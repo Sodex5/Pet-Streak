@@ -189,9 +189,8 @@ html, body { height: 100%; overflow: hidden; }
 .pg-away { left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(88%, 380px); padding: 22px; text-align: center; }
 .pg-away h2 { font-family: var(--display); margin: 6px 0 8px; font-size: 1.4rem; }
 .pg-away p { margin: 0; color: #55666e; }
-.pg-dots { display: flex; justify-content: center; gap: 8px; margin-top: 14px; }
-.pg-dots i { width: 14px; height: 14px; border-radius: 50%; background: #e3eaed; }
-.pg-dots i.on { background: #2f8a64; }
+.pg-away .pg-rescue { display: block; width: 100%; margin-top: 16px; }
+.pg-pretend { display: block; margin-top: 8px; font-size: 0.75rem; color: #55666e; }
 
 .pg-sheet { left: 0; right: 0; bottom: 0; max-height: 70%; overflow: auto; padding: 18px 16px calc(18px + env(safe-area-inset-bottom, 0px)); border-radius: 20px 20px 0 0; z-index: 5; }
 .pg-sheet h2 { font-family: var(--display); margin: 0 0 12px; font-size: 1.3rem; display: flex; justify-content: space-between; align-items: center; }
@@ -260,8 +259,9 @@ html, body { height: 100%; overflow: hidden; }
     <div class="pg pg-card pg-away" id="g-away" hidden>
       <div style="font-size:2.4rem">🏡</div>
       <h2 id="g-awaytitle">Mochi ran away</h2>
-      <p id="g-awaytext">They're at the sanctuary. Feed them 3 days in a row to bring them home.</p>
-      <div class="pg-dots" id="g-dots"><i></i><i></i><i></i></div>
+      <p id="g-awaytext">They're at the sanctuary. Pay the rescue fee to bring them home.</p>
+      <button type="button" class="pg-feed pg-rescue" id="g-rescuebtn">💳 Rescue for $0.99</button>
+      <small class="pg-pretend">Prototype: no real payment is taken.</small>
     </div>
     <div class="pg pg-msg" id="g-msg" role="status" aria-live="polite"></div>
     <div class="pg pg-card pg-tray" id="g-tray" hidden>
@@ -275,6 +275,8 @@ html, body { height: 100%; overflow: hidden; }
     <div class="pg pg-test">
       <button type="button" class="pg-testbtn" id="g-testbtn">🧪 Test tools</button>
       <div class="pg-card pg-testpanel" id="g-testpanel">
+        <em>Pretend co-parent</em>
+        <button type="button" id="g-coparent">🧑 Ada feeds today</button>
         <em>Prototype only: fake the calendar</em>
         <button type="button" data-skip="1">⏭ Next day</button>
         <button type="button" data-skip="3">⏩ Skip 3 days</button>
@@ -299,7 +301,7 @@ html, body { height: 100%; overflow: hidden; }
     <div class="pg pg-adopt" id="g-adopt" hidden>
       <div class="pg-card">
         <h2>Adopt your red panda</h2>
-        <p>Feed it every day to keep your streak and help it grow.</p>
+        <p>You and your co-parent Ada both feed it every day to keep the streak and help it grow.</p>
         <input id="g-namein" maxlength="16" value="Mochi" aria-label="Pet name">
         <button type="button" class="pg-feed" id="g-adoptbtn">Adopt</button>
       </div>
@@ -652,6 +654,7 @@ html, body { height: 100%; overflow: hidden; }
   // so the turn is kept small.
   var modelRoot = null, moodDroop = 0, sleepLids = 0, petSquint = 0;
   var HEAD_CENTER = new THREE.Vector3(0, 0.55, 0.12);
+  var PET_TURN_YAW = 0.13, PET_TURN_PITCH = 0.05, PET_TURN_YAW_SHARE = 0.27, PET_TURN_PITCH_SHARE = 0.16;
   var HEAD_YAW = 0.17, HEAD_PITCH = 0.05, LID_DROOP = 0.38, BREATH_PERIOD = 3400;
   var head = { yaw: 0, pitch: 0 };
   var headTarget = new THREE.Vector3(), headDir = new THREE.Vector3();
@@ -662,12 +665,12 @@ html, body { height: 100%; overflow: hidden; }
     var yawT = 0, pitchT = 0;
     if (state.eyes && haveHeadTarget && sleepLids < 0.5) {
       headDir.copy(headTarget).sub(HEAD_CENTER);
-      yawT = Math.max(-HEAD_YAW, Math.min(HEAD_YAW, Math.atan2(headDir.x, headDir.z) * 0.35));
-      pitchT = Math.max(-HEAD_PITCH, Math.min(HEAD_PITCH, Math.atan2(headDir.y, Math.sqrt(headDir.x * headDir.x + headDir.z * headDir.z)) * 0.25));
+      yawT = Math.max(-PET_TURN_YAW, Math.min(PET_TURN_YAW, (look.L.yaw + look.R.yaw) * 0.5 * PET_TURN_YAW_SHARE));
+      pitchT = Math.max(-PET_TURN_PITCH, Math.min(PET_TURN_PITCH, (look.L.pitch + look.R.pitch) * 0.5 * PET_TURN_PITCH_SHARE));
     }
     // The head lags behind the eyes, as it would in life
-    head.yaw += (yawT - head.yaw) * 0.045;
-    head.pitch += (pitchT - head.pitch) * 0.045;
+    head.yaw += (yawT - head.yaw) * 0.08;
+    head.pitch += (pitchT - head.pitch) * 0.08;
     modelRoot.rotation.set(-head.pitch, head.yaw, 0, "YXZ");
     // A slow squash and stretch about the feet, so it is never completely still
     var b = reduceMotion ? 0 : Math.sin(now / BREATH_PERIOD * Math.PI * 2);
@@ -765,7 +768,7 @@ html, body { height: 100%; overflow: hidden; }
       // Aim at a point halfway between the camera and the face, so the eyes turn about as far as the cursor is off-centre
       var dist = camera.position.distanceTo(controls.target) * 0.5;
       tmpTarget.copy(camera.position).addScaledVector(tmpV, dist);
-      headTarget.copy(tmpTarget); haveHeadTarget = true; if (isTouch) tmpTarget.copy(camera.position).addScaledVector(tmpV, dist * 1.7);
+      headTarget.copy(tmpTarget); haveHeadTarget = true; if (isTouch) tmpTarget.copy(camera.position).addScaledVector(tmpV, dist * 1.63);
       if (modelRoot) modelRoot.worldToLocal(tmpTarget);
     }
     pair.forEach(function (p) {
@@ -779,8 +782,8 @@ html, body { height: 100%; overflow: hidden; }
         yawT = Math.max(-0.5, Math.min(0.5, yawT));
         pitchT = Math.max(-0.32, Math.min(0.32, pitchT));
       }
-      st.yaw += (yawT - st.yaw) * 0.14;
-      st.pitch += (pitchT - st.pitch) * 0.14;
+      st.yaw += (yawT - st.yaw) * 0.1;
+      st.pitch += (pitchT - st.pitch) * 0.1;
       eye.quaternion.copy(eye.userData.restQ).multiply(eyeQ.setFromEuler(eyeE.set(-st.pitch, st.yaw, 0, "YXZ")));
     });
   }
@@ -1235,11 +1238,13 @@ html, body { height: 100%; overflow: hidden; }
     }
   }
 
-  // ---------- Pet Streak prototype (single player) ----------
-  // Rules are in RULES.md. Everything is saved on this device; the Test tools fake the calendar.
+  // ---------- Pet Streak prototype ----------
+  // Rules are in RULES.md (v2). A day counts as fed once 2 co-parents have fed the pet; here the
+  // second co-parent, Ada, is pretend and fed from the Test tools. Everything is saved on this
+  // device; the Test tools also fake the calendar.
   (function () {
     var KEY = "petstreak.v1";
-    var MAX_FREEZES = 2, AWAY_AFTER = 7, RESCUE_DAYS = 3;
+    var MAX_FREEZES = 2, AWAY_AFTER = 7, FEEDS_PER_DAY = 2, CO_PARENT = "Ada", RESCUE_FEE = "$0.99";
     var UNLOCKS = [
       { id: "mist", type: "backdrop", name: "Mist backdrop", level: 1, color: "#e6edf0" },
       { id: "bamboo", type: "backdrop", name: "Bamboo backdrop", level: 2, color: "#cfe3d4" },
@@ -1281,8 +1286,10 @@ html, body { height: 100%; overflow: hidden; }
 
     function fresh(name) {
       var t = realDay();
+      // lastFed is the last day that counted as fed; feeds lists who has fed on feedsDay
       return { name: name, level: 1, xp: 0, streak: 0, best: 0, freezes: 0, maxLevel: 1,
-               lastFed: t - 1, applied: 0, unfrozen: 0, status: "home", rescue: 0, levelLeft: 1,
+               lastFed: t - 1, applied: 0, unfrozen: 0, status: "home", levelLeft: 1,
+               feedsDay: -1, feeds: [],
                backdrop: "mist", hat: null, glasses: null, dayOffset: 0, born: t };
     }
     function load() { try { return JSON.parse(localStorage.getItem(KEY)); } catch (e) { return null; } }
@@ -1293,18 +1300,16 @@ html, body { height: 100%; overflow: hidden; }
       var news = [];
       if (!g) return news;
       var t = today();
-      if (g.status === "away") {
-        if (g.rescue > 0 && t - g.lastFed > 1) { g.rescue = 0; news.push("The rescue streak broke. Start again today."); }
-        return news;
-      }
+      if (g.status === "away") return news;
       var missed = Math.max(0, t - g.lastFed - 1);
       for (var k = g.applied + 1; k <= missed; k++) {
         if (g.freezes > 0) { g.freezes--; news.push("A freeze ❄️ saved your streak for a missed day."); continue; }
         g.unfrozen++;
-        if (g.unfrozen === 1) { if (g.streak > 0) news.push(g.name + " got hungry and your streak ended."); g.streak = 0; }
+        // the first missed day: remember the level it had while healthy, which sets the rescue level
+        if (g.unfrozen === 1) { if (g.streak > 0) news.push(g.name + " got hungry and your streak ended."); g.streak = 0; g.levelBeforeSick = g.level; }
         if (g.unfrozen >= 2 && g.unfrozen < AWAY_AFTER && g.level > 1) { g.level--; g.xp = 0; news.push(g.name + " is sick and dropped to level " + g.level + "."); }
         if (g.unfrozen >= AWAY_AFTER) {
-          g.status = "away"; g.levelLeft = g.level; g.rescue = 0;
+          g.status = "away"; g.levelLeft = g.level;
           news.push(g.name + " ran away to the sanctuary.");
           break;
         }
@@ -1319,24 +1324,58 @@ html, body { height: 100%; overflow: hidden; }
       return g.unfrozen === 0 ? "happy" : g.unfrozen === 1 ? "hungry" : "sick";
     }
 
+    // who has fed today ("you" and/or the co-parent)
+    function feedsToday() { return g.feedsDay === today() ? (g.feeds || []) : []; }
+    function fedBy(who) { return feedsToday().indexOf(who) >= 0; }
+    function addFeed(who) {
+      if (g.feedsDay !== today()) { g.feedsDay = today(); g.feeds = []; }
+      g.feeds.push(who);
+    }
+
+    // You feed: the pet eats, and the day counts once the co-parent has fed too
     function feed(foodId) {
       settle();
-      var t = today();
-      if (g.lastFed === t) { say(g.name + " is full. Come back tomorrow!"); return; }
+      if (g.status === "away") { say(g.name + " is at the sanctuary. Rescue them first."); return; }
+      if (fedBy("you")) { say("You already fed " + g.name + " today. Come back tomorrow!"); return; }
       var dish = FOODS.filter(function (f) { return f.id === foodId; })[0];
       setFoodChoice(dish ? dish.id : null);
-      if (g.status === "away") {
-        g.rescue = (g.rescue > 0 && g.lastFed === t - 1) ? g.rescue + 1 : 1;
-        g.lastFed = t;
-        if (g.rescue >= RESCUE_DAYS) {
-          g.status = "home"; g.level = Math.max(1, Math.floor(g.levelLeft / 2)); g.xp = 0;
-          g.streak = 1; g.best = Math.max(g.best, 1); g.applied = 0; g.unfrozen = 0; g.rescue = 0;
-          say(g.name + " came home! 🎉"); react(false);
-        } else {
-          say("Rescue " + g.rescue + " of " + RESCUE_DAYS + ". Come back tomorrow.");
-        }
-        save(); render(); return;
-      }
+      addFeed("you");
+      if (feedsToday().length >= FEEDS_PER_DAY) { countDay(true, dish); return; }
+      save(); render();
+      react(false);
+      say("Yum! " + g.name + (dish ? " loved the " + dish.name.toLowerCase() + "." : " is happy.") +
+          " " + CO_PARENT + " still needs to feed them today to keep the streak.");
+    }
+
+    // The pretend co-parent feeds (Test tools)
+    function coParentFeeds() {
+      settle();
+      if (g.status === "away") { say(g.name + " is at the sanctuary. Rescue them first."); return; }
+      if (fedBy(CO_PARENT)) { say(CO_PARENT + " already fed " + g.name + " today."); return; }
+      addFeed(CO_PARENT);
+      if (feedsToday().length >= FEEDS_PER_DAY) { countDay(false, null); return; }
+      save(); render();
+      wake(); playOnce("Happy");
+      say(CO_PARENT + " fed " + g.name + " 🐾 One more feed today keeps the streak!");
+    }
+
+    // Rescue from the sanctuary: a (pretend) fee brings the pet home at half the level it had before
+    // it got sick (the sick days already cost levels), with a fresh streak and today not yet fed
+    function rescueLevel() { return Math.max(1, Math.floor((g.levelBeforeSick || g.levelLeft) / 2)); }
+    function rescue() {
+      if (!g || g.status !== "away") return;
+      if (!confirm("Pay " + RESCUE_FEE + " to bring " + g.name + " home?\n\nThis is a prototype: no real payment is taken.")) return;
+      var t = today();
+      g.status = "home"; g.level = rescueLevel(); g.xp = 0; g.levelBeforeSick = null;
+      g.streak = 0; g.applied = 0; g.unfrozen = 0; g.lastFed = t - 1; g.feedsDay = -1; g.feeds = [];
+      save(); render();
+      wake(); hopStart = performance.now(); playOnce("Happy");
+      say(g.name + " came home at level " + g.level + "! 🎉 Feed them with " + CO_PARENT + " to start a new streak.");
+    }
+
+    // Both co-parents have fed: the day counts for the streak, XP and levels
+    function countDay(byYou, dish) {
+      var t = today();
       g.streak = g.unfrozen === 0 ? g.streak + 1 : 1;
       g.best = Math.max(g.best, g.streak);
       var gain = 10 + Math.min(g.streak, 10);
@@ -1349,11 +1388,14 @@ html, body { height: 100%; overflow: hidden; }
       g.lastFed = t; g.applied = 0; g.unfrozen = 0;
       save(); render();
       floatText("+" + gain + " XP");
-      react(levelled);
+      // you finished the day: the pet eats (then celebrates a level up); the co-parent did: it's just happy
+      if (byYou) react(levelled);
+      else { wake(); playOnce(levelled ? "LevelUp" : "Happy"); }
       if (unlockedNow.length) say("Level " + g.level + "! Unlocked: " + unlockedNow.map(function (u) { return u.name; }).join(", ") + " 🎀");
       else if (levelled) say("Level up! " + g.name + " is now level " + g.level + ".");
       else if (g.streak % 7 === 0) say(g.streak + " days in a row! You earned a freeze ❄️");
-      else say("Yum! " + g.name + (dish ? " loved the " + dish.name.toLowerCase() + "." : " is happy.") + " 🔥 " + g.streak);
+      else say((byYou ? "Yum! " + g.name + (dish ? " loved the " + dish.name.toLowerCase() + "." : " is happy.") : CO_PARENT + " fed " + g.name + " too.") +
+               " Day complete 🔥 " + g.streak);
     }
 
     // the food tray: Feed opens it, picking a treat feeds it
@@ -1544,21 +1586,27 @@ html, body { height: 100%; overflow: hidden; }
       $("g-streak").textContent = g.streak;
       $("g-freezes").textContent = g.freezes;
       $("g-frzlbl").textContent = g.freezes === 1 ? "freeze" : "freezes";
-      $("g-mood").textContent = { fed: "😊 Fed today", happy: "😊 Happy — waiting for food", hungry: "🥺 Hungry", sick: "🤒 Sick — losing levels", away: "🏡 At the sanctuary" }[m];
+      // mood, plus today's feeds while the day isn't complete: "· 1/2 fed today (you ✓, Ada …)"
+      var fedNow = feedsToday();
+      var who = ["you", CO_PARENT].map(function (p) { return (p === "you" ? "you" : p) + (fedNow.indexOf(p) >= 0 ? " ✓" : " …"); }).join(", ");
+      var partial = m !== "fed" && m !== "away" && fedNow.length > 0;
+      $("g-mood").textContent = partial
+        ? { happy: "😊", hungry: "🥺", sick: "🤒" }[m] + " " + fedNow.length + "/" + FEEDS_PER_DAY + " fed today (" + who + ")"
+        : { fed: "😊 Fed today (2/2)", happy: "😊 Happy — waiting for food", hungry: "🥺 Hungry", sick: "🤒 Sick — losing levels", away: "🏡 At the sanctuary" }[m];
       $("g-mood").hidden = m === "away";
       var away = m === "away";
       $("g-away").hidden = !away;
       if (away) {
         $("g-awaytitle").textContent = g.name + " ran away";
-        $("g-awaytext").textContent = "They're at the sanctuary. Feed them " + RESCUE_DAYS + " days in a row to bring them home.";
-        var dots = $("g-dots").children;
-        for (var i = 0; i < dots.length; i++) dots[i].classList.toggle("on", i < g.rescue);
+        $("g-awaytext").textContent = "They're at the sanctuary. Pay the rescue fee and they come home at level " + rescueLevel() + ".";
+        $("g-rescuebtn").textContent = "💳 Rescue for " + RESCUE_FEE;
       }
       var fb = $("g-feed");
-      var fedToday = g.lastFed === today();
-      fb.disabled = fedToday;
-      fb.textContent = fedToday ? (away ? "✓ Rescue " + g.rescue + "/" + RESCUE_DAYS + " — come back tomorrow" : "✓ Fed today")
-                                : (away ? "🍎 Feed to rescue (" + g.rescue + "/" + RESCUE_DAYS + ")" : "🍎 Feed " + g.name);
+      var youFed = fedBy("you");
+      fb.disabled = away || youFed;
+      fb.textContent = away ? "🏡 At the sanctuary"
+        : youFed ? (m === "fed" ? "✓ Fed today" : "✓ You fed — waiting for " + CO_PARENT)
+        : "🍎 Feed " + g.name;
       $("g-daylabel").textContent = "Day " + (today() - g.born + 1) + " · best streak " + g.best;
       applyLook();
       renderItems();
@@ -1588,9 +1636,11 @@ html, body { height: 100%; overflow: hidden; }
     }
 
     $("g-feed").addEventListener("click", function () {
-      if (g.lastFed === today()) { say(g.name + " is full. Come back tomorrow!"); return; }
+      if (fedBy("you")) { say("You already fed " + g.name + " today. Come back tomorrow!"); return; }
       renderFoods(); $("g-tray").hidden = !$("g-tray").hidden;
     });
+    $("g-coparent").addEventListener("click", coParentFeeds);
+    $("g-rescuebtn").addEventListener("click", rescue);
     $("g-trayclose").addEventListener("click", function () { $("g-tray").hidden = true; });
     $("g-wardrobe").addEventListener("click", function () { $("g-sheet").hidden = false; });
     $("g-close").addEventListener("click", function () { $("g-sheet").hidden = true; });
@@ -1625,7 +1675,7 @@ html, body { height: 100%; overflow: hidden; }
     $("g-adoptbtn").addEventListener("click", function () {
       var n = ($("g-namein").value || "").trim() || "Mochi";
       g = fresh(n); save(); $("g-adopt").hidden = true; render(); wake();
-      say("Meet " + n + "! Feed them once a day to keep your streak.");
+      say("Meet " + n + "! You and " + CO_PARENT + " both feed them each day to keep the streak.");
     });
 
     if (!g) { $("g-adopt").hidden = false; }
