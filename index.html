@@ -300,6 +300,12 @@ html, body { height: 100%; overflow: hidden; }
 .pg-loading { inset: 0; display: grid; place-items: center; background: rgba(230,237,240,0.75); font-weight: 600; color: #55666e; z-index: 7; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="theme-color" content="#2f8a64">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Pet Streak">
 </head>
 <body>
 <main class="wrap">
@@ -394,6 +400,11 @@ html, body { height: 100%; overflow: hidden; }
           <button type="button" class="pg-btn pg-wide" id="g-invite2">➕ Invite a co-parent</button>
           <p class="pg-note" id="g-rolenote"></p>
           <button type="button" class="pg-btn pg-wide pg-danger" id="g-leave">Leave Mochi</button>
+        </section>
+        <section class="pg-sec" id="g-remsec">
+          <h3>Reminders</h3>
+          <p class="pg-note" id="g-remtext">A nudge in the evening if you haven't fed your pets, and when a co-parent has fed them.</p>
+          <button type="button" class="pg-btn pg-wide" id="g-rembtn">🔔 Turn on reminders</button>
         </section>
         <section class="pg-sec" id="g-giftsec" hidden>
           <h3>Gifts you've sent</h3>
@@ -1463,7 +1474,9 @@ html, body { height: 100%; overflow: hidden; }
   (function () {
     var SB_URL = "https://klftxxfgvxqypgmmftwy.supabase.co";
     var SB_KEY = "sb_publishable_JW6pTMZRpqNfNuzEuMB6nQ_Wp8nGVGF";   // the public key: safe in the page
-    var JOIN_KEY = "petstreak.join", GIFT_KEY = "petstreak.gift", PET_KEY = "petstreak.pet";
+    var JOIN_KEY = "petstreak.join", GIFT_KEY = "petstreak.gift", PET_KEY = "petstreak.pet", HINT_KEY = "petstreak.remhint";
+    // the public half of the reminder keys (the private half is a Supabase secret)
+    var VAPID_PUBLIC = "BOsV2v9W4Hcan1QiN5iQU5M4y9Fb49Skmee1MhnJPCFSFbLDIcEzoyXGN73CmBgOIYiQV2bXBokGqjYUUE77EtQ";
     // coin packs for the shop; real payments aren't connected yet, so they show as coming soon
     var COIN_PACKS = [{ coins: 250, price: "$1.99" }, { coins: 700, price: "$4.99" }, { coins: 1500, price: "$9.99" }];
     var RESCUE_FEE = 100, ADOPT_FEE = 100, FEEDS_PER_DAY = 2;
@@ -1581,6 +1594,11 @@ html, body { height: 100%; overflow: hidden; }
                        : ""));
       }
       await loadAll();
+      // after their first feed, point new players at reminders once
+      if (pushState() === "ok" && Notification.permission === "default" && !localStorage.getItem(HINT_KEY)) {
+        localStorage.setItem(HINT_KEY, "1");
+        setTimeout(function () { say("🔔 Tip: turn on reminders in the menu (☰) so you never miss a day."); }, 3800);
+      }
     }
     function unlocksBetween(oldMax, level) {
       var free = store.filter(function (s) { return s.kind === "wardrobe" && s.price === 0 && s.level_req > oldMax && s.level_req <= level; }).map(function (s) { return s.name; });
@@ -2057,6 +2075,66 @@ html, body { height: 100%; overflow: hidden; }
     Array.prototype.forEach.call(document.querySelectorAll("#g-store [data-tab]"), function (b) {
       b.addEventListener("click", function () { storeTab = b.getAttribute("data-tab"); renderStore(); });
     });
+    // ---------- Reminders (web push) ----------
+    // sw.js shows the notifications; the server decides when (send-reminders, every hour)
+    var swReady = null;
+    if ("serviceWorker" in navigator) {
+      swReady = navigator.serviceWorker.register("sw.js").then(function () { return navigator.serviceWorker.ready; }).catch(function () { return null; });
+    }
+    function pushState() {
+      var ios = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+      var standalone = (window.matchMedia && matchMedia("(display-mode: standalone)").matches) || navigator.standalone === true;
+      if (!swReady || !("PushManager" in window) || !("Notification" in window)) return ios && !standalone ? "ios-home" : "none";
+      if (Notification.permission === "denied") return "denied";
+      return "ok";
+    }
+    async function pushSub() {
+      var reg = swReady && await Promise.race([swReady, new Promise(function (r) { setTimeout(function () { r(null); }, 4000); })]);
+      return reg ? { reg: reg, sub: await reg.pushManager.getSubscription() } : { reg: null, sub: null };
+    }
+    function keyBytes(b64) {
+      var s = atob(b64.replace(/-/g, "+").replace(/_/g, "/") + "===".slice((b64.length + 3) % 4));
+      var a = new Uint8Array(s.length); for (var i = 0; i < s.length; i++) a[i] = s.charCodeAt(i); return a;
+    }
+    async function saveSub(sub) {
+      var j = sub.toJSON();
+      await rpc("save_push_sub", { p_endpoint: j.endpoint, p_p256dh: j.keys.p256dh, p_auth: j.keys.auth, p_tz: tz() });
+    }
+    async function renderReminders() {
+      var st = pushState(), btn = $("g-rembtn"), txt = $("g-remtext");
+      btn.hidden = false; btn.disabled = false;
+      if (st === "ios-home") { txt.textContent = "On iPhone, add Pet Streak to your Home Screen first (Share ⬆ → Add to Home Screen), then open it from there and turn reminders on."; btn.hidden = true; return; }
+      if (st === "none") { txt.textContent = "This browser can't show reminders. Try Chrome on Android, or Safari on iPhone from the Home Screen."; btn.hidden = true; return; }
+      if (st === "denied") { txt.textContent = "Notifications are blocked for this site. Allow them in your browser's site settings, then come back here."; btn.hidden = true; return; }
+      var s = await pushSub();
+      if (s.sub) { txt.textContent = "On for this phone. You'll get a nudge in the evening if you haven't fed your pets, and when a co-parent has."; btn.textContent = "🔕 Turn off reminders"; }
+      else { txt.textContent = "A nudge in the evening if you haven't fed your pets, and when a co-parent has fed them."; btn.textContent = "🔔 Turn on reminders"; }
+    }
+    $("g-rembtn").addEventListener("click", async function () {
+      var btn = $("g-rembtn"); btn.disabled = true;
+      try {
+        var s = await pushSub();
+        if (s.sub) {
+          var ep = s.sub.endpoint;
+          await s.sub.unsubscribe();
+          await rpc("drop_push_sub", { p_endpoint: ep });
+          say("Reminders are off on this phone.");
+        } else {
+          if (await Notification.requestPermission() !== "granted") { say("Reminders need permission to show notifications."); return; }
+          if (!s.reg) { say("Couldn't start reminders. Refresh and try again."); return; }
+          var sub = await s.reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: keyBytes(VAPID_PUBLIC) });
+          await saveSub(sub);
+          say("Reminders are on 🔔");
+        }
+      } catch (e) { say("Couldn't change reminders: " + e.message); }
+      finally { btn.disabled = false; renderReminders(); }
+    });
+    // keep this phone's subscription linked to whoever is signed in (and their time zone)
+    async function refreshSub() {
+      if (pushState() !== "ok" || Notification.permission !== "granted") return;
+      try { var s = await pushSub(); if (s.sub) await saveSub(s.sub); } catch (e) { /* not important */ }
+    }
+
     // ---------- Menu ----------
     var sentGifts = [];
     function renderMenu() {
@@ -2113,7 +2191,7 @@ html, body { height: 100%; overflow: hidden; }
       $("g-adminsec").hidden = !(profile && profile.is_admin);
     }
     async function openMenu() {
-      renderMenu(); $("g-menu").hidden = false;
+      renderMenu(); $("g-menu").hidden = false; renderReminders();
       try { sentGifts = await rpc("my_gifts"); } catch (e) { sentGifts = []; }
       renderMenu();
     }
@@ -2189,6 +2267,7 @@ html, body { height: 100%; overflow: hidden; }
       await loadAll();
       await checkGift();
       checkJoin();
+      refreshSub();
       // co-parents feed on their own phones: check for news every 20 s while the app is open
       if (!polling) { polling = true; setInterval(function () { if (me && !document.hidden) loadAll({ quiet: true }); }, 20000); }
     }
