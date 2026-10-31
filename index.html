@@ -229,12 +229,14 @@ html, body { height: 100%; overflow: hidden; }
 .stage canvas { touch-action: none; }
 
 /* Pet Streak (real version): extra pieces on top of the prototype's game.css */
-.pg-bar { top: calc(10px + env(safe-area-inset-top, 0px)); left: 12px; right: 12px; max-width: 560px; margin: 0 auto; display: flex; gap: 8px; align-items: center; }
-.pg-chip { flex: none; border: 1px solid #d6e0e4; background: rgba(255,255,255,0.94); border-radius: 999px; padding: 6px 12px; font-weight: 700; color: #14232b; min-height: 36px; }
-.pg-pets { flex: 1; display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; }
+/* top bar: pets on the left, coins, store and menu on the right */
+.pg-bar { top: calc(10px + env(safe-area-inset-top, 0px)); left: 12px; right: 12px; max-width: 560px; margin: 0 auto; display: flex; gap: 6px; align-items: center; }
+.pg-chip { flex: none; border: 1px solid #d6e0e4; background: rgba(255,255,255,0.94); border-radius: 999px; padding: 6px 11px; font-weight: 700; color: #14232b; min-height: 36px; white-space: nowrap; }
+.pg-storechip { background: #2f8a64; border-color: #2f8a64; color: #fff; }
+.pg-pets { flex: 1; min-width: 0; display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; }
 .pg-pets::-webkit-scrollbar { display: none; }
 .pg-pets button { flex: none; border: 1px solid #d6e0e4; background: rgba(255,255,255,0.8); border-radius: 999px; padding: 6px 12px; font-weight: 600; color: #14232b; min-height: 36px; white-space: nowrap; }
-.pg-pets button[aria-pressed="true"] { background: #2f8a64; border-color: #2f8a64; color: #fff; }
+.pg-pets button[aria-pressed="true"] { background: #14232b; border-color: #14232b; color: #fff; }
 .pg-top { top: calc(56px + env(safe-area-inset-top, 0px)); }
 .pg-mood { top: calc(150px + env(safe-area-inset-top, 0px)); }
 /* co-parents: just above the Feed button, clear of the pet's face */
@@ -242,26 +244,58 @@ html, body { height: 100%; overflow: hidden; }
 .pg-crew span, .pg-crew button { border-radius: 999px; padding: 4px 10px; font-size: 0.8rem; font-weight: 600; background: rgba(255,255,255,0.85); border: 1px solid #d6e0e4; color: #14232b; }
 .pg-crew span.fed { background: #eaf6f0; border-color: #2f8a64; }
 .pg-crew button { border-style: dashed; color: #2f8a64; }
-.pg-bottom .pg-wardrobe { padding: 0 14px; }
+.pg-bottom .pg-wardrobe { padding: 0 16px; }
 /* messages sit above the co-parent row */
 .pg-msg { bottom: calc(132px + env(safe-area-inset-bottom, 0px)); }
 
 .pg-sheet h2 .pg-coinline { margin-left: auto; margin-right: 10px; font-family: var(--body); font-size: 1rem; }
 .pg-tabs { display: flex; gap: 6px; margin-bottom: 10px; }
-.pg-tabs button { flex: 1; border: 1px solid #d6e0e4; background: #fff; border-radius: 12px; padding: 8px 4px; font-weight: 600; color: #14232b; }
+.pg-tabs button { flex: 1; border: 1px solid #d6e0e4; background: #fff; border-radius: 12px; padding: 8px 2px; font-weight: 600; color: #14232b; font-size: 0.85rem; white-space: nowrap; }
 .pg-tabs button[aria-selected="true"] { background: #2f8a64; border-color: #2f8a64; color: #fff; }
 .pg-hint { margin: 0 0 10px; font-size: 0.85rem; color: #55666e; }
 .pg-hint:empty { display: none; }
-.pg-item .price { display: block; margin-top: 4px; font-weight: 700; color: #14232b; font-size: 0.85rem; }
 .pg-empty-note { grid-column: 1 / -1; color: #55666e; font-size: 0.9rem; padding: 8px 0; }
+/* a store card with its own buttons (pets: for me / as a gift) */
+.pg-card2 { border: 2px solid #d6e0e4; border-radius: 14px; background: #fff; padding: 10px; color: #14232b; display: flex; flex-direction: column; gap: 6px; }
+.pg-card2 b { font-size: 0.95rem; }
+.pg-card2 .sw { display: inline-block; width: 18px; height: 18px; border-radius: 50%; vertical-align: -4px; margin-right: 6px; border: 1px solid rgba(0,0,0,0.15); }
+.pg-card2 span { font-size: 0.8rem; color: #55666e; }
+.pg-card2 .acts { display: flex; gap: 6px; margin-top: 2px; }
+.pg-card2 .acts button { flex: 1; border: 0; border-radius: 10px; padding: 8px 4px; font-weight: 700; background: #2f8a64; color: #fff; font-size: 0.85rem; }
+.pg-card2 .acts button.alt { background: #fff1e6; color: #a5521f; }
+.pg-card2 .acts button[disabled] { background: #e3eaed; color: #8a9aa1; }
 
-.pg-menu { display: flex; flex-direction: column; gap: 10px; }
-.pg-menu label { display: flex; flex-direction: column; gap: 6px; font-size: 0.85rem; color: #55666e; }
-.pg-menu input { font: inherit; font-size: 1rem; padding: 10px 12px; border-radius: 12px; border: 1px solid #c3d0d5; background: #fff; color: #14232b; color-scheme: light; }
-.pg-menu button { border: 1px solid #d6e0e4; background: #fff; border-radius: 12px; padding: 12px; text-align: left; font-weight: 600; color: #14232b; }
-.pg-menu small { color: #55666e; }
+/* menu: a full panel, solid, grouped into sections */
+.pg-panel { inset: 0; z-index: 8; background: #f3f6f7; display: flex; flex-direction: column; }
+.pg-panelhead { display: flex; align-items: center; justify-content: space-between; padding: calc(14px + env(safe-area-inset-top, 0px)) 16px 10px; background: #fff; border-bottom: 1px solid #e3eaed; }
+.pg-panelhead h2 { margin: 0; font-family: var(--display); font-size: 1.35rem; }
+.pg-panelhead .pg-x { background: #e3eaed; color: #14232b; }
+.pg-panelbody { flex: 1; overflow-y: auto; padding: 14px 14px calc(24px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: 14px; max-width: 560px; width: 100%; margin: 0 auto; box-sizing: border-box; }
+.pg-sec { background: #fff; border: 1px solid #e3eaed; border-radius: 16px; padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; }
+.pg-sec[hidden] { display: none; }
+.pg-sec h3 { margin: 0; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #55666e; }
+.pg-row { display: flex; gap: 8px; align-items: center; }
+.pg-row[hidden] { display: none; }
+.pg-row input { flex: 1; min-width: 0; font: inherit; font-size: 1rem; padding: 10px 12px; border-radius: 12px; border: 1px solid #c3d0d5; background: #fff; color: #14232b; color-scheme: light; }
+.pg-grow { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.pg-grow small { color: #55666e; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pg-avatar { width: 40px; height: 40px; border-radius: 50%; background: #2f8a64; color: #fff; display: grid; place-items: center; font-weight: 800; font-size: 1.1rem; flex: none; }
+.pg-btn { border: 1px solid #d6e0e4; background: #fff; border-radius: 12px; padding: 10px 14px; font-weight: 700; color: #14232b; }
+.pg-btn.pg-wide { width: 100%; text-align: center; }
+.pg-btn.pg-danger { color: #b3261e; border-color: #f0c9c6; background: #fff7f6; }
+.pg-btn.pg-quiet { background: transparent; border-color: #c3d0d5; color: #55666e; }
+.pg-btn[hidden] { display: none; }
+.pg-note { margin: 0; font-size: 0.8rem; color: #55666e; }
+.pg-note:empty { display: none; }
+.pg-person { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-top: 1px solid #f0f3f4; }
+.pg-person:first-child { border-top: 0; }
+.pg-person .pg-grow b { font-size: 0.95rem; }
+.pg-person .tag { font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: #eaf6f0; color: #2f8a64; }
+.pg-person .rm { border: 0; background: none; color: #b3261e; font-weight: 700; padding: 6px; }
 
 .pg-adopt form { margin: 0; }
+/* questions (name a pet, open a gift, join as co-parent) always sit above "Get your first pet" and the store */
+#g-ask, #g-join { z-index: 9; }
 .pg-linkbtn { margin-top: 10px; border: 0; background: none; color: #2f8a64; font-weight: 600; text-decoration: underline; }
 .pg-loading { inset: 0; display: grid; place-items: center; background: rgba(230,237,240,0.75); font-weight: 600; color: #55666e; z-index: 7; }
 </style>
@@ -293,8 +327,9 @@ html, body { height: 100%; overflow: hidden; }
       </div>
     </div>
     <div class="pg pg-bar" id="g-bar" hidden>
-      <button type="button" class="pg-chip" id="g-coins" aria-label="Coins">🪙 <span id="g-coinnum">0</span></button>
       <div class="pg-pets" id="g-pets"></div>
+      <button type="button" class="pg-chip" id="g-coins" aria-label="Coins">🪙 <span id="g-coinnum">0</span></button>
+      <button type="button" class="pg-chip pg-storechip" id="g-storebtn">🛍️ Store</button>
       <button type="button" class="pg-chip" id="g-menubtn" aria-label="Menu">☰</button>
     </div>
     <div class="pg pg-card pg-mood" id="g-mood" role="status" hidden>😊 Happy</div>
@@ -313,8 +348,7 @@ html, body { height: 100%; overflow: hidden; }
     </div>
     <div class="pg pg-bottom" id="g-bottom" hidden>
       <button type="button" class="pg-feed" id="g-feed">🍎 Feed</button>
-      <button type="button" class="pg-wardrobe" id="g-storebtn">🛍️ Store</button>
-      <button type="button" class="pg-wardrobe" id="g-wardrobe">🎀</button>
+      <button type="button" class="pg-wardrobe" id="g-wardrobe">🎀 Wardrobe</button>
     </div>
 
     <!-- sheets -->
@@ -327,21 +361,55 @@ html, body { height: 100%; overflow: hidden; }
       <div class="pg-tabs" role="tablist">
         <button type="button" role="tab" data-tab="pets" aria-selected="true">🐾 Pets</button>
         <button type="button" role="tab" data-tab="sanctuary" aria-selected="false">🏡 Adopt</button>
-        <button type="button" role="tab" data-tab="wardrobe" aria-selected="false">🕶️ Wardrobe</button>
+        <button type="button" role="tab" data-tab="wardrobe" aria-selected="false">🕶️ Items</button>
+        <button type="button" role="tab" data-tab="coins" aria-selected="false">🪙 Coins</button>
       </div>
       <p class="pg-hint" id="g-storehint"></p>
       <div class="pg-items" id="g-storeitems"></div>
     </div>
-    <div class="pg pg-card pg-sheet" id="g-menu" hidden>
-      <h2>Menu <button type="button" class="pg-x" id="g-menuclose" aria-label="Close menu">✕</button></h2>
-      <div class="pg-menu">
-        <label>Your name <input id="g-myname" maxlength="24" autocomplete="nickname"></label>
-        <button type="button" id="g-savename">Save name</button>
-        <button type="button" id="g-daily">🪙 Get today's free 100 coins</button>
-        <button type="button" id="g-invite2">➕ Invite a co-parent</button>
-        <button type="button" id="g-leave">🚪 Leave this pet</button>
-        <button type="button" id="g-signout">Sign out</button>
-        <small id="g-who"></small>
+    <div class="pg pg-panel" id="g-menu" hidden>
+      <div class="pg-panelhead">
+        <h2>Menu</h2>
+        <button type="button" class="pg-x" id="g-menuclose" aria-label="Close menu">✕</button>
+      </div>
+      <div class="pg-panelbody">
+        <section class="pg-sec">
+          <h3>You</h3>
+          <div class="pg-row pg-me">
+            <span class="pg-avatar" id="g-avatar">P</span>
+            <div class="pg-grow"><b id="g-mename">Player</b><small id="g-who"></small></div>
+          </div>
+          <div class="pg-row">
+            <input id="g-myname" maxlength="24" autocomplete="nickname" aria-label="Your name" placeholder="Your name">
+            <button type="button" class="pg-btn" id="g-savename">Save</button>
+          </div>
+        </section>
+        <section class="pg-sec" id="g-petsec">
+          <h3 id="g-pethead">Mochi</h3>
+          <div class="pg-row" id="g-renamerow">
+            <input id="g-petname" maxlength="16" aria-label="Pet name">
+            <button type="button" class="pg-btn" id="g-rename">Rename</button>
+          </div>
+          <div id="g-coparents"></div>
+          <button type="button" class="pg-btn pg-wide" id="g-invite2">➕ Invite a co-parent</button>
+          <p class="pg-note" id="g-rolenote"></p>
+          <button type="button" class="pg-btn pg-wide pg-danger" id="g-leave">Leave Mochi</button>
+        </section>
+        <section class="pg-sec" id="g-giftsec" hidden>
+          <h3>Gifts you've sent</h3>
+          <div id="g-gifts"></div>
+        </section>
+        <section class="pg-sec" id="g-adminsec" hidden>
+          <h3>Admin: give coins</h3>
+          <div class="pg-row">
+            <input id="g-adminemail" type="email" placeholder="friend@example.com" aria-label="Player email">
+          </div>
+          <div class="pg-row">
+            <input id="g-adminamount" type="number" min="1" max="100000" value="500" aria-label="Coins">
+            <button type="button" class="pg-btn" id="g-admingive">Give coins</button>
+          </div>
+        </section>
+        <button type="button" class="pg-btn pg-wide pg-quiet" id="g-signout">Sign out</button>
       </div>
     </div>
 
@@ -382,7 +450,7 @@ html, body { height: 100%; overflow: hidden; }
       <div class="pg-card">
         <div style="font-size:2.4rem">🐾</div>
         <h2>Get your first pet</h2>
-        <p>Buy a red panda in the store, adopt one from the sanctuary, or ask a friend for an invite link.</p>
+        <p>Buy a red panda in the store, open a gift link from a friend, or ask a friend to invite you as a co-parent.</p>
         <button type="button" class="pg-feed" id="g-emptystore">🛍️ Open the store</button>
       </div>
     </div>
@@ -1395,7 +1463,9 @@ html, body { height: 100%; overflow: hidden; }
   (function () {
     var SB_URL = "https://klftxxfgvxqypgmmftwy.supabase.co";
     var SB_KEY = "sb_publishable_JW6pTMZRpqNfNuzEuMB6nQ_Wp8nGVGF";   // the public key: safe in the page
-    var JOIN_KEY = "petstreak.join", PET_KEY = "petstreak.pet";
+    var JOIN_KEY = "petstreak.join", GIFT_KEY = "petstreak.gift", PET_KEY = "petstreak.pet";
+    // coin packs for the shop; real payments aren't connected yet, so they show as coming soon
+    var COIN_PACKS = [{ coins: 250, price: "$1.99" }, { coins: 700, price: "$4.99" }, { coins: 1500, price: "$9.99" }];
     var RESCUE_FEE = 100, ADOPT_FEE = 100, FEEDS_PER_DAY = 2;
     // treats for the food tray; id matches Food_<id> in the model, more unlock as the pet levels up
     var FOODS = [
@@ -1423,6 +1493,10 @@ html, body { height: 100%; overflow: hidden; }
     function iFed(p) { return !!myMember(p).fed_today; }
     function fedCount(p) { return (p.members || []).filter(function (m) { return m.fed_today; }).length; }
     function others(p) { return (p.members || []).filter(function (m) { return !m.me; }); }
+    function isOwner(p) { return !!p && p.my_role === "owner"; }
+    function ownerName(p) { var o = (p.members || []).filter(function (m) { return m.role === "owner"; })[0]; return o ? (o.me ? "you" : o.name) : "the owner"; }
+    // XP and the streak only count on days when 2 co-parents fed
+    function fullToday(p) { return !!p && p.last_full === p.today; }
 
     function mood(p) {
       if (!p || p.status !== "home") return "away";
@@ -1460,7 +1534,7 @@ html, body { height: 100%; overflow: hidden; }
     // what each pet looked like at the last load, to notice co-parents' feeds while the app is open
     function remember() {
       pets.forEach(function (p) {
-        seen[p.id] = { today: p.today, fed: (p.members || []).filter(function (m) { return m.fed_today; }).map(function (m) { return m.id; }), last_fed: p.last_fed, level: p.level };
+        seen[p.id] = { today: p.today, fed: (p.members || []).filter(function (m) { return m.fed_today; }).map(function (m) { return m.id; }), last_full: p.last_full, level: p.level };
       });
     }
     function noticeOthers() {
@@ -1470,13 +1544,13 @@ html, body { height: 100%; overflow: hidden; }
       var newly = (p.members || []).filter(function (m) { return m.fed_today && !m.me && fedBefore.indexOf(m.id) < 0; });
       if (!newly.length) return;
       wake();
-      if (p.last_fed === p.today && s.last_fed !== p.today) {
+      if (fullToday(p) && s.last_full !== p.today) {
         floatText("Day complete!");
         playOnce(p.level > s.level ? "LevelUp" : "Happy");
-        say(newly[0].name + " fed " + p.name + " too. Day complete 🔥 " + p.streak);
+        say(newly[0].name + " fed " + p.name + " too. XP earned and the streak grows 🔥 " + p.streak);
       } else {
         playOnce("Happy");
-        say(newly[0].name + " fed " + p.name + " 🐾");
+        say(newly[0].name + " fed " + p.name + " 🐾" + (iFed(p) ? "" : " Feed them too to earn XP and grow the streak."));
       }
     }
 
@@ -1499,9 +1573,12 @@ html, body { height: 100%; overflow: hidden; }
         else if (r.streak % 7 === 0) say(r.streak + " days in a row! You earned a freeze ❄️");
         else say(yum + " Day complete 🔥 " + r.streak);
       } else {
+        // one feed keeps the pet healthy; XP and the streak need a second co-parent
         var waiting = others(p).filter(function (m) { return !m.fed_today; }).map(function (m) { return m.name; });
-        say(yum + (waiting.length ? " " + waiting.join(" or ") + " still needs to feed them today."
-                                  : " Invite a co-parent: a day counts when " + FEEDS_PER_DAY + " of you feed."));
+        say(yum + " They're fed for today." + (waiting.length
+          ? " When " + waiting.join(" or ") + " feeds them too, you'll earn XP and grow the streak."
+          : isOwner(p) ? " Invite a co-parent: XP and the streak only count when " + FEEDS_PER_DAY + " of you feed."
+                       : ""));
       }
       await loadAll();
     }
@@ -1553,6 +1630,43 @@ html, body { height: 100%; overflow: hidden; }
       say("You're now a co-parent of " + pet().name + "! 🐾");
     }
 
+    // ---------- Gifts ----------
+    function giftUrl(code) { return location.origin + location.pathname + "?gift=" + code; }
+    async function shareGift(code, variantName) {
+      var url = giftUrl(code), text = "I got you a " + variantName.toLowerCase() + " on Pet Streak! Open the link to name it and make it yours. 🎁";
+      if (navigator.share) {
+        try { await navigator.share({ title: "A pet for you", text: text, url: url }); return; } catch (e) { if (e && e.name === "AbortError") return; }
+      }
+      try { await navigator.clipboard.writeText(url); say("Gift link copied. Send it to your friend 🎁"); }
+      catch (e) { prompt("Send this gift link to your friend:", url); }
+    }
+    async function buyGift(s) {
+      if (!confirm("Buy a " + s.name.toLowerCase() + " as a gift for " + s.price + " coins? You'll get a link to send. Whoever opens it becomes the owner and names it.")) return;
+      var code;
+      try { code = await rpc("buy_gift", { p_variant: s.id }); } catch (e) { say(e.message); return; }
+      await loadAll(); renderStore();
+      await shareGift(code, s.name);
+    }
+    // someone opened a gift link (?gift=code): after signing in, they name the pet and it's theirs
+    async function checkGift() {
+      var code = localStorage.getItem(GIFT_KEY);
+      if (!code || !me) return;
+      var info;
+      try { info = await rpc("gift_info", { p_code: code }); } catch (e) { info = null; }
+      if (!info) { localStorage.removeItem(GIFT_KEY); say("That gift link isn't valid."); return; }
+      if (info.claimed) { localStorage.removeItem(GIFT_KEY); say("This gift has already been opened."); return; }
+      if (info.mine) { localStorage.removeItem(GIFT_KEY); say("That's a gift you sent. Share the link with a friend to give it to them."); return; }
+      var name = await askName("🎁 A gift from " + info.from_name, info.from_name + " sent you a " + info.variant_name.toLowerCase() + "! It's yours: give it a name.", "Mochi", "Make it mine");
+      if (!name) return;   // the link stays saved, so they can open it again later
+      var id;
+      try { id = await rpc("claim_gift", { p_code: code, p_name: name, p_tz: tz() }); } catch (e) { say(e.message); localStorage.removeItem(GIFT_KEY); return; }
+      localStorage.removeItem(GIFT_KEY);
+      localStorage.setItem(PET_KEY, id); cur = -1;
+      await loadAll();
+      wake(); playOnce("Happy");
+      say("Meet " + name + "! Invite a co-parent: XP and the streak count when " + FEEDS_PER_DAY + " of you feed.");
+    }
+
     // a little name/confirm card (returns the name, or null if cancelled)
     function askName(title, text, value, okLabel) {
       return new Promise(function (resolve) {
@@ -1572,18 +1686,34 @@ html, body { height: 100%; overflow: hidden; }
       Array.prototype.forEach.call(document.querySelectorAll("#g-store [data-tab]"), function (b) { b.setAttribute("aria-selected", b.getAttribute("data-tab") === storeTab ? "true" : "false"); });
       var box = $("g-storeitems"); box.innerHTML = "";
       var maxLv = pets.reduce(function (a, p) { return Math.max(a, p.max_level); }, 0);
+      var coins = profile ? profile.coins : 0;
       if (storeTab === "pets") {
-        $("g-storehint").textContent = "A new red panda of your own. Invite friends to co-parent it.";
+        $("g-storehint").textContent = "Buy a red panda for yourself, or as a gift: your friend becomes its owner and names it.";
         store.filter(function (s) { return s.kind === "pet"; }).forEach(function (s) {
-          card(box, s.name, s.color, "🪙 " + s.price, "Buy", async function () {
+          var c = document.createElement("div"); c.className = "pg-card2";
+          c.innerHTML = "<b>" + '<i class="sw" style="background:' + s.color + '"></i>' + esc(s.name) + "</b><span>🪙 " + s.price + "</span>" +
+            '<div class="acts"><button type="button">For me</button><button type="button" class="alt">🎁 Gift</button></div>';
+          var bs = c.querySelectorAll("button");
+          if (coins < s.price) { bs[0].disabled = bs[1].disabled = true; c.querySelector("span").textContent = "🪙 " + s.price + " · you have " + coins; }
+          bs[0].addEventListener("click", async function () {
             var name = await askName("Name your " + s.name.toLowerCase(), "It costs " + s.price + " coins.", "Mochi", "Buy for 🪙 " + s.price);
             if (!name) return;
             try { var id = await rpc("buy_pet", { p_variant: s.id, p_name: name, p_tz: tz() }); } catch (e) { say(e.message); return; }
             localStorage.setItem(PET_KEY, id); cur = -1;
             $("g-store").hidden = true; await loadAll();
-            say("Meet " + name + "! Invite a co-parent: a day counts when " + FEEDS_PER_DAY + " of you feed.");
+            say("Meet " + name + "! Invite a co-parent: XP and the streak count when " + FEEDS_PER_DAY + " of you feed.");
           });
+          bs[1].addEventListener("click", function () { buyGift(s); });
+          box.appendChild(c);
         });
+      } else if (storeTab === "coins") {
+        $("g-storehint").textContent = "Coins buy pets, gifts, rescues and wardrobe items.";
+        COIN_PACKS.forEach(function (k) { card(box, "🪙 " + k.coins + " coins", null, k.price + " · coming soon", null, null); });
+        var note = document.createElement("div"); note.className = "pg-empty-note";
+        note.textContent = profile && profile.is_admin
+          ? "Payments aren't connected yet. As the admin you can give coins to anyone from the menu (☰)."
+          : "Payments aren't connected yet. While we test, ask the admin for coins.";
+        box.appendChild(note);
       } else if (storeTab === "sanctuary") {
         $("g-storehint").textContent = "Pets whose owners left them, or that waited too long at the sanctuary. They come home at half their old level.";
         var list;
@@ -1703,10 +1833,10 @@ html, body { height: 100%; overflow: hidden; }
       $("g-streak").textContent = p.streak;
       $("g-freezes").textContent = p.freezes;
       $("g-frzlbl").textContent = p.freezes === 1 ? "freeze" : "freezes";
-      var n = fedCount(p), partial = m !== "fed" && m !== "away" && n > 0;
-      $("g-mood").textContent = partial
-        ? { happy: "😊", hungry: "🥺", sick: "🤒" }[m] + " " + n + "/" + FEEDS_PER_DAY + " fed today"
-        : { fed: "😊 Fed today", happy: "😊 Happy — waiting for food", hungry: "🥺 Hungry", sick: "🤒 Sick — losing levels", away: "🏡 At the sanctuary" }[m];
+      // fed (1 feed) keeps it healthy; the 2nd co-parent's feed earns XP and grows the streak
+      $("g-mood").textContent = m === "fed"
+        ? (fullToday(p) ? "😊 Fed today · XP earned ✓" : "😊 Fed · 1/" + FEEDS_PER_DAY + " for XP & streak")
+        : { happy: "😊 Happy — waiting for food", hungry: "🥺 Hungry", sick: "🤒 Sick — losing levels", away: "🏡 At the sanctuary" }[m];
       $("g-mood").hidden = m === "away";
       // co-parents and who fed today
       var crew = $("g-crew"); crew.innerHTML = "";
@@ -1716,7 +1846,8 @@ html, body { height: 100%; overflow: hidden; }
         if (mb.fed_today) s.className = "fed";
         crew.appendChild(s);
       });
-      if ((p.members || []).length < 4) {
+      // only the owner chooses co-parents
+      if (isOwner(p) && (p.members || []).length < 4) {
         var ib = document.createElement("button"); ib.type = "button"; ib.textContent = "＋ Invite";
         ib.addEventListener("click", invite); crew.appendChild(ib);
       }
@@ -1739,10 +1870,10 @@ html, body { height: 100%; overflow: hidden; }
       var fb = $("g-feed"), youFed = iFed(p);
       fb.disabled = away || youFed;
       fb.textContent = away ? "🏡 At the sanctuary"
-        : youFed ? (m === "fed" ? "✓ Fed today" : "✓ You fed — waiting")
+        : youFed ? (fullToday(p) ? "✓ Fed today" : "✓ You fed today")
         : "🍎 Feed " + p.name;
-      $("g-leave").textContent = "🚪 Leave " + p.name;
       applyLook();
+      if (!$("g-menu").hidden) renderMenu();
       if (!$("g-sheet").hidden) renderItems();
     }
 
@@ -1920,36 +2051,101 @@ html, body { height: 100%; overflow: hidden; }
     $("g-close").addEventListener("click", function () { $("g-sheet").hidden = true; });
     function openStore(tab) { storeTab = tab || storeTab; $("g-store").hidden = false; render(); renderStore(); }
     $("g-storebtn").addEventListener("click", function () { openStore(); });
-    $("g-coins").addEventListener("click", function () { openStore("pets"); });
+    $("g-coins").addEventListener("click", function () { openStore("coins"); });
     $("g-emptystore").addEventListener("click", function () { openStore("pets"); });
     $("g-storeclose").addEventListener("click", function () { $("g-store").hidden = true; render(); });
     Array.prototype.forEach.call(document.querySelectorAll("#g-store [data-tab]"), function (b) {
       b.addEventListener("click", function () { storeTab = b.getAttribute("data-tab"); renderStore(); });
     });
-    $("g-menubtn").addEventListener("click", function () {
-      $("g-myname").value = profile ? profile.display_name : "";
-      $("g-who").textContent = me ? "Signed in as " + me.email : "";
-      $("g-invite2").hidden = $("g-leave").hidden = !pet();
-      $("g-menu").hidden = false;
-    });
+    // ---------- Menu ----------
+    var sentGifts = [];
+    function renderMenu() {
+      var name = profile ? profile.display_name : "";
+      $("g-mename").textContent = name || "Player";
+      $("g-avatar").textContent = (name || "P").charAt(0).toUpperCase();
+      $("g-who").textContent = me ? me.email : "";
+      if (document.activeElement !== $("g-myname")) $("g-myname").value = name;
+      // this pet: the owner renames, invites and removes; co-parents feed, dress or leave
+      var p = pet(), own = isOwner(p);
+      $("g-petsec").hidden = !p;
+      if (p) {
+        $("g-pethead").textContent = p.name + (own ? " · you're the owner" : " · you're a co-parent");
+        $("g-renamerow").hidden = !own;
+        if (document.activeElement !== $("g-petname")) $("g-petname").value = p.name;
+        var box = $("g-coparents"); box.innerHTML = "";
+        (p.members || []).forEach(function (mb) {
+          var row = document.createElement("div"); row.className = "pg-person";
+          row.innerHTML = '<span class="pg-avatar" style="width:32px;height:32px;font-size:0.9rem">' + esc((mb.name || "?").charAt(0).toUpperCase()) + "</span>" +
+            '<div class="pg-grow"><b>' + esc(mb.me ? mb.name + " (you)" : mb.name) + "</b><small>" + (mb.fed_today ? "Fed today ✓" : "Not fed yet today") + "</small></div>" +
+            (mb.role === "owner" ? '<span class="tag">Owner</span>' : "");
+          if (own && !mb.me) {
+            var rm = document.createElement("button"); rm.type = "button"; rm.className = "rm"; rm.textContent = "Remove";
+            rm.addEventListener("click", async function () {
+              if (!confirm("Remove " + mb.name + " as a co-parent of " + p.name + "?")) return;
+              try { await rpc("remove_coparent", { p_id: p.id, p_user: mb.id }); } catch (e) { say(e.message); return; }
+              await loadAll(); say(mb.name + " is no longer a co-parent.");
+            });
+            row.appendChild(rm);
+          }
+          box.appendChild(row);
+        });
+        $("g-invite2").hidden = !own || (p.members || []).length >= 4;
+        $("g-rolenote").textContent = own
+          ? "XP and the streak count on days when " + FEEDS_PER_DAY + " of you feed. Up to 4 co-parents."
+          : "Only " + ownerName(p) + " can rename " + p.name + " or choose co-parents.";
+        $("g-leave").textContent = own ? "Give up " + p.name : "Leave " + p.name;
+      }
+      // gifts I've sent
+      $("g-giftsec").hidden = !sentGifts.length;
+      var gb = $("g-gifts"); gb.innerHTML = "";
+      sentGifts.forEach(function (gf) {
+        var v = item(gf.variant), row = document.createElement("div"); row.className = "pg-person";
+        row.innerHTML = '<span class="pg-avatar" style="width:32px;height:32px;font-size:1rem;background:' + (v ? v.color : "#2f8a64") + '">🎁</span>' +
+          '<div class="pg-grow"><b>' + esc(v ? v.name : "Red panda") + "</b><small>" +
+          esc(gf.claimed ? "Opened by " + gf.to_name + (gf.pet_name ? " · named " + gf.pet_name : "") : "Not opened yet") + "</small></div>";
+        if (!gf.claimed) {
+          var sh = document.createElement("button"); sh.type = "button"; sh.className = "rm"; sh.style.color = "#2f8a64"; sh.textContent = "Share";
+          sh.addEventListener("click", function () { shareGift(gf.code, v ? v.name : "red panda"); });
+          row.appendChild(sh);
+        }
+        gb.appendChild(row);
+      });
+      $("g-adminsec").hidden = !(profile && profile.is_admin);
+    }
+    async function openMenu() {
+      renderMenu(); $("g-menu").hidden = false;
+      try { sentGifts = await rpc("my_gifts"); } catch (e) { sentGifts = []; }
+      renderMenu();
+    }
+    $("g-menubtn").addEventListener("click", openMenu);
     $("g-menuclose").addEventListener("click", function () { $("g-menu").hidden = true; });
     $("g-savename").addEventListener("click", async function () {
       try { await rpc("set_name", { p_name: $("g-myname").value }); } catch (e) { say(e.message); return; }
-      await loadAll(); say("Name saved.");
+      await loadAll(); renderMenu(); say("Name saved.");
     });
-    $("g-daily").addEventListener("click", async function () {
-      try { var got = await rpc("claim_daily_coins"); } catch (e) { say(e.message); return; }
-      await loadAll();
-      say(got ? "+" + got + " coins 🪙" : "You've had today's coins. Come back tomorrow!");
+    $("g-rename").addEventListener("click", async function () {
+      var p = pet(); if (!p) return;
+      try { await rpc("rename_pet", { p_id: p.id, p_name: $("g-petname").value }); } catch (e) { say(e.message); return; }
+      $("g-petname").blur(); await loadAll(); renderMenu(); say("Renamed to " + pet().name + ".");
     });
-    $("g-invite2").addEventListener("click", function () { $("g-menu").hidden = true; invite(); });
+    $("g-invite2").addEventListener("click", function () { invite(); });
     $("g-leave").addEventListener("click", async function () {
       var p = pet(); if (!p) return;
-      var alone = (p.members || []).length <= 1;
-      if (!confirm("Leave " + p.name + "?" + (alone ? " Nobody else looks after them, so they'll go to the sanctuary for someone else to adopt." : ""))) return;
+      var own = isOwner(p), alone = (p.members || []).length <= 1;
+      var msg = own && !alone ? "Give up " + p.name + "? " + others(p)[0].name + " becomes the owner."
+              : alone ? "Give up " + p.name + "? Nobody else looks after them, so they'll go to the sanctuary for someone else to adopt."
+              : "Leave " + p.name + "? You won't be a co-parent any more.";
+      if (!confirm(msg)) return;
       try { await rpc("leave_pet", { p_id: p.id }); } catch (e) { say(e.message); return; }
       $("g-menu").hidden = true; localStorage.removeItem(PET_KEY); cur = 0;
-      await loadAll(); say("You left " + p.name + ".");
+      await loadAll(); say(own ? "You gave up " + p.name + "." : "You left " + p.name + ".");
+    });
+    $("g-admingive").addEventListener("click", async function () {
+      var email = $("g-adminemail").value.trim(), n = parseInt($("g-adminamount").value, 10);
+      if (!email) { say("Type the player's email."); return; }
+      try { var bal = await rpc("admin_grant_coins", { p_email: email, p_amount: n }); } catch (e) { say(e.message); return; }
+      await loadAll(); renderMenu();
+      say("Gave " + n + " coins to " + email + ". They now have " + bal + ".");
     });
     $("g-signout").addEventListener("click", async function () { await sb.auth.signOut(); location.reload(); });
     $("g-joinok").addEventListener("click", join);
@@ -1968,14 +2164,18 @@ html, body { height: 100%; overflow: hidden; }
     });
     $("g-again").addEventListener("click", function () { $("g-signinform").hidden = false; $("g-sent").hidden = true; });
 
-    // an invite link (?join=code) is kept until the visitor has signed in
+    // an invite link (?join=code) or gift link (?gift=code) is kept until the visitor has signed in
     (function () {
-      var q = new URLSearchParams(location.search), code = q.get("join");
+      var q = new URLSearchParams(location.search), code = q.get("join"), gift = q.get("gift");
       if (code) {
         localStorage.setItem(JOIN_KEY, code);
-        history.replaceState(null, "", location.pathname + location.hash);
         $("g-signintext").textContent = "A friend invited you to co-parent their red panda. Sign in with your email to join.";
       }
+      if (gift) {
+        localStorage.setItem(GIFT_KEY, gift);
+        $("g-signintext").textContent = "A friend sent you a red panda! 🎁 Sign in with your email to open your gift.";
+      }
+      if (code || gift) history.replaceState(null, "", location.pathname + location.hash);
     })();
 
     // sign-in state can arrive twice at start (stored session + the auth event): handle each user once
@@ -1987,6 +2187,7 @@ html, body { height: 100%; overflow: hidden; }
       startedFor = me.id;
       render();
       await loadAll();
+      await checkGift();
       checkJoin();
       // co-parents feed on their own phones: check for news every 20 s while the app is open
       if (!polling) { polling = true; setInterval(function () { if (me && !document.hidden) loadAll({ quiet: true }); }, 20000); }
