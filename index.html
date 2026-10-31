@@ -288,7 +288,7 @@ html, body { height: 100%; overflow: hidden; }
 .pg-sec h3 { margin: 0; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #55666e; }
 .pg-row { display: flex; gap: 8px; align-items: center; }
 .pg-row[hidden] { display: none; }
-.pg-row input { flex: 1; min-width: 0; font: inherit; font-size: 1rem; padding: 10px 12px; border-radius: 12px; border: 1px solid #c3d0d5; background: #fff; color: #14232b; color-scheme: light; }
+.pg-row input, .pg-row select { flex: 1; min-width: 0; font: inherit; font-size: 1rem; padding: 10px 12px; border-radius: 12px; border: 1px solid #c3d0d5; background: #fff; color: #14232b; color-scheme: light; }
 .pg-grow { flex: 1; min-width: 0; display: flex; flex-direction: column; }
 .pg-grow small { color: #55666e; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .pg-avatar { width: 40px; height: 40px; border-radius: 50%; background: #2f8a64; color: #fff; display: grid; place-items: center; font-weight: 800; font-size: 1.1rem; flex: none; }
@@ -409,6 +409,14 @@ html, body { height: 100%; overflow: hidden; }
 #g-ask, #g-join { z-index: 9; }
 .pg-linkbtn { margin-top: 10px; border: 0; background: none; color: #2f8a64; font-weight: 600; text-decoration: underline; }
 .pg-loading { inset: 0; display: grid; place-items: center; background: rgba(230,237,240,0.75); font-weight: 600; color: #55666e; z-index: 7; }
+
+/* a background picture or the share preview shouldn't stop the sheet from scrolling (the 3D view blocks touch scrolling) */
+.stage .pg-sheet canvas, .stage .pg-panel canvas { touch-action: pan-y; cursor: auto; }
+/* store and wardrobe category headings fold their items away */
+.pg-grouphead { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; width: 100%; margin: 6px 0 0; padding: 9px 12px; border: 0; border-radius: 12px; background: #eef3f5; color: #3b4b53; font: 700 0.8rem var(--body); text-transform: uppercase; letter-spacing: 0.04em; cursor: pointer; }
+.pg-grouphead small { margin-left: 4px; font-weight: 600; color: #7a8a91; }
+.pg-grouphead i { font-style: normal; font-size: 1rem; transition: transform 0.2s ease; }
+.pg-grouphead[aria-expanded="false"] i { transform: rotate(-90deg); }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -569,6 +577,14 @@ html, body { height: 100%; overflow: hidden; }
         <section class="pg-sec" id="g-adminfb" hidden>
           <h3>Admin: feedback <span id="g-fbcount"></span></h3>
           <div id="g-fblist"></div>
+        </section>
+        <section class="pg-sec" id="g-testsec" hidden>
+          <h3>Admin: test pet</h3>
+          <p class="pg-note">A pet called Tester at level 100 with every background, hat and glasses unlocked. Press again any time to reset it or change its colour.</p>
+          <div class="pg-row">
+            <select id="g-testvariant" aria-label="Test pet colour"></select>
+            <button type="button" class="pg-btn" id="g-testpet">🧪 Make test pet</button>
+          </div>
         </section>
         <section class="pg-sec" id="g-adminsec" hidden>
           <h3>Admin: give paws</h3>
@@ -972,7 +988,7 @@ html, body { height: 100%; overflow: hidden; }
   // Life: the head turns a little toward the cursor before the eyes do the rest, the upper lids
   // drop as the eyes look down, and the body breathes. The whole model turns about its feet,
   // so the turn is kept small.
-  var modelRoot = null, moodDroop = 0, sleepLids = 0, petSquint = 0, petTurnYaw = 0, petEyeYaw = 0;
+  var modelRoot = null, moodDroop = 0, sleepLids = 0, petSquint = 0, petTurnYaw = 0, petEyeYaw = 0, petTurnPitch = 0, petEyePitch = 0;
   var HEAD_CENTER = new THREE.Vector3(0, 0.55, 0.12);
   var PET_TURN_YAW = 0.13, PET_TURN_PITCH = 0.05, PET_TURN_YAW_SHARE = 0.27, PET_TURN_PITCH_SHARE = 0.16;
   var HEAD_YAW = 0.17, HEAD_PITCH = 0.05, LID_DROOP = 0.38, BREATH_PERIOD = 3400;
@@ -988,7 +1004,7 @@ html, body { height: 100%; overflow: hidden; }
       yawT = Math.max(-PET_TURN_YAW, Math.min(PET_TURN_YAW, (look.L.yaw + look.R.yaw) * 0.5 * PET_TURN_YAW_SHARE));
       pitchT = Math.max(-PET_TURN_PITCH, Math.min(PET_TURN_PITCH, (look.L.pitch + look.R.pitch) * 0.5 * PET_TURN_PITCH_SHARE));
     }
-    yawT += petTurnYaw;
+    yawT += petTurnYaw; pitchT += petTurnPitch;
     // The head lags behind the eyes, as it would in life
     head.yaw += (yawT - head.yaw) * 0.08;
     head.pitch += (pitchT - head.pitch) * 0.08;
@@ -1101,7 +1117,7 @@ html, body { height: 100%; overflow: hidden; }
         yawT = Math.atan2(dx, dz) + (eye === eyeL ? -EYE_CONVERGE : EYE_CONVERGE);
         pitchT = Math.atan2(dy, Math.sqrt(dx * dx + dz * dz));
         yawT = Math.max(-0.5, Math.min(0.5, yawT + petEyeYaw));
-        pitchT = Math.max(-0.32, Math.min(0.32, pitchT));
+        pitchT = Math.max(-0.32, Math.min(0.32, pitchT + petEyePitch));
       }
       st.yaw += (yawT - st.yaw) * 0.1;
       st.pitch += (pitchT - st.pitch) * 0.1;
@@ -1351,6 +1367,11 @@ html, body { height: 100%; overflow: hidden; }
       else { a.setLoop(THREE.LoopOnce, 1); a.clampWhenFinished = true; }
       acts[c.name] = a;
     });
+    // the look-up glances are done in code (below), so they get an empty clip just to time them
+    if (petClips.length) Object.keys(LOOK_UP).forEach(function (n) {
+      var a = mixer.clipAction(new THREE.AnimationClip(n, LOOK_UP_KEYS[LOOK_UP_KEYS.length - 1][0], []));
+      a.setLoop(THREE.LoopOnce, 1); a.clampWhenFinished = true; acts[n] = a;
+    });
     if (acts.Eat) makeFood(model);
   }
   function hasClips() { return !!acts.Sad; }
@@ -1359,7 +1380,7 @@ html, body { height: 100%; overflow: hidden; }
   function setBaseMood(w) { baseWant = w; }
 
   // Little things it does on its own when left alone; anything else cuts them short
-  var FIDGETS = ["LookAround", "Shake", "EarTwitch", "Yawn", "TailSwish"];
+  var FIDGETS = ["LookAround", "LookUpLeft", "LookUpRight", "Shake", "EarTwitch", "Yawn", "TailSwish"];
   function isFidget(name) { return FIDGETS.indexOf(name) >= 0; }
 
   // Play a one-off now, or after the one that is playing. Returns false if the model doesn't have it.
@@ -1378,13 +1399,19 @@ html, body { height: 100%; overflow: hidden; }
   // Look around, in seconds: turn to one side, hold, to the other side, hold, back (-1..1, eased)
   var LOOK_KEYS = [[0, 0], [0.4, 1], [1.0, 1], [1.45, -1], [2.1, -1], [2.6, 0], [3.0, 0]];
   var LOOK_TURN = 0.2, LOOK_EYES = 0.35;   // radians: about 11 deg for the body, 20 deg for the eyes
-  function lookAroundCurve(t) {
-    for (var i = 0; i < LOOK_KEYS.length - 1; i++) {
-      var a = LOOK_KEYS[i], b = LOOK_KEYS[i + 1];
+  function lookAroundCurve(t, keys) {
+    keys = keys || LOOK_KEYS;
+    for (var i = 0; i < keys.length - 1; i++) {
+      var a = keys[i], b = keys[i + 1];
       if (t <= b[0]) { var u = Math.max(0, (t - a[0]) / (b[0] - a[0])); u = u * u * (3 - 2 * u); return a[1] + (b[1] - a[1]) * u; }
     }
     return 0;
   }
+  // Look up at a top corner of the screen (-1 left, 1 right): eyes first, then the body turns and tilts
+  // up after them, a little hold, and back to the usual view
+  var LOOK_UP = { LookUpLeft: -1, LookUpRight: 1 };
+  var LOOK_UP_KEYS = [[0, 0], [0.5, 1], [1.9, 1], [2.5, 0], [2.9, 0]];
+  var LOOK_UP_TURN = 0.18, LOOK_UP_TILT = 0.12, LOOK_UP_EYES = 0.4, LOOK_UP_EYES_UP = 0.3;
   function busy() { return !!once && !isFidget(once.name); }
   function fidgeting() { return !!once && isFidget(once.name); }
 
@@ -1409,6 +1436,13 @@ html, body { height: 100%; overflow: hidden; }
     var lt = once && once.name === "LookAround" ? once.action.time : -1;
     petTurnYaw = lt < 0 ? 0 : LOOK_TURN * lookAroundCurve(lt);
     petEyeYaw = lt < 0 ? 0 : LOOK_EYES * lookAroundCurve(lt + 0.12);
+    petTurnPitch = petEyePitch = 0;
+    var side = once && LOOK_UP[once.name];
+    if (side) {
+      var ut = once.action.time, body = lookAroundCurve(ut, LOOK_UP_KEYS), eyes = lookAroundCurve(ut + 0.15, LOOK_UP_KEYS);
+      petTurnYaw = side * LOOK_UP_TURN * body; petTurnPitch = LOOK_UP_TILT * body;
+      petEyeYaw = side * LOOK_UP_EYES * eyes; petEyePitch = LOOK_UP_EYES_UP * eyes;
+    }
     // eyes shut for a moment: contented while patted, squeezed while shaking, sleepy while yawning
     // [from s, until s, how far shut]
     var SQUINT = { Pat: [0.15, 1.65, 0.8], Shake: [0.05, 0.95, 0.9], Yawn: [0.3, 1.6, 0.85] };
@@ -1583,48 +1617,142 @@ html, body { height: 100%; overflow: hidden; }
     }
   }
 
-  // ---------- Colour variants: Classic, Snowy, Golden ----------
-  // One small shader change on the fur and eyelid materials, switched by a shared uniform, so changing
-  // between pets of different colours doesn't rebuild anything. Colours here are linear (after the texture).
-  var petVariant = { value: 0 }, variantHooked = false;
-  var VARIANT_GLSL = [
-    "if ( petVariant == 1 ) {",
-    "  // Snowy: the fur goes cream white, the dark legs and markings soft grey",
-    "  float vl = dot( diffuseColor.rgb, vec3( 0.2126, 0.7152, 0.0722 ) );",
-    "  vec3 snow = vec3( 0.92, 0.89, 0.85 ) * smoothstep( 0.0, 0.35, vl + 0.08 );",
-    "  diffuseColor.rgb = mix( diffuseColor.rgb, snow, 0.85 );",
-    "} else if ( petVariant == 2 ) {",
-    "  // Golden: the orange fur shifts to honey gold; white and dark parts stay as they are",
-    "  vec3 vc = diffuseColor.rgb;",
-    "  vec3 gold = vec3( vc.r + vc.g * 0.15, vc.g * 1.45 + vc.r * 0.12, vc.b * 0.7 );",
-    "  float sat = max( vc.r, max( vc.g, vc.b ) ) - min( vc.r, min( vc.g, vc.b ) );",
-    "  diffuseColor.rgb = mix( vc, gold, smoothstep( 0.05, 0.3, sat ) );",
-    "}",
-    "diffuseColor.rgb = clamp( diffuseColor.rgb, 0.0, 1.0 );"
-  ].join("\n");
+  // ---------- Pet looks: fur textures, eye colours and the premium shading ----------
+  // Each kind of red panda has its own fur texture (pets/<tex>.jpg, 2048 px, loaded only when that pet is
+  // shown), an iris colour and an eyelid colour (the lids are one flat colour matched to the fur around the
+  // eyes). Classic keeps the textures inside the model. On top, for every pet: soft studio reflections from a
+  // small generated environment, a velvety sheen where the fur turns away from the camera, and filmic tones.
+  var PET_LOOKS = {
+    panda_classic:  { tex: null,       eye: null,      lid: null },
+    panda_snowy:    { tex: "arctic",   eye: "#5fb2ff", lid: "#ccd3e0" },
+    panda_golden:   { tex: "honey",    eye: "#9a5a1e", lid: "#daa54e" },
+    panda_cocoa:    { tex: "cocoa",    eye: "#e09a3a", lid: "#945944" },
+    panda_moss:     { tex: "moss",     eye: "#58c26a", lid: "#8f9555" },
+    panda_sakura:   { tex: "sakura",   eye: "#e0457a", lid: "#de97a8" },
+    panda_midnight: { tex: "midnight", eye: "#ffc23d", lid: "#4e456e" },
+    panda_cosmic:   { tex: "cosmic",   eye: "#35d6d0", lid: "#6268b3" }
+  };
+  var LID_LUMA = 0.252;   // the classic lid colour #c4764e, as linear luminance
+  var lookFx = {
+    eyeTint: { value: new THREE.Color(1, 1, 1) }, eyeMix: { value: 0 },
+    lidTint: { value: new THREE.Color(1, 1, 1) }, lidMix: { value: 0 },
+    furSheen: { value: new THREE.Vector2(0.35, 0.08) }   // how much fur colour / white light the edges pick up
+  };
+  var bodyMats = [], classicMap = null, furTextures = {}, lookHooked = false, wantedLook = null, texLoader = null;
 
-  function setVariantLook(v) {
-    petVariant.value = v || 0;
-    if (!variantHooked && modelRoot) hookVariant();
+  function setVariantLook(id) {
+    wantedLook = PET_LOOKS[id] ? id : "panda_classic";
+    if (!modelRoot) return;
+    if (!lookHooked) hookLooks();
+    var look = PET_LOOKS[wantedLook];
+    if (look.eye) { lookFx.eyeTint.value.set(look.eye).convertSRGBToLinear(); lookFx.eyeMix.value = 1; } else lookFx.eyeMix.value = 0;
+    if (look.lid) { lookFx.lidTint.value.set(look.lid).convertSRGBToLinear(); lookFx.lidMix.value = 1; } else lookFx.lidMix.value = 0;
+    if (!look.tex) { setFurMap(classicMap); return; }
+    var want = wantedLook;
+    furTexture(look.tex, function (t) { if (wantedLook === want) setFurMap(t); });
   }
-  function hookVariant() {
-    var mats = [];
+  function setFurMap(t) {
+    bodyMats.forEach(function (m) { if (m.map !== t) { m.map = t; m.needsUpdate = true; } });
+  }
+  var furWaiting = {};
+  function furTexture(name, done) {
+    if (furTextures[name]) { done(furTextures[name]); return; }
+    if (furWaiting[name]) { furWaiting[name].push(done); return; }
+    furWaiting[name] = [done];
+    texLoader = texLoader || new THREE.TextureLoader();
+    texLoader.load("pets/" + name + ".jpg", function (t) {
+      // match the model's own texture: glTF images are not flipped and are sRGB
+      t.flipY = false; t.encoding = THREE.sRGBEncoding;
+      if (classicMap) { t.wrapS = classicMap.wrapS; t.wrapT = classicMap.wrapT; t.anisotropy = classicMap.anisotropy; }
+      furTextures[name] = t;
+      var w = furWaiting[name]; delete furWaiting[name];
+      w.forEach(function (f) { f(t); });
+    }, undefined, function () { delete furWaiting[name]; });
+  }
+
+  // chain a change onto whatever shader changes a material already has (blinking, eye shading)
+  function addShaderStep(m, step) {
+    var prev = m.onBeforeCompile;
+    m.onBeforeCompile = function (shader, r) { if (prev) prev.call(m, shader, r); step(shader); };
+    m.needsUpdate = true;
+  }
+  var LOOK_UNIFORMS = "uniform vec3 eyeTint;\nuniform float eyeMix;\nuniform vec3 lidTint;\nuniform float lidMix;\nuniform vec2 furSheen;\n";
+  function lookUniforms(shader) {
+    shader.uniforms.eyeTint = lookFx.eyeTint; shader.uniforms.eyeMix = lookFx.eyeMix;
+    shader.uniforms.lidTint = lookFx.lidTint; shader.uniforms.lidMix = lookFx.lidMix;
+    shader.uniforms.furSheen = lookFx.furSheen;
+    shader.fragmentShader = LOOK_UNIFORMS + shader.fragmentShader;
+  }
+  // the iris takes the new colour by brightness, so its pattern stays. Only strongly coloured pixels change:
+  // the white of the eye is very slightly warm in the texture and must stay white, as must the pupil and shine
+  var IRIS_GLSL = "#include <map_fragment>\n" +
+    "{ float il = dot( diffuseColor.rgb, vec3( 0.2126, 0.7152, 0.0722 ) );\n" +
+    "  float sat = max( diffuseColor.r, max( diffuseColor.g, diffuseColor.b ) ) - min( diffuseColor.r, min( diffuseColor.g, diffuseColor.b ) );\n" +
+    "  float rel = sat / max( max( diffuseColor.r, max( diffuseColor.g, diffuseColor.b ) ), 1e-4 );\n" +
+    "  float iris = smoothstep( 0.012, 0.06, il ) * smoothstep( 0.3, 0.55, rel );\n" +
+    "  vec3 tinted = eyeTint * clamp( 0.3 + il * 1.7, 0.0, 1.15 );\n" +
+    "  diffuseColor.rgb = mix( diffuseColor.rgb, tinted, iris * eyeMix ); }\n";
+  var LID_GLSL = "#include <map_fragment>\n" +
+    "diffuseColor.rgb = mix( diffuseColor.rgb, lidTint * ( dot( diffuseColor.rgb, vec3( 0.2126, 0.7152, 0.0722 ) ) / " + LID_LUMA.toFixed(3) + " ), lidMix );\n";
+  // soft velvet: fur seen edge-on catches more light, tinted by its own colour, plus a faint white sheen
+  var FUR_GLSL = "{ float nv = clamp( dot( normalize( normal ), normalize( vViewPosition ) ), 0.0, 1.0 );\n" +
+    "  float edge = pow( 1.0 - nv, 2.6 );\n" +
+    "  gl_FragColor.rgb += diffuseColor.rgb * edge * furSheen.x + vec3( edge * edge ) * furSheen.y; }\n#include <tonemapping_fragment>";
+
+  function hookLooks() {
+    lookHooked = true;
     modelRoot.traverse(function (o) {
       if (!o.isMesh || !o.userData.litMat) return;
-      if (o.isSkinnedMesh || /^Lid_/.test(o.name)) mats.push(o.userData.litMat, o.userData.bakedMat);
+      var lit = o.userData.litMat, mats = [lit, o.userData.bakedMat].filter(Boolean), name = lit.name || "";
+      if (/^Eyelashes/.test(o.name)) {
+        // the lashes keep the dark lashes painted in the classic texture, whatever the fur colour
+      } else if (/RedPanda/i.test(name)) {
+        if (!classicMap) classicMap = lit.map;
+        mats.forEach(function (m) { if (bodyMats.indexOf(m) < 0) bodyMats.push(m); });
+        // the sheen needs lighting, so only the lit material gets it
+        addShaderStep(lit, function (s) { lookUniforms(s); s.fragmentShader = s.fragmentShader.replace("#include <tonemapping_fragment>", FUR_GLSL); });
+        lit.roughness = Math.max(lit.roughness, 0.85);
+      } else if (/Eyelid/i.test(name) || /^Lid_/.test(o.name)) {
+        mats.forEach(function (m) { addShaderStep(m, function (s) { lookUniforms(s); s.fragmentShader = s.fragmentShader.replace("#include <map_fragment>", LID_GLSL); }); });
+      } else if (/^Eye_/.test(o.name) || /^Eye_/.test(o.parent ? o.parent.name : "")) {
+        lit.envMapIntensity = 1.6;   // wet, glossy eyes
+        mats.forEach(function (m) { addShaderStep(m, function (s) { lookUniforms(s); s.fragmentShader = s.fragmentShader.replace("#include <map_fragment>", IRIS_GLSL); }); });
+      }
     });
-    if (!mats.length) return;
-    mats.forEach(function (m) {
-      var prev = m.onBeforeCompile;
-      m.onBeforeCompile = function (shader, r) {
-        if (prev) prev.call(m, shader, r);
-        shader.uniforms.petVariant = petVariant;
-        shader.fragmentShader = "uniform int petVariant;\n" +
-          shader.fragmentShader.replace("#include <map_fragment>", "#include <map_fragment>\n" + VARIANT_GLSL);
-      };
-      m.needsUpdate = true;
+    premiumLighting();
+  }
+
+  // Studio light for the whole scene: a soft image-based light made once from a tiny scene (a warm sky dome
+  // with a big key softbox, a cool rim panel and a dim floor), then filmic tone mapping for richer colour.
+  function premiumLighting() {
+    var env = new THREE.Scene();
+    var dome = new THREE.SphereGeometry(10, 32, 16), cols = [], p = dome.attributes.position, c = new THREE.Color();
+    for (var i = 0; i < p.count; i++) {
+      var y = p.getY(i) / 10;
+      if (y > 0) c.setRGB(0.86 + 0.14 * y, 0.85 + 0.12 * y, 0.82 + 0.1 * y); else c.setRGB(0.5 + 0.36 * (1 + y), 0.48 + 0.37 * (1 + y), 0.46 + 0.36 * (1 + y));
+      cols.push(c.r, c.g, c.b);
+    }
+    dome.setAttribute("color", new THREE.Float32BufferAttribute(cols, 3));
+    env.add(new THREE.Mesh(dome, new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.BackSide })));
+    function panel(w, h, color, x, y, z) {
+      var m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ color: color, side: THREE.DoubleSide }));
+      m.position.set(x, y, z); m.lookAt(0, 0, 0); env.add(m);
+    }
+    panel(5, 4, new THREE.Color(4.2, 4.0, 3.7), 4, 6, 6);      // key, warm, above front right
+    panel(3, 6, new THREE.Color(1.6, 1.8, 2.2), -6, 3, -5);    // rim, cool, behind left
+    panel(6, 2, new THREE.Color(1.2, 1.15, 1.1), -5, 1, 6);    // soft fill, front left
+    var pm = new THREE.PMREMGenerator(renderer);
+    scene.environment = pm.fromScene(env, 0.035).texture;
+    pm.dispose();
+    // the old lights were the only light before; now they share it with the environment
+    scene.children.forEach(function (o) {
+      if (o.isHemisphereLight) o.intensity = 0.2;
+      else if (o === key) o.intensity = 0.7;
+      else if (o === rim) o.intensity = 0.55;
     });
-    variantHooked = true;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 0.9;
+    scene.traverse(function (o) { if (o.isMesh && o.material) [].concat(o.material).forEach(function (m) { m.needsUpdate = true; }); });
   }
 
   // ---------- Scene backgrounds ----------
@@ -2280,7 +2408,7 @@ html, body { height: 100%; overflow: hidden; }
       { id: "BirthdayCake", name: "Birthday cake", icon: "🎂", level: 10 }
     ];
     // pictures for store and wardrobe items (icons/<id>.png); scene backgrounds have a photo (bg/<name>.jpg)
-    var ICONS = ["panda_classic", "panda_snowy", "panda_golden", "party", "gold",
+    var ICONS = ["panda_classic", "panda_snowy", "panda_golden", "panda_cocoa", "panda_moss", "panda_sakura", "panda_midnight", "panda_cosmic", "party", "gold",
       "RoundGold", "BlueRound", "PinkRound", "Aviator", "OrangeRound", "RedCatEye", "Butterfly", "Shutter", "Pixel", "Sunglasses", "Heart",
       "Beanie", "Cap", "Santa", "Frog", "Fox", "CatBeanie", "Pizza", "Aussie", "Cowboy", "TopHat", "Witch"];
     // scene backgrounds are drawn live (scenes.js); their pictures in the store are small drawings too
@@ -2291,7 +2419,6 @@ html, body { height: 100%; overflow: hidden; }
       if (it.type === "backdrop" && it.color) return '<i class="swbig" style="background:' + it.color + '"></i>';
       return "";
     }
-    var VARIANT_LOOK = { panda_classic: 0, panda_snowy: 1, panda_golden: 2 };
 
     var $ = function (id) { return document.getElementById(id); };
     var sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, detectSessionInUrl: true, flowType: "implicit" } }) : null;
@@ -2593,16 +2720,16 @@ html, body { height: 100%; overflow: hidden; }
         [["backdrop", "Backgrounds"], ["hat", "Hats"], ["glasses", "Glasses"]].forEach(function (sec) {
           var list = store.filter(function (s) { return s.kind === "wardrobe" && s.price > 0 && s.type === sec[0]; });
           if (!list.length) return;
-          var h = document.createElement("h3"); h.textContent = sec[1]; box.appendChild(h);
+          var inGroup = groupHead(box, "store:" + sec[0], sec[1], list.length);
           list.forEach(function (s) {
             var have = owned[s.id], open = maxLv >= s.level_req;
-            card(box, s.name, s.color, have ? "Owned ✓" : open ? "🐾 " + s.price : "🔒 A pet needs Lv " + s.level_req, have ? null : "Buy",
+            inGroup(card(box, s.name, s.color, have ? "Owned ✓" : open ? "🐾 " + s.price : "🔒 A pet needs Lv " + s.level_req, have ? null : "Buy",
               have || !open ? null : async function () {
                 if (!confirm("Buy " + s.name + " for " + s.price + " paws?")) return;
                 try { await rpc("buy_item", { p_item: s.id }); } catch (e) { say(e.message); return; }
                 await loadAll(); renderStore();
                 say(s.name + " is yours! Use it in the wardrobe 🎀");
-              }, s);
+              }, s));
           });
         });
         setTimeout(function () { paintSceneThumbs(box); }, 0);
@@ -2616,6 +2743,26 @@ html, body { height: 100%; overflow: hidden; }
       b.innerHTML = p + "<b>" + (!p && color ? '<i class="sw" style="background:' + color + '"></i>' : "") + esc(name) + "</b><span>" + esc(sub) + "</span>";
       if (onClick) b.addEventListener("click", onClick);
       box.appendChild(b);
+      return b;
+    }
+    // A category heading that folds its items away when tapped (remembered on this phone).
+    // Returns a function that puts an item card into the group.
+    var folded = {};
+    try { folded = JSON.parse(localStorage.getItem("pg-folded") || "{}") || {}; } catch (e) { folded = {}; }
+    function groupHead(box, id, label, count) {
+      var h = document.createElement("button");
+      h.type = "button"; h.className = "pg-grouphead";
+      h.innerHTML = "<span>" + esc(label) + " <small>" + count + "</small></span><i aria-hidden=\"true\">▾</i>";
+      h.setAttribute("aria-expanded", folded[id] ? "false" : "true");
+      h.addEventListener("click", function () {
+        folded[id] = !folded[id];
+        try { localStorage.setItem("pg-folded", JSON.stringify(folded)); } catch (e) {}
+        h.setAttribute("aria-expanded", folded[id] ? "false" : "true");
+        Array.prototype.forEach.call(box.querySelectorAll('[data-group="' + id + '"]'), function (el) { el.style.display = folded[id] ? "none" : ""; });
+        if (!folded[id]) paintSceneThumbs(box);
+      });
+      box.appendChild(h);
+      return function (el) { el.setAttribute("data-group", id); if (folded[id]) el.style.display = "none"; };
     }
     function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
 
@@ -2625,9 +2772,9 @@ html, body { height: 100%; overflow: hidden; }
       if (!p) return;
       var LABEL = { backdrop: "Backdrop", hat: "Hat", glasses: "Glasses" };
       [["backdrop", "Backdrops", null], ["hat", "Hats", "No hat"], ["glasses", "Glasses", "No glasses"]].forEach(function (sec) {
-        var h = document.createElement("h3"); h.textContent = sec[1]; box.appendChild(h);
         var list = store.filter(function (s) { return s.kind === "wardrobe" && s.type === sec[0]; });
         if (sec[2]) list.unshift({ id: null, type: sec[0], name: sec[2], level_req: 1, price: 0 });
+        var inGroup = groupHead(box, "wear:" + sec[0], sec[1], list.length - (sec[2] ? 1 : 0));
         list.forEach(function (u) {
           var on = (p[u.type] || null) === u.id;
           var levelOk = p.max_level >= u.level_req, have = !u.price || owned[u.id];
@@ -2643,7 +2790,7 @@ html, body { height: 100%; overflow: hidden; }
             try { await rpc("dress_pet", { p_id: p.id, p_slot: u.type, p_item: u.id }); } catch (e) { say(e.message); return; }
             await loadAll();
           });
-          box.appendChild(b);
+          box.appendChild(b); inGroup(b);
         });
       });
       // after the sheet is shown, so the little scene pictures know their size
@@ -2668,7 +2815,7 @@ html, body { height: 100%; overflow: hidden; }
       renderer.setClearColor(new THREE.Color(b.color), scene ? 0 : 1);
       stage.style.background = b.color;
       setScene(scene ? b.id : null);
-      setVariantLook(p ? VARIANT_LOOK[p.variant] || 0 : 0);
+      setVariantLook(p ? p.variant : null);
     }
 
     function render() {
@@ -2784,7 +2931,8 @@ html, body { height: 100%; overflow: hidden; }
     // a calm pet left alone dozes off; a tap wakes it
     var SLEEP_AFTER = 40000, lastPoke = performance.now(), asleep = false;
     // fidgets start once it's been left alone for a few seconds, then come every 7-14 s
-    var IDLE_AFTER = 5000, FIDGET_GAP = [7000, 14000], nextFidget = 0, lastFidget = null;
+    // the first fidget after being left alone is a glance up at a top corner, and it comes a little sooner
+    var IDLE_AFTER = 5000, FIRST_LOOK_AFTER = 3000, FIDGET_GAP = [7000, 14000], nextFidget = 0, lastFidget = null, fidgetPoke = -1;
     function react(levelled) {
       wake();
       if (playEat()) { if (levelled) playOnce("LevelUp"); }
@@ -2857,8 +3005,10 @@ html, body { height: 100%; overflow: hidden; }
       setBaseMood(asleep ? { Sleep: 1 } : m === "hungry" ? { Sad: 0.6 } : m === "sick" ? { Sick: 1 } : {});
       sleepLids += ((asleep ? 1 : 0) - sleepLids) * Math.min(1, dt * 1.5);
       // left alone and calm: every so often a little fidget (never the same one twice in a row)
-      if (calm && !asleep && !busy() && !fidgeting() && now - lastPoke > IDLE_AFTER && now > nextFidget) {
-        var pick = FIDGETS.filter(function (n) { return n !== lastFidget; });
+      var firstIdle = fidgetPoke !== lastPoke;
+      if (calm && !asleep && !busy() && !fidgeting() && (firstIdle ? now - lastPoke > FIRST_LOOK_AFTER : now - lastPoke > IDLE_AFTER && now > nextFidget)) {
+        var pick = firstIdle ? ["LookUpLeft", "LookUpRight"] : FIDGETS.filter(function (n) { return n !== lastFidget; });
+        fidgetPoke = lastPoke;
         lastFidget = pick[Math.floor(Math.random() * pick.length)];
         playOnce(lastFidget);
         nextFidget = now + FIDGET_GAP[0] + Math.random() * (FIDGET_GAP[1] - FIDGET_GAP[0]);
@@ -3247,7 +3397,9 @@ html, body { height: 100%; overflow: hidden; }
         }
         gb.appendChild(row);
       });
-      $("g-adminsec").hidden = $("g-adminfb").hidden = !(profile && profile.is_admin);
+      $("g-adminsec").hidden = $("g-adminfb").hidden = $("g-testsec").hidden = !(profile && profile.is_admin);
+      if (profile && profile.is_admin && !$("g-testvariant").options.length)
+        store.filter(function (s) { return s.kind === "pet"; }).forEach(function (s) { $("g-testvariant").add(new Option(s.name, s.id)); });
     }
     async function openMenu() {
       renderMenu(); $("g-menu").hidden = false; renderReminders();
@@ -3333,6 +3485,12 @@ html, body { height: 100%; overflow: hidden; }
       try { var bal = await rpc("admin_grant_coins", { p_email: email, p_amount: n }); } catch (e) { say(e.message); return; }
       await loadAll(); renderMenu();
       say("Gave " + n + " paws to " + email + ". They now have " + bal + ".");
+    });
+    $("g-testpet").addEventListener("click", async function () {
+      try { var id = await rpc("admin_test_pet", { p_variant: $("g-testvariant").value }); } catch (e) { say(e.message); return; }
+      localStorage.setItem(PET_KEY, id); cur = -1;
+      $("g-menu").hidden = true; await loadAll();
+      say("Tester is ready: level 100, everything unlocked 🧪");
     });
     $("g-signout").addEventListener("click", async function () { await sb.auth.signOut(); location.reload(); });
     $("g-joinok").addEventListener("click", join);
