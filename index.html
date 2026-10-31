@@ -1644,30 +1644,50 @@ html, body { height: 100%; overflow: hidden; }
     wantedLook = PET_LOOKS[id] ? id : "panda_classic";
     if (!modelRoot) return;
     if (!lookHooked) hookLooks();
-    var look = PET_LOOKS[wantedLook];
+    var look = PET_LOOKS[wantedLook], want = wantedLook;
+    if (!look.tex) { showLook(look, classicMap); return; }
+    // the eyes and lids change together with the fur, once its picture is ready
+    furTexture(look.tex, function (t) { if (wantedLook === want) showLook(look, t); });
+  }
+  function showLook(look, map) {
     if (look.eye) { lookFx.eyeTint.value.set(look.eye).convertSRGBToLinear(); lookFx.eyeMix.value = 1; } else lookFx.eyeMix.value = 0;
     if (look.lid) { lookFx.lidTint.value.set(look.lid).convertSRGBToLinear(); lookFx.lidMix.value = 1; } else lookFx.lidMix.value = 0;
-    if (!look.tex) { setFurMap(classicMap); return; }
-    var want = wantedLook;
-    furTexture(look.tex, function (t) { if (wantedLook === want) setFurMap(t); });
+    // swapping one picture for another needs no shader rebuild (a rebuild is slow on phones)
+    bodyMats.forEach(function (m) { m.map = map; });
   }
-  function setFurMap(t) {
-    bodyMats.forEach(function (m) { if (m.map !== t) { m.map = t; m.needsUpdate = true; } });
+  // Load the fur pictures for these pets in the background, so switching to them is instant
+  function preloadLooks(ids) {
+    (ids || []).forEach(function (id) { var l = PET_LOOKS[id]; if (l && l.tex) furTexture(l.tex, function () {}); });
   }
   var furWaiting = {};
   function furTexture(name, done) {
     if (furTextures[name]) { done(furTextures[name]); return; }
     if (furWaiting[name]) { furWaiting[name].push(done); return; }
     furWaiting[name] = [done];
-    texLoader = texLoader || new THREE.TextureLoader();
-    texLoader.load("pets/" + name + ".jpg", function (t) {
+    var ready = function (t) {
       // match the model's own texture: glTF images are not flipped and are sRGB
       t.flipY = false; t.encoding = THREE.sRGBEncoding;
-      if (classicMap) { t.wrapS = classicMap.wrapS; t.wrapT = classicMap.wrapT; t.anisotropy = classicMap.anisotropy; }
+      if (classicMap) { t.wrapS = classicMap.wrapS; t.wrapT = classicMap.wrapT; t.anisotropy = classicMap.anisotropy; t.generateMipmaps = classicMap.generateMipmaps; t.minFilter = classicMap.minFilter; }
+      t.needsUpdate = true;
+      // send it to the graphics card now, not on the frame it first shows
+      if (renderer.initTexture) renderer.initTexture(t);
       furTextures[name] = t;
       var w = furWaiting[name]; delete furWaiting[name];
       w.forEach(function (f) { f(t); });
-    }, undefined, function () { delete furWaiting[name]; });
+    };
+    var failed = function () { delete furWaiting[name]; };
+    var url = "pets/" + name + ".jpg";
+    // decode the JPEG off the main thread where the phone can, so the app doesn't stutter
+    if (window.createImageBitmap && THREE.ImageBitmapLoader) {
+      new THREE.ImageBitmapLoader().setOptions({ imageOrientation: "none", premultiplyAlpha: "none" })
+        .load(url, function (bmp) { ready(new THREE.Texture(bmp)); }, undefined, function () {
+          texLoader = texLoader || new THREE.TextureLoader();
+          texLoader.load(url, ready, undefined, failed);
+        });
+    } else {
+      texLoader = texLoader || new THREE.TextureLoader();
+      texLoader.load(url, ready, undefined, failed);
+    }
   }
 
   // chain a change onto whatever shader changes a material already has (blinking, eye shading)
@@ -2846,6 +2866,8 @@ html, body { height: 100%; overflow: hidden; }
       stage.style.background = b.color;
       setScene(scene ? b.id : null);
       setVariantLook(p ? p.variant : null);
+      // then quietly fetch the fur of my other pets, so switching between them is instant
+      preloadLooks(pets.map(function (q) { return q.variant; }));
     }
 
     function render() {
@@ -3465,6 +3487,7 @@ html, body { height: 100%; overflow: hidden; }
         gb.appendChild(row);
       });
       $("g-adminsec").hidden = $("g-adminfb").hidden = $("g-testsec").hidden = !(profile && profile.is_admin);
+      if (profile && profile.is_admin) preloadLooks(Object.keys(PET_LOOKS));   // every colour, for the test pet
       if (profile && profile.is_admin && !$("g-testvariant").options.length)
         store.filter(function (s) { return s.kind === "pet"; }).forEach(function (s) { $("g-testvariant").add(new Option(s.name, s.id)); });
     }
