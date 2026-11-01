@@ -234,6 +234,13 @@ html, body { height: 100%; overflow: hidden; }
 :root.theme-coral { --brand: #f06a4a; --brand-dark: #d4512f; --brand-tint: #fff1ea; --brand-2: #ffb27a; --brand-glow: rgba(240,106,74,0.35); }
 :root.theme-berry { --brand: #e0457a; --brand-dark: #c02e62; --brand-tint: #ffeaf1; --brand-2: #ff8a80; --brand-glow: rgba(224,69,122,0.35); }
 :root.theme-green { --brand: #2f8a64; --brand-dark: #236a4c; --brand-tint: #eaf6f0; --brand-2: #55c394; --brand-glow: rgba(47,138,100,0.35); }
+/* the page underneath has its own (green) accent and dark-mode colours: follow the app's theme and stay light,
+   so no green or dark strip shows at the screen edges */
+html:root, html:root:not([data-theme="light"]), html:root[data-theme="dark"] {
+  --accent: var(--brand); --accent-ink: #ffffff; --bg: #e6edf0; --surface: #ffffff; --surface-2: #f3f7f8;
+  --ink: #14232b; --muted: #55666e; --line: #cfdadf; color-scheme: light;
+}
+html, body { background: #e6edf0; }
 
 /* Pet Streak (real version): extra pieces on top of the prototype's game.css */
 /* top bar: pets on the left, coins, store and menu on the right */
@@ -420,6 +427,17 @@ html, body { height: 100%; overflow: hidden; }
 /* a background picture or the share preview shouldn't stop the sheet from scrolling (the 3D view blocks touch scrolling) */
 .stage .pg-sheet canvas, .stage .pg-panel canvas { touch-action: pan-y; cursor: auto; }
 /* store and wardrobe category headings fold their items away */
+.pg-capbtn { display: grid; place-items: center; }
+.pg-capbtn svg { width: 24px; height: 24px; }
+.pg-shareready { margin-top: 10px; padding: 12px; border-radius: 14px; background: var(--brand-tint); text-align: center; }
+.pg-shareready p { margin: 0 0 10px; font-weight: 700; }
+#g-adoptinfo { z-index: 6; }   /* over the store it was opened from */
+.pg-aibody { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 14px; }
+.pg-aipic { width: 116px; height: 116px; border-radius: 18px; background: var(--brand-tint); object-fit: cover; flex: none; }
+.pg-aiside { flex: 1; min-width: 0; }
+.pg-aifacts { display: grid; grid-template-columns: auto 1fr; gap: 6px 10px; margin: 10px 0 0; font-size: 0.9rem; }
+.pg-aifacts dt { color: #55666e; }
+.pg-aifacts dd { margin: 0; font-weight: 700; }
 .pg-grouphead { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; width: 100%; margin: 6px 0 0; padding: 9px 12px; border: 0; border-radius: 12px; background: #eef3f5; color: #3b4b53; font: 700 0.8rem var(--body); text-transform: uppercase; letter-spacing: 0.04em; cursor: pointer; }
 .pg-grouphead small { margin-left: 4px; font-weight: 600; color: #7a8a91; }
 .pg-grouphead i { font-style: normal; font-size: 1rem; transition: transform 0.2s ease; }
@@ -489,7 +507,7 @@ html, body { height: 100%; overflow: hidden; }
     <div class="pg pg-bottom" id="g-bottom" hidden>
       <button type="button" class="pg-feed" id="g-feed">🍎 Feed</button>
       <button type="button" class="pg-wardrobe" id="g-wardrobe">🎀 Wardrobe</button>
-      <button type="button" class="pg-wardrobe" id="g-sharebtn" aria-label="Share your pet">📤</button>
+      <button type="button" class="pg-wardrobe pg-capbtn" id="g-sharebtn" aria-label="Capture and share your pet"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l1.6-2.4A1.5 1.5 0 0 1 9.9 5h4.2a1.5 1.5 0 0 1 1.3.6L17 8h3a1.5 1.5 0 0 1 1.5 1.5v8A1.5 1.5 0 0 1 20 19H4a1.5 1.5 0 0 1-1.5-1.5v-8A1.5 1.5 0 0 1 4 8z"/><circle cx="12" cy="13" r="3.6"/></svg></button>
     </div>
 
     <!-- sheets -->
@@ -512,12 +530,30 @@ html, body { height: 100%; overflow: hidden; }
         <label><input type="checkbox" id="g-sh-crew" checked> Co-parents</label>
       </div>
       <div class="pg-row">
-        <button type="button" class="pg-btn pg-grow pg-primary" id="g-sharephoto">📸 Share photo</button>
-        <button type="button" class="pg-btn pg-grow" id="g-shareclip">🎬 Share 4 s clip</button>
+        <button type="button" class="pg-btn pg-grow pg-primary" id="g-sharephoto">📸 Photo</button>
+        <button type="button" class="pg-btn pg-grow" id="g-shareclip">🎬 4 s clip</button>
       </div>
       <p class="pg-note" id="g-sharenote"></p>
+      <div class="pg-shareready" id="g-shareready" hidden>
+        <p id="g-readytext">Your photo is ready ✨</p>
+        <div class="pg-row">
+          <button type="button" class="pg-btn pg-grow pg-primary" id="g-sharego">📤 Share</button>
+          <button type="button" class="pg-btn pg-grow" id="g-savego">⬇️ Download</button>
+        </div>
+      </div>
     </div>
     <div class="pg pg-rankup" id="g-rankup" hidden><div id="g-rankupinner"></div></div>
+    <div class="pg pg-card pg-sheet" id="g-adoptinfo" hidden>
+      <h2><span id="g-ai-title">Pet</span> <button type="button" class="pg-x" id="g-aiclose" aria-label="Close pet details">✕</button></h2>
+      <div class="pg-aibody">
+        <img id="g-ai-pic" class="pg-aipic" alt="">
+        <div class="pg-aiside">
+          <div id="g-ai-tag"></div>
+          <dl class="pg-aifacts" id="g-ai-facts"></dl>
+        </div>
+      </div>
+      <button type="button" class="pg-feed pg-wide" id="g-ai-adopt">Adopt</button>
+    </div>
     <div class="pg pg-card pg-sheet" id="g-petsheet" hidden>
       <h2>My pets <button type="button" class="pg-x" id="g-petsheetclose" aria-label="Close my pets">✕</button></h2>
       <div id="g-petlist"></div>
@@ -573,7 +609,10 @@ html, body { height: 100%; overflow: hidden; }
           <div class="pg-row">
             <select id="g-theme" aria-label="App colour"></select>
           </div>
-          <button type="button" class="pg-btn pg-wide" id="g-sound">🔊 Sounds on</button>
+          <div class="pg-row">
+            <button type="button" class="pg-btn pg-grow" id="g-sound">🔊 Sounds on</button>
+            <button type="button" class="pg-btn pg-grow" id="g-music">🎵 Music on</button>
+          </div>
         </section>
         <section class="pg-sec" id="g-remsec">
           <h3>Reminders</h3>
@@ -1439,7 +1478,8 @@ html, body { height: 100%; overflow: hidden; }
   // up after them, a little hold, and back to the usual view
   var LOOK_UP = { LookUpLeft: -1, LookUpRight: 1 };
   var LOOK_UP_KEYS = [[0, 0], [0.5, 1], [1.9, 1], [2.5, 0], [2.9, 0]];
-  var LOOK_UP_TURN = 0.18, LOOK_UP_TILT = 0.12, LOOK_UP_EYES = 0.4, LOOK_UP_EYES_UP = 0.3;
+  // no body tilt: tipping the whole pet back lifted its front feet off the ground; the eyes do the looking up
+  var LOOK_UP_TURN = 0.18, LOOK_UP_TILT = 0, LOOK_UP_EYES = 0.4, LOOK_UP_EYES_UP = 0.32;
   function busy() { return !!once && !isFidget(once.name); }
   function fidgeting() { return !!once && isFidget(once.name); }
 
@@ -1832,7 +1872,8 @@ html, body { height: 100%; overflow: hidden; }
   // so the pet always stands on the floor, path or counter rather than hanging in front of it.
   var sceneFoot = 0.7, sceneFootX = 0.5, scenePetW = 0.3;
   var SCENE_STAND = { bg_bamboo: 0.0875, bg_christmas: 0.075, bg_bakery: 0.02, bg_stars: 0.06,
-                      bg_bedroom: 0.075, bg_lounge: 0.075, bg_library: 0.075, bg_gameroom: 0.075 };
+                      bg_bedroom: 0.075, bg_lounge: 0.075, bg_library: 0.075, bg_gameroom: 0.075,
+                      bg_bath: 0.075, bg_studio: 0.075, bg_treehouse: 0.075 };
   function groundY(h, id) { return h * (sceneFoot - SCENE_STAND[id]); }
   var sceneStill = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -2335,6 +2376,180 @@ html, body { height: 100%; overflow: hidden; }
     ctx.fillStyle = "#4fd1ff"; ctx.beginPath(); ctx.arc(bx + 62 * s, by + 2 * s, 3 * s, 0, 6.2832); ctx.fill();
   };
 
+  // Bubble bath: pastel tiles, a clawfoot tub on the right, a rubber duck, bubbles floating up and wobbling
+  SCENE_DRAW.bg_bath = function (ctx, w, h, t) {
+    var s = h / 800, gy = groundY(h, "bg_bath");
+    room_wall(ctx, w, gy, "#dff3f6", "#bfe6ec");
+    // square tiles on the lower wall
+    var tile = 36 * s, ty = gy * 0.48;
+    ctx.fillStyle = "#e9f8fa"; ctx.fillRect(0, ty, w, gy - ty);
+    ctx.strokeStyle = "rgba(120,180,190,0.35)"; ctx.lineWidth = 1.5 * s; ctx.beginPath();
+    for (var x = 0; x < w; x += tile) { ctx.moveTo(x, ty); ctx.lineTo(x, gy); }
+    for (var y = ty; y < gy; y += tile) { ctx.moveTo(0, y); ctx.lineTo(w, y); }
+    ctx.stroke();
+    ctx.fillStyle = "#9fd8e0"; ctx.fillRect(0, ty - 8 * s, w, 8 * s);
+    // a round mirror and a towel bar
+    ctx.fillStyle = "#f6e3b4"; ctx.beginPath(); ctx.arc(w * 0.22, gy * 0.28, 52 * s, 0, 6.2832); ctx.fill();
+    ctx.fillStyle = grad(ctx, gy * 0.28 - 44 * s, gy * 0.28 + 44 * s, [[0, "#ffffff"], [1, "#cfeef4"]]);
+    ctx.beginPath(); ctx.arc(w * 0.22, gy * 0.28, 44 * s, 0, 6.2832); ctx.fill();
+    ctx.strokeStyle = "rgba(255,255,255,0.9)"; ctx.lineWidth = 5 * s; ctx.beginPath(); ctx.moveTo(w * 0.22 - 20 * s, gy * 0.28 - 18 * s); ctx.lineTo(w * 0.22 - 4 * s, gy * 0.28 - 30 * s); ctx.stroke();
+    ctx.fillStyle = "#c9a24a"; ctx.fillRect(w * 0.7, gy * 0.3, w * 0.24, 5 * s);
+    ctx.fillStyle = "#ff9fb9"; ctx.fillRect(w * 0.73, gy * 0.3, w * 0.12, 70 * s);
+    ctx.fillStyle = "#ffc2d2"; for (var k = 0; k < 4; k++) ctx.fillRect(w * 0.73, gy * 0.3 + 14 * s + k * 14 * s, w * 0.12, 4 * s);
+    room_baseboard(ctx, w, gy, s, "#9fd8e0");
+    // floor: big soft tiles
+    ctx.fillStyle = grad(ctx, gy, h, [[0, "#f3fbfc"], [1, "#d3eef2"]]); ctx.fillRect(0, gy, w, h - gy);
+    ctx.strokeStyle = "rgba(120,180,190,0.3)"; ctx.lineWidth = 1.5 * s; ctx.beginPath();
+    for (var i = -8; i <= 8; i++) { ctx.moveTo(w / 2 + i * w * 0.09, gy); ctx.lineTo(w / 2 + i * w * 0.26, h); }
+    for (var yy = gy + 18 * s, n = 1; yy < h; n++, yy += 18 * s * n * 0.75) { ctx.moveTo(0, yy); ctx.lineTo(w, yy); }
+    ctx.stroke();
+    room_rug(ctx, w, h, gy, s, "#8fd3e8", "#c8f0f8", "#ffffff");
+    // the tub
+    var bx = w * 0.84, by = gy + 4 * s, bw = 150 * s, bh = 70 * s;
+    ctx.fillStyle = "#ffffff"; ctx.beginPath(); ctx.moveTo(bx - bw / 2, by - bh); ctx.lineTo(bx + bw / 2, by - bh);
+    ctx.quadraticCurveTo(bx + bw / 2, by, bx + bw / 2 - 20 * s, by); ctx.lineTo(bx - bw / 2 + 20 * s, by); ctx.quadraticCurveTo(bx - bw / 2, by, bx - bw / 2, by - bh); ctx.fill();
+    ctx.strokeStyle = "#cfe3e8"; ctx.lineWidth = 3 * s; ctx.stroke();
+    ctx.fillStyle = "#c9a24a"; [-0.38, 0.38].forEach(function (d) { ctx.beginPath(); ctx.arc(bx + d * bw, by + 4 * s, 7 * s, 0, 6.2832); ctx.fill(); });
+    // foam on top
+    ctx.fillStyle = "#ffffff";
+    for (var f = 0; f < 9; f++) { ctx.beginPath(); ctx.arc(bx - bw / 2 + 12 * s + f * bw / 9, by - bh - 6 * s + Math.sin(t * 1.5 + f) * 2 * s, (13 + (f % 3) * 4) * s, 0, 6.2832); ctx.fill(); }
+    // rubber duck bobbing on the foam
+    var dx = bx - 20 * s, dy = by - bh - 18 * s + Math.sin(t * 2) * 3 * s;
+    ctx.fillStyle = "#ffd23f"; ctx.beginPath(); ctx.ellipse(dx, dy, 18 * s, 12 * s, 0, 0, 6.2832); ctx.fill();
+    ctx.beginPath(); ctx.arc(dx + 12 * s, dy - 12 * s, 9 * s, 0, 6.2832); ctx.fill();
+    ctx.fillStyle = "#ff8a3d"; ctx.beginPath(); ctx.moveTo(dx + 19 * s, dy - 13 * s); ctx.lineTo(dx + 28 * s, dy - 11 * s); ctx.lineTo(dx + 19 * s, dy - 9 * s); ctx.fill();
+    ctx.fillStyle = "#222"; ctx.beginPath(); ctx.arc(dx + 14 * s, dy - 14 * s, 1.6 * s, 0, 6.2832); ctx.fill();
+    // bubbles rising all over, each with a shine
+    var B = rng(41);
+    for (var b = 0; b < 26; b++) {
+      var r = (5 + B() * 16) * s, speed = 0.04 + B() * 0.05, ph = (B() + t * speed) % 1;
+      var bxp = B() * w + Math.sin(t * (0.8 + B()) + b) * 14 * s, byp = h * (1 - ph * 1.1);
+      ctx.strokeStyle = "rgba(140,200,230," + (0.55 * (1 - ph)) + ")"; ctx.lineWidth = 1.6 * s;
+      ctx.fillStyle = "rgba(255,255,255," + (0.18 * (1 - ph)) + ")";
+      ctx.beginPath(); ctx.arc(bxp, byp, r, 0, 6.2832); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = "rgba(255,255,255," + (0.8 * (1 - ph)) + ")"; ctx.beginPath(); ctx.arc(bxp - r * 0.35, byp - r * 0.35, r * 0.22, 0, 6.2832); ctx.fill();
+    }
+  };
+
+  // Art studio: a sunny window with drifting dust, an easel with a painting, paint pots and splatters
+  SCENE_DRAW.bg_studio = function (ctx, w, h, t) {
+    var s = h / 800, gy = groundY(h, "bg_studio");
+    room_wall(ctx, w, gy, "#fff6e6", "#f5e3c6");
+    // a tall window, top left, with sunbeams
+    var wx = w * 0.16, ww = Math.min(w * 0.26, 130 * s), wt = gy * 0.1, wb = gy * 0.62;
+    ctx.fillStyle = grad(ctx, wt, wb, [[0, "#9fd4ff"], [1, "#e6f5ff"]]); ctx.fillRect(wx - ww / 2, wt, ww, wb - wt);
+    ctx.fillStyle = "rgba(255,255,255,0.8)"; ctx.beginPath(); ctx.ellipse(wx + ww * 0.1, wt + 40 * s, 30 * s, 10 * s, 0, 0, 6.2832); ctx.fill();
+    ctx.strokeStyle = "#ffffff"; ctx.lineWidth = 7 * s; ctx.strokeRect(wx - ww / 2, wt, ww, wb - wt);
+    ctx.lineWidth = 4 * s; ctx.beginPath(); ctx.moveTo(wx, wt); ctx.lineTo(wx, wb); ctx.moveTo(wx - ww / 2, (wt + wb) / 2); ctx.lineTo(wx + ww / 2, (wt + wb) / 2); ctx.stroke();
+    ctx.save(); ctx.globalAlpha = 0.16 + 0.04 * Math.sin(t * 0.6); ctx.fillStyle = "#fff3c4";
+    ctx.beginPath(); ctx.moveTo(wx - ww / 2, wt); ctx.lineTo(wx + ww / 2, wt); ctx.lineTo(w * 0.75, h); ctx.lineTo(w * 0.15, h); ctx.fill(); ctx.restore();
+    // little framed sketches pinned to the wall
+    [[0.5, 0.18, "#ffb3c7"], [0.62, 0.3, "#b3e0ff"], [0.5, 0.42, "#c8f2b3"]].forEach(function (p, k) {
+      room_frame(ctx, w * p[0], gy * p[1], 46 * s, 36 * s, s, "#ffffff", function (x, y, fw, fh) {
+        ctx.fillStyle = p[2]; ctx.fillRect(x, y, fw, fh);
+        ctx.fillStyle = "rgba(0,0,0,0.25)"; ctx.beginPath(); ctx.arc(x + fw * 0.5, y + fh * 0.55, 8 * s, 0, 6.2832); ctx.fill();
+      });
+      ctx.fillStyle = ["#ff5f6d", "#4f9bff", "#ffd23f"][k]; ctx.beginPath(); ctx.arc(w * p[0], gy * p[1] - 21 * s, 3.5 * s, 0, 6.2832); ctx.fill();
+    });
+    room_baseboard(ctx, w, gy, s, "#e8d2a8");
+    room_woodFloor(ctx, w, h, gy, s, "#e7c79a", "#c99e6c", "rgba(110,70,30,0.2)");
+    // paint splatters on the floor
+    var P = rng(53), cols = ["#ff5f6d", "#4f9bff", "#ffd23f", "#5fd18b", "#b77bff"];
+    for (var i = 0; i < 9; i++) {
+      var px = P() * w, py = gy + 20 * s + P() * (h - gy - 30 * s);
+      if (Math.abs(px - w / 2) < w * 0.25 && py < h * (sceneFoot + 0.06)) continue;
+      ctx.fillStyle = cols[i % 5]; ctx.globalAlpha = 0.7; ctx.beginPath(); ctx.ellipse(px, py, (8 + P() * 12) * s, (3 + P() * 4) * s, 0, 0, 6.2832); ctx.fill(); ctx.globalAlpha = 1;
+    }
+    room_rug(ctx, w, h, gy, s, "#f2a65a", "#ffe0b8", "#ffffff");
+    // the easel on the right with a sunny painting
+    var ex = w * 0.84, et = gy - 210 * s;
+    ctx.strokeStyle = "#9b6a43"; ctx.lineWidth = 7 * s; ctx.lineCap = "round";
+    ctx.beginPath(); ctx.moveTo(ex, et); ctx.lineTo(ex - 50 * s, gy + 6 * s); ctx.moveTo(ex, et); ctx.lineTo(ex + 50 * s, gy + 6 * s); ctx.moveTo(ex, et); ctx.lineTo(ex + 8 * s, gy - 10 * s); ctx.stroke();
+    ctx.fillStyle = "#9b6a43"; ctx.fillRect(ex - 58 * s, et + 128 * s, 116 * s, 8 * s);
+    room_frame(ctx, ex, et + 70 * s, 100 * s, 112 * s, s, "#ffffff", function (x, y, fw, fh) {
+      ctx.fillStyle = grad(ctx, y, y + fh, [[0, "#8fd0ff"], [1, "#d8f0ff"]]); ctx.fillRect(x, y, fw, fh);
+      ctx.fillStyle = "#ffd23f"; ctx.beginPath(); ctx.arc(x + fw * 0.7, y + fh * 0.3, 14 * s, 0, 6.2832); ctx.fill();
+      ctx.fillStyle = "#5fd18b"; ctx.beginPath(); ctx.moveTo(x, y + fh); ctx.quadraticCurveTo(x + fw * 0.4, y + fh * 0.55, x + fw, y + fh * 0.8); ctx.lineTo(x + fw, y + fh); ctx.fill();
+    });
+    ctx.lineCap = "butt";
+    // paint pots by the easel and a jar of brushes on the left
+    [["#ff5f6d", -70], ["#4f9bff", -40], ["#ffd23f", 74]].forEach(function (pp) {
+      var x = ex + pp[1] * s, y = gy + 10 * s;
+      ctx.fillStyle = "#e0e6ea"; ctx.fillRect(x - 13 * s, y - 24 * s, 26 * s, 24 * s);
+      ctx.fillStyle = pp[0]; ctx.beginPath(); ctx.ellipse(x, y - 24 * s, 13 * s, 5 * s, 0, 0, 6.2832); ctx.fill();
+    });
+    var jx = w * 0.1, jy = gy + 12 * s;
+    ctx.fillStyle = "rgba(200,230,240,0.85)"; ctx.fillRect(jx - 16 * s, jy - 40 * s, 32 * s, 40 * s);
+    ["#ff5f6d", "#4f9bff", "#5fd18b"].forEach(function (c, k) {
+      var a = (k - 1) * 0.25; ctx.strokeStyle = "#9b6a43"; ctx.lineWidth = 3 * s; ctx.beginPath();
+      ctx.moveTo(jx + (k - 1) * 8 * s, jy - 30 * s); ctx.lineTo(jx + (k - 1) * 8 * s + Math.sin(a) * 50 * s, jy - 30 * s - Math.cos(a) * 50 * s); ctx.stroke();
+      ctx.fillStyle = c; ctx.beginPath(); ctx.arc(jx + (k - 1) * 8 * s + Math.sin(a) * 52 * s, jy - 30 * s - Math.cos(a) * 52 * s, 4 * s, 0, 6.2832); ctx.fill();
+    });
+    // dust floating in the sunlight
+    var D = rng(61);
+    for (var m = 0; m < 20; m++) {
+      var mx = w * 0.15 + D() * w * 0.5 + Math.sin(t * 0.3 + m) * 18 * s, my = gy * (0.15 + ((D() + t * 0.015) % 1) * 0.8);
+      ctx.fillStyle = "rgba(255,240,190," + (0.35 + 0.3 * Math.sin(t + m)) + ")"; ctx.beginPath(); ctx.arc(mx, my, 1.8 * s, 0, 6.2832); ctx.fill();
+    }
+  };
+
+  // Treehouse: plank walls, a round window onto swaying leaves, lanterns, fireflies and a rope ladder
+  SCENE_DRAW.bg_treehouse = function (ctx, w, h, t) {
+    var s = h / 800, gy = groundY(h, "bg_treehouse");
+    // vertical planks
+    ctx.fillStyle = "#b07a4a"; ctx.fillRect(0, 0, w, gy + 2);
+    var pw = 44 * s, PL = rng(71);
+    for (var x = 0; x < w; x += pw) {
+      ctx.fillStyle = ["#b98352", "#a8733f", "#c08b58"][Math.floor(PL() * 3)]; ctx.fillRect(x, 0, pw - 3 * s, gy);
+      ctx.fillStyle = "rgba(60,30,10,0.35)"; ctx.beginPath(); ctx.arc(x + pw * 0.5, gy * (0.2 + PL() * 0.6), 3 * s, 0, 6.2832); ctx.fill();
+    }
+    // round window with leaves outside
+    var cx = w * 0.5, cy = gy * 0.3, r = Math.min(w * 0.2, 90 * s);
+    ctx.save(); ctx.beginPath(); ctx.arc(cx, cy, r, 0, 6.2832); ctx.clip();
+    ctx.fillStyle = grad(ctx, cy - r, cy + r, [[0, "#9ad8ff"], [1, "#d8f2ff"]]); ctx.fillRect(cx - r, cy - r, r * 2, r * 2);
+    var L = rng(73);
+    for (var i = 0; i < 26; i++) {
+      var lx = cx - r + L() * r * 2, ly = cy - r + L() * r * 2, sway = Math.sin(t * 1.1 + i) * 0.15;
+      leaf(ctx, lx, ly, (24 + L() * 22) * s, L() * 6.28 + sway, ["#5cb85c", "#3f9a4a", "#7cc96a"][i % 3]);
+    }
+    ctx.restore();
+    ctx.strokeStyle = "#6e4426"; ctx.lineWidth = 12 * s; ctx.beginPath(); ctx.arc(cx, cy, r, 0, 6.2832); ctx.stroke();
+    ctx.lineWidth = 5 * s; ctx.beginPath(); ctx.moveTo(cx - r, cy); ctx.lineTo(cx + r, cy); ctx.moveTo(cx, cy - r); ctx.lineTo(cx, cy + r); ctx.stroke();
+    // a branch growing through the wall, top right
+    ctx.strokeStyle = "#7a4a2a"; ctx.lineWidth = 16 * s; ctx.lineCap = "round"; ctx.beginPath();
+    ctx.moveTo(w + 10 * s, gy * 0.08); ctx.quadraticCurveTo(w * 0.82, gy * 0.12, w * 0.74, gy * 0.05); ctx.stroke(); ctx.lineCap = "butt";
+    for (var j = 0; j < 7; j++) leaf(ctx, w * (0.76 + j * 0.035), gy * (0.06 + (j % 2) * 0.04), 30 * s, 0.9 + Math.sin(t * 1.2 + j) * 0.12 + (j % 2) * 0.8, j % 2 ? "#4caf50" : "#66bb6a");
+    // string of lanterns
+    ctx.strokeStyle = "#5a3820"; ctx.lineWidth = 1.5 * s; ctx.beginPath(); ctx.moveTo(0, gy * 0.62); ctx.quadraticCurveTo(w / 2, gy * 0.72, w, gy * 0.6); ctx.stroke();
+    ["#ffcf4d", "#ff8a5c", "#ffcf4d", "#ff8a5c", "#ffcf4d"].forEach(function (c, k) {
+      var u = (k + 0.5) / 5, lx = u * w, ly = gy * 0.62 + 4 * u * (1 - u) * gy * 0.08 + 6 * s, on = 0.75 + 0.25 * Math.sin(t * 1.6 + k * 1.3);
+      glow(ctx, lx, ly + 10 * s, 36 * s, "rgba(255,200,100," + (0.35 * on) + ")");
+      ctx.fillStyle = c; ctx.globalAlpha = on; ctx.beginPath(); ctx.ellipse(lx, ly + 10 * s, 9 * s, 12 * s, 0, 0, 6.2832); ctx.fill(); ctx.globalAlpha = 1;
+      ctx.fillStyle = "#5a3820"; ctx.fillRect(lx - 5 * s, ly - 3 * s, 10 * s, 4 * s);
+    });
+    room_baseboard(ctx, w, gy, s, "#6e4426");
+    room_woodFloor(ctx, w, h, gy, s, "#a8733f", "#7a4a26", "rgba(40,20,5,0.3)");
+    room_rug(ctx, w, h, gy, s, "#5c8f4a", "#a8d08d", "#e8f5d8");
+    // rope ladder on the left going down through a hatch
+    var rx = w * 0.1;
+    ctx.fillStyle = "#3e2412"; ctx.beginPath(); ctx.ellipse(rx, h * 0.93, 46 * s, 14 * s, 0, 0, 6.2832); ctx.fill();
+    ctx.strokeStyle = "#d9b77a"; ctx.lineWidth = 3 * s; ctx.beginPath();
+    ctx.moveTo(rx - 22 * s, gy - 120 * s); ctx.lineTo(rx - 22 * s, h * 0.93); ctx.moveTo(rx + 22 * s, gy - 120 * s); ctx.lineTo(rx + 22 * s, h * 0.93);
+    for (var y = gy - 110 * s; y < h * 0.92; y += 26 * s) { ctx.moveTo(rx - 22 * s, y); ctx.lineTo(rx + 22 * s, y); }
+    ctx.stroke();
+    // a little pile of books and a sleepy cushion on the right
+    ctx.fillStyle = "#e86f94"; ctx.beginPath(); ctx.ellipse(w * 0.88, gy + 24 * s, 48 * s, 20 * s, 0, 0, 6.2832); ctx.fill();
+    ctx.fillStyle = "#ff9fb9"; ctx.beginPath(); ctx.ellipse(w * 0.88, gy + 18 * s, 36 * s, 12 * s, 0, 0, 6.2832); ctx.fill();
+    // fireflies
+    var F = rng(79);
+    for (var f = 0; f < 14; f++) {
+      var fx = F() * w + Math.sin(t * 0.7 + f) * 16 * s, fy = gy * (0.4 + F() * 0.9) + Math.cos(t * 0.8 + f * 2) * 12 * s;
+      var on2 = Math.max(0, Math.sin(t * (0.9 + F()) + f * 1.7));
+      glow(ctx, fx, fy, 11 * s, "rgba(255,240,120," + (0.5 * on2) + ")");
+      ctx.fillStyle = "rgba(255,250,190," + on2 + ")"; ctx.beginPath(); ctx.arc(fx, fy, 1.8 * s, 0, 6.2832); ctx.fill();
+    }
+  };
+
   function drawScene(ctx, id, w, h, t) { var fn = SCENE_DRAW[id]; if (fn) fn(ctx, w, h, t); }
 
   // the floor point under the pet (the world origin, so a hop doesn't move the floor) and how wide the pet is
@@ -2476,22 +2691,24 @@ html, body { height: 100%; overflow: hidden; }
   // Every sound is made here with the browser's sound engine (Web Audio): little tones, glides and filtered
   // noise, so there are no audio files to download. Sounds start on; the menu button turns them off (remembered
   // on this phone). Phones only allow sound after a tap, so the engine wakes on the first touch.
-  var SOUND_KEY = "petstreak.sound";
-  var soundOn = true, actx = null, master = null, noiseBuf = null;
-  try { soundOn = localStorage.getItem(SOUND_KEY) !== "off"; } catch (e) {}
+  var SOUND_KEY = "petstreak.sound", MUSIC_KEY = "petstreak.music";
+  var soundOn = true, musicOn = true, actx = null, master = null, musicBus = null, noiseBuf = null;
+  try { soundOn = localStorage.getItem(SOUND_KEY) !== "off"; musicOn = localStorage.getItem(MUSIC_KEY) !== "off"; } catch (e) {}
 
   function wakeAudio() {
-    if (!soundOn) return;
+    if (!soundOn && !musicOn) return;
     var AC = window.AudioContext || window.webkitAudioContext;
     if (!AC) return;
     if (!actx) {
       try { actx = new AC(); } catch (e) { return; }
       master = actx.createGain(); master.gain.value = 0.35; master.connect(actx.destination);
+      musicBus = actx.createGain(); musicBus.gain.value = 0.55; musicBus.connect(actx.destination);
       noiseBuf = actx.createBuffer(1, actx.sampleRate, actx.sampleRate);
       var d = noiseBuf.getChannelData(0);
       for (var i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
     }
     if (actx.state === "suspended") actx.resume();
+    if (musicOn) startMusic();
   }
   ["pointerdown", "touchend", "keydown"].forEach(function (ev) { window.addEventListener(ev, wakeAudio, { capture: true, passive: true }); });
   function setSound(on) {
@@ -2502,7 +2719,7 @@ html, body { height: 100%; overflow: hidden; }
   function audioReady() { return soundOn && actx && actx.state === "running" && !document.hidden; }
 
   // a tone: frequency (gliding to f2), start delay, length, wave, volume
-  function tone(f, at, dur, type, vol, f2, vib) {
+  function tone(f, at, dur, type, vol, f2, vib, bus) {
     var t = actx.currentTime + (at || 0), o = actx.createOscillator(), g = actx.createGain();
     o.type = type || "sine";
     o.frequency.setValueAtTime(f, t);
@@ -2515,9 +2732,18 @@ html, body { height: 100%; overflow: hidden; }
     g.gain.setValueAtTime(0.0001, t);
     g.gain.exponentialRampToValueAtTime(vol || 0.2, t + Math.min(0.02, dur / 4));
     g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-    o.connect(g); g.connect(master);
+    o.connect(g); g.connect(bus || master);
     o.start(t); o.stop(t + dur + 0.05);
   }
+  // a soft kalimba / music-box pluck: the note, a quiet octave above, quick to fade
+  function pluck(f, at, vol, bus, len) {
+    var d = len || 0.45;
+    tone(f, at, d, "sine", vol, null, null, bus);
+    tone(f * 2, at, d * 0.5, "sine", vol * 0.28, null, null, bus);
+    tone(f * 3, at, d * 0.22, "triangle", vol * 0.08, null, null, bus);
+  }
+  // a little squeak: a quick rising glide with a flutter, like a tiny happy animal
+  function squeak(f, at, dur, vol, rise) { tone(f, at, dur, "sine", vol, f * (rise || 1.3), [32, f * 0.03]); }
   // a burst of filtered noise (crunches, rustles, breaths)
   function noise(at, dur, vol, freq, q, kind, attack) {
     var t = actx.currentTime + (at || 0), src = actx.createBufferSource(), f = actx.createBiquadFilter(), g = actx.createGain();
@@ -2533,8 +2759,10 @@ html, body { height: 100%; overflow: hidden; }
   var SFX = {
     click:   function () { tone(1250, 0, 0.04, "sine", 0.05); },
     happy:   function () { tone(880, 0, 0.13, "sine", 0.16, 1320); tone(1100, 0.15, 0.18, "sine", 0.16, 1700); },
-    pat:     function () { tone(95, 0, 1.1, "sawtooth", 0.05, 85, [24, 18]); noise(0, 1.1, 0.03, 380, 0.7, "lowpass", 0.15); },
-    giggle:  function () { [1180, 980, 1240, 1020, 1300].forEach(function (f, i) { tone(f, i * 0.11, 0.09, "triangle", 0.12, f * 0.82); }); },
+    // a contented "mm-hmm" coo with a tiny chime
+    pat:     function () { tone(640, 0.05, 0.3, "sine", 0.1, 560, [6, 7]); tone(590, 0.38, 0.4, "sine", 0.09, 480, [5, 7]); pluck(1568, 0.1, 0.035); },
+    // "hee-hee-hee": bright squeaks, each a little higher
+    giggle:  function () { [1250, 1350, 1300, 1480, 1600].forEach(function (f, i) { squeak(f, i * 0.12, 0.08, 0.11 - i * 0.012, 1.3); }); },
     eat:     function () {
       // a crunch at each bite of the Eat animation (EAT_BITES, in mood.js), and a happy hum after
       EAT_BITES.forEach(function (b) { noise(b, 0.08, 0.32, 2200, 0.9); noise(b + 0.03, 0.06, 0.18, 900, 1.2); tone(150, b, 0.07, "sine", 0.12, 90); });
@@ -2551,7 +2779,8 @@ html, body { height: 100%; overflow: hidden; }
     },
     coin:    function () { tone(1319, 0, 0.09, "square", 0.05); tone(1976, 0.08, 0.28, "sine", 0.13); },
     buy:     function () { SFX.coin(); tone(660, 0.22, 0.12, "sine", 0.1, 990); },
-    dance:   function () { [392, 523, 440, 587, 523, 659].forEach(function (f, i) { tone(f, i * 0.22, 0.12, "triangle", 0.1); }); },
+    // a happy little kalimba tune
+    dance:   function () { [1047, 1319, 1568, 1319, 1760, 1568, 2093].forEach(function (f, i) { pluck(f, i * 0.2, 0.12); }); },
     playBow: function () { tone(260, 1.3, 0.32, "sine", 0.16, 720, [14, 30]); },
     shake:   function () { noise(0.05, 0.75, 0.09, 1100, 0.9, "bandpass", 0.05); tone(70, 0.05, 0.7, "sawtooth", 0.035, 60, [28, 12]); },
     yawn:    function () { tone(520, 0.25, 1.15, "sine", 0.08, 230, [5, 10]); noise(0.25, 1.1, 0.03, 700, 0.8, "lowpass", 0.3); },
@@ -2575,6 +2804,49 @@ html, body { height: 100%; overflow: hidden; }
     else if (!on) stopSnore();
   }
   function stopSnore() { if (snoreTimer) { clearInterval(snoreTimer); snoreTimer = 0; } }
+
+  // ---------- Music: a slow, quiet lullaby made on the fly ----------
+  // Soft warm chords change every bar (about 4 s), and a kalimba melody wanders over them on the C major
+  // pentatonic, so it never repeats exactly and never clashes. It stops while the app is in the background.
+  var CHORDS = [[174.6, 220.0, 261.6, 329.6], [164.8, 196.0, 246.9, 293.7], [146.8, 174.6, 220.0, 261.6], [130.8, 164.8, 196.0, 246.9]];
+  var MELODY = [523.3, 587.3, 659.3, 784.0, 880.0, 1046.5, 1174.7];
+  var BEAT = 60 / 62, musicTimer = 0, nextBar = 0, bar = 0, melIdx = 3;
+  function padChord(notes, t, len) {
+    notes.forEach(function (f, i) {
+      var o = actx.createOscillator(), g = actx.createGain(), lp = actx.createBiquadFilter();
+      o.type = "triangle"; o.frequency.value = f; o.detune.value = (i % 2 ? 4 : -4);
+      lp.type = "lowpass"; lp.frequency.value = 900;
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(0.022, t + 1.2);
+      g.gain.setValueAtTime(0.022, t + len - 1.2);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + len + 0.6);
+      o.connect(lp); lp.connect(g); g.connect(musicBus);
+      o.start(t); o.stop(t + len + 0.7);
+    });
+  }
+  function musicTick() {
+    if (!actx || actx.state !== "running" || !musicOn || document.hidden) return;
+    var now = actx.currentTime;
+    if (nextBar < now) nextBar = now + 0.1;
+    while (nextBar < now + 1.5) {
+      var t = nextBar, len = BEAT * 4;
+      padChord(CHORDS[bar % CHORDS.length], t, len);
+      for (var b = 0; b < 4; b++) {
+        if (Math.random() < (b === 0 ? 0.9 : 0.55)) {
+          melIdx = Math.max(0, Math.min(MELODY.length - 1, melIdx + [-2, -1, -1, 0, 1, 1, 2][Math.floor(Math.random() * 7)]));
+          pluck(MELODY[melIdx], t + b * BEAT - now + (b ? Math.random() * 0.06 : 0), 0.05, musicBus, 1.1);
+        }
+      }
+      bar++; nextBar += len;
+    }
+  }
+  function startMusic() { if (!musicTimer && musicOn && actx) { nextBar = 0; musicTimer = setInterval(musicTick, 400); musicTick(); } }
+  function stopMusic() { if (musicTimer) { clearInterval(musicTimer); musicTimer = 0; } }
+  function setMusic(on) {
+    musicOn = !!on;
+    try { localStorage.setItem(MUSIC_KEY, musicOn ? "on" : "off"); } catch (e) {}
+    if (musicOn) { wakeAudio(); startMusic(); } else stopMusic();
+  }
 
   // ---------- Pet Streak (real version) ----------
   // Sign in with an email link, share pets with co-parents, buy and adopt pets and wardrobe items with paws.
@@ -2926,15 +3198,8 @@ html, body { height: 100%; overflow: hidden; }
         if (!list.length) { box.innerHTML = '<div class="pg-empty-note">No pets are waiting at the sanctuary right now. 🏡</div>'; return; }
         list.forEach(function (a) {
           var v = item(a.variant);
-          card(box, a.name, v && v.color, (v ? v.name.replace(" red panda", "") + " · " : "") + "comes home at Lv " + a.level + " · 🐾 " + ADOPT_FEE, "Adopt", async function () {
-            var name = await askName("Adopt " + a.name, "Give them a new name if you like. Adopting costs " + ADOPT_FEE + " paws.", a.name, "Adopt for 🐾 " + ADOPT_FEE);
-            if (!name) return;
-            try { await rpc("adopt_pet", { p_id: a.id, p_name: name, p_tz: tz() }); } catch (e) { say(e.message); renderStore(); return; }
-            localStorage.setItem(PET_KEY, a.id); cur = -1;
-            $("g-store").hidden = true; await loadAll();
-            wake(); playOnce("Happy");
-            say(name + " has a new home with you! 🎉");
-          }, { id: a.variant });
+          // tapping a pet shows its details first; adopting is a button there
+          card(box, a.name, v && v.color, (v ? v.name.replace(" red panda", "") + " · " : "") + "comes home at Lv " + a.level + " · 🐾 " + ADOPT_FEE, "Adopt", function () { showAdoptInfo(a); }, { id: a.variant });
         });
       } else {
         $("g-storehint").textContent = "Backgrounds and things your pets can wear. Bought items are yours to use on any of your pets.";
@@ -2957,6 +3222,40 @@ html, body { height: 100%; overflow: hidden; }
         setTimeout(function () { paintSceneThumbs(box); }, 0);
       }
     }
+    // a sanctuary pet's details, with the Adopt button
+    var adoptShown = null;
+    function showAdoptInfo(a) {
+      adoptShown = a;
+      var v = item(a.variant), old = a.old_level || a.level, ri = rankIndex(old);
+      $("g-ai-title").textContent = a.name;
+      $("g-ai-pic").src = "icons/" + (ICONS.indexOf(a.variant) >= 0 ? a.variant : "panda_classic") + ".png";
+      $("g-ai-tag").innerHTML = tagHTML(old, a.name);
+      var days = a.since ? Math.max(0, Math.round((Date.now() - new Date(a.since + "T00:00:00").getTime()) / 86400000)) : null;
+      var wear = [a.hat, a.glasses].filter(Boolean).map(function (id) { var it = item(id); return it ? it.name : id; });
+      var bg = a.backdrop && a.backdrop !== "mist" ? item(a.backdrop) : null;
+      var facts = [["Colour", v ? v.name.replace(" red panda", "") : "Classic"],
+                   ["Was", "Level " + old + " · " + RANKS[ri].name],
+                   ["Comes home", "Level " + a.level],
+                   ["Best streak", (a.best || 0) + (a.best === 1 ? " day" : " days")],
+                   ["Waiting", days === null ? "—" : days === 0 ? "since today" : days + (days === 1 ? " day" : " days")]];
+      if (wear.length) facts.push(["Wearing", wear.join(", ")]);
+      if (bg) facts.push(["Background", bg.name]);
+      $("g-ai-facts").innerHTML = facts.map(function (f) { return "<dt>" + esc(f[0]) + "</dt><dd>" + esc(f[1]) + "</dd>"; }).join("");
+      $("g-ai-adopt").textContent = "🏡 Adopt " + a.name + " for 🐾 " + ADOPT_FEE;
+      $("g-adoptinfo").hidden = false;
+    }
+    $("g-aiclose").addEventListener("click", function () { $("g-adoptinfo").hidden = true; });
+    $("g-ai-adopt").addEventListener("click", async function () {
+      var a = adoptShown; if (!a) return;
+      var name = await askName("Adopt " + a.name, "Give them a new name if you like. Adopting costs " + ADOPT_FEE + " paws.", a.name, "Adopt for 🐾 " + ADOPT_FEE);
+      if (!name) return;
+      try { await rpc("adopt_pet", { p_id: a.id, p_name: name, p_tz: tz() }); } catch (e) { say(e.message); renderStore(); return; }
+      sfx("buy");
+      localStorage.setItem(PET_KEY, a.id); cur = -1;
+      $("g-adoptinfo").hidden = true; $("g-store").hidden = true; await loadAll();
+      wake(); playOnce("Happy");
+      say(name + " has a new home with you! 🎉");
+    });
     function card(box, name, color, sub, action, onClick, it) {
       var b = document.createElement("button");
       b.type = "button"; b.className = "pg-item";
@@ -3253,7 +3552,7 @@ html, body { height: 100%; overflow: hidden; }
       // its own shadow on its floor, so the 3D one steps aside then
       scene.children.forEach(function (o) { if (o.isMesh && o.geometry.type === "PlaneGeometry") o.visible = home && !sceneId; });
       // the upper lids rest a touch lower even when content, so the pet looks at you rather than just above you
-      moodDroop = m === "hungry" ? 0.28 : m === "sick" ? 0.45 : 0.08;
+      moodDroop = m === "hungry" ? 0.28 : m === "sick" ? 0.45 : 0.15;
       sadTarget = m === "hungry" ? 0.55 : m === "sick" ? 1 : 0;
       var calm = home && (m === "fed" || m === "happy");
       if (!calm) lastPoke = now;
@@ -3529,26 +3828,39 @@ html, body { height: 100%; overflow: hidden; }
     function startPreview() { previewT0 = performance.now(); clearInterval(previewTimer); previewTimer = setInterval(drawPreview, 80); drawPreview(); }
     function stopPreview() { clearInterval(previewTimer); previewTimer = 0; }
     function fileName(ext) { return (pet() ? pet().name : "pet").replace(/[^A-Za-z0-9]+/g, "-") + "-pet-streak." + ext; }
-    async function shareFile(file, label) {
-      var data = { files: [file], title: pet().name + " on Pet Streak", text: "Meet " + pet().name + "! 🐾" };
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        try { await navigator.share(data); return; } catch (e) { if (e && e.name === "AbortError") return; }
-      }
-      // no share menu (e.g. on a computer): save the file instead
-      var a = document.createElement("a"), url = URL.createObjectURL(file);
-      a.href = url; a.download = file.name; document.body.appendChild(a); a.click(); a.remove();
-      setTimeout(function () { URL.revokeObjectURL(url); }, 5000);
-      say(label + " saved to your device.");
+    // Once the photo or clip is made, offer Share and Download. (Phones only open the share menu straight after
+    // a tap, and making a clip takes 4 seconds, so the share has to come from its own tap.)
+    var readyFile = null, readyLabel = "";
+    function shareFile(file, label) {
+      readyFile = file; readyLabel = label;
+      $("g-readytext").textContent = (label === "Clip" ? "Your 4-second clip" : "Your photo") + " is ready ✨";
+      $("g-sharego").hidden = !(navigator.canShare && navigator.canShare({ files: [file] }));
+      $("g-shareready").hidden = false;
+      $("g-shareready").scrollIntoView({ block: "nearest", behavior: "smooth" });
+      sfx("coin");
     }
+    $("g-sharego").addEventListener("click", async function () {
+      if (!readyFile || !pet()) return;
+      try { await navigator.share({ files: [readyFile], title: pet().name + " on Pet Streak", text: "Meet " + pet().name + "! 🐾" }); }
+      catch (e) { if (!e || e.name !== "AbortError") say("Couldn't open sharing. Try Download instead."); }
+    });
+    $("g-savego").addEventListener("click", function () {
+      if (!readyFile) return;
+      var a = document.createElement("a"), url = URL.createObjectURL(readyFile);
+      a.href = url; a.download = readyFile.name; document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function () { URL.revokeObjectURL(url); }, 30000);
+      say(readyLabel + " saved to your phone ⬇️");
+    });
     $("g-sharebtn").addEventListener("click", function () {
       if (!pet()) return;
-      $("g-sharenote").textContent = "";
+      $("g-sharenote").textContent = ""; $("g-shareready").hidden = true; readyFile = null;
       $("g-shareclip").hidden = !(window.MediaRecorder && HTMLCanvasElement.prototype.captureStream);
       $("g-share").hidden = false; startPreview();
     });
     $("g-shareclose").addEventListener("click", function () { $("g-share").hidden = true; stopPreview(); });
     ["g-sh-badge", "g-sh-level", "g-sh-streak", "g-sh-crew"].forEach(function (id) { $(id).addEventListener("change", drawPreview); });
     $("g-sharephoto").addEventListener("click", async function () {
+      $("g-shareready").hidden = true;
       var c = document.createElement("canvas"); c.width = 1080; c.height = 1350;
       drawShareCard(c.getContext("2d"), 1080, 1350, 3, shareOpts(), await badgeImg(rankIndex(pet().level)));
       c.toBlob(function (b) { if (b) shareFile(new File([b], fileName("png"), { type: "image/png" }), "Picture"); }, "image/png");
@@ -3556,6 +3868,7 @@ html, body { height: 100%; overflow: hidden; }
     // a 4-second clip: the pet dances while the card is drawn frame by frame and recorded
     $("g-shareclip").addEventListener("click", async function () {
       var btn = $("g-shareclip"); if (btn.disabled) return;
+      $("g-shareready").hidden = true;
       var types = ["video/mp4;codecs=avc1", "video/mp4", "video/webm;codecs=vp9", "video/webm"];
       var type = types.filter(function (t) { return MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(t); })[0];
       if (!type) { $("g-sharenote").textContent = "This browser can't record clips. Try the photo instead."; return; }
@@ -3697,6 +4010,9 @@ html, body { height: 100%; overflow: hidden; }
     function soundLabel() { $("g-sound").textContent = soundOn ? "🔊 Sounds on" : "🔈 Sounds off"; $("g-sound").setAttribute("aria-pressed", soundOn ? "true" : "false"); }
     soundLabel();
     $("g-sound").addEventListener("click", function () { setSound(!soundOn); soundLabel(); if (soundOn) setTimeout(function () { sfx("happy"); }, 60); });
+    function musicLabel() { $("g-music").textContent = musicOn ? "🎵 Music on" : "🎵 Music off"; $("g-music").setAttribute("aria-pressed", musicOn ? "true" : "false"); }
+    musicLabel();
+    $("g-music").addEventListener("click", function () { setMusic(!musicOn); musicLabel(); });
     $("g-theme").addEventListener("change", function () {
       themeNow = applyTheme($("g-theme").value);
       try { localStorage.setItem(THEME_KEY, themeNow); } catch (e) {}
@@ -3708,7 +4024,7 @@ html, body { height: 100%; overflow: hidden; }
     // Tapping anywhere outside an open sheet, the menu or the food tray closes it (through its ✕, so the usual
     // tidying up runs). That tap only closes: it doesn't also pat the pet or press the button underneath.
     var CLOSABLE = [["g-menu", "g-menuclose"], ["g-store", "g-storeclose"], ["g-sheet", "g-close"], ["g-ranks", "g-ranksclose"],
-                    ["g-share", "g-shareclose"], ["g-petsheet", "g-petsheetclose"], ["g-tray", "g-trayclose"]];
+                    ["g-share", "g-shareclose"], ["g-petsheet", "g-petsheetclose"], ["g-adoptinfo", "g-aiclose"], ["g-tray", "g-trayclose"]];
     var swallowClick = 0;
     document.addEventListener("pointerdown", function (e) {
       // a full-screen card (gift, join, name...) is on top: leave everything as it is
