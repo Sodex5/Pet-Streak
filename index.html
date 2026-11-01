@@ -330,6 +330,13 @@ html, body { background: #e6edf0; }
 /* item pictures in the store and wardrobe */
 .pg-item .pic, .pg-card2 .pic { display: block; width: 100%; aspect-ratio: 1 / 1; object-fit: contain; border-radius: 10px; background: #f3f6f7; margin-bottom: 6px; }
 .pg-item .pic.scene, .pg-card2 .pic.scene { object-fit: cover; aspect-ratio: 3 / 4; }
+/* the 3D view's rule makes every canvas full height; the background pictures keep their own 3:4 shape */
+.stage canvas.pic.scene { height: auto; cursor: inherit; }
+/* locked items: fade only the picture, so the name and what unlocks it stay easy to read */
+.pg-item[disabled] { opacity: 1; background: #f7f9fa; }
+.pg-item[disabled] .pic, .pg-item[disabled] .swbig { opacity: 0.45; filter: grayscale(0.5); }
+.pg-item[disabled] b { color: #14232b; }
+.pg-item[disabled] span { color: #3b4b53; font-weight: 700; }
 .pg-item .swbig { display: block; width: 100%; aspect-ratio: 1 / 1; border-radius: 10px; margin-bottom: 6px; border: 1px solid rgba(0,0,0,0.08); }
 .pg-items { grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); }
 /* rank name tags: a pill in the rank's colours with its badge */
@@ -2493,7 +2500,7 @@ html, body { background: #e6edf0; }
     }
   };
 
-  // Treehouse: plank walls, a round window onto swaying leaves, lanterns, fireflies and a rope ladder
+  // Treehouse: plank walls, a round window onto swaying leaves, lanterns, fireflies and a potted fern
   SCENE_DRAW.bg_treehouse = function (ctx, w, h, t) {
     var s = h / 800, gy = groundY(h, "bg_treehouse");
     // vertical planks
@@ -2530,13 +2537,8 @@ html, body { background: #e6edf0; }
     room_baseboard(ctx, w, gy, s, "#6e4426");
     room_woodFloor(ctx, w, h, gy, s, "#a8733f", "#7a4a26", "rgba(40,20,5,0.3)");
     room_rug(ctx, w, h, gy, s, "#5c8f4a", "#a8d08d", "#e8f5d8");
-    // rope ladder on the left going down through a hatch
-    var rx = w * 0.1;
-    ctx.fillStyle = "#3e2412"; ctx.beginPath(); ctx.ellipse(rx, h * 0.93, 46 * s, 14 * s, 0, 0, 6.2832); ctx.fill();
-    ctx.strokeStyle = "#d9b77a"; ctx.lineWidth = 3 * s; ctx.beginPath();
-    ctx.moveTo(rx - 22 * s, gy - 120 * s); ctx.lineTo(rx - 22 * s, h * 0.93); ctx.moveTo(rx + 22 * s, gy - 120 * s); ctx.lineTo(rx + 22 * s, h * 0.93);
-    for (var y = gy - 110 * s; y < h * 0.92; y += 26 * s) { ctx.moveTo(rx - 22 * s, y); ctx.lineTo(rx + 22 * s, y); }
-    ctx.stroke();
+    // a potted fern in the left corner
+    room_plant(ctx, w * 0.1, gy + 30 * s, s, t * 0.8, "#c98b4a");
     // a little pile of books and a sleepy cushion on the right
     ctx.fillStyle = "#e86f94"; ctx.beginPath(); ctx.ellipse(w * 0.88, gy + 24 * s, 48 * s, 20 * s, 0, 0, 6.2832); ctx.fill();
     ctx.fillStyle = "#ff9fb9"; ctx.beginPath(); ctx.ellipse(w * 0.88, gy + 18 * s, 36 * s, 12 * s, 0, 0, 6.2832); ctx.fill();
@@ -2689,11 +2691,11 @@ html, body { background: #e6edf0; }
 
   // ---------- Sounds ----------
   // Every sound is made here with the browser's sound engine (Web Audio): little tones, glides and filtered
-  // noise, so there are no audio files to download. Sounds start on; the menu button turns them off (remembered
-  // on this phone). Phones only allow sound after a tap, so the engine wakes on the first touch.
+  // noise, so there are no audio files to download. Sounds start on, music starts off; the menu buttons switch
+  // them (remembered on this phone). Phones only allow sound after a tap, so the engine wakes on the first touch.
   var SOUND_KEY = "petstreak.sound", MUSIC_KEY = "petstreak.music";
-  var soundOn = true, musicOn = true, actx = null, master = null, musicBus = null, noiseBuf = null;
-  try { soundOn = localStorage.getItem(SOUND_KEY) !== "off"; musicOn = localStorage.getItem(MUSIC_KEY) !== "off"; } catch (e) {}
+  var soundOn = true, musicOn = false, actx = null, master = null, musicBus = null, noiseBuf = null, MUSIC_LEVEL = 0.15, musicHushed = false;
+  try { soundOn = localStorage.getItem(SOUND_KEY) !== "off"; musicOn = localStorage.getItem(MUSIC_KEY) === "on"; } catch (e) {}
 
   function wakeAudio() {
     if (!soundOn && !musicOn) return;
@@ -2702,7 +2704,11 @@ html, body { background: #e6edf0; }
     if (!actx) {
       try { actx = new AC(); } catch (e) { return; }
       master = actx.createGain(); master.gain.value = 0.35; master.connect(actx.destination);
-      musicBus = actx.createGain(); musicBus.gain.value = 0.55; musicBus.connect(actx.destination);
+      // the music sits further back: quieter, with a soft echo as if from another room
+      musicBus = actx.createGain(); musicBus.gain.value = MUSIC_LEVEL; musicBus.connect(actx.destination);
+      var echo = actx.createDelay(1), fb = actx.createGain(), wet = actx.createGain(), dark = actx.createBiquadFilter();
+      echo.delayTime.value = 0.34; fb.gain.value = 0.28; wet.gain.value = 0.22; dark.type = "lowpass"; dark.frequency.value = 1100;
+      musicBus.connect(echo); echo.connect(dark); dark.connect(fb); fb.connect(echo); dark.connect(wet); wet.connect(actx.destination);
       noiseBuf = actx.createBuffer(1, actx.sampleRate, actx.sampleRate);
       var d = noiseBuf.getChannelData(0);
       for (var i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
@@ -2779,14 +2785,36 @@ html, body { background: #e6edf0; }
     },
     coin:    function () { tone(1319, 0, 0.09, "square", 0.05); tone(1976, 0.08, 0.28, "sine", 0.13); },
     buy:     function () { SFX.coin(); tone(660, 0.22, 0.12, "sine", 0.1, 990); },
-    // a happy little kalimba tune
-    dance:   function () { [1047, 1319, 1568, 1319, 1760, 1568, 2093].forEach(function (f, i) { pluck(f, i * 0.2, 0.12); }); },
+    // happy squeaks in time with the dance steps, ending in a tiny giggle trill
+    dance:   function () {
+      [[1150, 0], [1320, 0.32], [1220, 0.64], [1420, 0.96], [1280, 1.28], [1500, 1.6]].forEach(function (n, i) {
+        squeak(n[0], n[1], 0.09, 0.085 - i * 0.004, 1.28);
+      });
+      [1600, 1720, 1850].forEach(function (f, i) { squeak(f, 1.95 + i * 0.07, 0.06, 0.06, 1.2); });
+    },
     playBow: function () { tone(260, 1.3, 0.32, "sine", 0.16, 720, [14, 30]); },
     shake:   function () { noise(0.05, 0.75, 0.09, 1100, 0.9, "bandpass", 0.05); tone(70, 0.05, 0.7, "sawtooth", 0.035, 60, [28, 12]); },
     yawn:    function () { tone(520, 0.25, 1.15, "sine", 0.08, 230, [5, 10]); noise(0.25, 1.1, 0.03, 700, 0.8, "lowpass", 0.3); },
     flick:   function () { noise(0.1, 0.04, 0.05, 3500, 2); }
   };
-  function sfx(name) { if (audioReady() && SFX[name]) { try { SFX[name](); } catch (e) {} } }
+  function sfx(name) { if (audioReady() && SFX[name]) { try { duckMusic(name === "click" ? 0.6 : 0.35); SFX[name](); } catch (e) {} } }
+  // the music dips while a button makes a sound, then glides back up
+  function duckMusic(to) {
+    if (!musicBus || musicHushed) return;
+    var g = musicBus.gain, now = actx.currentTime;
+    g.cancelScheduledValues(now); g.setValueAtTime(g.value, now);
+    g.setTargetAtTime(MUSIC_LEVEL * to, now, 0.04);
+    g.setTargetAtTime(MUSIC_LEVEL, now + 0.9, 0.45);
+  }
+  // silent while the pet is doing something (patted, eating, dancing...), back once it's idle again
+  function hushMusic(on) {
+    if (on === musicHushed || !musicBus) return;
+    musicHushed = on;
+    var g = musicBus.gain, now = actx.currentTime;
+    g.cancelScheduledValues(now); g.setValueAtTime(g.value, now);
+    if (on) g.setTargetAtTime(0, now, 0.08);                 // gone in about a quarter of a second
+    else g.setTargetAtTime(MUSIC_LEVEL, now + 0.4, 0.6);     // eases back in over a couple of seconds
+  }
   // the pet's one-off animations each have their sound (the quiet idle ones stay quiet)
   var ANIM_SFX = { Happy: "happy", Pat: "pat", Giggle: "giggle", Eat: "eat", LevelUp: "levelUp", Dance: "dance",
                    PlayBow: "playBow", Shake: "shake", Yawn: "yawn", EarTwitch: "flick" };
@@ -2805,39 +2833,49 @@ html, body { background: #e6edf0; }
   }
   function stopSnore() { if (snoreTimer) { clearInterval(snoreTimer); snoreTimer = 0; } }
 
-  // ---------- Music: a slow, quiet lullaby made on the fly ----------
-  // Soft warm chords change every bar (about 4 s), and a kalimba melody wanders over them on the C major
-  // pentatonic, so it never repeats exactly and never clashes. It stops while the app is in the background.
-  var CHORDS = [[174.6, 220.0, 261.6, 329.6], [164.8, 196.0, 246.9, 293.7], [146.8, 174.6, 220.0, 261.6], [130.8, 164.8, 196.0, 246.9]];
-  var MELODY = [523.3, 587.3, 659.3, 784.0, 880.0, 1046.5, 1174.7];
-  var BEAT = 60 / 62, musicTimer = 0, nextBar = 0, bar = 0, melIdx = 3;
-  function padChord(notes, t, len) {
-    notes.forEach(function (f, i) {
-      var o = actx.createOscillator(), g = actx.createGain(), lp = actx.createBiquadFilter();
-      o.type = "triangle"; o.frequency.value = f; o.detune.value = (i % 2 ? 4 : -4);
-      lp.type = "lowpass"; lp.frequency.value = 900;
+  // ---------- Music: a slow, soft piano lullaby, made on the fly ----------
+  // Three beats to a bar at a sleepy pace over a gentle C, A minor, F, G pattern: a very soft low note starts
+  // each bar, and a sparse melody steps between the notes of each chord with plenty of rests, so it sounds like
+  // a lullaby rather than random notes, and never quite repeats. Off unless switched on in the menu; quiet when
+  // on. It stops while the app is in the background.
+  var PIANO_CHORDS = [
+    { bass: 130.8, tones: [523.3, 659.3, 784.0, 1046.5] },   // C
+    { bass: 110.0, tones: [440.0, 523.3, 659.3, 880.0] },    // A minor
+    { bass: 87.3,  tones: [440.0, 523.3, 698.5, 880.0] },    // F
+    { bass: 98.0,  tones: [493.9, 587.3, 784.0, 987.8] }     // G
+  ];
+  var LULLABY_BEAT = 60 / 52, musicTimer = 0, nextBar = 0, bar = 0, lastNote = 659.3;
+  // a soft piano note: a quick gentle strike with a few overtones that fade faster than the note itself
+  function piano(f, at, vol, len) {
+    var t = actx.currentTime + at, d = len || 2.6, lp = actx.createBiquadFilter();
+    lp.type = "lowpass"; lp.frequency.value = 1500; lp.connect(musicBus);
+    [[1, 1, 1], [2, 0.35, 0.55], [3, 0.12, 0.35], [4, 0.05, 0.25]].forEach(function (p) {
+      var o = actx.createOscillator(), g = actx.createGain();
+      o.type = "sine"; o.frequency.value = f * p[0] * (1 + (p[0] - 1) * 0.0008);
       g.gain.setValueAtTime(0.0001, t);
-      g.gain.exponentialRampToValueAtTime(0.022, t + 1.2);
-      g.gain.setValueAtTime(0.022, t + len - 1.2);
-      g.gain.exponentialRampToValueAtTime(0.0001, t + len + 0.6);
-      o.connect(lp); lp.connect(g); g.connect(musicBus);
-      o.start(t); o.stop(t + len + 0.7);
+      g.gain.exponentialRampToValueAtTime(vol * p[1], t + 0.03);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + d * p[2]);
+      o.connect(g); g.connect(lp);
+      o.start(t); o.stop(t + d * p[2] + 0.05);
     });
+  }
+  // the next melody note: one of the chord's notes, preferring a small step from the last one
+  function nextMelodyNote(tones) {
+    var sorted = tones.slice().sort(function (a, b) { return Math.abs(a - lastNote) - Math.abs(b - lastNote); });
+    var pick = Math.random() < 0.7 ? sorted[Math.floor(Math.random() * 2)] : sorted[Math.floor(Math.random() * sorted.length)];
+    lastNote = pick; return pick;
   }
   function musicTick() {
     if (!actx || actx.state !== "running" || !musicOn || document.hidden) return;
     var now = actx.currentTime;
-    if (nextBar < now) nextBar = now + 0.1;
-    while (nextBar < now + 1.5) {
-      var t = nextBar, len = BEAT * 4;
-      padChord(CHORDS[bar % CHORDS.length], t, len);
-      for (var b = 0; b < 4; b++) {
-        if (Math.random() < (b === 0 ? 0.9 : 0.55)) {
-          melIdx = Math.max(0, Math.min(MELODY.length - 1, melIdx + [-2, -1, -1, 0, 1, 1, 2][Math.floor(Math.random() * 7)]));
-          pluck(MELODY[melIdx], t + b * BEAT - now + (b ? Math.random() * 0.06 : 0), 0.05, musicBus, 1.1);
-        }
-      }
-      bar++; nextBar += len;
+    if (nextBar < now) nextBar = now + 0.2;
+    while (nextBar < now + 2) {
+      var ch = PIANO_CHORDS[Math.floor(bar / 2) % PIANO_CHORDS.length], at = nextBar - now;
+      piano(ch.bass, at, 0.05, 3.6);                                   // the soft low note on beat 1
+      if (Math.random() < 0.85) piano(nextMelodyNote(ch.tones), at, 0.045, 2.8);
+      if (Math.random() < 0.35) piano(nextMelodyNote(ch.tones), at + LULLABY_BEAT * 2, 0.035, 2.2);
+      if (bar % 8 === 7) piano(ch.tones[0] / 2, at + LULLABY_BEAT, 0.025, 3);  // a quiet inner note to round off each phrase
+      bar++; nextBar += LULLABY_BEAT * 3;
     }
   }
   function startMusic() { if (!musicTimer && musicOn && actx) { nextBar = 0; musicTimer = setInterval(musicTick, 400); musicTick(); } }
@@ -3561,6 +3599,7 @@ html, body { background: #e6edf0; }
       setBaseMood(asleep ? { Sleep: 1 } : m === "hungry" ? { Sad: 0.6 } : m === "sick" ? { Sick: 1 } : {});
       sleepLids += ((asleep ? 1 : 0) - sleepLids) * Math.min(1, dt * 1.5);
       setSnore(asleep && home);
+      hushMusic(busy());   // the music steps out while the pet does something (not for the small idle moves)
       // left alone and calm: every so often a little fidget (never the same one twice in a row)
       var firstIdle = fidgetPoke !== lastPoke;
       if (calm && !asleep && !busy() && !fidgeting() && (firstIdle ? now - lastPoke > FIRST_LOOK_AFTER : now - lastPoke > IDLE_AFTER && now > nextFidget)) {
