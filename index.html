@@ -447,6 +447,15 @@ html, body { background: #e6edf0; }
 .pg-aifacts dd { margin: 0; font-weight: 700; }
 .pg-update { top: calc(10px + env(safe-area-inset-top, 0px)); left: 50%; transform: translateX(-50%); z-index: 12; display: flex; align-items: center; gap: 12px; padding: 8px 8px 8px 16px; border-radius: 999px; font-weight: 700; white-space: nowrap; box-shadow: 0 6px 24px rgba(20,35,43,0.25); }
 .pg-update .pg-btn { padding: 8px 16px; border-radius: 999px; }
+.pg-rankrow { position: relative; }
+.pg-rankreward { margin-left: auto; padding: 3px 10px; border-radius: 999px; background: var(--brand-tint); color: var(--brand-dark); font-weight: 800; font-size: 0.85rem; white-space: nowrap; }
+.pg-xpbtn { display: block; width: 100%; padding: 0; border: 0; background: none; text-align: left; cursor: pointer; font: inherit; color: inherit; }
+.pg-xpbtn .pg-xptext::after { content: " ⓘ"; color: var(--brand); font-weight: 800; }
+.pg-bonushead { margin: 16px 0 6px; font-size: 1rem; }
+.pg-bonuslist { margin: 0; padding-left: 0; list-style: none; display: grid; gap: 6px; font-size: 0.9rem; }
+.pg-bonuslist li { padding: 8px 10px; border-radius: 12px; background: #f3f6f7; }
+.pg-favfood { position: relative; border-color: #f5b301 !important; box-shadow: 0 0 0 2px #ffe08a; }
+.pg-favtag { position: absolute; top: -9px; left: 50%; transform: translateX(-50%); padding: 1px 7px; border-radius: 999px; background: #f5b301; color: #fff; font-style: normal; font-size: 0.65rem; font-weight: 800; white-space: nowrap; }
 .pg-grouphead { grid-column: 1 / -1; display: flex; align-items: center; gap: 10px; width: 100%; margin: 8px 0 2px; padding: 11px 12px 11px 16px; border: 2px solid var(--brand); border-radius: 16px; background: var(--brand-tint); color: var(--brand-dark); font: 800 1rem var(--body); text-transform: none; letter-spacing: 0; cursor: pointer; box-shadow: 0 3px 10px var(--brand-glow); }
 .pg-grouphead > span { flex: 1; text-align: left; }
 .pg-grouphead small { margin-left: 6px; padding: 1px 8px; border-radius: 999px; background: #fff; font-weight: 700; font-size: 0.8rem; color: var(--brand-dark); }
@@ -490,8 +499,10 @@ html, body { background: #e6edf0; }
       <div class="pg-card pg-id" id="g-idcard">
         <div class="pg-idmain">
           <div class="pg-name"><button type="button" class="pg-tagbtn" id="g-name" aria-label="Ranks">Mochi</button></div>
-          <div class="pg-xp" aria-hidden="true"><i id="g-xpbar"></i></div>
-          <div class="pg-xptext" id="g-xptext">0 / 50 XP</div>
+          <button type="button" class="pg-xpbtn" id="g-xpbtn" aria-label="How to earn XP">
+            <div class="pg-xp" aria-hidden="true"><i id="g-xpbar"></i></div>
+            <div class="pg-xptext" id="g-xptext">0 / 50 XP</div>
+          </button>
         </div>
         <div class="pg-badgewrap">
           <button type="button" class="pg-bigbadge" id="g-bigbadge" aria-label="Ranks"></button>
@@ -541,8 +552,16 @@ html, body { background: #e6edf0; }
     </div>
     <div class="pg pg-card pg-sheet" id="g-ranks" hidden>
       <h2>Ranks <button type="button" class="pg-x" id="g-ranksclose" aria-label="Close ranks">✕</button></h2>
-      <p class="pg-hint">Pets rank up as they level up from days fed together. Each new rank earns 50 🐾.</p>
+      <p class="pg-hint">Pets rank up as they level up from days fed together. Everyone who feeds that day gets the rank's reward.</p>
       <div id="g-ranklist"></div>
+      <h3 class="pg-bonushead" id="g-bonushead">Bonus XP each day</h3>
+      <ul class="pg-bonuslist">
+        <li>⭐ <b>Favourite food</b> +5 — feed the food your pet is craving (💭)</li>
+        <li>🤝 <b>Fed together</b> +5 — two co-parents feed within an hour</li>
+        <li>👨‍👩‍👧 <b>Bigger family</b> +5 — for each 3rd and 4th co-parent who feeds</li>
+        <li>🎾 <b>Playtime</b> +3 — play with your pet 5 times (each co-parent)</li>
+      </ul>
+      <p class="pg-note">Bonus XP counts on days 2 co-parents feed.</p>
     </div>
     <div class="pg pg-card pg-sheet" id="g-share" hidden>
       <h2>Share <button type="button" class="pg-x" id="g-shareclose" aria-label="Close share">✕</button></h2>
@@ -564,6 +583,21 @@ html, body { background: #e6edf0; }
           <button type="button" class="pg-btn pg-grow pg-primary" id="g-sharego">📤 Share</button>
           <button type="button" class="pg-btn pg-grow" id="g-savego">⬇️ Download</button>
         </div>
+      </div>
+    </div>
+    <div class="pg pg-adopt" id="g-bonusintro" hidden>
+      <div class="pg-card">
+        <div style="font-size:2.2rem">✨</div>
+        <h2>New: Bonus XP!</h2>
+        <p>Level up faster on the days you and a co-parent both feed:</p>
+        <ul class="pg-bonuslist" style="text-align:left">
+          <li>⭐ <b>Favourite food</b> +5 — your pet craves one food each day (look for 💭)</li>
+          <li>🤝 <b>Fed together</b> +5 — two co-parents feed within an hour</li>
+          <li>👨‍👩‍👧 <b>Bigger family</b> +5 — for each 3rd and 4th co-parent</li>
+          <li>🎾 <b>Playtime</b> +3 — play with your pet 5 times</li>
+        </ul>
+        <p class="pg-note">Tap the XP bar any time to see this again.</p>
+        <button type="button" class="pg-feed" id="g-bonusok">Got it</button>
       </div>
     </div>
     <div class="pg pg-rankup" id="g-rankup" hidden><div id="g-rankupinner"></div></div>
@@ -2653,6 +2687,9 @@ html, body { background: #e6edf0; }
     { name: "Celestial", min: 50, c1: "#ffffff", c2: "#4aa8ff", rim: "#1b4f9c", ink: "#ffffff", emblem: "crown", wings: "#dff1ff", halo: true },
     { name: "Immortal",  min: 100, c1: "#5b3fa8", c2: "#120a2a", rim: "#f5c542", ink: "#ffd96b", emblem: "crown", wings: "#ffcf5a", flames: true }
   ];
+  // the same rules as the server (update_009.sql): XP needed for each level, and the paws each new rank pays
+  function xpNeed(level) { return Math.round(168 + 2.5 * Math.pow(Math.max(level, 1) - 1, 0.8)); }
+  var RANK_REWARDS = [0, 50, 100, 200, 500, 1000, 1500, 3000];
   function rankIndex(level) { var r = 0; for (var i = 0; i < RANKS.length; i++) if (level >= RANKS[i].min) r = i; return r; }
   function rankOf(level) { return RANKS[rankIndex(level)]; }
   function rankRange(i) { var next = RANKS[i + 1]; return "Lv " + RANKS[i].min + (next ? "–" + (next.min - 1) : "+"); }
@@ -2916,7 +2953,7 @@ html, body { background: #e6edf0; }
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261101054538";   // replaced by build_real.ps1
+    var APP_BUILD = "20261101062724";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -2988,7 +3025,7 @@ html, body { background: #e6edf0; }
 
     var $ = function (id) { return document.getElementById(id); };
     var sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, detectSessionInUrl: true, flowType: "implicit" } }) : null;
-    var me = null, profile = null, pets = [], cur = 0, store = [], owned = {}, seen = {}, loaded = false;
+    var me = null, profile = null, pets = [], cur = 0, store = [], owned = {}, seen = {}, loaded = false, favs = {};
     function pet() { return pets[cur] || null; }
     function tz() { try { return Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC"; } catch (e) { return "UTC"; } }
     function item(id) { return store.filter(function (s) { return s.id === id; })[0] || null; }
@@ -3020,9 +3057,11 @@ html, body { background: #e6edf0; }
         sb.from("profiles").select("*").eq("id", me.id).maybeSingle(),
         sb.rpc("my_pets"),
         sb.from("store_items").select("*").order("sort"),
-        sb.from("owned_items").select("item_id")
+        sb.from("owned_items").select("item_id"),
+        sb.rpc("todays_favourites")
       ]);
-      var err = r.filter(function (x) { return x.error; })[0];
+      favs = r[4].error ? {} : (r[4].data || {});
+      var err = r.slice(0, 4).filter(function (x) { return x.error; })[0];
       if (err) { say(err.error.message); return; }
       // coins that came in while the app was open (a co-parent's feed completed the day)
       var before = profile ? profile.coins : null;
@@ -3037,6 +3076,8 @@ html, body { background: #e6edf0; }
       if (opts && opts.quiet) noticeOthers();
       remember();
       loaded = true;
+      // players who already have a pet going hear about bonus XP once, shortly after opening
+      if (pet() && (pet().best > 0 || pet().level > 1)) setTimeout(maybeBonusIntro, 2500);
       render();
     }
     // what each pet looked like at the last load, to notice co-parents' feeds while the app is open
@@ -3069,7 +3110,7 @@ html, body { background: #e6edf0; }
       $("g-rankupinner").innerHTML = badgeSVG(i, 140) + "<p>" + esc(p.name) + " is now " + RANKS[i].name + "!</p>";
       rankFanfareUntil = performance.now() + 3000; sfx("rankUp");
       el.hidden = false; wake(); playOnce("LevelUp");
-      say("🏅 New rank: " + RANKS[i].name + "! +50 🐾");
+      say("🏅 New rank: " + RANKS[i].name + "! +" + RANK_REWARDS[i] + " 🐾");
       setTimeout(function () { el.hidden = true; }, 2900);
     }
     // the big badge at the right of the top card, with a glow (plus spinning rays from Elite, sparkles from Mythic);
@@ -3090,13 +3131,30 @@ html, body { background: #e6edf0; }
       var p = pet(), cur = p ? rankIndex(p.level) : -1, box = $("g-ranklist"); box.innerHTML = "";
       RANKS.forEach(function (r, i) {
         var row = document.createElement("div"); row.className = "pg-rankrow" + (i === cur ? " on" : "");
-        row.innerHTML = badgeSVG(i, 46) + "<div><b>" + r.name + (i === cur ? " · " + esc(p.name) + " is here" : "") + "</b><small>" + rankRange(i) + "</small></div>";
+        row.innerHTML = badgeSVG(i, 46) + "<div><b>" + r.name + (i === cur ? " · " + esc(p.name) + " is here" : "") + "</b><small>" + rankRange(i) + "</small></div>" +
+          (RANK_REWARDS[i] ? '<span class="pg-rankreward">🎁 ' + RANK_REWARDS[i].toLocaleString() + " 🐾</span>" : "");
         box.appendChild(row);
       });
     }
     $("g-name").addEventListener("click", function () { renderRanks(); $("g-ranks").hidden = false; });
     $("g-bigbadge").addEventListener("click", function () { renderRanks(); $("g-ranks").hidden = false; });
     $("g-ranksclose").addEventListener("click", function () { $("g-ranks").hidden = true; });
+    // tapping the XP bar opens the ranks sheet at the bonus XP list
+    $("g-xpbtn").addEventListener("click", function () {
+      renderRanks(); $("g-ranks").hidden = false;
+      setTimeout(function () { $("g-bonushead").scrollIntoView({ block: "start", behavior: "smooth" }); }, 50);
+    });
+    // a one-time card explaining bonus XP (after this update, or after a new player's first feed)
+    var BONUS_INTRO_KEY = "petstreak.bonusintro";
+    function maybeBonusIntro() {
+      try { if (localStorage.getItem(BONUS_INTRO_KEY)) return; } catch (e) { return; }
+      if (!pet() || !$("g-join").hidden || !$("g-ask").hidden) return;
+      $("g-bonusintro").hidden = false;
+    }
+    $("g-bonusok").addEventListener("click", function () {
+      $("g-bonusintro").hidden = true;
+      try { localStorage.setItem(BONUS_INTRO_KEY, "1"); } catch (e) {}
+    });
 
     // ---------- Actions ----------
     async function feed(foodId) {
@@ -3117,6 +3175,9 @@ html, body { background: #e6edf0; }
         else if (r.streak % 7 === 0) say(r.streak + " days in a row! You earned a freeze ❄️");
         else say(yum + " Day complete 🔥 " + r.streak);
         if (r.ranked_up) { var lv = r.level; setTimeout(function () { rankUp({ name: p.name, level: lv }); }, 2600); }
+        if (r.bonuses && r.bonuses.length) setTimeout(function () { say("Bonus XP! " + bonusText(r.bonuses)); }, r.ranked_up ? 5800 : 2400);
+      } else if (r.bonuses && r.bonuses.length) {
+        say(yum + " " + bonusText(r.bonuses) + " — it counts when " + FEEDS_PER_DAY + " of you have fed today.");
       } else {
         // one feed keeps the pet healthy; XP and the streak need a second co-parent
         var waiting = others(p).filter(function (m) { return !m.fed_today; }).map(function (m) { return m.name; });
@@ -3126,11 +3187,33 @@ html, body { background: #e6edf0; }
                        : ""));
       }
       await loadAll();
+      // new players hear about bonus XP after their first feed
+      setTimeout(maybeBonusIntro, 4500);
       // after their first feed, point new players at reminders once
       if (pushState() === "ok" && Notification.permission === "default" && !localStorage.getItem(HINT_KEY)) {
         localStorage.setItem(HINT_KEY, "1");
         setTimeout(function () { say("🔔 Tip: turn on reminders in the menu (☰) so you never miss a day."); }, 3800);
       }
+    }
+    // ---------- Bonus XP ----------
+    var BONUS_NAMES = { fav: "⭐ Favourite food", together: "🤝 Fed together", family: "👨‍👩‍👧 Bigger family", play: "🎾 Playtime" };
+    function bonusText(list) {
+      return list.map(function (b) { return BONUS_NAMES[String(b.kind).split(":")[0]] + " +" + b.xp; }).join("  ·  ");
+    }
+    // the pet's craving today (from the server; the same for every co-parent)
+    function favFood(p) { var id = p && favs[p.id]; return id ? FOODS.filter(function (f) { return f.id === id; })[0] : null; }
+    // playtime: 5 plays with the pet in a day earns a bonus (once a day for each co-parent)
+    var PLAY_FOR_BONUS = 5;
+    function countPlay(p) {
+      if (!p) return;
+      var key = "petstreak.play." + p.id + "." + new Date().toDateString(), n = 0;
+      try { n = parseInt(localStorage.getItem(key) || "0", 10) + 1; localStorage.setItem(key, String(n)); } catch (e) { return; }
+      if (n !== PLAY_FOR_BONUS) return;
+      rpc("record_play", { p_id: p.id }).then(function (r) {
+        if (!r || !r.ok || r.already) return;
+        if (r.paid) { floatText("+3 XP 🎾"); say("🎾 Playtime bonus! +3 XP for playing with " + p.name + "."); loadAll(); if (r.ranked_up) rankUp({ name: p.name, level: r.level }); }
+        else say("🎾 Playtime bonus saved! +3 XP once " + FEEDS_PER_DAY + " of you have fed " + p.name + " today.");
+      }).catch(function () {});
     }
     function unlocksBetween(oldMax, level) {
       var free = store.filter(function (s) { return s.kind === "wardrobe" && s.price === 0 && s.level_req > oldMax && s.level_req <= level; }).map(function (s) { return s.name; });
@@ -3441,7 +3524,7 @@ html, body { background: #e6edf0; }
       $("g-name").innerHTML = tagHTML(p.level, p.name, false, true);
       $("g-lv").textContent = "Lv " + p.level;
       showBigBadge(rankIndex(p.level));
-      var need = 50 + 25 * (p.level - 1);
+      var need = xpNeed(p.level);
       $("g-xpbar").style.width = Math.min(100, p.xp / need * 100) + "%";
       $("g-xptext").textContent = rankOf(p.level).name + " · " + p.xp + "/" + need + " XP";
       $("g-streak").textContent = p.streak;
@@ -3451,6 +3534,8 @@ html, body { background: #e6edf0; }
       $("g-mood").textContent = m === "fed"
         ? (fullToday(p) ? "😊 Fed today · XP earned ✓" : "😊 Fed · 1/" + FEEDS_PER_DAY + " for XP & streak")
         : { happy: "😊 Happy — waiting for food", hungry: "🥺 Hungry", sick: "🤒 Sick — losing levels", away: "🏡 At the sanctuary" }[m];
+      var crave = favFood(p);
+      if (crave && m !== "away" && !iFed(p)) $("g-mood").textContent += "  ·  💭 " + crave.icon;
       $("g-mood").hidden = m === "away";
       // co-parents and who fed today
       var crew = $("g-crew"); crew.innerHTML = "";
@@ -3519,7 +3604,9 @@ html, body { background: #e6edf0; }
         b.type = "button"; b.className = "pg-food";
         var open = p && p.max_level >= f.level;
         b.disabled = !open;
-        b.innerHTML = "<i>" + (open ? f.icon : "🔒") + "</i><span>" + (open ? f.name : "Lv " + f.level) + "</span>";
+        var isFav = open && favFood(p) === f;
+        if (isFav) b.classList.add("pg-favfood");
+        b.innerHTML = (isFav ? '<em class="pg-favtag">⭐ Craving</em>' : "") + "<i>" + (open ? f.icon : "🔒") + "</i><span>" + (open ? f.name : "Lv " + f.level) + "</span>";
         b.setAttribute("aria-label", open ? "Feed " + f.name : f.name + ", unlocks at level " + f.level);
         b.addEventListener("click", function () { $("g-tray").hidden = true; feed(f.id); });
         box.appendChild(b);
@@ -3578,7 +3665,7 @@ html, body { background: #e6edf0; }
       if (!hit) return;
       if (wake()) return;
       var m = mood(p);
-      if ((m === "fed" || m === "happy") && !busy()) playWith(hit.point);
+      if ((m === "fed" || m === "happy") && !busy() && playWith(hit.point)) countPlay(p);
     });
     window.addEventListener("pointermove", function () { if (!asleep) lastPoke = performance.now(); }, { passive: true });
 
