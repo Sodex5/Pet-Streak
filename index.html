@@ -447,10 +447,21 @@ html, body { background: #e6edf0; }
 .pg-aifacts dd { margin: 0; font-weight: 700; }
 .pg-update { top: calc(10px + env(safe-area-inset-top, 0px)); left: 50%; transform: translateX(-50%); z-index: 12; display: flex; align-items: center; gap: 12px; padding: 8px 8px 8px 16px; border-radius: 999px; font-weight: 700; white-space: nowrap; box-shadow: 0 6px 24px rgba(20,35,43,0.25); }
 .pg-update .pg-btn { padding: 8px 16px; border-radius: 999px; }
-.pg-grouphead { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; width: 100%; margin: 6px 0 0; padding: 9px 12px; border: 0; border-radius: 12px; background: #eef3f5; color: #3b4b53; font: 700 0.8rem var(--body); text-transform: uppercase; letter-spacing: 0.04em; cursor: pointer; }
-.pg-grouphead small { margin-left: 4px; font-weight: 600; color: #7a8a91; }
-.pg-grouphead i { font-style: normal; font-size: 1rem; transition: transform 0.2s ease; }
+.pg-grouphead { grid-column: 1 / -1; display: flex; align-items: center; gap: 10px; width: 100%; margin: 8px 0 2px; padding: 11px 12px 11px 16px; border: 2px solid var(--brand); border-radius: 16px; background: var(--brand-tint); color: var(--brand-dark); font: 800 1rem var(--body); text-transform: none; letter-spacing: 0; cursor: pointer; box-shadow: 0 3px 10px var(--brand-glow); }
+.pg-grouphead > span { flex: 1; text-align: left; }
+.pg-grouphead small { margin-left: 6px; padding: 1px 8px; border-radius: 999px; background: #fff; font-weight: 700; font-size: 0.8rem; color: var(--brand-dark); }
+.pg-grouphead em { font-style: normal; font-weight: 700; font-size: 0.85rem; }
+.pg-grouphead i { flex: none; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--brand); color: #fff; font-style: normal; font-size: 1.1rem; transition: transform 0.2s ease; }
+.pg-grouphead[aria-expanded="false"] { background: #fff; }
 .pg-grouphead[aria-expanded="false"] i { transform: rotate(-90deg); }
+/* every item card the same shape: a square picture, the name (two lines at most), the price or lock at the bottom */
+.pg-items .pg-item { display: flex; flex-direction: column; padding: 8px; }
+.pg-items .pg-item .pic { position: relative; }
+.pg-items .pg-item b { margin-top: 2px; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.pg-items .pg-item span { margin-top: auto; padding-top: 4px; line-height: 1.3; }
+.pg-items .pg-item img.pic:not(.scene) { aspect-ratio: 1 / 1; object-fit: contain; padding: 6px; }
+.pg-item[disabled] { position: relative; }
+.pg-item[disabled]::after { content: "🔒"; position: absolute; top: 12px; right: 12px; width: 26px; height: 26px; display: grid; place-items: center; border-radius: 50%; background: rgba(255,255,255,0.92); box-shadow: 0 1px 4px rgba(0,0,0,0.2); font-size: 0.8rem; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -2905,7 +2916,7 @@ html, body { background: #e6edf0; }
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261101053017";   // replaced by build_real.ps1
+    var APP_BUILD = "20261101054538";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -3337,12 +3348,13 @@ html, body { background: #e6edf0; }
     function groupHead(box, id, label, count) {
       var h = document.createElement("button");
       h.type = "button"; h.className = "pg-grouphead";
-      h.innerHTML = "<span>" + esc(label) + " <small>" + count + "</small></span><i aria-hidden=\"true\">▾</i>";
-      h.setAttribute("aria-expanded", folded[id] ? "false" : "true");
+      h.innerHTML = "<span>" + esc(label) + " <small>" + count + "</small></span><em></em><i aria-hidden=\"true\">▾</i>";
+      var showState = function () { h.setAttribute("aria-expanded", folded[id] ? "false" : "true"); h.querySelector("em").textContent = folded[id] ? "Show" : "Hide"; };
+      showState();
       h.addEventListener("click", function () {
         folded[id] = !folded[id];
         try { localStorage.setItem("pg-folded", JSON.stringify(folded)); } catch (e) {}
-        h.setAttribute("aria-expanded", folded[id] ? "false" : "true");
+        showState();
         Array.prototype.forEach.call(box.querySelectorAll('[data-group="' + id + '"]'), function (el) { el.style.display = folded[id] ? "none" : ""; });
         if (!folded[id]) paintSceneThumbs(box);
       });
