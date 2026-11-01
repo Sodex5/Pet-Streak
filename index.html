@@ -164,9 +164,9 @@ html, body { height: 100%; overflow: hidden; }
 .pg-top { top: calc(12px + env(safe-area-inset-top, 0px)); left: 12px; right: 12px; display: flex; gap: 10px; align-items: stretch; max-width: 560px; margin: 0 auto; }
 .pg-id { flex: 1; padding: 10px 14px; min-width: 0; }
 .pg-name { font-family: var(--display); font-weight: 700; font-size: 1.25rem; line-height: 1.1; display: flex; align-items: center; gap: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.pg-lv { font-family: var(--body); font-size: 0.8rem; font-weight: 700; background: #2f8a64; color: #fff; border-radius: 999px; padding: 2px 9px; flex: none; }
+.pg-lv { font-family: var(--body); font-size: 0.8rem; font-weight: 700; background: var(--brand, #2f8a64); color: #fff; border-radius: 999px; padding: 2px 9px; flex: none; }
 .pg-xp { height: 8px; border-radius: 999px; background: #e3eaed; margin-top: 8px; overflow: hidden; }
-.pg-xp > i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #55c394, #2f8a64); border-radius: 999px; transition: width 0.5s ease; }
+.pg-xp > i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--brand-2, #55c394), var(--brand, #2f8a64)); border-radius: 999px; transition: width 0.5s ease; }
 .pg-xptext { font-size: 0.78rem; color: #55666e; margin-top: 3px; }
 .pg-stats { display: flex; flex-direction: column; justify-content: center; gap: 2px; padding: 8px 14px; font-weight: 700; font-size: 1.05rem; white-space: nowrap; }
 .pg-stats small { font-weight: 500; font-size: 0.75rem; color: #55666e; }
@@ -174,12 +174,12 @@ html, body { height: 100%; overflow: hidden; }
 .pg-mood { top: calc(108px + env(safe-area-inset-top, 0px)); left: 50%; transform: translateX(-50%); padding: 6px 14px; border-radius: 999px; font-weight: 600; font-size: 0.95rem; white-space: nowrap; }
 
 .pg-bottom { bottom: calc(16px + env(safe-area-inset-bottom, 0px)); left: 12px; right: 12px; max-width: 460px; margin: 0 auto; display: flex; gap: 10px; }
-.pg-feed { flex: 1; min-height: 58px; border: 0; border-radius: 18px; background: #2f8a64; color: #fff; font-weight: 700; font-size: 1.15rem; box-shadow: 0 6px 18px rgba(47,138,100,0.35); }
+.pg-feed { flex: 1; min-height: 58px; border: 0; border-radius: 18px; background: var(--brand, #2f8a64); color: #fff; font-weight: 700; font-size: 1.15rem; box-shadow: 0 6px 18px var(--brand-glow, rgba(47,138,100,0.35)); }
 .pg-feed:active { transform: scale(0.98); }
 .pg-feed[disabled] { background: #9fb3ba; box-shadow: none; cursor: default; }
 .pg-wardrobe { min-height: 58px; padding: 0 16px; border-radius: 18px; border: 1px solid #d6e0e4; background: rgba(255,255,255,0.94); color: #14232b; font-weight: 600; }
 
-.pg-float { left: 50%; top: 42%; transform: translateX(-50%); font-weight: 800; font-size: 1.4rem; color: #2f8a64; pointer-events: none; opacity: 0; text-shadow: 0 2px 8px rgba(255,255,255,0.9); }
+.pg-float { left: 50%; top: 42%; transform: translateX(-50%); font-weight: 800; font-size: 1.4rem; color: var(--brand, #2f8a64); pointer-events: none; opacity: 0; text-shadow: 0 2px 8px rgba(255,255,255,0.9); }
 .pg-float.go { animation: pgfloat 1.1s ease forwards; }
 @keyframes pgfloat { 0% { opacity: 0; transform: translate(-50%, 10px); } 20% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -50px); } }
 
@@ -209,7 +209,7 @@ html, body { height: 100%; overflow: hidden; }
 .pg-item b { display: block; font-size: 0.95rem; }
 .pg-item span { font-size: 0.8rem; color: #55666e; }
 .pg-item .sw { display: inline-block; width: 18px; height: 18px; border-radius: 50%; vertical-align: -4px; margin-right: 6px; border: 1px solid rgba(0,0,0,0.15); }
-.pg-item[aria-pressed="true"] { border-color: #2f8a64; background: #eaf6f0; }
+.pg-item[aria-pressed="true"] { border-color: var(--brand, #2f8a64); background: var(--brand-tint, #eaf6f0); }
 .pg-item[disabled] { opacity: 0.55; cursor: default; }
 
 .pg-test { left: 12px; bottom: calc(86px + env(safe-area-inset-bottom, 0px)); }
@@ -228,21 +228,28 @@ html, body { height: 100%; overflow: hidden; }
 /* the page never scrolls, so a finger on the pet is always for looking, not scrolling */
 .stage canvas { touch-action: none; }
 
+/* the app's colour: every button, chip and highlight uses these */
+:root { --brand: #2f7fe0; --brand-dark: #1e63b8; --brand-tint: #eaf3ff; --brand-2: #5fb0ff; --brand-glow: rgba(47,127,224,0.35); }
+:root.theme-lavender { --brand: #7c5cff; --brand-dark: #6243e0; --brand-tint: #f1edff; --brand-2: #f08bd6; --brand-glow: rgba(124,92,255,0.35); }
+:root.theme-coral { --brand: #f06a4a; --brand-dark: #d4512f; --brand-tint: #fff1ea; --brand-2: #ffb27a; --brand-glow: rgba(240,106,74,0.35); }
+:root.theme-berry { --brand: #e0457a; --brand-dark: #c02e62; --brand-tint: #ffeaf1; --brand-2: #ff8a80; --brand-glow: rgba(224,69,122,0.35); }
+:root.theme-green { --brand: #2f8a64; --brand-dark: #236a4c; --brand-tint: #eaf6f0; --brand-2: #55c394; --brand-glow: rgba(47,138,100,0.35); }
+
 /* Pet Streak (real version): extra pieces on top of the prototype's game.css */
 /* top bar: pets on the left, coins, store and menu on the right */
 .pg-bar { top: calc(10px + env(safe-area-inset-top, 0px)); left: 12px; right: 12px; max-width: 560px; margin: 0 auto; display: flex; gap: 6px; align-items: center; }
 .pg-chip { flex: none; border: 1px solid #d6e0e4; background: rgba(255,255,255,0.94); border-radius: 999px; padding: 6px 11px; font-weight: 700; color: #14232b; min-height: 36px; white-space: nowrap; }
-.pg-storechip { background: #2f8a64; border-color: #2f8a64; color: #fff; }
+.pg-storechip { background: var(--brand); border-color: var(--brand); color: #fff; }
 .pg-petbtn { background: #14232b; border-color: #14232b; color: #fff; max-width: 44vw; overflow: hidden; text-overflow: ellipsis; }
 .pg-petbtn small { opacity: 0.7; font-weight: 600; }
 .pg-grow2 { flex: 1; }
 /* My pets list */
 .pg-petrow { display: flex; align-items: center; gap: 10px; width: 100%; padding: 8px; border: 2px solid #e3eaed; border-radius: 14px; background: #fff; margin-bottom: 8px; text-align: left; color: #14232b; }
-.pg-petrow[aria-pressed="true"] { border-color: #2f8a64; background: #eaf6f0; }
+.pg-petrow[aria-pressed="true"] { border-color: var(--brand); background: var(--brand-tint); }
 .pg-petrow img { width: 52px; height: 52px; border-radius: 12px; object-fit: cover; flex: none; background: #f3f6f7; }
 .pg-petrow b { display: block; font-size: 1rem; }
 .pg-petrow small { color: #55666e; display: block; }
-.pg-petrow .tag { margin-left: auto; font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: #eaf6f0; color: #2f8a64; flex: none; }
+.pg-petrow .tag { margin-left: auto; font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: var(--brand-tint); color: var(--brand); flex: none; }
 .pg-petrow .tag.co { background: #eef1ff; color: #4b5bd6; }
 .pg-top { top: calc(56px + env(safe-area-inset-top, 0px)); }
 /* the mood line sits low, above the co-parents, so hats on the pet's head are never hidden */
@@ -250,8 +257,8 @@ html, body { height: 100%; overflow: hidden; }
 /* co-parents: just above the Feed button, clear of the pet's face */
 .pg-crew { bottom: calc(88px + env(safe-area-inset-bottom, 0px)); left: 12px; right: 12px; display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
 .pg-crew span, .pg-crew button { border-radius: 999px; padding: 4px 10px; font-size: 0.8rem; font-weight: 600; background: rgba(255,255,255,0.85); border: 1px solid #d6e0e4; color: #14232b; }
-.pg-crew span.fed { background: #eaf6f0; border-color: #2f8a64; }
-.pg-crew button { border-style: dashed; color: #2f8a64; }
+.pg-crew span.fed { background: var(--brand-tint); border-color: var(--brand); }
+.pg-crew button { border-style: dashed; color: var(--brand); }
 .pg-bottom .pg-wardrobe { padding: 0 16px; }
 /* messages sit above the co-parent row */
 .pg-msg { bottom: calc(166px + env(safe-area-inset-bottom, 0px)); }
@@ -259,7 +266,7 @@ html, body { height: 100%; overflow: hidden; }
 .pg-sheet h2 .pg-coinline { margin-left: auto; margin-right: 10px; font-family: var(--body); font-size: 1rem; }
 .pg-tabs { display: flex; gap: 6px; margin-bottom: 10px; }
 .pg-tabs button { flex: 1; border: 1px solid #d6e0e4; background: #fff; border-radius: 12px; padding: 8px 2px; font-weight: 600; color: #14232b; font-size: 0.85rem; white-space: nowrap; }
-.pg-tabs button[aria-selected="true"] { background: #2f8a64; border-color: #2f8a64; color: #fff; }
+.pg-tabs button[aria-selected="true"] { background: var(--brand); border-color: var(--brand); color: #fff; }
 .pg-hint { margin: 0 0 10px; font-size: 0.85rem; color: #55666e; }
 .pg-hint:empty { display: none; }
 .pg-empty-note { grid-column: 1 / -1; color: #55666e; font-size: 0.9rem; padding: 8px 0; }
@@ -269,7 +276,7 @@ html, body { height: 100%; overflow: hidden; }
 .pg-card2 .sw { display: inline-block; width: 18px; height: 18px; border-radius: 50%; vertical-align: -4px; margin-right: 6px; border: 1px solid rgba(0,0,0,0.15); }
 .pg-card2 span { font-size: 0.8rem; color: #55666e; }
 .pg-card2 .acts { display: flex; gap: 6px; margin-top: 2px; }
-.pg-card2 .acts button { flex: 1; border: 0; border-radius: 10px; padding: 8px 4px; font-weight: 700; background: #2f8a64; color: #fff; font-size: 0.85rem; }
+.pg-card2 .acts button { flex: 1; border: 0; border-radius: 10px; padding: 8px 4px; font-weight: 700; background: var(--brand); color: #fff; font-size: 0.85rem; }
 .pg-card2 .acts button.alt { background: #fff1e6; color: #a5521f; }
 .pg-card2 .acts button[disabled] { background: #e3eaed; color: #8a9aa1; }
 
@@ -291,7 +298,7 @@ html, body { height: 100%; overflow: hidden; }
 .pg-row input, .pg-row select { flex: 1; min-width: 0; font: inherit; font-size: 1rem; padding: 10px 12px; border-radius: 12px; border: 1px solid #c3d0d5; background: #fff; color: #14232b; color-scheme: light; }
 .pg-grow { flex: 1; min-width: 0; display: flex; flex-direction: column; }
 .pg-grow small { color: #55666e; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.pg-avatar { width: 40px; height: 40px; border-radius: 50%; background: #2f8a64; color: #fff; display: grid; place-items: center; font-weight: 800; font-size: 1.1rem; flex: none; }
+.pg-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--brand); color: #fff; display: grid; place-items: center; font-weight: 800; font-size: 1.1rem; flex: none; }
 .pg-btn { border: 1px solid #d6e0e4; background: #fff; border-radius: 12px; padding: 10px 14px; font-weight: 700; color: #14232b; }
 .pg-btn.pg-wide { width: 100%; text-align: center; }
 .pg-btn.pg-danger { color: #b3261e; border-color: #f0c9c6; background: #fff7f6; }
@@ -302,7 +309,7 @@ html, body { height: 100%; overflow: hidden; }
 .pg-person { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-top: 1px solid #f0f3f4; }
 .pg-person:first-child { border-top: 0; }
 .pg-person .pg-grow b { font-size: 0.95rem; }
-.pg-person .tag { font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: #eaf6f0; color: #2f8a64; }
+.pg-person .tag { font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: var(--brand-tint); color: var(--brand); }
 .pg-person .rm { border: 0; background: none; color: #b3261e; font-weight: 700; padding: 6px; }
 
 .pg-sec textarea { font: inherit; font-size: 1rem; padding: 10px 12px; border-radius: 12px; border: 1px solid #c3d0d5; background: #fff; color: #14232b; color-scheme: light; resize: vertical; min-height: 70px; }
@@ -311,7 +318,7 @@ html, body { height: 100%; overflow: hidden; }
 .pg-fb p { margin: 0; font-size: 0.92rem; white-space: pre-wrap; word-break: break-word; }
 .pg-fb small { color: #55666e; }
 .pg-fb.done p { color: #8a9aa1; text-decoration: line-through; }
-.pg-fb button { align-self: flex-start; border: 0; background: none; color: #2f8a64; font-weight: 700; padding: 2px 0; }
+.pg-fb button { align-self: flex-start; border: 0; background: none; color: var(--brand); font-weight: 700; padding: 2px 0; }
 
 /* item pictures in the store and wardrobe */
 .pg-item .pic, .pg-card2 .pic { display: block; width: 100%; aspect-ratio: 1 / 1; object-fit: contain; border-radius: 10px; background: #f3f6f7; margin-bottom: 6px; }
@@ -385,7 +392,7 @@ html, body { height: 100%; overflow: hidden; }
 @keyframes pgrankup { 0% { opacity: 0; transform: scale(0.3) rotate(-12deg); } 15% { opacity: 1; transform: scale(1.12) rotate(3deg); } 25% { transform: scale(1) rotate(0); } 80% { opacity: 1; } 100% { opacity: 0; transform: scale(1.05) translateY(-30px); } }
 /* the rank ladder */
 .pg-rankrow { display: flex; align-items: center; gap: 10px; padding: 6px 4px; border-radius: 12px; }
-.pg-rankrow.on { background: #eaf6f0; }
+.pg-rankrow.on { background: var(--brand-tint); }
 .pg-rankrow b { display: block; }
 .pg-rankrow small { color: #55666e; }
 /* profile picture picker */
@@ -398,16 +405,16 @@ html, body { height: 100%; overflow: hidden; }
 /* share sheet */
 .stage canvas.pg-sharepreview { cursor: default; display: block; width: min(100%, 300px, 30vh); height: auto; aspect-ratio: 4 / 5; margin: 0 auto 10px; border-radius: 16px; box-shadow: 0 4px 16px rgba(20,35,43,0.2); background: #e6edf0; }
 .pg-sharetoggles { display: flex; flex-wrap: wrap; gap: 8px 14px; justify-content: center; margin-bottom: 10px; font-size: 0.9rem; }
-.pg-sharetoggles input { accent-color: #2f8a64; }
-.pg-btn.pg-primary { background: #2f8a64; border-color: #2f8a64; color: #fff; }
+.pg-sharetoggles input { accent-color: var(--brand); }
+.pg-btn.pg-primary { background: var(--brand); border-color: var(--brand); color: #fff; }
 .pg-btn.pg-grow { flex: 1; }
 /* avatars */
 .pg-avatar.img { background-size: cover; background-position: center; color: transparent; }
-.pg-crew .av { display: inline-block; width: 18px; height: 18px; border-radius: 50%; background: #2f8a64 center/cover; vertical-align: -4px; margin-right: 4px; color: #fff; font-size: 0.65rem; line-height: 18px; text-align: center; }
+.pg-crew .av { display: inline-block; width: 18px; height: 18px; border-radius: 50%; background: var(--brand) center/cover; vertical-align: -4px; margin-right: 4px; color: #fff; font-size: 0.65rem; line-height: 18px; text-align: center; }
 .pg-adopt form { margin: 0; }
 /* questions (name a pet, open a gift, join as co-parent) always sit above "Get your first pet" and the store */
 #g-ask, #g-join { z-index: 9; }
-.pg-linkbtn { margin-top: 10px; border: 0; background: none; color: #2f8a64; font-weight: 600; text-decoration: underline; }
+.pg-linkbtn { margin-top: 10px; border: 0; background: none; color: var(--brand); font-weight: 600; text-decoration: underline; }
 .pg-loading { inset: 0; display: grid; place-items: center; background: rgba(230,237,240,0.75); font-weight: 600; color: #55666e; z-index: 7; }
 
 /* a background picture or the share preview shouldn't stop the sheet from scrolling (the 3D view blocks touch scrolling) */
@@ -421,7 +428,7 @@ html, body { height: 100%; overflow: hidden; }
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
-<meta name="theme-color" content="#2f8a64">
+<meta name="theme-color" content="#2f7fe0">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Pet Streak">
@@ -560,6 +567,13 @@ html, body { height: 100%; overflow: hidden; }
           <button type="button" class="pg-btn pg-wide" id="g-invite2">➕ Invite a co-parent</button>
           <p class="pg-note" id="g-rolenote"></p>
           <button type="button" class="pg-btn pg-wide pg-danger" id="g-leave">Leave Mochi</button>
+        </section>
+        <section class="pg-sec">
+          <h3>Look &amp; sound</h3>
+          <div class="pg-row">
+            <select id="g-theme" aria-label="App colour"></select>
+          </div>
+          <button type="button" class="pg-btn pg-wide" id="g-sound">🔊 Sounds on</button>
         </section>
         <section class="pg-sec" id="g-remsec">
           <h3>Reminders</h3>
@@ -2334,13 +2348,16 @@ html, body { height: 100%; overflow: hidden; }
     if (isFinite(fy)) { sceneFoot = Math.max(0.5, Math.min(0.9, fy)); sceneFootX = fx; scenePetW = Math.max(0.1, Math.min(0.6, half)); }
   }
   // a soft contact shadow on the ground under the pet, so it sits on the floor
+  // two layers: a wide soft shade, and a tight dark patch right where the feet touch, which is what makes it sit
   function sceneShadow(ctx, x, y, rx) {
-    var ry = rx * 0.24;
-    ctx.save(); ctx.translate(x, y); ctx.scale(1, ry / rx);
-    var g = ctx.createRadialGradient(0, 0, 0, 0, 0, rx);
-    g.addColorStop(0, "rgba(10,8,20,0.42)"); g.addColorStop(0.55, "rgba(10,8,20,0.22)"); g.addColorStop(1, "rgba(10,8,20,0)");
-    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(0, 0, rx, 0, 6.2832); ctx.fill();
-    ctx.restore();
+    [[rx * 1.05, 0.26, 0.34], [rx * 0.62, 0.2, 0.55]].forEach(function (l) {
+      var r = l[0];
+      ctx.save(); ctx.translate(x, y); ctx.scale(1, l[1]);
+      var g = ctx.createRadialGradient(0, 0, 0, 0, 0, r);
+      g.addColorStop(0, "rgba(10,8,20," + l[2] + ")"); g.addColorStop(0.5, "rgba(10,8,20," + (l[2] * 0.55) + ")"); g.addColorStop(1, "rgba(10,8,20,0)");
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(0, 0, r, 0, 6.2832); ctx.fill();
+      ctx.restore();
+    });
   }
 
   // Show a scene behind the pet (or none). The canvas sits under the 3D view's canvas in the stage.
@@ -2455,6 +2472,110 @@ html, body { height: 100%; overflow: hidden; }
       '<b>' + String(name).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }) + "</b></span>";
   }
 
+  // ---------- Sounds ----------
+  // Every sound is made here with the browser's sound engine (Web Audio): little tones, glides and filtered
+  // noise, so there are no audio files to download. Sounds start on; the menu button turns them off (remembered
+  // on this phone). Phones only allow sound after a tap, so the engine wakes on the first touch.
+  var SOUND_KEY = "petstreak.sound";
+  var soundOn = true, actx = null, master = null, noiseBuf = null;
+  try { soundOn = localStorage.getItem(SOUND_KEY) !== "off"; } catch (e) {}
+
+  function wakeAudio() {
+    if (!soundOn) return;
+    var AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    if (!actx) {
+      try { actx = new AC(); } catch (e) { return; }
+      master = actx.createGain(); master.gain.value = 0.35; master.connect(actx.destination);
+      noiseBuf = actx.createBuffer(1, actx.sampleRate, actx.sampleRate);
+      var d = noiseBuf.getChannelData(0);
+      for (var i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    }
+    if (actx.state === "suspended") actx.resume();
+  }
+  ["pointerdown", "touchend", "keydown"].forEach(function (ev) { window.addEventListener(ev, wakeAudio, { capture: true, passive: true }); });
+  function setSound(on) {
+    soundOn = !!on;
+    try { localStorage.setItem(SOUND_KEY, soundOn ? "on" : "off"); } catch (e) {}
+    if (soundOn) wakeAudio(); else stopSnore();
+  }
+  function audioReady() { return soundOn && actx && actx.state === "running" && !document.hidden; }
+
+  // a tone: frequency (gliding to f2), start delay, length, wave, volume
+  function tone(f, at, dur, type, vol, f2, vib) {
+    var t = actx.currentTime + (at || 0), o = actx.createOscillator(), g = actx.createGain();
+    o.type = type || "sine";
+    o.frequency.setValueAtTime(f, t);
+    if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + dur);
+    if (vib) {
+      var lfo = actx.createOscillator(), lg = actx.createGain();
+      lfo.frequency.value = vib[0]; lg.gain.value = vib[1];
+      lfo.connect(lg); lg.connect(o.frequency); lfo.start(t); lfo.stop(t + dur + 0.05);
+    }
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(vol || 0.2, t + Math.min(0.02, dur / 4));
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g); g.connect(master);
+    o.start(t); o.stop(t + dur + 0.05);
+  }
+  // a burst of filtered noise (crunches, rustles, breaths)
+  function noise(at, dur, vol, freq, q, kind, attack) {
+    var t = actx.currentTime + (at || 0), src = actx.createBufferSource(), f = actx.createBiquadFilter(), g = actx.createGain();
+    src.buffer = noiseBuf; src.loop = true;
+    f.type = kind || "bandpass"; f.frequency.value = freq || 1500; f.Q.value = q || 1;
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(vol || 0.2, t + (attack || 0.005));
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    src.connect(f); f.connect(g); g.connect(master);
+    src.start(t, Math.random() * 0.5); src.stop(t + dur + 0.05);
+  }
+
+  var SFX = {
+    click:   function () { tone(1250, 0, 0.04, "sine", 0.05); },
+    happy:   function () { tone(880, 0, 0.13, "sine", 0.16, 1320); tone(1100, 0.15, 0.18, "sine", 0.16, 1700); },
+    pat:     function () { tone(95, 0, 1.1, "sawtooth", 0.05, 85, [24, 18]); noise(0, 1.1, 0.03, 380, 0.7, "lowpass", 0.15); },
+    giggle:  function () { [1180, 980, 1240, 1020, 1300].forEach(function (f, i) { tone(f, i * 0.11, 0.09, "triangle", 0.12, f * 0.82); }); },
+    eat:     function () {
+      // a crunch at each bite of the Eat animation (EAT_BITES, in mood.js), and a happy hum after
+      EAT_BITES.forEach(function (b) { noise(b, 0.08, 0.32, 2200, 0.9); noise(b + 0.03, 0.06, 0.18, 900, 1.2); tone(150, b, 0.07, "sine", 0.12, 90); });
+      tone(520, EAT_GONE + 0.05, 0.25, "sine", 0.1, 700, [7, 12]);
+    },
+    levelUp: function () {
+      [523, 659, 784, 1047].forEach(function (f, i) { tone(f, i * 0.09, 0.22, "triangle", 0.16); });
+      tone(2093, 0.4, 0.4, "sine", 0.07); tone(2637, 0.47, 0.35, "sine", 0.05);
+    },
+    rankUp:  function () {
+      [523, 784, 1047, 1319, 1568].forEach(function (f, i) { tone(f, i * 0.11, 0.5, "triangle", 0.15); tone(f * 2, i * 0.11, 0.3, "sine", 0.04); });
+      noise(0.55, 0.9, 0.06, 7000, 0.6, "highpass", 0.05);
+      tone(2093, 0.7, 0.9, "sine", 0.06, 2200, [6, 15]);
+    },
+    coin:    function () { tone(1319, 0, 0.09, "square", 0.05); tone(1976, 0.08, 0.28, "sine", 0.13); },
+    buy:     function () { SFX.coin(); tone(660, 0.22, 0.12, "sine", 0.1, 990); },
+    dance:   function () { [392, 523, 440, 587, 523, 659].forEach(function (f, i) { tone(f, i * 0.22, 0.12, "triangle", 0.1); }); },
+    playBow: function () { tone(260, 1.3, 0.32, "sine", 0.16, 720, [14, 30]); },
+    shake:   function () { noise(0.05, 0.75, 0.09, 1100, 0.9, "bandpass", 0.05); tone(70, 0.05, 0.7, "sawtooth", 0.035, 60, [28, 12]); },
+    yawn:    function () { tone(520, 0.25, 1.15, "sine", 0.08, 230, [5, 10]); noise(0.25, 1.1, 0.03, 700, 0.8, "lowpass", 0.3); },
+    flick:   function () { noise(0.1, 0.04, 0.05, 3500, 2); }
+  };
+  function sfx(name) { if (audioReady() && SFX[name]) { try { SFX[name](); } catch (e) {} } }
+  // the pet's one-off animations each have their sound (the quiet idle ones stay quiet)
+  var ANIM_SFX = { Happy: "happy", Pat: "pat", Giggle: "giggle", Eat: "eat", LevelUp: "levelUp", Dance: "dance",
+                   PlayBow: "playBow", Shake: "shake", Yawn: "yawn", EarTwitch: "flick" };
+
+  // a soft snore while asleep: a breath in, a longer breath out, every few seconds
+  var snoreTimer = 0;
+  function snoreOnce() {
+    if (!audioReady()) return;
+    noise(0, 1.3, 0.035, 420, 0.8, "lowpass", 0.9);
+    noise(1.5, 1.7, 0.05, 300, 0.9, "lowpass", 0.25);
+    tone(75, 1.5, 1.4, "sawtooth", 0.018, 65, [18, 6]);
+  }
+  function setSnore(on) {
+    if (on && !snoreTimer && soundOn) { snoreOnce(); snoreTimer = setInterval(snoreOnce, 4200); }
+    else if (!on) stopSnore();
+  }
+  function stopSnore() { if (snoreTimer) { clearInterval(snoreTimer); snoreTimer = 0; } }
+
   // ---------- Pet Streak (real version) ----------
   // Sign in with an email link, share pets with co-parents, buy and adopt pets and wardrobe items with paws.
   // All rules run on the server (Supabase functions in pet-real/supabase/schema.sql); this file only shows
@@ -2463,6 +2584,21 @@ html, body { height: 100%; overflow: hidden; }
     var SB_URL = "https://klftxxfgvxqypgmmftwy.supabase.co";
     var SB_KEY = "sb_publishable_JW6pTMZRpqNfNuzEuMB6nQ_Wp8nGVGF";   // the public key: safe in the page
     var JOIN_KEY = "petstreak.join", GIFT_KEY = "petstreak.gift", PET_KEY = "petstreak.pet", HINT_KEY = "petstreak.remhint";
+
+    // ---------- App colour themes (chosen in the menu, remembered on this phone) ----------
+    var THEME_KEY = "petstreak.theme";
+    var THEMES = [["ocean", "Ocean blue", "#2f7fe0"], ["lavender", "Lavender dream", "#7c5cff"], ["coral", "Sunset coral", "#f06a4a"],
+                  ["berry", "Berry pink", "#e0457a"], ["green", "Forest green", "#2f8a64"]];
+    function applyTheme(id) {
+      var t = THEMES.filter(function (x) { return x[0] === id; })[0] || THEMES[0], root = document.documentElement;
+      THEMES.forEach(function (x) { root.classList.remove("theme-" + x[0]); });
+      if (t[0] !== "ocean") root.classList.add("theme-" + t[0]);   // ocean is the default colour set
+      var meta = document.querySelector('meta[name="theme-color"]'); if (meta) meta.setAttribute("content", t[2]);
+      return t[0];
+    }
+    var themeNow = null;
+    try { themeNow = localStorage.getItem(THEME_KEY); } catch (e) {}
+    themeNow = applyTheme(themeNow);
     // the public half of the reminder keys (the private half is a Supabase secret)
     var VAPID_PUBLIC = "BOsV2v9W4Hcan1QiN5iQU5M4y9Fb49Skmee1MhnJPCFSFbLDIcEzoyXGN73CmBgOIYiQV2bXBokGqjYUUE77EtQ";
     // coin packs for the shop; real payments aren't connected yet, so they show as coming soon
@@ -2584,6 +2720,7 @@ html, body { height: 100%; overflow: hidden; }
     function rankUp(p) {
       var i = rankIndex(p.level), el = $("g-rankup");
       $("g-rankupinner").innerHTML = badgeSVG(i, 140) + "<p>" + esc(p.name) + " is now " + RANKS[i].name + "!</p>";
+      rankFanfareUntil = performance.now() + 3000; sfx("rankUp");
       el.hidden = false; wake(); playOnce("LevelUp");
       say("🏅 New rank: " + RANKS[i].name + "! +50 🐾");
       setTimeout(function () { el.hidden = true; }, 2900);
@@ -2765,6 +2902,7 @@ html, body { height: 100%; overflow: hidden; }
             var name = await askName("Name your " + s.name.toLowerCase(), "It costs " + s.price + " paws.", "Mochi", "Buy for 🐾 " + s.price);
             if (!name) return;
             try { var id = await rpc("buy_pet", { p_variant: s.id, p_name: name, p_tz: tz() }); } catch (e) { say(e.message); return; }
+            sfx("buy");
             localStorage.setItem(PET_KEY, id); cur = -1;
             $("g-store").hidden = true; await loadAll();
             say("Meet " + name + "! Invite a co-parent: XP and the streak count when " + FEEDS_PER_DAY + " of you feed.");
@@ -2810,6 +2948,7 @@ html, body { height: 100%; overflow: hidden; }
               have || !open ? null : async function () {
                 if (!confirm("Buy " + s.name + " for " + s.price + " paws?")) return;
                 try { await rpc("buy_item", { p_item: s.id }); } catch (e) { say(e.message); return; }
+                sfx("buy");
                 await loadAll(); renderStore();
                 say(s.name + " is yours! Use it in the wardrobe 🎀");
               }, s));
@@ -2888,6 +3027,7 @@ html, body { height: 100%; overflow: hidden; }
       msgTimer = setTimeout(function () { el.classList.remove("show"); }, 3500);
     }
     function floatText(text) {
+      if (/🐾/.test(text)) setTimeout(function () { sfx("coin"); }, 250);
       var el = $("g-float"); el.textContent = text;
       el.classList.remove("go"); void el.offsetWidth; el.classList.add("go");
     }
@@ -3025,7 +3165,10 @@ html, body { height: 100%; overflow: hidden; }
       triggerBlink(performance.now());
     }
     // the Level up animation springs up at about 0.43 s, Play bow pops up at about 1.4 s: lift the whole pet then
+    var rankFanfareUntil = 0;
     onOnceStart = function (name) {
+      // each animation has its sound (a new rank has its own fanfare instead of the level-up jingle)
+      if (!(name === "LevelUp" && performance.now() < rankFanfareUntil)) sfx(ANIM_SFX[name]);
       if (name === "LevelUp") hopAt = performance.now() + 430;
       if (name === "PlayBow") hopAt = performance.now() + 1400;
     };
@@ -3076,12 +3219,26 @@ html, body { height: 100%; overflow: hidden; }
       pointer.y += (faceNdc.y - pointer.y) * k;
     }
 
+    // A firmer shadow under the pet on the plain background: the page's soft shadow made darker, plus a small
+    // dark patch right where the feet touch the ground (what makes it look like it sits rather than floats)
+    function groundShadow() {
+      var soft = scene.children.filter(function (o) { return o.isMesh && o.geometry.type === "PlaneGeometry"; })[0];
+      if (soft) soft.material.opacity = 0.85;
+      var c = document.createElement("canvas"); c.width = c.height = 128;
+      var g = c.getContext("2d"), grad = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+      grad.addColorStop(0, "rgba(0,0,0,0.7)"); grad.addColorStop(0.45, "rgba(0,0,0,0.38)"); grad.addColorStop(1, "rgba(0,0,0,0)");
+      g.fillStyle = grad; g.fillRect(0, 0, 128, 128);
+      var core = new THREE.Mesh(new THREE.PlaneGeometry(0.78, 0.58),
+        new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(c), transparent: true, depthWrite: false, toneMapped: false }));
+      core.rotation.x = -Math.PI / 2; core.position.set(0, 0.004, 0.02);
+      scene.add(core);
+    }
     var lastT = performance.now();
     function frame() {
       requestAnimationFrame(frame);
       var now = performance.now(), dt = Math.min(0.1, (now - lastT) / 1000); lastT = now;
       if (!modelRoot) return;
-      if (!moodRig) setupMoodRig(modelRoot);
+      if (!moodRig) { setupMoodRig(modelRoot); groundShadow(); }
       if (hopAt >= 0 && now >= hopAt) { hopStart = now; hopAt = -1; }
       var y = 0;
       if (hopStart >= 0) {
@@ -3092,9 +3249,11 @@ html, body { height: 100%; overflow: hidden; }
       eyesHome(now, dt);
       var p = pet(), m = mood(p), home = !!p && m !== "away";
       modelRoot.visible = home;
-      // the soft ground shadow lives outside the model, so hide it with the pet
-      scene.children.forEach(function (o) { if (o.isMesh && o.geometry.type === "PlaneGeometry") o.visible = home; });
-      moodDroop = m === "hungry" ? 0.28 : m === "sick" ? 0.45 : 0;
+      // the soft ground shadow lives outside the model, so hide it with the pet; a scene background draws
+      // its own shadow on its floor, so the 3D one steps aside then
+      scene.children.forEach(function (o) { if (o.isMesh && o.geometry.type === "PlaneGeometry") o.visible = home && !sceneId; });
+      // the upper lids rest a touch lower even when content, so the pet looks at you rather than just above you
+      moodDroop = m === "hungry" ? 0.28 : m === "sick" ? 0.45 : 0.08;
       sadTarget = m === "hungry" ? 0.55 : m === "sick" ? 1 : 0;
       var calm = home && (m === "fed" || m === "happy");
       if (!calm) lastPoke = now;
@@ -3102,6 +3261,7 @@ html, body { height: 100%; overflow: hidden; }
       // hungry is a softer sad: the Sad loop at 60%, blended with the rest pose
       setBaseMood(asleep ? { Sleep: 1 } : m === "hungry" ? { Sad: 0.6 } : m === "sick" ? { Sick: 1 } : {});
       sleepLids += ((asleep ? 1 : 0) - sleepLids) * Math.min(1, dt * 1.5);
+      setSnore(asleep && home);
       // left alone and calm: every so often a little fidget (never the same one twice in a row)
       var firstIdle = fidgetPoke !== lastPoke;
       if (calm && !asleep && !busy() && !fidgeting() && (firstIdle ? now - lastPoke > FIRST_LOOK_AFTER : now - lastPoke > IDLE_AFTER && now > nextFidget)) {
@@ -3355,7 +3515,7 @@ html, body { height: 100%; overflow: hidden; }
       roundRect(ctx, 50 * u, ppy, W - 100 * u, panelH, 44 * u); ctx.fillStyle = "rgba(255,255,255,0.92)"; ctx.fill();
       ctx.fillStyle = "#14232b"; ctx.textAlign = "left";
       lines.forEach(function (l, i) { ctx.font = (i === 0 ? "800 " : "600 ") + Math.round(46 * u) + "px system-ui, -apple-system, Segoe UI, sans-serif"; ctx.fillText(l, 100 * u, ppy + 60 * u + i * lh); });
-      ctx.font = "700 " + Math.round(34 * u) + "px system-ui, -apple-system, Segoe UI, sans-serif"; ctx.fillStyle = "#2f8a64";
+      ctx.font = "700 " + Math.round(34 * u) + "px system-ui, -apple-system, Segoe UI, sans-serif"; ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue("--brand").trim() || "#2f7fe0";
       ctx.fillText("🐾 Pet Streak · sodex5.github.io/Pet-Streak", 100 * u, ppy + panelH - 50 * u);
       ctx.restore();
     }
@@ -3509,11 +3669,11 @@ html, body { height: 100%; overflow: hidden; }
       var gb = $("g-gifts"); gb.innerHTML = "";
       sentGifts.forEach(function (gf) {
         var v = item(gf.variant), row = document.createElement("div"); row.className = "pg-person";
-        row.innerHTML = '<span class="pg-avatar" style="width:32px;height:32px;font-size:1rem;background:' + (v ? v.color : "#2f8a64") + '">🎁</span>' +
+        row.innerHTML = '<span class="pg-avatar" style="width:32px;height:32px;font-size:1rem;background:' + (v ? v.color : "var(--brand)") + '">🎁</span>' +
           '<div class="pg-grow"><b>' + esc(v ? v.name : "Red panda") + "</b><small>" +
           esc(gf.claimed ? "Opened by " + gf.to_name + (gf.pet_name ? " · named " + gf.pet_name : "") : "Not opened yet") + "</small></div>";
         if (!gf.claimed) {
-          var sh = document.createElement("button"); sh.type = "button"; sh.className = "rm"; sh.style.color = "#2f8a64"; sh.textContent = "Share";
+          var sh = document.createElement("button"); sh.type = "button"; sh.className = "rm"; sh.style.color = "var(--brand)"; sh.textContent = "Share";
           sh.addEventListener("click", function () { shareGift(gf.code, v ? v.name : "red panda"); });
           row.appendChild(sh);
         }
@@ -3530,6 +3690,17 @@ html, body { height: 100%; overflow: hidden; }
       renderMenu();
     }
     $("g-menubtn").addEventListener("click", openMenu);
+    THEMES.forEach(function (t) { $("g-theme").add(new Option("🎨 " + t[1], t[0])); });
+    $("g-theme").value = themeNow;
+    // sounds: a soft tap for every button, and the on/off switch in the menu
+    document.addEventListener("click", function (e) { if (e.target.closest && e.target.closest(".pg button, .pg select")) sfx("click"); }, true);
+    function soundLabel() { $("g-sound").textContent = soundOn ? "🔊 Sounds on" : "🔈 Sounds off"; $("g-sound").setAttribute("aria-pressed", soundOn ? "true" : "false"); }
+    soundLabel();
+    $("g-sound").addEventListener("click", function () { setSound(!soundOn); soundLabel(); if (soundOn) setTimeout(function () { sfx("happy"); }, 60); });
+    $("g-theme").addEventListener("change", function () {
+      themeNow = applyTheme($("g-theme").value);
+      try { localStorage.setItem(THEME_KEY, themeNow); } catch (e) {}
+    });
     // the admin's test pet can be any colour: fetch them all in the background once the menu is opened
     $("g-menubtn").addEventListener("click", function () { if (profile && profile.is_admin) preloadLooks(Object.keys(PET_LOOKS)); });
     $("g-menuclose").addEventListener("click", function () { $("g-menu").hidden = true; });
