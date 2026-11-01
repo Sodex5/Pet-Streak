@@ -43,6 +43,14 @@ function pageFirst(e) {
     offline.then(function (res) { if (res) pick(res); else if (!done) fresh.then(pick, reject); });
   });
 }
+// "update now": always from the internet, saved as the page for next time before answering
+function pageFresh(e) {
+  return fetch(e.request.url, { cache: "no-store" }).then(function (res) {
+    if (!res.ok) return res;
+    var copy = res.clone();
+    return caches.open(CACHE).then(function (c) { return c.put(PAGE_KEY, copy); }).then(function () { return res; });
+  });
+}
 // files whose address changes when they change: the saved copy if there is one, else download and save
 function savedFirst(e) {
   var saving = null;
@@ -81,7 +89,7 @@ self.addEventListener("fetch", function (e) {
   if (url.origin === self.location.origin) {
     var path = url.pathname;
     // only the app page itself (not prototype.html or other pages)
-    if (/\/(index\.html)?$/.test(path)) { e.respondWith(pageFirst(e)); return; }
+    if (/\/(index\.html)?$/.test(path)) { e.respondWith(url.searchParams.has("fresh") ? pageFresh(e) : pageFirst(e)); return; }
     if (/\/pet-model\.js$/.test(path)) { e.respondWith(savedFirst(e)); return; }
     if (/\/(pets|icons)\/|\/icon-\d+\.png$|\/manifest\.json$/.test(path)) { e.respondWith(savedThenRefresh(e)); return; }
     return;

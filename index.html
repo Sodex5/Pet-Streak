@@ -445,6 +445,8 @@ html, body { background: #e6edf0; }
 .pg-aifacts { display: grid; grid-template-columns: auto 1fr; gap: 6px 10px; margin: 10px 0 0; font-size: 0.9rem; }
 .pg-aifacts dt { color: #55666e; }
 .pg-aifacts dd { margin: 0; font-weight: 700; }
+.pg-update { top: calc(10px + env(safe-area-inset-top, 0px)); left: 50%; transform: translateX(-50%); z-index: 12; display: flex; align-items: center; gap: 12px; padding: 8px 8px 8px 16px; border-radius: 999px; font-weight: 700; white-space: nowrap; box-shadow: 0 6px 24px rgba(20,35,43,0.25); }
+.pg-update .pg-btn { padding: 8px 16px; border-radius: 999px; }
 .pg-grouphead { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; width: 100%; margin: 6px 0 0; padding: 9px 12px; border: 0; border-radius: 12px; background: #eef3f5; color: #3b4b53; font: 700 0.8rem var(--body); text-transform: uppercase; letter-spacing: 0.04em; cursor: pointer; }
 .pg-grouphead small { margin-left: 4px; font-weight: 600; color: #7a8a91; }
 .pg-grouphead i { font-style: normal; font-size: 1rem; transition: transform 0.2s ease; }
@@ -507,6 +509,10 @@ html, body { background: #e6edf0; }
       <button type="button" class="pg-feed pg-rescue" id="g-rescuebtn">🐾 Rescue for 100 paws</button>
     </div>
     <div class="pg pg-msg" id="g-msg" role="status" aria-live="polite"></div>
+    <div class="pg pg-card pg-update" id="g-update" role="status" hidden>
+      <span>✨ A new version is ready</span>
+      <button type="button" class="pg-btn pg-primary" id="g-updatebtn">Update</button>
+    </div>
     <div class="pg pg-card pg-tray" id="g-tray" hidden>
       <h2>What's for food today? <button type="button" class="pg-x" id="g-trayclose" aria-label="Close food tray">✕</button></h2>
       <div class="pg-foods" id="g-foods"></div>
@@ -2894,6 +2900,26 @@ html, body { background: #e6edf0; }
     var SB_URL = "https://klftxxfgvxqypgmmftwy.supabase.co";
     var SB_KEY = "sb_publishable_JW6pTMZRpqNfNuzEuMB6nQ_Wp8nGVGF";   // the public key: safe in the page
     var JOIN_KEY = "petstreak.join", GIFT_KEY = "petstreak.gift", PET_KEY = "petstreak.pet", HINT_KEY = "petstreak.remhint";
+
+    // ---------- New versions ----------
+    // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
+    // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
+    // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
+    var APP_BUILD = "20261101053017";   // replaced by build_real.ps1
+    function checkForUpdate() {
+      if (APP_BUILD === "dev" || !navigator.onLine) return;
+      fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (v) { if (v && v.build && v.build > APP_BUILD) document.getElementById("g-update").hidden = false; })
+        .catch(function () {});
+    }
+    setTimeout(checkForUpdate, 8000);
+    setInterval(checkForUpdate, 5 * 60 * 1000);
+    document.addEventListener("visibilitychange", function () { if (!document.hidden) checkForUpdate(); });
+    document.getElementById("g-updatebtn").addEventListener("click", function () {
+      var b = this; b.disabled = true; b.textContent = "Updating…";
+      fetch("./?fresh=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.text(); })
+        .catch(function () {}).then(function () { location.reload(); });
+    });
 
     // ---------- App colour themes (chosen in the menu, remembered on this phone) ----------
     var THEME_KEY = "petstreak.theme";
