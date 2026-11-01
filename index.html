@@ -733,7 +733,7 @@ html, body { background: #e6edf0; }
           <p>We emailed a code to <b id="g-sentto"></b>. Type it here:</p>
           <input id="g-code" class="pg-codein" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="123456" aria-label="Sign-in code">
           <button type="submit" class="pg-feed" id="g-codeok">Sign in</button>
-          <p class="pg-hint">No code? Check spam, or tap the link in the email instead.</p>
+          <p class="pg-hint">No code? Check spam, or tap the link in the email instead. A new code replaces the old one: use the newest email.</p>
           <button type="button" class="pg-linkbtn" id="g-resend">Send a new code</button>
           <button type="button" class="pg-linkbtn" id="g-again">Use a different email</button>
         </form>
@@ -2983,7 +2983,7 @@ html, body { background: #e6edf0; }
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261101195052";   // replaced by build_real.ps1
+    var APP_BUILD = "20261101202951";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -4372,10 +4372,24 @@ html, body { background: #e6edf0; }
     // We email a code (typed in here) and a link. The code works everywhere; on iPhone the link often opens in
     // Safari instead of the installed app, which has its own separate sign-in.
     // The email being signed in is remembered for an hour, so the code box is still there if the phone reloads the app.
-    var SIGNIN_KEY = "petstreak.signin";
+    var SIGNIN_KEY = "petstreak.signin", RESEND_WAIT = 60e3, resendTimer = null;
     function showCodeBox(email) {
       $("g-signinform").hidden = true; $("g-sent").hidden = false; $("g-sentto").textContent = email;
       $("g-code").value = ""; setTimeout(function () { $("g-code").focus(); }, 50);
+      resendCountdown();
+    }
+    // Supabase allows one code a minute per email, and each new code cancels the last: count down instead of failing
+    function resendCountdown() {
+      clearInterval(resendTimer);
+      function tick() {
+        var s = null;
+        try { s = JSON.parse(localStorage.getItem(SIGNIN_KEY) || "null"); } catch (e) {}
+        var left = s ? Math.ceil((s.at + RESEND_WAIT - Date.now()) / 1000) : 0;
+        $("g-resend").disabled = left > 0;
+        $("g-resend").textContent = left > 0 ? "Send a new code in " + left + "s" : "Send a new code";
+        if (left <= 0) clearInterval(resendTimer);
+      }
+      tick(); resendTimer = setInterval(tick, 1000);
     }
     async function sendCode(email) {
       // the link carries a pending gift or invite along, in case it opens somewhere else
@@ -4392,7 +4406,7 @@ html, body { background: #e6edf0; }
     $("g-signinform").addEventListener("submit", async function (e) {
       e.preventDefault();
       var email = $("g-email").value.trim().toLowerCase();
-      if (!email) return;
+      if (!email || $("g-sendlink").disabled) return;
       $("g-sendlink").disabled = true; $("g-sendlink").textContent = "Sending…";
       var ok = await sendCode(email);
       $("g-sendlink").disabled = false; $("g-sendlink").textContent = "Send me a code";
@@ -4414,7 +4428,10 @@ html, body { background: #e6edf0; }
     });
     $("g-resend").addEventListener("click", async function () {
       var email = $("g-sentto").textContent;
-      if (await sendCode(email)) { $("g-code").value = ""; say("New code sent to " + email + " ✉️"); }
+      if ($("g-resend").disabled) return;
+      $("g-resend").disabled = true;
+      if (await sendCode(email)) { $("g-code").value = ""; say("New code sent to " + email + " ✉️ Use this one: the old code no longer works."); }
+      resendCountdown();
     });
     $("g-again").addEventListener("click", function () { localStorage.removeItem(SIGNIN_KEY); $("g-signinform").hidden = false; $("g-sent").hidden = true; });
     (function () {
