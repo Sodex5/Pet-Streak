@@ -427,7 +427,15 @@ html, body { background: #e6edf0; }
 .pg-crew .av { display: inline-block; width: 18px; height: 18px; border-radius: 50%; background: var(--brand) center/cover; vertical-align: -4px; margin-right: 4px; color: #fff; font-size: 0.65rem; line-height: 18px; text-align: center; }
 .pg-adopt form { margin: 0; }
 /* questions (name a pet, open a gift, join as co-parent) always sit above "Get your first pet" and the store */
-#g-ask, #g-join { z-index: 9; }
+#g-ask, #g-join, #g-giftsend { z-index: 9; }
+/* sign-in code and the gift sheet */
+.pg-adopt input.pg-codein { font-size: 1.6rem; letter-spacing: 0.3em; font-weight: 700; }
+.pg-adopt .pg-hint { font-size: 0.8rem; margin: 0 0 4px; }
+#g-sent .pg-linkbtn { display: block; margin: 8px auto 0; }
+.pg-gsmsg { font-weight: 600; color: #14232b !important; margin: 0 0 10px !important; }
+.pg-gsmsg.bad { color: #b3261e !important; }
+.pg-or { display: flex; align-items: center; gap: 8px; margin: 14px 0 10px; color: #8a9aa1; font-size: 0.8rem; }
+.pg-or::before, .pg-or::after { content: ""; flex: 1; border-top: 1px solid #d6e0e4; }
 .pg-linkbtn { margin-top: 10px; border: 0; background: none; color: var(--brand); font-weight: 600; text-decoration: underline; }
 .pg-loading { inset: 0; display: grid; place-items: center; background: rgba(230,237,240,0.75); font-weight: 600; color: #55666e; z-index: 7; }
 
@@ -716,15 +724,19 @@ html, body { background: #e6edf0; }
     <div class="pg pg-adopt" id="g-signin" hidden>
       <div class="pg-card">
         <h2>Pet Streak</h2>
-        <p id="g-signintext">Raise a red panda with your friends. Sign in with your email and we'll send you a link.</p>
+        <p id="g-signintext">Raise a red panda with your friends. Sign in with your email and we'll send you a code.</p>
         <form id="g-signinform">
           <input id="g-email" type="email" placeholder="you@example.com" autocomplete="email" aria-label="Email" required>
-          <button type="submit" class="pg-feed" id="g-sendlink">Send me a link</button>
+          <button type="submit" class="pg-feed" id="g-sendlink">Send me a code</button>
         </form>
-        <div id="g-sent" hidden>
-          <p>Check your inbox at <b id="g-sentto"></b> and tap the link on this phone.</p>
+        <form id="g-sent" hidden>
+          <p>We emailed a code to <b id="g-sentto"></b>. Type it here:</p>
+          <input id="g-code" class="pg-codein" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="123456" aria-label="Sign-in code">
+          <button type="submit" class="pg-feed" id="g-codeok">Sign in</button>
+          <p class="pg-hint">No code? Check spam, or tap the link in the email instead.</p>
+          <button type="button" class="pg-linkbtn" id="g-resend">Send a new code</button>
           <button type="button" class="pg-linkbtn" id="g-again">Use a different email</button>
-        </div>
+        </form>
       </div>
     </div>
     <div class="pg pg-adopt" id="g-ask" hidden>
@@ -734,6 +746,24 @@ html, body { background: #e6edf0; }
         <input id="g-askname" maxlength="16" value="Mochi" aria-label="Pet name">
         <button type="button" class="pg-feed" id="g-askok">OK</button>
         <button type="button" class="pg-linkbtn" id="g-askcancel">Cancel</button>
+      </div>
+    </div>
+    <div class="pg pg-adopt" id="g-giftsend" hidden>
+      <div class="pg-card">
+        <div style="font-size:2.4rem">🎁</div>
+        <h2 id="g-gstitle">Your gift is ready</h2>
+        <p id="g-gstext">Send it straight to a friend:</p>
+        <form id="g-gsform">
+          <input id="g-gsto" placeholder="Their email or Pet Streak name" autocomplete="off" autocapitalize="none" spellcheck="false" aria-label="Their email or Pet Streak name">
+          <button type="submit" class="pg-feed" id="g-gsgo">Send gift</button>
+        </form>
+        <p class="pg-gsmsg" id="g-gsmsg" hidden></p>
+        <div class="pg-or"><span>or send the link yourself</span></div>
+        <div class="pg-row">
+          <button type="button" class="pg-btn pg-grow" id="g-gscopy">🔗 Copy link</button>
+          <button type="button" class="pg-btn pg-grow" id="g-gsshare">📤 Share…</button>
+        </div>
+        <button type="button" class="pg-linkbtn" id="g-gsdone">Done</button>
       </div>
     </div>
     <div class="pg pg-adopt" id="g-join" hidden>
@@ -2953,7 +2983,7 @@ html, body { background: #e6edf0; }
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261101062724";   // replaced by build_real.ps1
+    var APP_BUILD = "20261101195052";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -3274,11 +3304,77 @@ html, body { background: #e6edf0; }
       catch (e) { prompt("Send this gift link to your friend:", url); }
     }
     async function buyGift(s) {
-      if (!confirm("Buy a " + s.name.toLowerCase() + " as a gift for " + s.price + " paws? You'll get a link to send. Whoever opens it becomes the owner and names it.")) return;
+      if (!confirm("Buy a " + s.name.toLowerCase() + " as a gift for " + s.price + " paws? Next you can send it to a friend's email or Pet Streak name, or share a link.")) return;
       var code;
       try { code = await rpc("buy_gift", { p_variant: s.id }); } catch (e) { say(e.message); return; }
       await loadAll(); renderStore();
-      await shareGift(code, s.name);
+      openGiftSend(code, s.name);
+    }
+    // the gift sheet: send straight to a friend (email or name), or copy / share the link
+    var giftSending = null;
+    function giftMsg(text, bad) { var m = $("g-gsmsg"); m.textContent = text; m.hidden = !text; m.classList.toggle("bad", !!bad); }
+    function openGiftSend(code, variantName, sentTo) {
+      giftSending = { code: code, name: variantName };
+      $("g-gstitle").textContent = sentTo ? "Your " + variantName.toLowerCase() : "Your gift is ready";
+      $("g-gstext").textContent = sentTo ? "Waiting for " + sentTo + ". Send it to someone else instead:" : "Send it straight to a friend:";
+      $("g-gsto").value = ""; giftMsg("");
+      $("g-gsshare").hidden = !navigator.share;
+      $("g-giftsend").hidden = false;
+    }
+    // someone who hasn't joined yet gets an email with a sign-in code; the gift waits for that email.
+    // A separate client sends it, so the sender's own sign-in is never touched.
+    async function inviteByEmail(email, code, variantName) {
+      var c = window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false, storageKey: "petstreak-invite" } });
+      var res = await c.auth.signInWithOtp({ email: email, options: { shouldCreateUser: true, emailRedirectTo: giftUrl(code),
+        data: { gift_from: profile ? profile.display_name : "A friend", gift_pet: variantName.toLowerCase() } } });
+      return !res.error;
+    }
+    $("g-gsform").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      var to = $("g-gsto").value.trim(), g = giftSending;
+      if (!to || !g) return;
+      $("g-gsgo").disabled = true; $("g-gsgo").textContent = "Sending…"; giftMsg("");
+      var r;
+      try { r = await rpc("send_gift", { p_code: g.code, p_to: to }); }
+      catch (err) { giftMsg(err.message, true); $("g-gsgo").disabled = false; $("g-gsgo").textContent = "Send gift"; return; }
+      if (r.joined) giftMsg("🎉 Sent to " + r.to_name + "! It's waiting for them in the app.");
+      else {
+        var mailed = await inviteByEmail(r.to_email, g.code, g.name);
+        giftMsg(mailed ? "🎉 Sent! " + r.to_email + " isn't playing yet, so we emailed them a code. The gift waits for them when they sign in."
+          : "Saved for " + r.to_email + ": it waits for them when they sign in with that email. We couldn't email them just now, so share the link too.", !mailed);
+      }
+      sfx("coin");
+      $("g-gsgo").disabled = false; $("g-gsgo").textContent = "Send gift"; $("g-gsto").value = "";
+      try { sentGifts = await rpc("my_gifts"); } catch (err) {}
+    });
+    $("g-gscopy").addEventListener("click", async function () {
+      var url = giftUrl(giftSending.code);
+      try { await navigator.clipboard.writeText(url); giftMsg("🔗 Link copied. Paste it to your friend."); }
+      catch (e) { prompt("Send this gift link to your friend:", url); }
+    });
+    $("g-gsshare").addEventListener("click", function () { shareGift(giftSending.code, giftSending.name); });
+    $("g-gsdone").addEventListener("click", function () { $("g-giftsend").hidden = true; giftSending = null; if (!$("g-menu").hidden) renderMenu(); });
+    // gifts friends sent straight to me (by my email or name): name each one to make it mine
+    var inboxBusy = false, inboxSkipped = {};
+    async function checkInbox() {
+      if (inboxBusy || !me) return;
+      inboxBusy = true;
+      try {
+        var list;
+        try { list = await rpc("my_gift_inbox"); } catch (e) { list = []; }
+        for (var i = 0; i < (list || []).length; i++) {
+          var g = list[i];
+          if (inboxSkipped[g.code]) continue;
+          var name = await askName("🎁 A gift from " + g.from_name, g.from_name + " sent you a " + g.variant_name.toLowerCase() + "! It's yours: give it a name.", "Mochi", "Make it mine");
+          if (!name) { inboxSkipped[g.code] = true; say("Your gift will wait. It shows again next time you open the app 🎁"); continue; }
+          var id;
+          try { id = await rpc("claim_gift", { p_code: g.code, p_name: name, p_tz: tz() }); } catch (e) { say(e.message); continue; }
+          localStorage.setItem(PET_KEY, id); cur = -1;
+          await loadAll();
+          wake(); playOnce("Happy");
+          say("Meet " + name + "! Invite a co-parent: XP and the streak count when " + FEEDS_PER_DAY + " of you feed.");
+        }
+      } finally { inboxBusy = false; }
     }
     // someone opened a gift link (?gift=code): after signing in, they name the pet and it's theirs
     async function checkGift() {
@@ -3289,6 +3385,7 @@ html, body { background: #e6edf0; }
       if (!info) { localStorage.removeItem(GIFT_KEY); say("That gift link isn't valid."); return; }
       if (info.claimed) { localStorage.removeItem(GIFT_KEY); say("This gift has already been opened."); return; }
       if (info.mine) { localStorage.removeItem(GIFT_KEY); say("That's a gift you sent. Share the link with a friend to give it to them."); return; }
+      if (info.for_someone_else) { localStorage.removeItem(GIFT_KEY); say("This gift was sent to someone else. If it's for you, sign in with the email it was sent to."); return; }
       var name = await askName("🎁 A gift from " + info.from_name, info.from_name + " sent you a " + info.variant_name.toLowerCase() + "! It's yours: give it a name.", "Mochi", "Make it mine");
       if (!name) return;   // the link stays saved, so they can open it again later
       var id;
@@ -4148,10 +4245,10 @@ html, body { background: #e6edf0; }
         var v = item(gf.variant), row = document.createElement("div"); row.className = "pg-person";
         row.innerHTML = '<span class="pg-avatar" style="width:32px;height:32px;font-size:1rem;background:' + (v ? v.color : "var(--brand)") + '">🎁</span>' +
           '<div class="pg-grow"><b>' + esc(v ? v.name : "Red panda") + "</b><small>" +
-          esc(gf.claimed ? "Opened by " + gf.to_name + (gf.pet_name ? " · named " + gf.pet_name : "") : "Not opened yet") + "</small></div>";
+          esc(gf.claimed ? "Opened by " + gf.to_name + (gf.pet_name ? " · named " + gf.pet_name : "") : gf.sent_to ? "Waiting for " + gf.sent_to : "Not opened yet") + "</small></div>";
         if (!gf.claimed) {
-          var sh = document.createElement("button"); sh.type = "button"; sh.className = "rm"; sh.style.color = "var(--brand)"; sh.textContent = "Share";
-          sh.addEventListener("click", function () { shareGift(gf.code, v ? v.name : "red panda"); });
+          var sh = document.createElement("button"); sh.type = "button"; sh.className = "rm"; sh.style.color = "var(--brand)"; sh.textContent = "Send";
+          sh.addEventListener("click", function () { openGiftSend(gf.code, v ? v.name : "Red panda", gf.sent_to); });
           row.appendChild(sh);
         }
         gb.appendChild(row);
@@ -4272,17 +4369,60 @@ html, body { background: #e6edf0; }
     $("g-joincancel").addEventListener("click", function () { $("g-join").hidden = true; localStorage.removeItem(JOIN_KEY); render(); });
 
     // ---------- Signing in ----------
+    // We email a code (typed in here) and a link. The code works everywhere; on iPhone the link often opens in
+    // Safari instead of the installed app, which has its own separate sign-in.
+    // The email being signed in is remembered for an hour, so the code box is still there if the phone reloads the app.
+    var SIGNIN_KEY = "petstreak.signin";
+    function showCodeBox(email) {
+      $("g-signinform").hidden = true; $("g-sent").hidden = false; $("g-sentto").textContent = email;
+      $("g-code").value = ""; setTimeout(function () { $("g-code").focus(); }, 50);
+    }
+    async function sendCode(email) {
+      // the link carries a pending gift or invite along, in case it opens somewhere else
+      var join = localStorage.getItem(JOIN_KEY), gift = localStorage.getItem(GIFT_KEY);
+      var back = location.origin + location.pathname + (gift ? "?gift=" + gift : join ? "?join=" + join : "");
+      var res = await sb.auth.signInWithOtp({ email: email, options: { emailRedirectTo: back } });
+      if (res.error) {
+        say(/rate|limit|seconds/i.test(res.error.message) ? "Too many emails just now. Wait a minute, then try again." : res.error.message);
+        return false;
+      }
+      localStorage.setItem(SIGNIN_KEY, JSON.stringify({ email: email, at: Date.now() }));
+      return true;
+    }
     $("g-signinform").addEventListener("submit", async function (e) {
       e.preventDefault();
-      var email = $("g-email").value.trim();
+      var email = $("g-email").value.trim().toLowerCase();
       if (!email) return;
       $("g-sendlink").disabled = true; $("g-sendlink").textContent = "Sending…";
-      var res = await sb.auth.signInWithOtp({ email: email, options: { emailRedirectTo: location.origin + location.pathname } });
-      $("g-sendlink").disabled = false; $("g-sendlink").textContent = "Send me a link";
-      if (res.error) { say(res.error.message); return; }
-      $("g-signinform").hidden = true; $("g-sent").hidden = false; $("g-sentto").textContent = email;
+      var ok = await sendCode(email);
+      $("g-sendlink").disabled = false; $("g-sendlink").textContent = "Send me a code";
+      if (ok) showCodeBox(email);
     });
-    $("g-again").addEventListener("click", function () { $("g-signinform").hidden = false; $("g-sent").hidden = true; });
+    $("g-code").addEventListener("input", function () {
+      var v = $("g-code").value.replace(/\D/g, "").slice(0, 8);
+      if (v !== $("g-code").value) $("g-code").value = v;
+    });
+    $("g-sent").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      var token = $("g-code").value.replace(/\D/g, ""), email = $("g-sentto").textContent;
+      if (token.length < 6) { say("Type the code from the email."); return; }
+      $("g-codeok").disabled = true; $("g-codeok").textContent = "Signing in…";
+      var res = await sb.auth.verifyOtp({ email: email, token: token, type: "email" });
+      $("g-codeok").disabled = false; $("g-codeok").textContent = "Sign in";
+      if (res.error) { say(/expired|invalid/i.test(res.error.message) ? "That code didn't work. Check it, or send a new one." : res.error.message); return; }
+      localStorage.removeItem(SIGNIN_KEY);   // the sign-in event takes it from here
+    });
+    $("g-resend").addEventListener("click", async function () {
+      var email = $("g-sentto").textContent;
+      if (await sendCode(email)) { $("g-code").value = ""; say("New code sent to " + email + " ✉️"); }
+    });
+    $("g-again").addEventListener("click", function () { localStorage.removeItem(SIGNIN_KEY); $("g-signinform").hidden = false; $("g-sent").hidden = true; });
+    (function () {
+      try {
+        var s = JSON.parse(localStorage.getItem(SIGNIN_KEY) || "null");
+        if (s && Date.now() - s.at < 3600e3) { $("g-email").value = s.email; showCodeBox(s.email); }
+      } catch (e) {}
+    })();
 
     // an invite link (?join=code) or gift link (?gift=code) is kept until the visitor has signed in
     (function () {
@@ -4307,13 +4447,15 @@ html, body { background: #e6edf0; }
       startedFor = me.id;
       render();
       await loadAll();
+      localStorage.removeItem(SIGNIN_KEY);
       await checkGift();
+      await checkInbox();
       checkJoin();
       refreshSub();
       // co-parents feed on their own phones: check for news every 20 s while the app is open
       if (!polling) { polling = true; setInterval(function () { if (me && !document.hidden) loadAll({ quiet: true }); }, 20000); }
     }
-    document.addEventListener("visibilitychange", function () { if (!document.hidden && me) loadAll({ quiet: true }); });
+    document.addEventListener("visibilitychange", function () { if (!document.hidden && me) { loadAll({ quiet: true }); checkInbox(); } });
     if (!sb) { $("g-loading").textContent = "Couldn't load. Check your connection and refresh."; return; }
     sb.auth.onAuthStateChange(function (ev, session) { setTimeout(function () { onSession(session); }, 0); });
     sb.auth.getSession().then(function (r) { onSession(r.data.session); });
