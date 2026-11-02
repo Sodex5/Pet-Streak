@@ -455,6 +455,27 @@ html, body { background: #e6edf0; }
 .pg-earn div > span { font-size: 1.6rem; flex: none; }
 .pg-earn b { display: block; color: #14232b; }
 .pg-earn small { color: #55666e; font-size: 0.85rem; }
+/* dress up: a shorter sheet so the pet stays in view above it; the items scroll, the try-on bar stays put */
+.pg-sheet.pg-dress { max-height: 52%; display: flex; flex-direction: column; overflow: hidden; padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px)); }
+.pg-dress h2, .pg-dress .pg-tabs, .pg-dress .pg-hint { flex: none; }
+.pg-dress .pg-tabs button { font-size: 0.95rem; padding: 10px 2px; }
+.pg-dress .pg-hint { margin-bottom: 8px; }
+.pg-dress .pg-items { flex: 1; min-height: 0; overflow-y: auto; touch-action: pan-y; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); grid-auto-rows: max-content; padding: 2px; align-content: start; }
+.pg-dress .pg-items .pg-item { min-height: max-content; }
+.pg-dress .pg-item.locked { position: relative; background: #fff; }
+.pg-dress .pg-item.locked::after { content: "🔒"; position: absolute; top: 10px; right: 10px; width: 24px; height: 24px; display: grid; place-items: center; border-radius: 50%; background: rgba(255,255,255,0.95); font-size: 0.75rem; box-shadow: 0 1px 3px rgba(0,0,0,0.15); }
+.pg-dress .pg-item.locked span { color: #8a5a00; font-weight: 700; }
+.pg-dress .pg-item[aria-pressed="true"] { border-color: var(--brand); background: var(--brand-tint); }
+.pg-dress .pg-item[aria-pressed="true"] span { color: var(--brand); font-weight: 800; }
+.pg-dress .pg-item[aria-pressed="true"] b { color: #14232b; }
+.pg-dress .pg-item.trying { border-color: #f5b301; background: #fff8e1; box-shadow: 0 0 0 3px rgba(245,179,1,0.25); }
+.pg-dress .pg-item.trying span { color: #8a5a00; font-weight: 800; }
+.pg-dress .pg-item .nonepic { display: grid; place-items: center; font-size: 2.2rem; opacity: 0.55; }
+.pg-tryon { flex: none; display: flex; align-items: center; gap: 8px; margin-top: 10px; padding: 10px 12px; border-radius: 14px; background: #fff8e1; border: 2px solid #f5d36a; }
+.pg-tryon[hidden] { display: none; }
+.pg-tryon span { flex: 1; min-width: 0; font-weight: 700; font-size: 0.9rem; color: #5a4300; line-height: 1.3; }
+.pg-tryon .pg-btn { padding: 9px 12px; white-space: nowrap; font-size: 0.9rem; }
+.pg-tryon .pg-btn[hidden] { display: none; }
 /* get the app */
 #g-getapp { z-index: 10; }
 .pg-gasteps { text-align: left; margin: 0 0 16px; padding-left: 0; list-style: none; counter-reset: gastep; display: flex; flex-direction: column; gap: 10px; }
@@ -684,7 +705,7 @@ html, body { background: #e6edf0; }
     <div class="pg pg-bottom" id="g-bottom" hidden>
       <button type="button" class="pg-feed" id="g-feed">🍎 Feed</button>
       <button type="button" class="pg-wardrobe pg-bathbtn" id="g-bathbtn" hidden aria-label="Give your pet a bath">🛁<span class="pg-lbl"> Bath</span></button>
-      <button type="button" class="pg-wardrobe" id="g-wardrobe" aria-label="Wardrobe">🎀<span class="pg-lbl"> Wardrobe</span></button>
+      <button type="button" class="pg-wardrobe" id="g-wardrobe" aria-label="Dress up">🎀<span class="pg-lbl"> Dress up</span></button>
       <button type="button" class="pg-wardrobe pg-capbtn" id="g-sharebtn" aria-label="Capture and share your pet"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l1.6-2.4A1.5 1.5 0 0 1 9.9 5h4.2a1.5 1.5 0 0 1 1.3.6L17 8h3a1.5 1.5 0 0 1 1.5 1.5v8A1.5 1.5 0 0 1 20 19H4a1.5 1.5 0 0 1-1.5-1.5v-8A1.5 1.5 0 0 1 4 8z"/><circle cx="12" cy="13" r="3.6"/></svg></button>
     </div>
 
@@ -707,9 +728,21 @@ html, body { background: #e6edf0; }
     <div class="pg-sponge" id="g-sponge" hidden aria-hidden="true">🧽</div>
 
     <!-- sheets -->
-    <div class="pg pg-card pg-sheet" id="g-sheet" hidden>
-      <h2>Wardrobe <button type="button" class="pg-x" id="g-close" aria-label="Close wardrobe">✕</button></h2>
+    <!-- dress up: tabs for hats, glasses and rooms; tap anything to try it on the pet above -->
+    <div class="pg pg-card pg-sheet pg-dress" id="g-sheet" hidden>
+      <h2><span id="g-dresstitle">Dress up</span> <button type="button" class="pg-x" id="g-close" aria-label="Close dress up">✕</button></h2>
+      <div class="pg-tabs" role="tablist" id="g-dresstabs">
+        <button type="button" role="tab" data-slot="hat" aria-selected="true">🎩 Hats</button>
+        <button type="button" role="tab" data-slot="glasses" aria-selected="false">👓 Glasses</button>
+        <button type="button" role="tab" data-slot="backdrop" aria-selected="false">🖼️ Rooms</button>
+      </div>
+      <p class="pg-hint" id="g-dresshint">Tap anything to try it on.</p>
       <div class="pg-items" id="g-items"></div>
+      <div class="pg-tryon" id="g-tryon" hidden>
+        <span id="g-tryontext">Trying on</span>
+        <button type="button" class="pg-btn pg-primary" id="g-tryonbtn">Wear it</button>
+        <button type="button" class="pg-btn" id="g-tryonoff">Take off</button>
+      </div>
     </div>
     <div class="pg pg-card pg-sheet" id="g-ranks" hidden>
       <h2>Ranks <button type="button" class="pg-x" id="g-ranksclose" aria-label="Close ranks">✕</button></h2>
@@ -3446,7 +3479,7 @@ html, body { background: #e6edf0; }
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261102041408";   // replaced by build_real.ps1
+    var APP_BUILD = "20261102045614";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -3557,16 +3590,19 @@ html, body { background: #e6edf0; }
       var err = r.slice(0, 4).filter(function (x) { return x.error; })[0];
       if (err) { say(err.error.message); return; }
       // coins that came in while the app was open (a co-parent's feed completed the day)
-      var before = profile ? profile.coins : null;
+      var before = profile ? profile.coins : null, gained = 0;
       profile = r[0].data; store = r[2].data || [];
       if (opts && opts.quiet && before !== null && profile && profile.coins > before) {
-        setTimeout(function () { floatText("+" + (profile.coins - before) + " 🐾"); }, 900);
+        gained = profile.coins - before;
+        setTimeout(function () { floatText("+" + gained + " 🐾"); }, 900);
       }
       owned = {}; (r[3].data || []).forEach(function (o) { owned[o.item_id] = true; });
       var keepId = pet() ? pet().id : localStorage.getItem(PET_KEY);
       pets = r[1].data || [];
       cur = Math.max(0, pets.map(function (p) { return p.id; }).indexOf(keepId));
-      if (opts && opts.quiet) noticeOthers();
+      if (opts && opts.quiet) noticeOthers(gained);
+      if (!loaded) pawsWhileAway();
+      try { localStorage.setItem(COINS_KEY + me.id, String(profile ? profile.coins : 0)); } catch (e) {}
       remember();
       loaded = true;
       // players who already have a pet going hear about bonus XP once, shortly after opening
@@ -3579,7 +3615,25 @@ html, body { background: #e6edf0; }
         seen[p.id] = { today: p.today, fed: (p.members || []).filter(function (m) { return m.fed_today; }).map(function (m) { return m.id; }), last_full: p.last_full, level: p.level };
       });
     }
-    function noticeOthers() {
+    // paws that came in while the app was closed (usually a co-parent's feed completing the day): say where they
+    // came from when the app opens, instead of the number just being higher
+    var COINS_KEY = "petstreak.coins.";
+    function pawsWhileAway() {
+      if (!profile) return;
+      var was = null;
+      try { was = localStorage.getItem(COINS_KEY + me.id); } catch (e) {}
+      if (was === null || profile.coins <= +was) return;
+      var got = profile.coins - +was;
+      var done = pets.filter(function (q) { return fullToday(q) && iFed(q); })[0];
+      var by = done ? others(done).filter(function (m) { return m.fed_today; })[0] : null;
+      setTimeout(function () {
+        floatText("+" + got + " 🐾");
+        say(done && by
+          ? "While you were away, " + by.name + " fed " + done.name + " too, so the day counts! +" + got + " 🐾 for you 🎉"
+          : "+" + got + " 🐾 came in while you were away 🎉");
+      }, 1800);
+    }
+    function noticeOthers(gained) {
       var p = pet(); if (!p || !seen[p.id]) return;
       var s = seen[p.id];
       var fedBefore = s.today === p.today ? s.fed : [];   // a new day starts with nobody fed
@@ -3589,7 +3643,7 @@ html, body { background: #e6edf0; }
       if (fullToday(p) && s.last_full !== p.today) {
         floatText("Day complete!");
         playOnce(p.level > s.level ? "LevelUp" : "Happy");
-        say(newly[0].name + " fed " + p.name + " too. XP earned and the streak grows 🔥 " + p.streak);
+        say(newly[0].name + " fed " + p.name + " too, so the day counts! " + (gained ? "+" + gained + " 🐾 for you, " : "") + "XP earned and the streak grows 🔥 " + p.streak);
         if (rankIndex(p.level) > rankIndex(s.level)) setTimeout(function () { rankUp(p); }, 1200);
       } else {
         playOnce("Happy");
@@ -3822,13 +3876,12 @@ html, body { background: #e6edf0; }
         else say(yum + " Day complete 🔥 " + r.streak);
         if (r.ranked_up) { var lv = r.level; setTimeout(function () { rankUp({ name: p.name, level: lv }); }, 2600); }
         if (r.bonuses && r.bonuses.length) setTimeout(function () { say("Bonus XP! " + bonusText(r.bonuses)); }, r.ranked_up ? 5800 : 2400);
-      } else if (r.bonuses && r.bonuses.length) {
-        say(yum + " " + bonusText(r.bonuses) + " — it counts when " + FEEDS_PER_DAY + " of you have fed today.");
       } else {
-        // one feed keeps the pet healthy; XP and the streak need a second co-parent
+        // one feed keeps the pet healthy; the paws, XP and streak come when a second co-parent feeds (for both of
+        // them), so say so: otherwise the first one to feed thinks they got nothing
         var waiting = others(p).filter(function (m) { return !m.fed_today; }).map(function (m) { return m.name; });
-        say(yum + " They're fed for today." + (waiting.length
-          ? " When " + waiting.join(" or ") + " feeds them too, you'll earn XP and grow the streak."
+        say(yum + " They're fed for today." + (r.bonuses && r.bonuses.length ? " " + bonusText(r.bonuses) + "." : "") + (waiting.length
+          ? " When " + waiting.join(" or ") + " feeds them too, you'll both get 10 🐾 and XP, and the streak grows."
           : isOwner(p) ? " Invite a co-parent: XP and the streak only count when " + FEEDS_PER_DAY + " of you feed."
                        : ""));
       }
@@ -4096,7 +4149,7 @@ html, body { background: #e6edf0; }
                 try { await rpc("buy_item", { p_item: s.id }); } catch (e) { say(e.message); return; }
                 sfx("buy");
                 await loadAll(); renderStore();
-                say(s.name + " is yours! Use it in the wardrobe 🎀");
+                say(s.name + " is yours! Put it on in Dress up 🎀");
               }, s));
           });
         });
@@ -4170,35 +4223,106 @@ html, body { background: #e6edf0; }
     function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
 
     // ---------- Wardrobe (dress the current pet) ----------
+    // ---------- Dress up ----------
+    // One tab at a time (hats first: the most fun), big pictures, and tap anything to try it on: it shows on the
+    // pet straight away, even if it's locked or not bought yet, with a bar saying what it takes to keep it.
+    var dressSlot = "hat", tryOn = null;
+    var DRESS = {
+      hat: { none: "No hat", hint: "Tap a hat to try it on " },
+      glasses: { none: "No glasses", hint: "Tap a pair of glasses to try them on " },
+      backdrop: { none: null, hint: "Tap a room to see " }
+    };
+    // what the pet shows: what it wears, with the item being tried on swapped in
+    function dressView(p) {
+      if (!p || !tryOn || $("g-sheet").hidden) return p;
+      var v = Object.assign({}, p); v[tryOn.slot] = tryOn.id; return v;
+    }
+    function dressItems(slot) {
+      var list = store.filter(function (s) { return s.kind === "wardrobe" && s.type === slot; });
+      // rooms: the drawn scenes first, the plain colours after
+      if (slot === "backdrop") list = list.filter(function (s) { return SCENE_DRAW[s.id]; }).concat(list.filter(function (s) { return !SCENE_DRAW[s.id]; }));
+      if (DRESS[slot].none) list.unshift({ id: null, type: slot, name: DRESS[slot].none, level_req: 1, price: 0 });
+      return list;
+    }
     function renderItems() {
       var p = pet(), box = $("g-items"); box.innerHTML = "";
       if (!p) return;
-      var LABEL = { backdrop: "Backdrop", hat: "Hat", glasses: "Glasses" };
-      [["backdrop", "Backdrops", null], ["hat", "Hats", "No hat"], ["glasses", "Glasses", "No glasses"]].forEach(function (sec) {
-        var list = store.filter(function (s) { return s.kind === "wardrobe" && s.type === sec[0]; });
-        if (sec[2]) list.unshift({ id: null, type: sec[0], name: sec[2], level_req: 1, price: 0 });
-        var inGroup = groupHead(box, "wear:" + sec[0], sec[1], list.length - (sec[2] ? 1 : 0));
-        list.forEach(function (u) {
-          var on = (p[u.type] || null) === u.id;
-          var levelOk = p.max_level >= u.level_req, have = !u.price || owned[u.id];
-          var sub = on ? "Wearing" : !levelOk ? "🔒 Reach level " + u.level_req : !have ? "In the store · 🐾 " + u.price : LABEL[u.type];
-          var b = document.createElement("button");
-          b.type = "button"; b.className = "pg-item";
-          b.disabled = !levelOk;
-          b.setAttribute("aria-pressed", on ? "true" : "false");
-          var up = pic(u);
-          b.innerHTML = up + "<b>" + (!up && u.color ? '<i class="sw" style="background:' + u.color + '"></i>' : "") + esc(u.name) + "</b><span>" + esc(sub) + "</span>";
-          b.addEventListener("click", async function () {
-            if (!have) { $("g-sheet").hidden = true; storeTab = "wardrobe"; $("g-store").hidden = false; renderStore(); return; }
-            try { await rpc("dress_pet", { p_id: p.id, p_slot: u.type, p_item: u.id }); } catch (e) { say(e.message); return; }
-            await loadAll();
-          });
-          box.appendChild(b); inGroup(b);
-        });
+      $("g-dresstitle").textContent = "Dress up " + p.name;
+      Array.prototype.forEach.call(document.querySelectorAll("#g-dresstabs [data-slot]"), function (t) {
+        t.setAttribute("aria-selected", t.getAttribute("data-slot") === dressSlot ? "true" : "false");
       });
+      $("g-dresshint").textContent = DRESS[dressSlot].hint + (dressSlot === "backdrop" ? "it behind " : "") + p.name + ".";
+      dressItems(dressSlot).forEach(function (u) {
+        var on = (p[u.type] || null) === u.id, trying = !!tryOn && tryOn.slot === u.type && tryOn.id === u.id && !on;
+        var levelOk = p.max_level >= u.level_req, have = !u.price || owned[u.id];
+        var sub = on ? "✓ Wearing" : trying ? "👀 Trying on" : !levelOk ? "🔒 Level " + u.level_req : !have ? "🐾 " + u.price : "Tap to wear";
+        if (u.type === "backdrop" && u.id && !SCENE_DRAW[u.id] && !on && !trying && levelOk && have) sub = "Plain colour";
+        var b = document.createElement("button");
+        b.type = "button";
+        b.className = "pg-item" + (!levelOk ? " locked" : "") + (trying ? " trying" : "") + (!u.id ? " none" : "");
+        b.setAttribute("aria-pressed", on ? "true" : "false");
+        var up = u.id ? pic(u) : '<span class="pic nonepic" aria-hidden="true">🚫</span>';
+        // plain-colour rooms say so (one shares its name with a drawn room)
+        var label = u.type === "backdrop" && u.id && !SCENE_DRAW[u.id] ? u.name.replace(/ backdrop$/i, "") + " (plain)" : u.name;
+        b.innerHTML = up + "<b>" + (!up && u.color ? '<i class="sw" style="background:' + u.color + '"></i>' : "") + esc(label) + "</b><span>" + esc(sub) + "</span>";
+        b.addEventListener("click", function () { pickDress(u); });
+        box.appendChild(b);
+      });
+      showTryOn();
+      applyLook();
       // after the sheet is shown, so the little scene pictures know their size
       setTimeout(function () { paintSceneThumbs(box); }, 0);
     }
+    // tapping a card: what you own is worn straight away; anything else is tried on
+    async function pickDress(u) {
+      var p = pet(); if (!p) return;
+      var levelOk = p.max_level >= u.level_req, have = !u.price || owned[u.id];
+      if (levelOk && have) {
+        tryOn = null;
+        if ((p[u.type] || null) !== u.id) await wear(p, u);
+        else renderItems();
+        return;
+      }
+      tryOn = { slot: u.type, id: u.id };
+      wake(); playOnce("Happy");
+      renderItems();
+    }
+    async function wear(p, u) {
+      try { await rpc("dress_pet", { p_id: p.id, p_slot: u.type, p_item: u.id }); } catch (e) { say(e.message); return false; }
+      sfx("happy");
+      await loadAll();
+      return true;
+    }
+    // the bar under the items while trying something on: buy it, or how to unlock it
+    function showTryOn() {
+      var p = pet(), u = tryOn && item(tryOn.id);
+      $("g-tryon").hidden = !u || !p;
+      if (!u || !p) return;
+      var levelOk = p.max_level >= u.level_req, coins = profile ? profile.coins : 0;
+      var btn = $("g-tryonbtn");
+      btn.hidden = !levelOk; btn.disabled = coins < u.price;
+      if (!levelOk) $("g-tryontext").textContent = "🔒 " + u.name + " unlocks when " + p.name + " reaches level " + u.level_req;
+      else {
+        $("g-tryontext").textContent = u.name;
+        btn.textContent = coins < u.price ? "Needs 🐾 " + u.price + " (you have " + coins + ")" : "Buy & wear · 🐾 " + u.price;
+      }
+      $("g-tryonoff").textContent = u.type === "backdrop" ? "Back" : "Take off";
+    }
+    $("g-tryonbtn").addEventListener("click", async function () {
+      var p = pet(), u = tryOn && item(tryOn.id);
+      if (!p || !u) return;
+      $("g-tryonbtn").disabled = true;
+      try { await rpc("buy_item", { p_item: u.id }); } catch (e) { say(e.message); $("g-tryonbtn").disabled = false; return; }
+      sfx("buy");
+      owned[u.id] = true; tryOn = null;
+      if (await wear(p, u)) say(p.name + " looks great in the " + u.name + "! ✨ It's yours for all your pets.");
+      renderItems();
+    });
+    $("g-tryonoff").addEventListener("click", function () { tryOn = null; renderItems(); });
+    Array.prototype.forEach.call(document.querySelectorAll("#g-dresstabs [data-slot]"), function (t) {
+      t.addEventListener("click", function () { dressSlot = t.getAttribute("data-slot"); tryOn = null; renderItems(); $("g-items").scrollTop = 0; });
+    });
+    function closeDress() { $("g-sheet").hidden = true; tryOn = null; applyLook(); }
 
     // ---------- Showing the state ----------
     var msgTimer = null;
@@ -4216,7 +4340,7 @@ html, body { background: #e6edf0; }
     }
     function applyLook() {
       // bath time happens in the Bubble bath room, for those who have it
-      var p = pet(), b = item(bathing && owned.bg_bath ? "bg_bath" : p ? p.backdrop : "mist") || { color: "#e6edf0" };
+      var p = pet(), b = item(bathing && owned.bg_bath ? "bg_bath" : p ? dressView(p).backdrop : "mist") || { color: "#e6edf0" };
       // a scene background is drawn behind the (see-through) 3D view
       var scene = !!SCENE_DRAW[b.id];
       renderer.setClearColor(new THREE.Color(b.color), scene ? 0 : 1);
@@ -4614,8 +4738,8 @@ html, body { background: #e6edf0; }
         nextFidget = now + FIDGET_GAP[0] + Math.random() * (FIDGET_GAP[1] - FIDGET_GAP[0]);
       }
       updateMood(now, dt);
-      updateHat(p);
-      updateGlasses(p);
+      updateHat(dressView(p));      // with anything being tried on in Dress up
+      updateGlasses(dressView(p));
     }
     // the glasses are already in the model on the head bone: show only the one being worn
     var glassesNodes = null, glassesOn;
@@ -4720,8 +4844,8 @@ html, body { background: #e6edf0; }
     });
     $("g-trayclose").addEventListener("click", function () { $("g-tray").hidden = true; });
     $("g-rescuebtn").addEventListener("click", rescue);
-    $("g-wardrobe").addEventListener("click", function () { renderItems(); $("g-sheet").hidden = false; });
-    $("g-close").addEventListener("click", function () { $("g-sheet").hidden = true; });
+    $("g-wardrobe").addEventListener("click", function () { tryOn = null; $("g-sheet").hidden = false; renderItems(); });
+    $("g-close").addEventListener("click", closeDress);
     function openStore(tab) { storeTab = tab || storeTab; $("g-store").hidden = false; render(); renderStore(); }
     $("g-storebtn").addEventListener("click", function () { openStore(); });
     $("g-coins").addEventListener("click", function () { openStore("coins"); });
