@@ -556,6 +556,21 @@ html, body { background: #e6edf0; }
 @keyframes pg-achin { from { transform: scale(0.2) rotate(-30deg); opacity: 0; } to { transform: none; opacity: 1; } }
 .pg-achsmall { margin: 4px 0 0 !important; font-weight: 800; color: #c98a00 !important; text-transform: uppercase; letter-spacing: 0.06em; font-size: 0.8rem; }
 .pg-achpaws { font-size: 1.4rem; font-weight: 800; color: #a5521f !important; }
+/* co-parents under the pet: tap a name for chat / hello / remind; a dot for unread messages */
+.pg-crew span.tap { cursor: pointer; position: relative; }
+.pg-crew span.tap:active { transform: scale(0.96); }
+.pg-chipdot { position: absolute; top: -3px; right: -3px; width: 10px; height: 10px; border-radius: 50%; background: #e2456f; box-shadow: 0 0 0 2px #fff; }
+/* a row of reaction emoji */
+.pg-emojirow { display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap; padding: 8px; border-radius: 14px; background: #f6f1ff; }
+.pg-emojirow span { width: 100%; font-weight: 700; font-size: 0.85rem; color: #5b5470; }
+.pg-emojirow button { width: 44px; height: 44px; border: 0; border-radius: 50%; background: #fff; font-size: 1.4rem; box-shadow: 0 2px 6px rgba(60,30,90,0.1); }
+.pg-emojirow button.on { box-shadow: 0 0 0 3px var(--brand); }
+.pg-emojirow.inline { flex-basis: 100%; margin-top: 6px; }
+/* reactions in Today's log */
+.pg-log li { flex-wrap: wrap; }
+.pg-reacts { display: block; margin-top: 3px; font-size: 0.82rem; color: #5b5470; }
+.pg-reactbtn { flex: none; width: 34px; height: 34px; border: 1px solid #d9cff0; border-radius: 50%; background: #fff; font-size: 1rem; }
+.pg-reactbtn.on { border-color: var(--brand); background: var(--brand-tint); }
 /* which game? and a pet's card (above the Playground page and the chat) */
 #g-gamepick, #g-petopts { z-index: 20; }
 /* in a row, the pet's picture and name are one big button that opens its card */
@@ -4255,7 +4270,7 @@ html, body { background: #e6edf0; }
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261102072301";   // replaced by build_real.ps1
+    var APP_BUILD = "20261102073024";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -4402,6 +4417,7 @@ html, body { background: #e6edf0; }
       if (!loaded) pawsWhileAway();
       showNudges();
       refreshUnread();
+      checkReactions();
       checkAch(!(opts && opts.quiet));
       if (!$("g-today").hidden) renderToday();   // keep an open log up to date
       try { localStorage.setItem(COINS_KEY + me.id, String(profile ? profile.coins : 0)); } catch (e) {}
@@ -5184,9 +5200,19 @@ html, body { background: #e6edf0; }
       rpc("report_pet", { p_id: e.pet_id }).then(function () { say("Thanks for telling us. We'll take a look. 💛"); }, function (err) { say(err.message); });
     }
     // a pet's card: what you can do with someone in the Playground
-    function petOpts(pic, titleHTML, sub, acts) {
+    function petOpts(pic, titleHTML, sub, acts, emojis) {
       $("g-poimg").src = pic; $("g-potitle").innerHTML = titleHTML; $("g-posub").textContent = sub;
       var box = $("g-poacts"); box.innerHTML = "";
+      if (emojis) {
+        var row = document.createElement("div"); row.className = "pg-emojirow";
+        row.innerHTML = '<span>' + esc(emojis.label) + "</span>";
+        REACTIONS.forEach(function (em) {
+          var b = document.createElement("button"); b.type = "button"; b.textContent = em; b.setAttribute("aria-label", "Send " + em);
+          b.addEventListener("click", function () { $("g-petopts").hidden = true; emojis.go(em); });
+          row.appendChild(b);
+        });
+        box.appendChild(row);
+      }
       acts.forEach(function (a) {
         var b = document.createElement("button"); b.type = "button";
         b.className = "pg-btn pg-wide" + (a.primary ? " pg-primary" : "") + (a.danger ? " pg-danger" : "");
@@ -5612,6 +5638,60 @@ html, body { background: #e6edf0; }
     $("g-achbtn").addEventListener("click", openAchs);
     $("g-achsclose").addEventListener("click", function () { $("g-achs").hidden = true; });
 
+    // ---------- Reactions between co-parents ----------
+    // Only these 5, only between co-parents of the pet; the server checks the thing really happened today.
+    var REACTIONS = ["❤️", "👏", "😂", "🤗", "🙏"];
+    // a co-parent's card (tap their name under the pet): chat, a hello, and the reminder if they haven't fed
+    function coParentCard(p, mb) {
+      var acts = [{ text: "💬 Chat" + (unread[mb.id] ? " (" + unread[mb.id] + " new)" : ""), primary: true,
+        go: function () { openChat({ id: mb.id, name: mb.name, pet: { name: p.name, level: p.level, variant: p.variant } }); } }];
+      if (!mb.fed_today && p.status === "home") acts.push({ text: mb.nudged ? "👋 Reminded today" : "👋 Remind to feed " + p.name, disabled: !!mb.nudged, go: function () { nudge(p, mb, null); } });
+      petOpts(safeUrl(mb.avatar) || petPic(p.variant), tagHTML(p.level, mb.name),
+        (mb.role === "owner" ? "Owner" : "Co-parent") + " of " + p.name + " · " + (mb.fed_today ? "Fed today ✓" : "Not fed yet today"), acts,
+        { label: "Send a hello:", go: function (em) { sendReaction(p, mb.id, "hello", em, mb.name); } });
+    }
+    async function sendReaction(p, to, kind, emoji, name) {
+      try { await rpc("react", { p_pet: p.id, p_to: to, p_kind: kind, p_emoji: emoji }); }
+      catch (e) { say(/react/.test(e.message) && /function/.test(e.message) ? "Reactions aren't switched on yet." : e.message); return false; }
+      if (emoji) { sfx("happy"); if (kind === "hello") say(emoji + " Sent to " + name + "!"); }
+      return true;
+    }
+    // under a line in Today's log: pick an emoji (tap your current one again to take it back)
+    function reactPicker(li, p, e, mineR) {
+      var open = li.querySelector(".pg-emojirow");
+      if (open) { open.remove(); return; }
+      var row = document.createElement("div"); row.className = "pg-emojirow inline";
+      REACTIONS.forEach(function (em) {
+        var b = document.createElement("button"); b.type = "button"; b.textContent = em;
+        if (mineR && mineR.emoji === em) b.className = "on";
+        b.setAttribute("aria-label", mineR && mineR.emoji === em ? "Take back " + em : "React " + em);
+        b.addEventListener("click", async function () {
+          if (await sendReaction(p, e.who_id, e.kind, mineR && mineR.emoji === em ? "" : em, e.who)) renderToday();
+        });
+        row.appendChild(b);
+      });
+      li.appendChild(row);
+    }
+    // reactions sent to me: float them over the pet, one after another
+    var reactQueue = [], reactBusy = false;
+    async function checkReactions() {
+      if (!me) return;
+      var list;
+      try { list = (await rpc("reactions_inbox")) || []; } catch (e) { return; }
+      list.forEach(function (r) { reactQueue.push(r); });
+      showReaction();
+    }
+    function showReaction() {
+      if (reactBusy || !reactQueue.length) return;
+      if (document.querySelector(".pg-game")) { setTimeout(showReaction, 3000); return; }
+      var r = reactQueue.shift(); reactBusy = true;
+      var what = { hello: " sent you a hello!", feed: " reacted to you feeding " + r.pet, bath: " reacted to your bath for " + r.pet, play: " reacted to you playing with " + r.pet }[r.kind] || " reacted";
+      floatText(r.emoji);
+      say(r.emoji + " " + r.from + what);
+      wake(); playOnce("Happy");
+      setTimeout(function () { reactBusy = false; showReaction(); }, 3500);
+    }
+
     // ---------- Today's log ----------
     // What happened with the pet today, oldest first, then who still needs to feed and how long is left.
     async function openToday() {
@@ -5642,8 +5722,18 @@ html, body { background: #e6edf0; }
         else if (e.kind === "nudge") { icon = "👋"; text = who(e.who_id, e.who) + " reminded " + (e.to_id === me.id ? "you" : e.to) + " to feed " + p.name; }
         else return;
         var li = document.createElement("li");
-        li.innerHTML = '<span class="ic" aria-hidden="true">' + icon + '</span><span class="tx">' + esc(text) + "</span><time>" +
+        var reacts = (e.reactions || []).map(function (x) { return x.emoji + " " + (x.from_id === me.id ? "You" : x.from); }).join("  ·  ");
+        li.innerHTML = '<span class="ic" aria-hidden="true">' + icon + '</span><span class="tx">' + esc(text) +
+          (reacts ? '<small class="pg-reacts">' + esc(reacts) + "</small>" : "") + "</span><time>" +
           esc(new Date(e.at).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })) + "</time>";
+        // react to what a co-parent did (not to your own)
+        if (e.reactions && e.who_id && e.who_id !== me.id) {
+          var mineR = (e.reactions || []).filter(function (x) { return x.from_id === me.id; })[0];
+          var rb = document.createElement("button"); rb.type = "button"; rb.className = "pg-reactbtn" + (mineR ? " on" : "");
+          rb.textContent = mineR ? mineR.emoji : "🙂"; rb.setAttribute("aria-label", "React to this");
+          rb.addEventListener("click", function () { reactPicker(li, p, e, mineR); });
+          li.appendChild(rb);
+        }
         box.appendChild(li);
       });
       if (!box.children.length) box.innerHTML = '<li class="pg-logempty">Nothing yet today. Be the first to feed ' + esc(p.name) + "! 🍎</li>";
@@ -6178,8 +6268,15 @@ html, body { background: #e6edf0; }
       var crew = $("g-crew"); crew.innerHTML = "";
       (p.members || []).forEach(function (mb) {
         var s = document.createElement("span");
-        s.innerHTML = avatarDot(mb) + esc(mb.me ? "You" : mb.name) + (mb.fed_today ? " ✓" : "");
+        s.innerHTML = avatarDot(mb) + esc(mb.me ? "You" : mb.name) + (mb.fed_today ? " ✓" : "") + (!mb.me && unread[mb.id] ? '<i class="pg-chipdot" aria-label="New message"></i>' : "");
         if (mb.fed_today) s.className = "fed";
+        // tap a co-parent for chat, a hello and the reminder
+        if (!mb.me) {
+          s.classList.add("tap"); s.setAttribute("role", "button"); s.tabIndex = 0;
+          s.setAttribute("aria-label", mb.name + ": chat, say hello" + (mb.fed_today ? "" : " or remind"));
+          s.addEventListener("click", function () { coParentCard(p, mb); });
+          s.addEventListener("keydown", function (e) { if (e.key === "Enter") coParentCard(p, mb); });
+        }
         // a co-parent who hasn't fed yet can be nudged (once a day)
         if (!mb.me && !mb.fed_today && m !== "away") {
           var nb = document.createElement("button"); nb.type = "button"; nb.className = "pg-nudge";
