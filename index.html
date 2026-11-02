@@ -1354,8 +1354,8 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
         <div class="pg-modeart" id="g-modeart" aria-hidden="true">🏁</div>
         <h2 id="g-modename">Treat race</h2>
         <div class="pg-tabs pg-modevs" id="g-modevs" role="tablist" hidden>
-          <button type="button" role="tab" data-vs="0" aria-selected="true">🤝 Together</button>
-          <button type="button" role="tab" data-vs="1" aria-selected="false">⚔️ Versus</button>
+          <button type="button" role="tab" data-vs="1" aria-selected="true">⚔️ Versus</button>
+          <button type="button" role="tab" data-vs="0" aria-selected="false">🤝 Together</button>
         </div>
         <button type="button" class="pg-modebtn" id="g-modesolo"></button>
         <button type="button" class="pg-modebtn others" id="g-modeothers"></button>
@@ -4809,7 +4809,7 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261102230227";   // replaced by build_real.ps1
+    var APP_BUILD = "20261102231017";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -5423,8 +5423,8 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
     function sendLive(event, payload) { if (lobby && lobbyReady) lobby.send({ type: "broadcast", event: event, payload: payload }); }
 
     // --- tap a game: solo, or with others ---
-    // Ball pass has two ways to play: together (one team score) or versus (first to 5 points)
-    var ballVs = false, BALL_VS_TEXT = { solo: ["🤖 Play the bot", "First to 5 points. Make Bamboo the bot miss!"],
+    // Ball pass has two ways to play: versus (first to 5 points, the default) or together (one team score)
+    var ballVs = true, BALL_VS_TEXT = { solo: ["🤖 Play the bot", "First to 5 points. Make Bamboo the bot miss!"],
       others: ["👫 Play someone", "First to 5 points. Every drop is a point to the other player."] };
     function openMode(game) {
       var g = GAMES[game], n = Object.keys(online).length, vs = game === "ball" && ballVs;
