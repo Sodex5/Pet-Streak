@@ -479,6 +479,16 @@ html, body { background: #e6edf0; }
 /* nudge a co-parent: a small button inside their chip */
 .pg-crew span .pg-nudge { margin-left: 6px; padding: 2px 8px; border: 0; border-radius: 999px; background: var(--brand); color: #fff; font-size: 0.78rem; font-weight: 700; }
 .pg-crew span .pg-nudge[disabled] { background: #e3eaed; color: #55666e; }
+/* today's log */
+.pg-crew .pg-todaychip { border-style: solid; color: #14232b; }
+.pg-log { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.pg-log li { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 12px; background: #f3f6f7; color: #14232b; }
+.pg-log .ic { font-size: 1.3rem; flex: none; width: 28px; text-align: center; }
+.pg-log .tx { flex: 1; min-width: 0; line-height: 1.35; }
+.pg-log time { flex: none; font-size: 0.82rem; color: #55666e; font-weight: 600; }
+.pg-log .pg-logempty { justify-content: center; color: #55666e; background: none; }
+.pg-logfoot { margin: 12px 0 0; padding: 10px 12px; border-radius: 12px; background: var(--brand-tint); color: #14232b; font-weight: 600; font-size: 0.92rem; }
+.pg-logfoot:empty { display: none; }
 /* food tray: what unlocks next */
 .pg-foodnext { grid-column: 1 / -1; margin: 4px 0 0; padding: 10px 12px; border-radius: 12px; background: #f3f6f7; color: #3b4b53; font-size: 0.88rem; line-height: 1.4; }
 /* get the app */
@@ -748,6 +758,12 @@ html, body { background: #e6edf0; }
         <button type="button" class="pg-btn pg-primary" id="g-tryonbtn">Wear it</button>
         <button type="button" class="pg-btn" id="g-tryonoff">Take off</button>
       </div>
+    </div>
+    <!-- today's log: who fed, bathed, played and reminded, with the time -->
+    <div class="pg pg-card pg-sheet" id="g-today" hidden>
+      <h2><span id="g-todaytitle">Today</span> <button type="button" class="pg-x" id="g-todayclose" aria-label="Close today's log">✕</button></h2>
+      <ol class="pg-log" id="g-loglist"></ol>
+      <p class="pg-logfoot" id="g-logfoot"></p>
     </div>
     <div class="pg pg-card pg-sheet" id="g-ranks" hidden>
       <h2>Ranks <button type="button" class="pg-x" id="g-ranksclose" aria-label="Close ranks">✕</button></h2>
@@ -3489,7 +3505,7 @@ html, body { background: #e6edf0; }
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261102053028";   // replaced by build_real.ps1
+    var APP_BUILD = "20261102055632";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -3635,6 +3651,7 @@ html, body { background: #e6edf0; }
       if (opts && opts.quiet) noticeOthers(gained);
       if (!loaded) pawsWhileAway();
       showNudges();
+      if (!$("g-today").hidden) renderToday();   // keep an open log up to date
       try { localStorage.setItem(COINS_KEY + me.id, String(profile ? profile.coins : 0)); } catch (e) {}
       remember();
       loaded = true;
@@ -3952,6 +3969,50 @@ html, body { background: #e6edf0; }
       var food = FOODS.filter(function (f) { return f.level > oldMax && f.level <= level; }).map(function (f) { return f.name; });
       return free.concat(food);
     }
+
+    // ---------- Today's log ----------
+    // What happened with the pet today, oldest first, then who still needs to feed and how long is left.
+    async function openToday() {
+      var p = pet(); if (!p) return;
+      $("g-todaytitle").textContent = "Today with " + p.name;
+      $("g-loglist").innerHTML = '<li class="pg-logempty">Loading…</li>'; $("g-logfoot").textContent = "";
+      $("g-today").hidden = false;
+      await renderToday();
+    }
+    async function renderToday() {
+      var p = pet(); if (!p || $("g-today").hidden) return;
+      var list;
+      try { list = await rpc("pet_log", { p_id: p.id }); }
+      catch (e) { $("g-loglist").innerHTML = '<li class="pg-logempty">' + esc(/pet_log/.test(e.message) ? "Today's log isn't switched on yet." : e.message) + "</li>"; return; }
+      var who = function (id, name) { return id === me.id ? "You" : name; };
+      var food = function (id) { return FOODS.filter(function (x) { return x.id === id; })[0] || null; };
+      var box = $("g-loglist"); box.innerHTML = "";
+      (list || []).forEach(function (e) {
+        var icon, text;
+        if (e.kind === "feed") {
+          var f = food(e.food);
+          icon = f ? f.icon : "🍎";
+          text = who(e.who_id, e.who) + " fed " + p.name + (f ? " " + (/^[aeiou]/i.test(f.name) ? "an " : "a ") + f.name.toLowerCase() : "") + (e.fav ? " ⭐ its craving!" : "");
+        } else if (e.kind === "day") { icon = "🔥"; text = "The day counts! Streak " + e.streak + ", with XP and paws for everyone who fed"; }
+        else if (e.kind === "mud") { icon = "🟤"; text = p.name + " rolled in the mud"; }
+        else if (e.kind === "bath") { icon = "🛁"; text = who(e.who_id, e.who) + " gave " + p.name + " a bath"; }
+        else if (e.kind === "play") { icon = "🎾"; text = who(e.who_id, e.who) + " played with " + p.name; }
+        else if (e.kind === "nudge") { icon = "👋"; text = who(e.who_id, e.who) + " reminded " + (e.to_id === me.id ? "you" : e.to) + " to feed " + p.name; }
+        else return;
+        var li = document.createElement("li");
+        li.innerHTML = '<span class="ic" aria-hidden="true">' + icon + '</span><span class="tx">' + esc(text) + "</span><time>" +
+          esc(new Date(e.at).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })) + "</time>";
+        box.appendChild(li);
+      });
+      if (!box.children.length) box.innerHTML = '<li class="pg-logempty">Nothing yet today. Be the first to feed ' + esc(p.name) + "! 🍎</li>";
+      // what's still to do today
+      var waiting = (p.members || []).filter(function (mb) { return !mb.fed_today; }).map(function (mb) { return mb.me ? "you" : mb.name; });
+      var left = minutesLeftToday(p);
+      $("g-logfoot").textContent = fullToday(p)
+        ? "✓ Today counts for " + p.name + ". See you tomorrow!"
+        : (waiting.length ? "Still to feed: " + waiting.join(", ") + ". " : "") + (left !== null ? "⏰ " + leftText(left) + " left today." : "");
+    }
+    $("g-todayclose").addEventListener("click", function () { $("g-today").hidden = true; });
 
     // ---------- Nudging a co-parent ----------
     // The send-nudge function checks it's allowed (both look after the pet, they haven't fed, once a day), records it
@@ -4487,6 +4548,13 @@ html, body { background: #e6edf0; }
         }
         crew.appendChild(s);
       });
+      // today's log
+      if (m !== "away") {
+        var lb = document.createElement("button"); lb.type = "button"; lb.className = "pg-todaychip";
+        lb.textContent = "📋 Today"; lb.setAttribute("aria-label", "What happened with " + p.name + " today");
+        lb.addEventListener("click", openToday);
+        crew.appendChild(lb);
+      }
       // only the owner chooses co-parents
       if (isOwner(p) && (p.members || []).length < 4) {
         var ib = document.createElement("button"); ib.type = "button";
@@ -5290,7 +5358,8 @@ html, body { background: #e6edf0; }
     // Tapping anywhere outside an open sheet, the menu or the food tray closes it (through its ✕, so the usual
     // tidying up runs). That tap only closes: it doesn't also pat the pet or press the button underneath.
     var CLOSABLE = [["g-menu", "g-menuclose"], ["g-store", "g-storeclose"], ["g-sheet", "g-close"], ["g-ranks", "g-ranksclose"],
-                    ["g-share", "g-shareclose"], ["g-petsheet", "g-petsheetclose"], ["g-adoptinfo", "g-aiclose"], ["g-tray", "g-trayclose"]];
+                    ["g-share", "g-shareclose"], ["g-petsheet", "g-petsheetclose"], ["g-adoptinfo", "g-aiclose"], ["g-tray", "g-trayclose"],
+                    ["g-today", "g-todayclose"]];
     var swallowClick = 0;
     document.addEventListener("pointerdown", function (e) {
       // a full-screen card (gift, join, name...) is on top: leave everything as it is
