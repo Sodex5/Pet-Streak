@@ -455,6 +455,38 @@ html, body { background: #e6edf0; }
 .pg-earn div > span { font-size: 1.6rem; flex: none; }
 .pg-earn b { display: block; color: #14232b; }
 .pg-earn small { color: #55666e; font-size: 0.85rem; }
+/* get the app */
+#g-getapp { z-index: 10; }
+.pg-gasteps { text-align: left; margin: 0 0 16px; padding-left: 0; list-style: none; counter-reset: gastep; display: flex; flex-direction: column; gap: 10px; }
+.pg-gasteps:empty { display: none; }
+.pg-gasteps li { counter-increment: gastep; position: relative; padding: 10px 12px 10px 46px; border-radius: 14px; background: var(--brand-tint); color: #14232b; line-height: 1.4; }
+.pg-gasteps li::before { content: counter(gastep); position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 24px; height: 24px; border-radius: 50%;
+  background: var(--brand); color: #fff; font-weight: 800; font-size: 0.85rem; display: grid; place-items: center; }
+.pg-iosshare { display: inline-grid; place-items: center; width: 22px; height: 22px; border: 2px solid var(--brand); border-radius: 5px; color: var(--brand); font-size: 0.8rem; font-weight: 800; vertical-align: -5px; }
+#g-getapp .pg-btn.pg-wide { margin-top: 8px; }
+.pg-getappbtn[hidden] { display: none; }
+#g-getappsignin { display: block; margin: 14px auto 0; }
+#g-getappsignin[hidden] { display: none; }
+.pg-appbar { top: calc(186px + env(safe-area-inset-top, 0px)); left: 12px; right: 12px; max-width: 460px; margin: 0 auto; display: flex; align-items: center; gap: 8px;
+  padding: 8px 8px 8px 14px; border-radius: 16px; font-weight: 700; font-size: 0.9rem; color: #14232b; z-index: 4; }
+.pg-appbar[hidden] { display: none; }
+.pg-appbar span { flex: 1; min-width: 0; }
+.pg-appbar .pg-btn { padding: 8px 12px; white-space: nowrap; }
+.pg-appbarx { border: 0; background: none; color: #55666e; font-size: 1rem; padding: 6px; }
+/* leaving a pet: a small red link at the very bottom of the menu */
+#g-leave.pg-leavelink { display: block; margin: 18px auto 6px; color: #b3261e; font-size: 0.9rem; }
+#g-leave.pg-leavelink[hidden] { display: none; }
+/* easier reading: the small grey texts people actually need to read are a bit bigger */
+.pg-xptext { font-size: 0.85rem; }
+.pg-stats small { font-size: 0.82rem; }
+.pg-food span { font-size: 0.8rem; }
+.pg-note { font-size: 0.88rem; line-height: 1.4; }
+.pg-hint { font-size: 0.9rem; }
+.pg-adopt .pg-hint { font-size: 0.88rem; }
+.pg-crew span, .pg-crew button { font-size: 0.85rem; }
+.pg-mood { font-size: 0.92rem; }
+.pg-card2 span { font-size: 0.85rem; }
+.pg-sec h3 { font-size: 0.8rem; }
 /* messages: tap to close */
 .pg-msg.show { pointer-events: auto; cursor: pointer; }
 /* bath time: a soft aqua look, separate from the app's theme colour so it always reads as "water" */
@@ -738,6 +770,23 @@ html, body { background: #e6edf0; }
         </div>
       </div>
     </div>
+    <!-- get the app: install on Android, or step-by-step help for iPhone -->
+    <div class="pg pg-adopt" id="g-getapp" hidden>
+      <div class="pg-card" role="dialog" aria-labelledby="g-gatitle">
+        <div class="pg-howicon">📲</div>
+        <h2 id="g-gatitle">Get the Pet Streak app</h2>
+        <p id="g-gatext">Put Pet Streak on your home screen: it opens like a normal app, full screen, and can remind you to feed your pet.</p>
+        <ol class="pg-gasteps" id="g-gasteps"></ol>
+        <button type="button" class="pg-feed" id="g-gago">Install</button>
+        <button type="button" class="pg-btn pg-wide" id="g-gacopy" hidden>🔗 Copy the link</button>
+        <button type="button" class="pg-linkbtn" id="g-gaclose">Not now</button>
+      </div>
+    </div>
+    <div class="pg pg-card pg-appbar" id="g-appbar" hidden>
+      <span>📲 Put Pet Streak on your phone</span>
+      <button type="button" class="pg-btn pg-primary" id="g-appbarbtn">Get app</button>
+      <button type="button" class="pg-appbarx" id="g-appbarx" aria-label="Hide">✕</button>
+    </div>
     <!-- what the streak and freezes mean (tap the streak card) -->
     <div class="pg pg-adopt" id="g-streakinfo" hidden>
       <div class="pg-card" role="dialog">
@@ -824,7 +873,6 @@ html, body { background: #e6edf0; }
           <div id="g-coparents"></div>
           <button type="button" class="pg-btn pg-wide" id="g-invite2">➕ Invite a co-parent</button>
           <p class="pg-note" id="g-rolenote"></p>
-          <button type="button" class="pg-btn pg-wide pg-danger" id="g-leave">Leave Mochi</button>
         </section>
         <section class="pg-sec">
           <h3>Look &amp; sound</h3>
@@ -848,6 +896,7 @@ html, body { background: #e6edf0; }
         <section class="pg-sec">
           <h3>Help</h3>
           <button type="button" class="pg-btn pg-wide" id="g-howbtn">❓ How to play</button>
+          <button type="button" class="pg-btn pg-wide pg-getappbtn" id="g-getappmenu">📲 Get the app</button>
         </section>
         <section class="pg-sec">
           <h3>Send feedback</h3>
@@ -877,6 +926,8 @@ html, body { background: #e6edf0; }
           </div>
         </section>
         <button type="button" class="pg-btn pg-wide pg-quiet" id="g-signout">Sign out</button>
+        <!-- kept out of the way at the very bottom, so it's never tapped by mistake (it still asks first) -->
+        <button type="button" class="pg-linkbtn pg-leavelink" id="g-leave">Leave Mochi</button>
       </div>
     </div>
 
@@ -889,6 +940,7 @@ html, body { background: #e6edf0; }
           <input id="g-email" type="email" placeholder="you@example.com" autocomplete="email" aria-label="Email" required>
           <button type="submit" class="pg-feed" id="g-sendlink">Send me a code</button>
         </form>
+        <button type="button" class="pg-linkbtn pg-getappbtn" id="g-getappsignin">📲 Get the app on your phone</button>
         <form id="g-sent" hidden>
           <p>We emailed a code to <b id="g-sentto"></b>. Type it here:</p>
           <input id="g-code" class="pg-codein" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="123456" aria-label="Sign-in code">
@@ -2054,6 +2106,9 @@ html, body { background: #e6edf0; }
     "  float edge = pow( 1.0 - nv, 2.6 );\n" +
     "  gl_FragColor.rgb += diffuseColor.rgb * edge * furSheen.x + vec3( edge * edge ) * furSheen.y; }\n#include <tonemapping_fragment>";
 
+  var LID_SHADE_GLSL = "{ float lnv = clamp( dot( normalize( normal ), normalize( vViewPosition ) ), 0.0, 1.0 );\n" +
+    "  gl_FragColor.rgb *= mix( 0.5, 1.0, smoothstep( 0.05, 0.85, lnv ) ); }\n#include <tonemapping_fragment>";
+
   function hookLooks() {
     lookHooked = true;
     modelRoot.traverse(function (o) {
@@ -2070,6 +2125,9 @@ html, body { background: #e6edf0; }
         lit.roughness = Math.max(lit.roughness, 0.85);
       } else if (/Eyelid/i.test(name) || /^Lid_/.test(o.name)) {
         mats.forEach(function (m) { addShaderStep(m, function (s) { lookUniforms(s); s.fragmentShader = s.fragmentShader.replace("#include <map_fragment>", LID_GLSL); }); });
+        // the lid is one flat colour, so closed (asleep, or mid-blink) it looked like a flat disc: shade it
+        // darker towards its edges so it reads as a rounded eyelid
+        addShaderStep(lit, function (s) { s.fragmentShader = s.fragmentShader.replace("#include <tonemapping_fragment>", LID_SHADE_GLSL); });
       } else if (/^Eye_/.test(o.name) || /^Eye_/.test(o.parent ? o.parent.name : "")) {
         lit.envMapIntensity = 1.6;   // wet, glossy eyes
         mats.forEach(function (m) { addShaderStep(m, function (s) { lookUniforms(s); s.fragmentShader = s.fragmentShader.replace("#include <map_fragment>", IRIS_GLSL); }); });
@@ -3388,7 +3446,7 @@ html, body { background: #e6edf0; }
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261102035956";   // replaced by build_real.ps1
+    var APP_BUILD = "20261102041408";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -3591,6 +3649,29 @@ html, body { background: #e6edf0; }
       try { localStorage.setItem(BONUS_INTRO_KEY, "1"); } catch (e) {}
     });
 
+    // ---------- Your name ----------
+    // New accounts get a name made from the email ("peter97"). Once per account on this phone, if the name is
+    // still that, ask for a real one: co-parents see it and friends can send gifts by it.
+    var NAMED_KEY = "petstreak.named";
+    async function maybeAskName() {
+      if (!profile || !me) return;
+      var key = NAMED_KEY + "." + me.id;
+      try { if (localStorage.getItem(key)) return; } catch (e) { return; }
+      var auto = (me.email || "").split("@")[0].slice(0, 24);
+      if (profile.display_name && profile.display_name !== auto && profile.display_name !== "Player") {
+        try { localStorage.setItem(key, "1"); } catch (e) {}
+        return;
+      }
+      $("g-askname").placeholder = "Your name, e.g. Peter";
+      var name = await askName("👋 What should friends call you?",
+        "Your co-parents see this name, and friends can send you gifts with it.", "", "Save my name");
+      $("g-askname").placeholder = "";
+      try { localStorage.setItem(key, "1"); } catch (e) {}
+      if (!name) return;
+      try { await rpc("set_name", { p_name: name }); await loadAll({ quiet: true }); say("Nice to meet you, " + name + "! 👋"); }
+      catch (e) { say(e.message); }
+    }
+
     // ---------- How to play ----------
     // A few swipeable cards the first time someone opens the app (new and existing players alike), and any time
     // from the menu. It waits while another question is on screen (naming a gift, joining as a co-parent).
@@ -3629,6 +3710,83 @@ html, body { background: #e6edf0; }
     $("g-howback").addEventListener("click", function () { howShow(howAt - 1); });
     $("g-howskip").addEventListener("click", closeHowTo);
     $("g-howbtn").addEventListener("click", openHowTo);
+
+    // ---------- Get the app (add to the home screen) ----------
+    // Android browsers can install it in one tap (they hand us the install prompt). iPhones can't be asked, so we
+    // show the steps for Safari; inside an app's own browser (Gmail, Instagram…) it has to be opened in the real
+    // browser first. Nothing shows once it already runs as the installed app.
+    var APPBAR_KEY = "petstreak.appbar", installPrompt = null;
+    window.addEventListener("beforeinstallprompt", function (e) { e.preventDefault(); installPrompt = e; showAppButtons(); });
+    window.addEventListener("appinstalled", function () { installPrompt = null; $("g-getapp").hidden = true; showAppButtons(); say("Pet Streak is on your home screen 🎉"); });
+    function installed() {
+      return (window.matchMedia && matchMedia("(display-mode: standalone)").matches) || navigator.standalone === true;
+    }
+    function phoneKind() {
+      var ua = navigator.userAgent || "";
+      var ios = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+      var inApp = /FBAN|FBAV|Instagram|Line\/|GSA\/|Snapchat|TikTok|Twitter|LinkedInApp|WhatsApp|Gmail/i.test(ua);
+      var iosOther = ios && /CriOS|FxiOS|EdgiOS/.test(ua);
+      return { ios: ios, android: /Android/.test(ua), inApp: inApp, iosOther: iosOther };
+    }
+    function showAppButtons() {
+      var hide = installed();
+      ["g-getappmenu", "g-getappsignin"].forEach(function (id) { $(id).hidden = hide; });
+      var dismissed = 0;
+      try { dismissed = +localStorage.getItem(APPBAR_KEY) || 0; } catch (e) {}
+      // the little banner on the home screen: phones only, and it stays away a week after "✕"
+      var k = phoneKind();
+      $("g-appbar").hidden = hide || !me || !pet() || !(k.ios || k.android) || Date.now() - dismissed < 7 * 864e5 || !!bathing;
+    }
+    function step(html) { var li = document.createElement("li"); li.innerHTML = html; $("g-gasteps").appendChild(li); }
+    function openGetApp() {
+      var k = phoneKind(), steps = $("g-gasteps");
+      steps.innerHTML = ""; $("g-gacopy").hidden = true; $("g-gago").hidden = false; $("g-menu").hidden = true;
+      $("g-gatext").textContent = "Put Pet Streak on your home screen: it opens like a normal app, full screen, and can remind you to feed your pet.";
+      if (installed()) {
+        $("g-gatext").textContent = "You're already using the app. 🎉"; $("g-gago").hidden = true;
+      } else if (installPrompt) {
+        $("g-gago").textContent = "📲 Install the app";
+      } else if (k.inApp || k.iosOther) {
+        $("g-gatext").textContent = k.ios
+          ? "This page is open inside another app. To add Pet Streak to your home screen, open it in Safari first:"
+          : "This page is open inside another app. To install Pet Streak, open it in Chrome first:";
+        step("Tap <b>Copy the link</b> below");
+        step("Open <b>" + (k.ios ? "Safari" : "Chrome") + "</b> and paste it in the address bar");
+        step("Tap <b>📲 Get the app</b> there");
+        $("g-gacopy").hidden = false; $("g-gago").hidden = true;
+      } else if (k.ios) {
+        step("Tap the <b>Share</b> button <span class=\"pg-iosshare\" aria-hidden=\"true\">⬆︎</span> (the square with an arrow, at the bottom or top of Safari)");
+        step("Scroll down and tap <b>Add to Home Screen</b> ➕");
+        step("Tap <b>Add</b>. Then open Pet Streak from the 🐾 icon and sign in with your email code");
+        $("g-gago").hidden = true;
+      } else if (k.android) {
+        step("Tap the browser menu <b>⋮</b> (top right)");
+        step("Tap <b>Install app</b> or <b>Add to Home screen</b>");
+        step("Open Pet Streak from the 🐾 icon on your home screen");
+        $("g-gago").hidden = true;
+      } else {
+        $("g-gatext").textContent = "Open this page on your phone to add Pet Streak to your home screen: " + location.origin + location.pathname;
+        $("g-gacopy").hidden = false; $("g-gago").hidden = true;
+      }
+      $("g-getapp").hidden = false;
+    }
+    $("g-gago").addEventListener("click", async function () {
+      if (!installPrompt) return;
+      installPrompt.prompt();
+      try { var c = await installPrompt.userChoice; if (c && c.outcome === "accepted") $("g-getapp").hidden = true; } catch (e) {}
+      installPrompt = null;
+    });
+    $("g-gacopy").addEventListener("click", async function () {
+      var url = location.origin + location.pathname;
+      try { await navigator.clipboard.writeText(url); say("Link copied 🔗 Paste it in your browser."); } catch (e) { prompt("Copy this link:", url); }
+    });
+    $("g-gaclose").addEventListener("click", function () { $("g-getapp").hidden = true; });
+    ["g-getappmenu", "g-getappsignin", "g-appbarbtn"].forEach(function (id) { $(id).addEventListener("click", openGetApp); });
+    $("g-appbarx").addEventListener("click", function () {
+      try { localStorage.setItem(APPBAR_KEY, String(Date.now())); } catch (e) {}
+      $("g-appbar").hidden = true;
+    });
+    showAppButtons();
 
     // ---------- What the streak and freezes mean ----------
     function openStreakInfo() {
@@ -4088,6 +4246,7 @@ html, body { background: #e6edf0; }
       $("g-petbtnname").textContent = pet() ? pet().name : "My pets";
       $("g-petcount").textContent = pets.length > 1 ? "(" + pets.length + ")" : "";
       if (!$("g-petsheet").hidden) renderPetList();
+      showAppButtons();
       if (!p) { $("g-away").hidden = true; applyLook(); return; }
       localStorage.setItem(PET_KEY, p.id);
       var m = mood(p);
@@ -4197,6 +4356,7 @@ html, body { background: #e6edf0; }
     var hopStart = -1, hopAt = -1, hat = null;
     // a calm pet left alone dozes off; a tap wakes it
     var SLEEP_AFTER = 40000, lastPoke = performance.now(), asleep = false;
+    if (window.__mock) window.__sleepNow = function () { lastPoke = -1e9; };   // test copy only
     // fidgets start once it's been left alone for a few seconds, then come every 7-14 s
     // the first fidget after being left alone is a glance up at a top corner, and it comes a little sooner
     var IDLE_AFTER = 5000, FIRST_LOOK_AFTER = 3000, FIDGET_GAP = [7000, 14000], nextFidget = 0, lastFidget = null, fidgetPoke = -1;
@@ -4832,7 +4992,7 @@ html, body { background: #e6edf0; }
       if (document.activeElement !== $("g-myname")) $("g-myname").value = name;
       // this pet: the owner renames, invites and removes; co-parents feed, dress or leave
       var p = pet(), own = isOwner(p);
-      $("g-petsec").hidden = !p;
+      $("g-petsec").hidden = $("g-leave").hidden = !p;
       if (p) {
         $("g-pethead").textContent = p.name + (own ? " · you're the owner" : " · you're a co-parent");
         $("g-renamerow").hidden = !own;
@@ -4858,7 +5018,7 @@ html, body { background: #e6edf0; }
         $("g-rolenote").textContent = own
           ? "XP and the streak count on days when " + FEEDS_PER_DAY + " of you feed. Up to 4 co-parents."
           : "Only " + ownerName(p) + " can rename " + p.name + " or choose co-parents.";
-        $("g-leave").textContent = own ? "Give up " + p.name : "Leave " + p.name;
+        $("g-leave").textContent = own ? "Give up " + p.name + "…" : "Leave " + p.name + "…";
       }
       // gifts I've sent
       $("g-giftsec").hidden = !sentGifts.length;
@@ -5087,6 +5247,7 @@ html, body { background: #e6edf0; }
       render();
       await loadAll();
       localStorage.removeItem(SIGNIN_KEY);
+      await maybeAskName();
       await checkGift();
       await checkInbox();
       checkJoin();
