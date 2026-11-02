@@ -1109,6 +1109,24 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
 .pg-ball .pg-gamemsg { top: 30%; color: #2b1d3a; text-shadow: 0 2px 0 #fff; }
 .pb-hint { position: absolute; left: 24px; right: 24px; bottom: calc(14px + env(safe-area-inset-bottom, 0px)); margin: 0; text-align: center; font-weight: 700; font-size: 0.9rem; color: #1f4d17; pointer-events: none; transition: opacity 0.4s; }
 .pb-hint.gone { opacity: 0; }
+/* Ball pass: Together / Versus, and the versus score */
+.pg-modevs[hidden] { display: none; }
+.pg-modevs { margin: 0 0 4px; }
+.pg-ball.vs .pb-score { display: flex; flex-direction: column; align-items: center; gap: 0; top: 34%; font-size: 3.4rem; line-height: 1; color: rgba(43,29,58,0.28); }
+.pg-ball.vs .pb-score i { font-style: normal; font-size: 1.6rem; }
+.pg-ball.vs .pb-score .m { color: rgba(47,127,224,0.55); }
+.pb-score.bump { animation: pb-bump 0.4s; }
+@keyframes pb-bump { 40% { transform: scale(1.25); } }
+.pb-ball.out { transition: opacity 0.5s; opacity: 0; }
+.pb-ball.fast { filter: drop-shadow(0 0 10px rgba(255,140,40,0.9)); }
+/* chat: a clear background so the message bubbles stand out */
+.pg-chatpage { background: #dfe7f3; }
+.pg-chatpage .pg-playhead { background: #fff; box-shadow: 0 2px 10px rgba(20,35,43,0.08); padding-bottom: 10px; }
+.pg-chatlist li.them .b { background: #fff; box-shadow: 0 1px 2px rgba(20,35,43,0.12); border: 1px solid #cfd9e6; }
+.pg-chatlist li time { color: #5f6f85; }
+.pg-chatlist .pg-logempty { color: #44556b; }
+.pg-chatquick, .pg-chatform { background: #fff; }
+.pg-chatquick { border-top: 1px solid #d3dcea; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -1335,6 +1353,10 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
       <div class="pg-card pg-modecard">
         <div class="pg-modeart" id="g-modeart" aria-hidden="true">🏁</div>
         <h2 id="g-modename">Treat race</h2>
+        <div class="pg-tabs pg-modevs" id="g-modevs" role="tablist" hidden>
+          <button type="button" role="tab" data-vs="0" aria-selected="true">🤝 Together</button>
+          <button type="button" role="tab" data-vs="1" aria-selected="false">⚔️ Versus</button>
+        </div>
         <button type="button" class="pg-modebtn" id="g-modesolo"></button>
         <button type="button" class="pg-modebtn others" id="g-modeothers"></button>
         <button type="button" class="pg-linkbtn" id="g-modeclose">Cancel</button>
@@ -4607,47 +4629,65 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
     };
   }
 
-  // ---------- Ball pass (co-op: keep it going together) ----------
-  // The ball flies between your pet (bottom) and your partner's (top). Tap anywhere as it reaches your pet: the ring
-  // around your pet shrinks to show when. Each pass is a little faster. Miss (or tap too soon) and the ball drops;
-  // the team score is how many passes you made. Only the player the ball is flying to judges their own tap, so both
-  // phones always agree: onHit(n) sends "I hit pass n", onDrop(n) "I dropped it".
-  // startBallPass({ me: { pic, html }, them: { pic, html, bot }, iServe, live, onHit(n), onDrop(n), onQuick(i), onEnd(score), onQuit() })
-  //   -> { wrap, start(), hit(n), drop(n), quick(i), left(), close() }
+  // ---------- Ball pass (together, or versus) ----------
+  // The ball flies between your pet (bottom) and the other pet (top). Tap anywhere as it reaches your pet: the ring
+  // around your pet shrinks to show when. Each pass is a little faster. Miss (or tap too soon) and the ball drops.
+  //  * Together: the team score is how many passes you made; one drop ends the game.
+  //  * Versus (opts.versus): a drop is a point to the other player. First to 5 wins; the serve swaps every point.
+  //    A perfect tap sends a faster, curving shot that's harder to catch.
+  // Only the player the ball is flying to judges their own tap, so both phones always agree: onHit(n, fast) sends
+  // "I hit pass n", onDrop(n) "I dropped it".
+  // startBallPass({ me: { pic, html }, them: { pic, html, bot }, iServe, live, versus, onHit(n, fast), onDrop(n), onQuick(i), onEnd(score, why, points), onQuit() })
+  //   -> { wrap, start(), hit(n, fast), drop(), quick(i), left(), close() }
+  var BALL_POINTS = 5;
   function ballTravel(n) { return Math.max(520, 1500 * Math.pow(0.955, n)); }   // ms for pass n
   function startBallPass(opts) {
-    var wrap = document.createElement("div"); wrap.className = "pg-game pg-ball";
+    var VS = !!opts.versus;
+    var wrap = document.createElement("div"); wrap.className = "pg-game pg-ball" + (VS ? " vs" : "");
     wrap.innerHTML =
-      '<div class="pg-gamehud"><span class="lbl">⚽ Ball pass</span>' +
+      '<div class="pg-gamehud"><span class="lbl">⚽ Ball pass' + (VS ? " · first to " + BALL_POINTS : "") + "</span>" +
         (opts.onQuick ? '<button type="button" class="pg-qcbtn" aria-label="Send an emoji">💬</button>' : "") +
         '<button type="button" class="pg-gamex" aria-label="Stop the game">✕</button></div>' +
       '<div class="pg-qcpal" hidden></div>' +
       '<div class="pb-pet them"><span class="who"></span><img alt=""></div>' +
-      '<div class="pb-score" aria-live="polite">0</div>' +
+      '<div class="pb-score" aria-live="polite">' + (VS ? '<b class="t">0</b><i>–</i><b class="m">0</b>' : "0") + "</div>" +
       '<div class="pb-pet me"><i class="pb-ring" aria-hidden="true"></i><img alt=""><span class="who"></span></div>' +
       '<span class="pb-ball" aria-hidden="true">⚽</span>' +
-      '<div class="pb-say"></div><p class="pb-hint">Tap anywhere when the ring around your pet turns green 🟢</p>' +
+      '<div class="pb-say"></div><p class="pb-hint">' + (VS ? "Tap when the ring turns green 🟢 Make them miss! A perfect tap sends a faster shot." : "Tap anywhere when the ring around your pet turns green 🟢") + "</p>" +
       '<div class="pg-gamemsg big">Get ready…</div>';
     document.body.appendChild(wrap);
     var themEl = wrap.querySelector(".pb-pet.them"), meEl = wrap.querySelector(".pb-pet.me"), ring = wrap.querySelector(".pb-ring");
     var ball = wrap.querySelector(".pb-ball"), scoreEl = wrap.querySelector(".pb-score"), sayEl = wrap.querySelector(".pb-say"), msg = wrap.querySelector(".pg-gamemsg");
     themEl.querySelector("img").src = opts.them.pic; meEl.querySelector("img").src = opts.me.pic;
     themEl.querySelector(".who").innerHTML = opts.them.html || ""; meEl.querySelector(".who").innerHTML = (opts.me.html || "") + " <small>(you)</small>";
-    var live = false, over = false, timers = [], flight = null, score = 0, raf = 0, lateT = null;
+    var live = false, over = false, timers = [], flight = null, score = 0, raf = 0, lateT = null, hits = 0;
+    var pts = { me: 0, them: 0 }, rally = 0;
     function bubble(el, text) {
       var b = document.createElement("span"); b.className = "pg-bubble"; b.textContent = text;
       el.appendChild(b); setTimeout(function () { b.remove(); }, 2600);
     }
     quickPalette(wrap, function (i, t) { bubble(meEl, t); opts.onQuick(i); });
     function centre(el) { var r = el.querySelector("img").getBoundingClientRect(), w = wrap.getBoundingClientRect(); return { x: r.left - w.left + r.width / 2, y: r.top - w.top + r.height * 0.35 }; }
-    function ballSay(text, cls) { sayEl.textContent = text; sayEl.className = "pb-say show " + (cls || ""); clearTimeout(ballSay.t); ballSay.t = setTimeout(function () { sayEl.className = "pb-say"; }, 700); }
-    // send the ball on its way: to "me" or to "them", as pass n
-    function launch(to, n) {
-      flight = { to: to, n: n, t0: performance.now(), dur: ballTravel(n), sway: (Math.random() < 0.5 ? -1 : 1) * (0.12 + Math.random() * 0.16) };
+    function ballSay(text, cls) { sayEl.textContent = text; sayEl.className = "pb-say show " + (cls || ""); clearTimeout(ballSay.t); ballSay.t = setTimeout(function () { sayEl.className = "pb-say"; }, 900); }
+    function showScore() {
+      if (!VS) { scoreEl.textContent = score; return; }
+      scoreEl.querySelector(".t").textContent = pts.them; scoreEl.querySelector(".m").textContent = pts.me;
+    }
+    // send the ball on its way: to "me" or to "them", as pass n (fast: a perfect hit's quicker, curvier shot)
+    function launch(to, n, fast) {
+      ball.classList.remove("fall", "out");
+      flight = { to: to, n: n, t0: performance.now(), dur: ballTravel(n) * (fast ? 0.8 : 1), fast: !!fast,
+                 sway: (Math.random() < 0.5 ? -1 : 1) * (fast ? 0.28 + Math.random() * 0.08 : 0.12 + Math.random() * 0.16) };
       clearTimeout(lateT);
-      if (to === "them" && opts.them.bot) {   // Bamboo the bot always gets it back
-        var f = flight;
-        timers.push(setTimeout(function () { if (flight === f && !over) { score++; scoreEl.textContent = score; pop(themEl); launch("me", f.n + 1); } }, f.dur + (Math.random() * 80 - 40)));
+      if (to === "them" && opts.them.bot) {
+        // Bamboo the bot: never misses together; in versus it misses more as the rally speeds up
+        var f = flight, miss = VS && Math.random() < Math.min(0.5, 0.04 + n * 0.035 + (fast ? 0.12 : 0));
+        timers.push(setTimeout(function () {
+          if (flight !== f || over) return;
+          if (miss) { pointTo("me"); return; }
+          if (!VS) { score++; showScore(); }
+          pop(themEl); launch("me", f.n + 1, VS && Math.random() < 0.18);
+        }, f.dur + (miss ? 180 : Math.random() * 80 - 40)));
       } else if (to === "them") {
         // no word from the other phone long after the ball got there: we've lost touch
         lateT = setTimeout(function () { if (!over && flight && flight.to === "them") end("lost"); }, flight.dur + 8000);
@@ -4663,7 +4703,8 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
       var x = a.x + (b.x - a.x) * s + Math.sin(Math.PI * Math.min(1, s)) * flight.sway * W;
       var y = a.y + (b.y - a.y) * s;
       var big = 1 + Math.sin(Math.PI * Math.min(1, s)) * 0.6;
-      ball.style.transform = "translate(" + (x - 22) + "px," + (y - 22) + "px) scale(" + big + ") rotate(" + (s * 540) + "deg)";
+      ball.style.transform = "translate(" + (x - 22) + "px," + (y - 22) + "px) scale(" + big + ") rotate(" + (s * (flight.fast ? 900 : 540)) + "deg)";
+      ball.classList.toggle("fast", flight.fast);
       if (flight.to === "me") {
         var left = flight.t0 + flight.dur - now, w = windowMs(flight.n);
         ring.style.opacity = 1;
@@ -4681,28 +4722,50 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
       var left = flight.t0 + flight.dur - performance.now(), w = windowMs(flight.n);
       if (left > w + 450) return;                   // way too soon: ignore (the ball is still far away)
       if (left > w) { ballSay("Too soon!", "bad"); drop(); return; }
-      score++; scoreEl.textContent = score; pop(meEl);
-      if (score >= 4) wrap.querySelector(".pb-hint").classList.add("gone");
-      if (Math.abs(left) < 60) ballSay("Perfect! ✨", "good"); else ballSay(["Nice!", "Good!", "Got it!"][score % 3]);
+      hits++; if (!VS) { score++; showScore(); }
+      pop(meEl);
+      if (hits >= 4) wrap.querySelector(".pb-hint").classList.add("gone");
+      var perfect = Math.abs(left) < 60, fast = VS && perfect;
+      if (perfect) ballSay(fast ? "Power shot! 🔥" : "Perfect! ✨", "good"); else ballSay(["Nice!", "Good!", "Got it!"][hits % 3]);
       if (navigator.vibrate) try { navigator.vibrate(15); } catch (er) {}
       var n = flight.n + 1;
-      launch("them", n);
-      if (opts.onHit) opts.onHit(n);
+      launch("them", n, fast);
+      if (opts.onHit) opts.onHit(n, fast);
     }
     wrap.addEventListener("pointerdown", tap);
     function onKey(e) { if (e.key === " " || e.key === "Enter") tap(e); }
     window.addEventListener("keydown", onKey);
     function drop() {
+      if (over || !flight) return;
+      if (opts.onDrop) opts.onDrop(flight.n);
+      if (VS) pointTo("them"); else end("dropped-me");
+    }
+    // versus: a point, then the next rally (the serve swaps every point), or the end at 5
+    function pointTo(who) {
       if (over) return;
-      if (opts.onDrop) opts.onDrop(flight ? flight.n : 0);
-      end("dropped-me");
+      flight = null; clearTimeout(lateT);
+      ball.classList.add("out");
+      pts[who]++; showScore();
+      scoreEl.classList.remove("bump"); void scoreEl.offsetWidth; scoreEl.classList.add("bump");
+      if (typeof sfx === "function") sfx(who === "me" ? "coin" : "pat");
+      if (pts[who] >= BALL_POINTS) { end(who === "me" ? "won" : "lost-match"); return; }
+      ballSay(who === "me" ? "Your point! 🎉" : "Their point", who === "me" ? "good" : "bad");
+      rally++;
+      timers.push(setTimeout(serve, 1700));
+    }
+    function serve() {
+      if (over) return;
+      var mine = (rally % 2 === 0) === !!opts.iServe;
+      if (mine) { pop(meEl); launch("them", 0, false); if (opts.onHit) opts.onHit(0, false); }
+      else if (opts.them.bot) { pop(themEl); launch("me", 0, false); }
+      else ballSay("Their serve…");
     }
     function end(why) {
-      if (over) return; over = true; live = false; clearTimeout(lateT);
+      if (over) return; over = true; live = false; clearTimeout(lateT); flight = null;
       ball.classList.add("fall");
-      msg.textContent = why === "lost" ? "" : why === "left" ? "" : "Dropped! 😮";
-      if (typeof sfx === "function") sfx("pat");
-      timers.push(setTimeout(function () { opts.onEnd(score, why); }, 1100));
+      msg.textContent = why === "won" ? "🏆 You win!" : why === "lost-match" ? "" : why === "lost" || why === "left" ? "" : "Dropped! 😮";
+      if (typeof sfx === "function") sfx(why === "won" ? "levelUp" : "pat");
+      timers.push(setTimeout(function () { opts.onEnd(score, why, { me: pts.me, them: pts.them }); }, 1100));
     }
     function close() { over = true; live = false; cancelAnimationFrame(raf); clearTimeout(lateT); timers.forEach(clearTimeout); window.removeEventListener("keydown", onKey); wrap.remove(); }
     wrap.querySelector(".pg-gamex").addEventListener("click", function () {
@@ -4712,8 +4775,8 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
     function go() {
       live = true;
       msg.textContent = "";
-      if (opts.iServe) { pop(meEl); launch("them", 0); if (opts.onHit) opts.onHit(0); }
-      else { ballSay(opts.them.bot ? "" : "Here it comes!"); if (opts.them.bot) { pop(themEl); launch("me", 0); } }
+      if (!opts.iServe && !opts.them.bot) ballSay("Here it comes!");
+      serve();
     }
     return {
       wrap: wrap, close: close,
@@ -4724,8 +4787,9 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
         });
       },
       // the other player hit pass n: it's coming to me
-      hit: function (n) { if (over) return; if (n > 0) { score = Math.max(score, n); scoreEl.textContent = score; } pop(themEl); launch("me", n); },
-      drop: function () { if (over) return; msg.textContent = ""; end("dropped-them"); },
+      hit: function (n, fast) { if (over) return; if (!VS && n > 0) { score = Math.max(score, n); showScore(); } pop(themEl); launch("me", n, fast); },
+      // the other player dropped it
+      drop: function () { if (over) return; if (VS) pointTo("me"); else { msg.textContent = ""; end("dropped-them"); } },
       left: function () { end("left"); },
       quick: function (i) { if (QUICK_CHAT[i]) bubble(themEl, QUICK_CHAT[i]); },
       score: function () { return score; }
@@ -4745,7 +4809,7 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261102221417";   // replaced by build_real.ps1
+    var APP_BUILD = "20261102230227";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -5359,11 +5423,17 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
     function sendLive(event, payload) { if (lobby && lobbyReady) lobby.send({ type: "broadcast", event: event, payload: payload }); }
 
     // --- tap a game: solo, or with others ---
+    // Ball pass has two ways to play: together (one team score) or versus (first to 5 points)
+    var ballVs = false, BALL_VS_TEXT = { solo: ["🤖 Play the bot", "First to 5 points. Make Bamboo the bot miss!"],
+      others: ["👫 Play someone", "First to 5 points. Every drop is a point to the other player."] };
     function openMode(game) {
-      var g = GAMES[game], n = Object.keys(online).length;
+      var g = GAMES[game], n = Object.keys(online).length, vs = game === "ball" && ballVs;
+      var solo = vs ? BALL_VS_TEXT.solo : g.solo, oth = vs ? BALL_VS_TEXT.others : g.others;
       $("g-modeart").textContent = g.art; $("g-modename").textContent = g.name;
-      $("g-modesolo").innerHTML = "<b>" + esc(g.solo[0]) + "</b><small>" + esc(g.solo[1]) + "</small>";
-      $("g-modeothers").innerHTML = "<b>" + esc(g.others[0]) + "</b><small>" + esc(g.others[1]) + "</small>" +
+      $("g-modevs").hidden = game !== "ball";
+      Array.prototype.forEach.call(document.querySelectorAll("#g-modevs [data-vs]"), function (b) { b.setAttribute("aria-selected", (b.dataset.vs === "1") === ballVs ? "true" : "false"); });
+      $("g-modesolo").innerHTML = "<b>" + esc(solo[0]) + "</b><small>" + esc(solo[1]) + "</small>";
+      $("g-modeothers").innerHTML = "<b>" + esc(oth[0]) + "</b><small>" + esc(oth[1]) + "</small>" +
         '<em class="' + (n ? "on" : "") + '">' + (showOnline() ? (n ? "🟢 " + n + " online now" : "🌙 Nobody online · invite a friend") : "🙈 You're hidden") + "</em>";
       $("g-modesolo").onclick = function () { $("g-mode").hidden = true; playSolo(game); };
       $("g-modeothers").onclick = function () {
@@ -5373,16 +5443,19 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
       $("g-mode").hidden = false;
     }
     $("g-modeclose").addEventListener("click", function () { $("g-mode").hidden = true; });
+    Array.prototype.forEach.call(document.querySelectorAll("#g-modevs [data-vs]"), function (b) {
+      b.addEventListener("click", function () { ballVs = b.dataset.vs === "1"; openMode("ball"); });
+    });
     Array.prototype.forEach.call(document.querySelectorAll(".pg-gamecard[data-game]"), function (b) {
       b.addEventListener("click", function () { openMode(b.dataset.game); });
     });
-    function playSolo(game) { if (game === "bamboo") startGame(); else if (game === "memory") startMemory(); else if (game === "ball") ballBot(); else raceBot(); }
-    function playBot(game) { if (game === "bamboo") duelBot(); else if (game === "memory") memoryBot(); else if (game === "ball") ballBot(); else raceBot(); }
+    function playSolo(game) { if (game === "bamboo") startGame(); else if (game === "memory") startMemory(); else if (game === "ball") ballBot(ballVs); else raceBot(); }
+    function playBot(game) { if (game === "bamboo") duelBot(); else if (game === "memory") memoryBot(); else if (game === "ball") ballBot(ballVs); else raceBot(); }
 
     // --- with others: pick who (online players, and friends who are away: they get a notification) ---
     var pick = null;
     function openPick(game, preUid) {
-      pick = { game: game, chosen: {} };
+      pick = { game: game, chosen: {}, vs: game === "ball" && ballVs };
       if (preUid) pick.chosen[preUid] = true;
       var g = GAMES[game];
       $("g-picktitle").textContent = g.art + " " + (game === "race" ? "Who's racing?" : "Who do you want to play?");
@@ -5455,7 +5528,7 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
       });
       return li;
     }
-    $("g-picksend").addEventListener("click", function () { var p0 = pick; $("g-pick").hidden = true; pick = null; hostGame(p0.game, Object.keys(p0.chosen)); });
+    $("g-picksend").addEventListener("click", function () { var p0 = pick; $("g-pick").hidden = true; pick = null; hostGame(p0.game, Object.keys(p0.chosen), { vs: p0.vs }); });
     $("g-pickbot").addEventListener("click", function () { var g = pick ? pick.game : "race"; $("g-pick").hidden = true; pick = null; playBot(g); });
     $("g-pickclose").addEventListener("click", function () { $("g-pick").hidden = true; pick = null; });
     // "Play" from someone's card: pick the game, then invite just them
@@ -5469,7 +5542,8 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
     }
 
     // --- sending invites: I host the game ---
-    function hostGame(game, uids) {
+    function hostGame(game, uids, extra) {
+      var vs = game === "ball" && !!(extra && extra.vs);
       if (raceNow || !uids.length) return;
       var room = Math.random().toString(36).slice(2, 10);
       var guests = uids.map(function (uid) {
@@ -5479,12 +5553,12 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
       uids.forEach(function (uid) {
         var f = friendOf(uid);
         if (online[uid]) {
-          sendLive("invite", { to: uid, from: me.id, room: room, game: game, me: myPresence() });
+          sendLive("invite", { to: uid, from: me.id, room: room, game: game, vs: vs, me: myPresence() });
           // a friend's app might be in the background: the server keeps it for them too
           if (f) rpc("invite_friend", { p_to: uid, p_game: game, p_room: room }).catch(function () {});
         } else if (f) inviteFriendAway(f, game, room);
       });
-      liveGame(game, room, true, { guests: guests });
+      liveGame(game, room, true, { guests: guests, vs: vs });
     }
     async function inviteFriendAway(f, game, room) {
       var res = null, msg = null;
@@ -5508,7 +5582,7 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
     function gotInvite(m) {
       if (!m || m.to !== me.id || !m.me || !m.room || blocked.indexOf(m.me.pet_id) >= 0 || invSeen(m.room)) return;
       if (raceNow || inviteOpen) { sendLive("reply", { to: m.from, from: me.id, room: m.room, ok: false, busy: true }); return; }
-      showInvite({ from: m.from, room: m.room, game: gameOf(m.game), pic: petPic(m.me.variant), html: petTagHTML(m.me), canBlock: !friendOf(m.from), pet: m.me });
+      showInvite({ from: m.from, room: m.room, game: gameOf(m.game), pic: petPic(m.me.variant), html: petTagHTML(m.me), canBlock: !friendOf(m.from), pet: m.me, vs: !!m.vs });
     }
     // invites friends saved for me: a fresh one (with its room) joins the game; an older one offers to invite back
     async function checkPlayInvites() {
@@ -5528,8 +5602,9 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
       inviteOpen = inv;
       $("g-invitepic").src = inv.pic; $("g-invitegame").textContent = g.art;
       $("g-invitewho").innerHTML = inv.html;
-      $("g-invitetext").textContent = inv.old ? "wanted to play " + g.name : g.invite;
-      $("g-invitesub").textContent = inv.old ? "That was " + inv.old + (inv.old === 1 ? " minute" : " minutes") + " ago." : g.others[1];
+      var vs = inv.vs && inv.game === "ball";
+      $("g-invitetext").textContent = inv.old ? "wanted to play " + g.name : vs ? "wants a Ball pass match!" : g.invite;
+      $("g-invitesub").textContent = inv.old ? "That was " + inv.old + (inv.old === 1 ? " minute" : " minutes") + " ago." : vs ? "First to 5 points wins." : g.others[1];
       $("g-inviteyes").textContent = inv.old ? "🎮 Invite back" : "Let's play! " + g.art;
       $("g-inviteno").textContent = inv.old ? "Close" : "Not now";
       $("g-inviteblock").hidden = !inv.canBlock;
@@ -5693,14 +5768,14 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
       R.on("qc", function (m) { if (!started) waitBubble(m.uid, QUICK_CHAT[m.i | 0]); else if (S.quick) S.quick(m.uid, m.i | 0); });
       function startNow() {
         if (!host || started || players.length < 2) return;
-        var m = { players: players.slice(), first: players[Math.floor(Math.random() * players.length)].uid };
+        var m = { players: players.slice(), first: players[Math.floor(Math.random() * players.length)].uid, vs: !!info.vs };
         R.send("go", m);
         go(m);
         // (said three times: a player who misses it would wait forever)
         timers.push(setTimeout(function () { R.send("go", m); }, 400), setTimeout(function () { R.send("go", m); }, 1200));
       }
       function go(m) {
-        started = true; clearInterval(hereTimer); clearTimeout(autoT);
+        started = true; clearInterval(hereTimer); clearTimeout(autoT); S.vs = !!m.vs;
         timers.forEach(clearTimeout); timers = [];
         wait.remove();
         players = m.players;
@@ -5826,19 +5901,24 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
         S.stop = function () { mem.close(); };
         mem.start();
       }
-      // Ball pass together: whoever the ball flies to judges their own tap ("hit" n, or "drop")
+      // Ball pass, together or versus: whoever the ball flies to judges their own tap ("hit" n, or "drop")
       function goBall(m) {
-        var other = others()[0];
+        var other = others()[0], vs = !!m.vs;
         var bp = startBallPass({
           me: { pic: petPic(p.variant), html: tagHTML(p.level, p.name) }, them: { pic: petPic(other.variant), html: petTagHTML(other) },
-          iServe: m.first === me.id, live: true,
-          onHit: function (n) { R.send("hit", { n: n }); },
+          iServe: m.first === me.id, live: true, versus: vs,
+          onHit: function (n, fast) { R.send("hit", { n: n, fast: !!fast }); },
           onDrop: function (n) { R.send("drop", { n: n }); },
           onQuick: function (i) { R.send("qc", { uid: me.id, i: i }); },
           onQuit: function () { leave(); openPlay(); },
-          onEnd: function (score, why) {
+          onEnd: function (score, why, pts) {
             if (done) return; done = true;
-            if (why === "left" || why === "lost") { endLeft(bp.wrap, (why === "left" ? label(other) + " left the game." : "We lost touch with " + label(other) + ".") + " You made " + score + (score === 1 ? " pass" : " passes") + " together."); return; }
+            if (why === "left" || why === "lost") { endLeft(bp.wrap, (why === "left" ? label(other) + " left the game." : "We lost touch with " + label(other) + ".") + (vs ? "" : " You made " + score + (score === 1 ? " pass" : " passes") + " together.")); return; }
+            if (vs) {
+              endCard(bp.wrap, why === "won", { big: pts.me + ' <small class="vs">vs ' + pts.them + "</small>", lbl: "points",
+                lost: label(other) + " wins this time!", score: pts.me, against: label(other), again: "⚽ Rematch" });
+              return;
+            }
             var b = bestBall("team", score);
             logGame("ball", "live", label(other), null, null, score);
             var again = againUids(), end = document.createElement("div"); end.className = "pg-gameend";
@@ -5850,11 +5930,11 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
             sfx(b.isNew ? "levelUp" : "pat");
             end.querySelector('[data-a="done"]').addEventListener("click", function () { cleanup(); openPlay(); });
             var ag = end.querySelector('[data-a="again"]');
-            if (ag) ag.addEventListener("click", function () { cleanup(); openPlay(); hostGame("ball", again); });
+            if (ag) ag.addEventListener("click", function () { cleanup(); openPlay(); hostGame("ball", again, { vs: false }); });
           }
         });
         view = bp;
-        R.on("hit", function (x) { bp.hit(x.n | 0); });
+        R.on("hit", function (x) { bp.hit(x.n | 0, !!x.fast); });
         R.on("drop", function () { bp.drop(); });
         S.quick = function (uid, i) { bp.quick(i); };
         S.bye = function (uid) { if (uid === other.uid && !done) bp.left(); };
@@ -5878,7 +5958,7 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
         sfx(won === true ? "levelUp" : "pat");
         end.querySelector('[data-a="done"]').addEventListener("click", function () { cleanup(); openPlay(); });
         var ag = end.querySelector('[data-a="again"]');
-        if (ag) ag.addEventListener("click", function () { cleanup(); openPlay(); hostGame(game, again); });
+        if (ag) ag.addEventListener("click", function () { cleanup(); openPlay(); hostGame(game, again, { vs: S.vs }); });
         var fr = end.querySelector('[data-a="friend"]');
         if (fr) fr.addEventListener("click", async function () { if (await addFriendPet(stranger)) { fr.disabled = true; fr.textContent = "Request sent ✓"; } });
         var bl = end.querySelector('[data-a="block"]');
@@ -5963,17 +6043,23 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
       if (score > b) { try { localStorage.setItem(k, String(score)); } catch (e) {} return { best: score, isNew: score > 0 }; }
       return { best: b, isNew: false };
     }
-    function ballBot() {
+    function ballBot(vs) {
       var p = pet(); if (!p || raceNow) return;
       hidePlayPages();
       var bp = startBallPass({
         me: { pic: petPic(p.variant), html: tagHTML(p.level, p.name) }, them: { pic: petPic("panda_golden"), html: "Bamboo the bot 🤖", bot: true },
-        iServe: false,
+        iServe: !!vs, versus: !!vs,
         onQuit: function () { raceNow = null; trackMe(); openPlay(); },
-        onEnd: function (score) {
+        onEnd: function (score, why, pts) {
+          if (vs) {
+            var won = why === "won";
+            logGame("ball", "bot", "Bamboo the bot", won ? "won" : "lost", null, pts.me);
+            botEnd(bp, pts.me + ' <small class="vs">vs ' + pts.them + "</small>", won ? "You beat Bamboo the bot! Practice wins don't count, but you're ready for a real match." : "Bamboo the bot wins! Have another go.", function () { ballBot(true); });
+            return;
+          }
           var b = bestBall("solo", score);
           logGame("ball", "bot", "Bamboo the bot", null, null, score);
-          botEnd(bp, score + ' <small class="vs">passes</small>', b.isNew ? "🏆 Your best ever! Now try it with a friend." : "Your best: " + b.best + " passes. Have another go!", ballBot);
+          botEnd(bp, score + ' <small class="vs">passes</small>', b.isNew ? "🏆 Your best ever! Now try it with a friend." : "Your best: " + b.best + " passes. Have another go!", function () { ballBot(false); });
         }
       });
       raceNow = { race: bp }; trackMe();
@@ -6331,7 +6417,7 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
         var d = new Date(g.at), day = dayName(d);
         if (day !== lastDay) { lastDay = day; var h = document.createElement("li"); h.className = "pg-histday"; h.textContent = day; box.appendChild(h); }
         var G = GAMES[g.game] || GAMES.race, res, cls = "";
-        if (g.game === "ball") { res = (g.score || 0) + " passes"; cls = g.result === "left" ? "left" : ""; }
+        if (g.game === "ball" && g.result !== "won" && g.result !== "lost") { res = (g.score || 0) + " passes"; cls = g.result === "left" ? "left" : ""; }
         else if (g.mode === "solo") res = (g.score || 0) + " pts";
         else if (g.result === "left") { res = "Left"; cls = "left"; }
         else if (g.place && g.game === "race") { res = PLACES[g.place - 1] || g.place + "th"; cls = g.place === 1 ? "won" : "lost"; }
