@@ -876,6 +876,173 @@ html, body { background: #e6edf0; }
 .pg-items .pg-item img.pic:not(.scene) { aspect-ratio: 1 / 1; object-fit: contain; padding: 6px; }
 .pg-item[disabled] { position: relative; }
 .pg-item[disabled]::after { content: "🔒"; position: absolute; top: 12px; right: 12px; width: 26px; height: 26px; display: grid; place-items: center; border-radius: 50%; background: rgba(255,255,255,0.92); box-shadow: 0 1px 4px rgba(0,0,0,0.2); font-size: 0.8rem; }
+/* ---------- Update 20: the new Playground, Social page, waiting room, invites and history ---------- */
+.pg-headicon { position: relative; width: 42px; height: 42px; flex: none; border-radius: 50%; border: 0; background: rgba(255,255,255,0.85); font-size: 1.25rem; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+span.pg-headicon { background: none; box-shadow: none; }
+.pg-socialchip { position: relative; padding: 6px 10px; }
+.pg-mecard { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 20px; background: rgba(255,255,255,0.9); box-shadow: 0 4px 14px rgba(60,30,90,0.08); }
+.pg-mecard .pg-mepet { flex: 1; max-width: none; padding: 0; background: none; font-size: 1rem; min-width: 0; }
+.pg-mecard .pg-mepet img { width: 44px; height: 44px; }
+.pg-mecard .pg-mepet .pg-tag { min-width: 0; }
+.pg-winsbtn { flex: none; border: 0; border-radius: 999px; padding: 9px 14px; background: linear-gradient(150deg, #ffcf5c, #ff9f43); color: #4a2a00; font-weight: 800; font-size: 0.95rem; box-shadow: 0 3px 0 #d97a1c; }
+.pg-winsbtn b { font-size: 1.1rem; }
+.pg-onlinenow { margin: 10px 4px 4px; font-weight: 700; color: #4a4060; font-size: 0.92rem; }
+.pg-gamegrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px; }
+.pg-gamegrid .pg-gamecard { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; min-height: 138px; padding: 14px; border: 0; border-radius: 22px; color: #fff; text-align: left; font: inherit; cursor: pointer; box-shadow: 0 8px 20px rgba(60,30,90,0.16); transition: transform 0.12s; }
+.pg-gamegrid .pg-gamecard:active { transform: scale(0.97); }
+.pg-gamegrid .pg-gamecard .art { font-size: 2.6rem; line-height: 1.1; margin-bottom: auto; }
+.pg-gamegrid .pg-gamecard b { color: #fff; font-size: 1.08rem; margin-top: 8px; }
+.pg-gamegrid .pg-gamecard small { color: rgba(255,255,255,0.92); font-size: 0.82rem; margin: 0; }
+.pg-gamegrid .pg-gamecard.bamboo { background: linear-gradient(150deg, #5fbf6a, #2f8f5b); }
+.pg-gamegrid .pg-gamecard.race { background: linear-gradient(150deg, #ff8a5c, #e2456f); }
+.pg-gamegrid .pg-gamecard.memory { background: linear-gradient(150deg, #b06ad9, #6b4fd1); }
+.pg-gamegrid .pg-gamecard.soon { background: linear-gradient(150deg, #c9c3e2, #9d96bf); cursor: default; box-shadow: none; }
+.pg-playpage .pg-switch { margin-top: 16px; }
+/* Social page */
+.pg-socialpage { z-index: 13; }
+.pg-playpage[hidden] { display: none; }
+.pg-soctabs { flex: none; margin: 0 14px 6px; }
+.pg-soctabs button { padding: 10px 2px; font-size: 0.95rem; font-weight: 700; }
+.pg-tabdot { display: inline-block; min-width: 18px; height: 18px; padding: 0 5px; margin-left: 2px; border-radius: 999px; background: #e2456f; color: #fff; font-size: 0.7rem; line-height: 18px; vertical-align: 1px; }
+.pg-tabdot[hidden] { display: none; }
+.pg-people .pg-petpick { flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; border: 0; background: none; padding: 0; text-align: left; font: inherit; color: inherit; }
+.pg-people .pg-petpick small { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pg-chatrow { padding: 0 !important; }
+.pg-chatrow .pg-petpick { padding: 10px; }
+.pg-chatrow.new small { color: #2b1d3a; font-weight: 700; }
+.pg-av { position: relative; flex: none; }
+.pg-ondot { position: absolute; right: 0; bottom: 0; width: 12px; height: 12px; border-radius: 50%; background: #36c38a; box-shadow: 0 0 0 2px #fff; }
+.pg-chatmeta { flex: none; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.pg-chatmeta time { font-size: 0.75rem; color: #8a8399; }
+.pg-unread { min-width: 22px; height: 22px; padding: 0 6px; border-radius: 999px; background: #e2456f; color: #fff !important; font-size: 0.75rem; line-height: 22px; text-align: center; }
+.pg-people li.pg-center { justify-content: center; background: none; box-shadow: none; }
+.pg-people li.pg-center .pg-feed { width: auto; }
+.pg-codecard { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 18px 16px; border-radius: 22px; background: #fff; box-shadow: 0 6px 20px rgba(60,30,90,0.1); text-align: center; }
+.pg-codecard small { color: #5b5470; font-weight: 600; }
+.pg-codecard b { font-family: var(--display); font-size: 1.9rem; letter-spacing: 0.06em; color: #2b1d3a; }
+.pg-codecard .pg-row { width: 100%; margin-top: 6px; }
+.pg-addform { margin-top: 16px; padding: 14px 16px; border-radius: 22px; background: rgba(255,255,255,0.85); }
+.pg-addform label { display: block; margin-bottom: 8px; font-weight: 700; color: #2b1d3a; }
+.pg-addform input { flex: 1; min-width: 0; font-size: 1.1rem; letter-spacing: 0.05em; text-transform: uppercase; }
+/* solo or with others */
+#g-mode, #g-pick { z-index: 20; }
+#g-petopts { z-index: 22; }
+.pg-modecard { display: flex; flex-direction: column; align-items: stretch; gap: 10px; text-align: center; }
+.pg-modeart { font-size: 3.2rem; line-height: 1; }
+.pg-modecard h2 { margin: 0 0 4px; }
+.pg-modebtn { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; padding: 14px 16px; border: 2px solid #e4dcef; border-radius: 18px; background: #fff; text-align: left; font: inherit; color: #2b1d3a; cursor: pointer; }
+.pg-modebtn b { font-size: 1.1rem; }
+.pg-modebtn small { color: #5b5470; font-size: 0.86rem; line-height: 1.35; }
+.pg-modebtn.others { border-color: var(--brand); background: var(--brand-tint); }
+.pg-modebtn em { margin-top: 4px; font-style: normal; font-weight: 700; font-size: 0.82rem; color: #5b5470; }
+.pg-modebtn em.on { color: #1f8a5b; }
+.pg-modebtn:active { transform: scale(0.98); }
+/* who to invite */
+.pg-pickcard { display: flex; flex-direction: column; max-height: calc(100dvh - 40px); }
+.pg-pickcard h2 { margin: 0 0 2px; }
+.pg-picklist { flex: 1 1 auto; overflow-y: auto; min-height: 80px; margin: 4px 0 12px; }
+.pg-picklist li { background: #f7f3ff; box-shadow: none; padding: 8px; }
+.pg-picklist .pg-pickhead { background: none; padding: 6px 2px 0; font-size: 0.8rem; font-weight: 700; color: #5b5470; }
+.pg-pickrow .pg-petpick { flex: none; }
+.pg-pickmain { flex: 1; min-width: 0; display: flex; align-items: center; gap: 8px; border: 0; background: none; padding: 2px 0; text-align: left; font: inherit; color: inherit; }
+.pg-pickmain .tick { flex: none; width: 26px; height: 26px; border-radius: 50%; border: 2px solid #c9bfdc; font-style: normal; display: grid; place-items: center; color: #fff; font-size: 0.9rem; font-weight: 900; }
+.pg-pickrow.on { background: var(--brand-tint); box-shadow: inset 0 0 0 2px var(--brand); }
+.pg-pickrow.on .tick { background: var(--brand); border-color: var(--brand); }
+.pg-pickrow.on .tick::before { content: "✓"; }
+.pg-pickrow.off { opacity: 0.55; }
+.pg-pickfoot { justify-content: space-between; }
+.pg-pickfoot .pg-linkbtn { margin-top: 8px; }
+/* the waiting room */
+.pg-game.pg-wait { background: linear-gradient(170deg, #fff4d6 0%, #ffe0ec 50%, #dcefff 100%); display: flex; flex-direction: column; touch-action: auto; }
+.pg-wait .pg-gamehud .lbl { margin-right: auto; }
+.pg-waitbody { flex: 1; overflow-y: auto; display: flex; flex-direction: column; align-items: center; padding: calc(80px + env(safe-area-inset-top, 0px)) 18px 24px; text-align: center; }
+.pg-waitart { font-size: 3.6rem; animation: pg-waitbob 1.6s ease-in-out infinite; }
+@keyframes pg-waitbob { 50% { transform: translateY(-8px) rotate(-4deg); } }
+.pg-waittitle { margin: 6px 0 14px; font-family: var(--display); font-size: 1.35rem; color: #2b1d3a; }
+.pg-waitlist { list-style: none; margin: 0; padding: 0; width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 8px; }
+.pg-waitlist li { position: relative; display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 18px; background: rgba(255,255,255,0.92); text-align: left; box-shadow: 0 2px 10px rgba(60,30,90,0.06); }
+.pg-waitlist li img { width: 44px; height: 44px; flex: none; border-radius: 50%; background: #f6f1ff; object-fit: contain; }
+.pg-waitlist .ttl { display: flex; align-items: center; gap: 4px; min-width: 0; font-weight: 700; color: #2b1d3a; }
+.pg-waitlist small { display: block; color: #5b5470; font-size: 0.82rem; }
+.pg-waitlist .st { flex: none; font-style: normal; font-size: 1.2rem; }
+.pg-waitlist .st-wait .st { animation: pg-waitbob 1.2s ease-in-out infinite; }
+.pg-waitlist .st-no, .pg-waitlist .st-busy, .pg-waitlist .st-left { opacity: 0.55; }
+.pg-waitlist .pg-bubble { right: 46px; top: -10px; font-size: 1.4rem; padding: 2px 10px; }
+.pg-waitnote { margin: 14px 0 0; color: #5b5470; font-weight: 600; font-size: 0.92rem; }
+.pg-waitacts { width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 8px; margin-top: 16px; }
+/* emoji quick chat */
+.pg-qcpal { justify-content: center; }
+.pg-qcpal button { width: 48px; height: 48px; padding: 0; font-size: 1.6rem; border-radius: 50%; }
+.pg-bubble { font-size: 1.5rem; padding: 2px 10px; }
+.pg-duelbubbles .pg-bubble { font-size: 1.1rem; padding: 6px 12px; }
+.pg-gamemsg small { display: block; margin-top: 6px; font-family: var(--body); font-size: 0.95rem; font-weight: 700; text-shadow: none; opacity: 0.85; }
+/* the race with up to 4 lanes */
+.pg-lanes { gap: 16px; }
+.pg-lane { position: relative; }
+.pg-lane .track { height: 68px; }
+.pg-lane img { width: 64px; height: 64px; }
+.pg-lane .place { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); font-size: 1.6rem; font-family: var(--display); color: #2b1d3a; pointer-events: none; }
+.pg-lane.gone { opacity: 0.45; }
+.pg-lane .pg-bubble { right: 8px; top: -14px; }
+/* Memory: 24 cards, taking turns */
+.pg-cards { gap: 8px; width: min(92vw, 380px); margin-top: calc(78px + env(safe-area-inset-top, 0px)); }
+.pg-memory.turns .pg-cards { margin-top: 10px; }
+.pg-mcard .front { font-size: 1.7rem; }
+.pg-memscores { display: flex; gap: 6px; padding: 0 !important; background: none !important; box-shadow: none !important; min-width: 0; flex: 1; }
+.pg-memscores span { padding: 6px 12px; border-radius: 999px; background: rgba(255,255,255,0.75); font-size: 0.95rem; font-weight: 700; color: #4a4060; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 50%; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+.pg-memscores span.on { background: #fff; color: #2b1d3a; box-shadow: 0 0 0 3px var(--brand), 0 2px 8px rgba(0,0,0,0.1); }
+.pg-memscores b { font-size: 1.05rem; }
+.pg-turn { flex: none; margin: calc(70px + env(safe-area-inset-top, 0px)) auto 0; padding: 8px 18px; border-radius: 999px; background: rgba(255,255,255,0.85); font-weight: 800; color: #4a4060; min-height: 1.4em; }
+.pg-turn:empty { visibility: hidden; }
+.pg-turn small { font-weight: 700; color: #8a8399; margin-left: 4px; }
+.pg-memory.myturn .pg-turn { background: var(--brand); color: #fff; }
+.pg-memory.myturn .pg-turn small { color: rgba(255,255,255,0.85); }
+.pg-turn.shake { animation: pg-shake 0.35s; }
+@keyframes pg-shake { 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+.pg-memory.turns:not(.myturn) .pg-cards { opacity: 0.85; }
+.pg-memory .pg-duelbubbles { top: calc(120px + env(safe-area-inset-top, 0px)); }
+/* the invite */
+.pg-invitewrap { z-index: 60; }
+.pg-invite { position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center; padding: 22px 18px 14px; border-radius: 26px; animation: pg-invitein 0.35s cubic-bezier(.2,1.4,.4,1); left: auto; right: auto; top: auto; max-width: 360px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
+@keyframes pg-invitein { from { transform: scale(0.85) translateY(20px); opacity: 0; } }
+.pg-invpic { position: relative; width: 96px; height: 96px; margin-bottom: 4px; border-radius: 50%; background: linear-gradient(150deg, #fff4d6, #ffe0ec); box-shadow: 0 0 0 4px #fff, 0 0 0 7px var(--brand-tint); animation: pg-waitbob 1.6s ease-in-out infinite; }
+.pg-invpic img { width: 100%; height: 100%; object-fit: contain; }
+.pg-invgame { position: absolute; right: -8px; bottom: -4px; width: 40px; height: 40px; border-radius: 50%; background: #fff; display: grid; place-items: center; font-size: 1.4rem; box-shadow: 0 3px 10px rgba(0,0,0,0.18); }
+.pg-invwho { margin: 6px 0 0 !important; display: flex; align-items: center; justify-content: center; gap: 4px; flex-wrap: wrap; font-weight: 700; }
+.pg-invite h2 { margin: 2px 0 0; font-family: var(--display); font-size: 1.35rem; color: #2b1d3a; }
+.pg-invsub { margin: 0 !important; color: #5b5470 !important; font-weight: 500 !important; font-size: 0.9rem !important; }
+.pg-invtimer { width: 100%; height: 6px; margin: 10px 0 4px; border-radius: 999px; background: #efe8f6; overflow: hidden; }
+.pg-invtimer[hidden] { display: none; }
+.pg-invtimer i { display: block; height: 100%; background: var(--brand); transform-origin: left; }
+.pg-invite .pg-row { margin-top: 8px; }
+.pg-invite .pg-feed { width: auto; }
+/* your games */
+.pg-histsheet { z-index: 16; }
+.pg-histsheet h2 small { color: #55666e; font-family: var(--body); font-size: 0.85rem; font-weight: 600; }
+.pg-histlist { list-style: none; margin: 0; padding: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
+.pg-histlist li { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 14px; background: #f3f7f8; }
+.pg-histlist .gi { font-size: 1.6rem; flex: none; }
+.pg-histlist b { display: block; color: #14232b; font-size: 0.95rem; }
+.pg-histlist small { display: block; color: #55666e; font-size: 0.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pg-histlist .pg-grow { min-width: 0; }
+.pg-histlist .res { flex: none; padding: 4px 10px; border-radius: 999px; background: #fff; font-weight: 800; font-size: 0.85rem; color: #14232b; }
+.pg-histlist .res.won { background: #fff1c2; color: #7a4d00; }
+.pg-histlist .res.lost, .pg-histlist .res.left { color: #55666e; }
+.pg-histlist .pg-histday { background: none; padding: 8px 2px 0; font-weight: 800; font-size: 0.82rem; color: #55666e; text-transform: uppercase; letter-spacing: 0.04em; }
+.pg-histlist .pg-logempty { justify-content: center; color: #55666e; }
+/* a chat message that couldn't be sent */
+.pg-chatlist li.failed .b { background: #f3d6dc; color: #5a1f2b; }
+.pg-chatlist li.failed .why { margin: 3px 6px 0; color: #b3261e; font-size: 0.78rem; font-weight: 600; text-align: right; cursor: pointer; }
+.pg-pickmain, .pg-pickmain[aria-pressed="true"] { background: none !important; color: inherit !important; box-shadow: none !important; border: 0 !important; }
+.pg-race .pg-lanes { padding-top: calc(150px + env(safe-area-inset-top, 0px)); }
+.pg-race .pg-gamemsg { top: calc(64px + env(safe-area-inset-top, 0px)); }
+.pg-race .pg-gamemsg.big { font-size: 2.6rem; }
+/* 24 cards: square, and the board always fits the screen height */
+.pg-memory .pg-mcard { aspect-ratio: 1; }
+.pg-memory .pg-cards { width: min(92vw, 380px, calc((100dvh - 150px - env(safe-area-inset-top, 0px)) / 1.55)); }
+.pg-memory .pg-mcard .back { font-size: 1.3rem; }
+.pg-people[hidden], .pg-socadd[hidden], .pg-waitacts:empty { display: none; }
+.pg-histsheet { background: #fff; max-height: 80dvh; display: flex; flex-direction: column; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -923,6 +1090,7 @@ html, body { background: #e6edf0; }
       <button type="button" class="pg-chip pg-petbtn" id="g-petbtn" aria-label="Switch pet"><span id="g-petbtnname">My pets</span> <small id="g-petcount"></small> ▾</button>
       <span class="pg-grow2"></span>
       <button type="button" class="pg-chip" id="g-coins" aria-label="Paws">🐾 <span id="g-coinnum">0</span></button>
+      <button type="button" class="pg-chip pg-socialchip" id="g-socialbtn" aria-label="Friends and chats">💬<span class="pg-dotcount" id="g-socialdot" hidden></span></button>
       <button type="button" class="pg-chip pg-storechip" id="g-storebtn">🛍️ Store</button>
       <button type="button" class="pg-chip" id="g-menubtn" aria-label="Menu">☰</button>
     </div>
@@ -948,7 +1116,7 @@ html, body { background: #e6edf0; }
       <button type="button" class="pg-feed" id="g-feed">🍎 Feed</button>
       <button type="button" class="pg-wardrobe pg-bathbtn" id="g-bathbtn" hidden aria-label="Give your pet a bath">🛁<span class="pg-lbl"> Bath</span></button>
       <button type="button" class="pg-wardrobe" id="g-wardrobe" aria-label="Dress up">🎀<span class="pg-lbl"> Dress up</span></button>
-      <button type="button" class="pg-wardrobe pg-capbtn pg-playbtn" id="g-playbtn" aria-label="Playground: mini-games">🎮<span class="pg-dotcount" id="g-playdot" hidden></span></button>
+      <button type="button" class="pg-wardrobe pg-capbtn pg-playbtn" id="g-playbtn" aria-label="Playground: mini-games">🎮</button>
       <button type="button" class="pg-wardrobe pg-capbtn" id="g-sharebtn" aria-label="Capture and share your pet"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l1.6-2.4A1.5 1.5 0 0 1 9.9 5h4.2a1.5 1.5 0 0 1 1.3.6L17 8h3a1.5 1.5 0 0 1 1.5 1.5v8A1.5 1.5 0 0 1 20 19H4a1.5 1.5 0 0 1-1.5-1.5v-8A1.5 1.5 0 0 1 4 8z"/><circle cx="12" cy="13" r="3.6"/></svg></button>
     </div>
 
@@ -987,67 +1155,69 @@ html, body { background: #e6edf0; }
         <button type="button" class="pg-btn" id="g-tryonoff">Take off</button>
       </div>
     </div>
-    <!-- the Playground: mini-games and today's best scores among your pet family -->
-    <!-- the Playground: its own page, with games, who's online right now, friends and high scores -->
+    <!-- the Playground: its own page with the games, your wins and today's high scores -->
     <div class="pg pg-playpage" id="g-play" hidden>
       <header class="pg-playhead">
         <button type="button" class="pg-playback" id="g-playclose" aria-label="Back to your pet">←</button>
         <h2>🎮 Playground</h2>
-        <span class="pg-mepet" id="g-mepet"></span>
+        <button type="button" class="pg-headicon" id="g-playsocial" aria-label="Friends and chats">💬<span class="pg-dotcount" id="g-playsocialdot" hidden></span></button>
       </header>
       <div class="pg-playbody">
-        <h3 class="pg-playh">Games</h3>
-        <div class="pg-gamerow">
-          <div class="pg-gametile bamboo">
-            <span class="art" aria-hidden="true">🎋</span>
-            <b>Bamboo catch</b>
-            <small>Solo · beat today's high score</small>
-            <button type="button" class="pg-feed" id="g-gameplay">▶ Play</button>
-          </div>
-          <div class="pg-gametile race">
-            <span class="art" aria-hidden="true">🏁</span>
-            <b>Treat race</b>
-            <small>Live · tap fastest to the treat</small>
-            <button type="button" class="pg-feed" id="g-racefind">Find a racer</button>
-          </div>
-          <div class="pg-gametile duel">
-            <span class="art" aria-hidden="true">🎋⚔️</span>
-            <b>Bamboo duel</b>
-            <small>Live · same 30 s, highest score wins</small>
-            <button type="button" class="pg-feed" id="g-duelfind">Find a player</button>
-          </div>
-          <div class="pg-gametile memory">
-            <span class="art" aria-hidden="true">🃏</span>
-            <b>Memory match</b>
-            <small>Solo · find the 8 pairs fast</small>
-            <button type="button" class="pg-feed" id="g-memplay">▶ Play</button>
-          </div>
-          <div class="pg-gametile soon"><span class="art" aria-hidden="true">⚽</span><b>Ball pass</b><small>Coming soon</small></div>
+        <div class="pg-mecard">
+          <span class="pg-mepet" id="g-mepet"></span>
+          <button type="button" class="pg-winsbtn" id="g-mywins" aria-label="Your games this week">🏁 0 wins</button>
         </div>
-        <p class="pg-hint" id="g-gamereward"></p>
-
-        <h3 class="pg-playh" id="g-onlinehead">🟢 Online now</h3>
-        <ul class="pg-people" id="g-online"></ul>
-        <label class="pg-switch"><input type="checkbox" id="g-showonline" checked> Show my pet as online</label>
-
-        <h3 class="pg-playh">👫 Friends</h3>
-        <ul class="pg-people" id="g-friends"></ul>
-        <div class="pg-friendcode">
-          <span>Your friend code <b id="g-mycode">…</b></span>
-          <button type="button" class="pg-btn" id="g-copycode">Copy</button>
+        <p class="pg-onlinenow" id="g-onlinecount"></p>
+        <div class="pg-gamegrid">
+          <button type="button" class="pg-gamecard bamboo" data-game="bamboo"><span class="art" aria-hidden="true">🎋</span><b>Bamboo catch</b><small>Catch the falling food</small></button>
+          <button type="button" class="pg-gamecard race" data-game="race"><span class="art" aria-hidden="true">🏁</span><b>Treat race</b><small>Tap fastest · up to 4</small></button>
+          <button type="button" class="pg-gamecard memory" data-game="memory"><span class="art" aria-hidden="true">🃏</span><b>Memory match</b><small>Find the pairs</small></button>
+          <div class="pg-gamecard soon"><span class="art" aria-hidden="true">⚽</span><b>Ball pass</b><small>Coming soon</small></div>
         </div>
-        <form class="pg-row" id="g-addcode">
-          <input id="g-codein" placeholder="Add a friend: PANDA-XXXXX" autocapitalize="characters" autocomplete="off" spellcheck="false" aria-label="A friend's code">
-          <button type="submit" class="pg-btn">Add</button>
-        </form>
-
         <h3 class="pg-playh">🏆 Today's best</h3>
         <div class="pg-tabs pg-boardtabs" role="tablist">
           <button type="button" role="tab" data-board="bamboo" aria-selected="true">🎋 Bamboo catch</button>
           <button type="button" role="tab" data-board="memory" aria-selected="false">🃏 Memory match</button>
         </div>
         <ol class="pg-board" id="g-board"></ol>
+        <p class="pg-hint" id="g-gamereward"></p>
+        <label class="pg-switch"><input type="checkbox" id="g-showonline" checked> Show me as online, so others can invite me</label>
         <p class="pg-note">Scores reset every day. Other players only ever see your pet, never your name, unless you're friends.</p>
+      </div>
+    </div>
+    <!-- Social: chats, friends, and adding a friend by code -->
+    <div class="pg pg-playpage pg-socialpage" id="g-social" hidden>
+      <header class="pg-playhead">
+        <button type="button" class="pg-playback" id="g-socialclose" aria-label="Back">←</button>
+        <h2>💬 Friends</h2>
+        <span class="pg-headicon" aria-hidden="true"></span>
+      </header>
+      <div class="pg-tabs pg-soctabs" role="tablist" id="g-soctabs">
+        <button type="button" role="tab" data-tab="chats" aria-selected="true">Chats <span class="pg-tabdot" id="g-socchatdot" hidden></span></button>
+        <button type="button" role="tab" data-tab="friends" aria-selected="false">Friends <span class="pg-tabdot" id="g-socreqdot" hidden></span></button>
+        <button type="button" role="tab" data-tab="add" aria-selected="false">➕ Add</button>
+      </div>
+      <div class="pg-playbody">
+        <ul class="pg-people pg-chats" id="g-socchats"></ul>
+        <ul class="pg-people" id="g-socfriends" hidden></ul>
+        <div class="pg-socadd" id="g-socadd" hidden>
+          <div class="pg-codecard">
+            <small>Your friend code</small>
+            <b id="g-mycode">…</b>
+            <div class="pg-row">
+              <button type="button" class="pg-btn pg-grow" id="g-copycode">📋 Copy</button>
+              <button type="button" class="pg-btn pg-primary pg-grow" id="g-sharecode">📤 Share</button>
+            </div>
+          </div>
+          <form class="pg-addform" id="g-addcode">
+            <label for="g-codein">Got a friend's code?</label>
+            <div class="pg-row">
+              <input id="g-codein" placeholder="PANDA-XXXXX" autocapitalize="characters" autocomplete="off" spellcheck="false">
+              <button type="submit" class="pg-btn pg-primary">Add</button>
+            </div>
+          </form>
+          <p class="pg-note">Friends can chat, see each other's names and invite each other to play, even when the app is closed. You can also tap a pet in the Playground to add its owner.</p>
+        </div>
       </div>
     </div>
     <!-- chat with a friend (strangers only get quick chat in games) -->
@@ -1094,27 +1264,61 @@ html, body { background: #e6edf0; }
         <button type="button" class="pg-linkbtn" id="g-poclose">Close</button>
       </div>
     </div>
-    <!-- "Play" with someone: which game? -->
+    <!-- tap a game: solo or with others -->
+    <div class="pg pg-adopt" id="g-mode" hidden>
+      <div class="pg-card pg-modecard">
+        <div class="pg-modeart" id="g-modeart" aria-hidden="true">🏁</div>
+        <h2 id="g-modename">Treat race</h2>
+        <button type="button" class="pg-modebtn" id="g-modesolo"></button>
+        <button type="button" class="pg-modebtn others" id="g-modeothers"></button>
+        <button type="button" class="pg-linkbtn" id="g-modeclose">Cancel</button>
+      </div>
+    </div>
+    <!-- with others: who to invite -->
+    <div class="pg pg-adopt" id="g-pick" hidden>
+      <div class="pg-card pg-pickcard">
+        <h2 id="g-picktitle">Who do you want to play?</h2>
+        <p class="pg-hint" id="g-picksub"></p>
+        <ul class="pg-people pg-picklist" id="g-picklist"></ul>
+        <button type="button" class="pg-feed pg-wide" id="g-picksend" disabled>Pick someone above</button>
+        <div class="pg-row pg-pickfoot">
+          <button type="button" class="pg-linkbtn" id="g-pickbot">🤖 Play the bot instead</button>
+          <button type="button" class="pg-linkbtn" id="g-pickclose">Cancel</button>
+        </div>
+      </div>
+    </div>
+    <!-- "Play" from someone's card: which game? -->
     <div class="pg pg-adopt" id="g-gamepick" hidden>
       <div class="pg-card">
         <h2>Which game?</h2>
         <div class="pg-pickgames">
           <button type="button" class="pg-gametile race" id="g-pickrace"><span class="art" aria-hidden="true">🏁</span><b>Treat race</b><small>Tap fastest to the treat</small></button>
-          <button type="button" class="pg-gametile duel" id="g-pickduel"><span class="art" aria-hidden="true">🎋⚔️</span><b>Bamboo duel</b><small>Highest score in 30 s</small></button>
-          <button type="button" class="pg-gametile memory" id="g-pickmem"><span class="art" aria-hidden="true">🃏</span><b>Memory duel</b><small>First to find all pairs</small></button>
+          <button type="button" class="pg-gametile duel" id="g-pickduel"><span class="art" aria-hidden="true">🎋</span><b>Bamboo duel</b><small>Highest score in 30 s</small></button>
+          <button type="button" class="pg-gametile memory" id="g-pickmem"><span class="art" aria-hidden="true">🃏</span><b>Memory match</b><small>Take turns finding pairs</small></button>
         </div>
         <button type="button" class="pg-linkbtn" id="g-pickno">Cancel</button>
       </div>
     </div>
-    <!-- a live invite (anywhere in the app) or a friend's invite from when you were away -->
-    <div class="pg pg-card pg-invite" id="g-invite" hidden role="alertdialog" aria-labelledby="g-invitetext">
-      <img id="g-invitepic" alt="">
-      <p id="g-invitetext"></p>
-      <div class="pg-row">
-        <button type="button" class="pg-btn" id="g-inviteno">No thanks</button>
-        <button type="button" class="pg-btn pg-primary" id="g-inviteyes">Accept</button>
+    <!-- an invite to play (anywhere in the app) -->
+    <div class="pg pg-adopt pg-invitewrap" id="g-invite" hidden role="alertdialog" aria-labelledby="g-invitetext">
+      <div class="pg-card pg-invite">
+        <div class="pg-invpic"><img id="g-invitepic" alt=""><span class="pg-invgame" id="g-invitegame" aria-hidden="true">🏁</span></div>
+        <p class="pg-invwho" id="g-invitewho"></p>
+        <h2 id="g-invitetext"></h2>
+        <p class="pg-invsub" id="g-invitesub"></p>
+        <div class="pg-invtimer" aria-hidden="true"><i id="g-invitebar"></i></div>
+        <div class="pg-row">
+          <button type="button" class="pg-btn pg-grow" id="g-inviteno">Not now</button>
+          <button type="button" class="pg-feed pg-grow" id="g-inviteyes">Let's play!</button>
+        </div>
+        <button type="button" class="pg-linkbtn pg-small" id="g-inviteblock">Block this pet</button>
       </div>
-      <button type="button" class="pg-linkbtn pg-small" id="g-inviteblock">Block this pet</button>
+    </div>
+    <!-- your games in the last 7 days (tap your wins in the Playground) -->
+    <div class="pg pg-card pg-sheet pg-histsheet" id="g-history" hidden>
+      <h2><span>🏁 Your games <small>last 7 days</small></span> <button type="button" class="pg-x" id="g-historyclose" aria-label="Close your games">✕</button></h2>
+      <p class="pg-hint" id="g-histsum"></p>
+      <ol class="pg-histlist" id="g-histlist"></ol>
     </div>
     <!-- today's log: who fed, bathed, played and reminded, with the time -->
     <div class="pg pg-card pg-sheet" id="g-today" hidden>
@@ -3864,7 +4068,8 @@ html, body { background: #e6edf0; }
   // startBambooGame({ pic, name, onEnd(score) }) builds its own screen; real.js saves the score and shows the board.
   // As a live duel: { seed, live: true, them: {html}, onScore(n), onQuick(i) } -> both phones get the same falling
   // things (from the shared seed), the game waits for start() so both begin together, and opp(n) / quick(i) show the
-  // other player's score and quick chat. The clock doesn't pause in a duel (the other player keeps going).
+  // other player's score and emoji. The clock doesn't pause in a duel (the other player keeps going), and a duel
+  // counts down from 5 (time to send an emoji).
   function seeded(seed) {   // a small repeatable random number maker (mulberry32)
     var a = seed >>> 0;
     return function () { a = (a + 0x6D2B79F5) >>> 0; var t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
@@ -3877,7 +4082,7 @@ html, body { background: #e6edf0; }
       '<canvas aria-label="Bamboo catch: move your pet to catch the falling food"></canvas>' +
       '<div class="pg-gamehud"><span class="sc">0</span>' + (opts.live ? '<span class="op"><span class="nm"></span> <b class="opn">0</b></span>' : "") +
       '<span class="tm">' + BAMBOO_TIME + 's</span>' +
-      (opts.onQuick ? '<button type="button" class="pg-qcbtn" aria-label="Quick chat">💬</button>' : "") +
+      (opts.onQuick ? '<button type="button" class="pg-qcbtn" aria-label="Send an emoji">💬</button>' : "") +
       '<button type="button" class="pg-gamex" aria-label="Stop the game">✕</button></div>' +
       '<div class="pg-qcpal" hidden></div><div class="pg-duelbubbles"></div>' +
       '<div class="pg-gamemsg"></div>';
@@ -3895,20 +4100,14 @@ html, body { background: #e6edf0; }
     var rnd = opts.seed ? seeded(opts.seed) : Math.random;
     var opEl = wrap.querySelector(".op .opn");   // (not just "b": the name with its badge has a <b> too)
     if (opts.live) { wrap.querySelector(".op .nm").innerHTML = opts.them.html || ""; msg.className = "pg-gamemsg big"; msg.textContent = "Get ready…"; }
-    // quick chat (duels): set phrases only, shown as bubbles at the top
-    var bubbles = wrap.querySelector(".pg-duelbubbles"), pal = wrap.querySelector(".pg-qcpal"), lastQc = 0;
+    // emoji (duels), shown as bubbles at the top
+    var bubbles = wrap.querySelector(".pg-duelbubbles");
     function duelBubble(text, mine) {
-      var b = document.createElement("span"); b.className = "pg-bubble" + (mine ? " mine" : ""); b.textContent = (mine ? "You: " : "") + text;
+      var b = document.createElement("span"); b.className = "pg-bubble" + (mine ? " mine" : ""); b.textContent = (mine ? "You " : "") + text;
       bubbles.appendChild(b); setTimeout(function () { b.remove(); }, 2600);
     }
-    if (opts.onQuick) {
-      QUICK_CHAT.forEach(function (t, i) {
-        var c = document.createElement("button"); c.type = "button"; c.textContent = t;
-        c.addEventListener("click", function () { pal.hidden = true; if (Date.now() - lastQc < 1500) return; lastQc = Date.now(); duelBubble(t, true); opts.onQuick(i); });
-        pal.appendChild(c);
-      });
-      wrap.querySelector(".pg-qcbtn").addEventListener("click", function () { pal.hidden = !pal.hidden; });
-    }
+    if (opts.onQuick) quickPalette(wrap, function (i, t) { duelBubble(t, true); opts.onQuick(i); });
+    var CD = opts.live ? 5 : 3;
 
     // moving: drag anywhere, or the arrow keys
     function aim(e) { var r = cv.getBoundingClientRect(); tx = Math.max(P / 2, Math.min(W - P / 2, e.clientX - r.left)); }
@@ -3955,10 +4154,10 @@ html, body { background: #e6edf0; }
       drawScene(now);
 
       if (state === "count") {
-        var n = 3 - Math.floor(since);
-        msg.textContent = n > 0 ? n : "Go!";
+        var n = CD - Math.floor(since);
+        if (n > 0 && opts.live) msg.innerHTML = n + "<small>Get ready! Tap 💬 to send an emoji</small>"; else msg.textContent = n > 0 ? n : "Go!";
         msg.className = "pg-gamemsg big";
-        if (since >= 3.6) { state = "play"; t0 = now; msg.textContent = ""; msg.className = "pg-gamemsg"; }
+        if (since >= CD + 0.6) { state = "play"; t0 = now; msg.textContent = ""; msg.className = "pg-gamemsg"; }
       } else if (state === "play") {
         var left = Math.max(0, BAMBOO_TIME - since);
         hudTime.textContent = Math.ceil(left) + "s";
@@ -4022,222 +4221,297 @@ html, body { background: #e6edf0; }
       start: function () { if (state === "wait") { state = "count"; t0 = performance.now(); last = t0; } },
       opp: function (n) { if (opEl) opEl.textContent = n; },
       quick: function (i) { if (QUICK_CHAT[i]) duelBubble(QUICK_CHAT[i], false); },
+      status: function (t) { msg.className = "pg-gamemsg big"; msg.textContent = t; },
       score: function () { return score; }
     };
   }
 
-  // ---------- Treat race (live, two players) ----------
-  // Two lanes, a treat at the end. Every tap on the big button moves your pet a step; the other pet moves as the
-  // other player taps (their taps arrive over the live channel, or come from Bamboo the bot). First to the treat wins.
-  // startTapRace({ me: {pic, label}, them: {pic, label}, steps, onTap(n), onEnd(won), onQuit() })
-  //   -> { start(), opp(n), oppLeft(), close() }   start() runs the 3-2-1 (both phones get it at the same moment)
-  var RACE_STEPS = 40;
-  // quick chat: set phrases only (a stranger can only send one of these, by number, never their own words)
-  var QUICK_CHAT = ["Good luck! 🍀", "Good game! 🤝", "Rematch? 🏁", "So close! 😮", "You're fast! ⚡", "Wow! 🤩", "😂", "❤️", "👋 Hi!", "Thanks! 😊"];
+
+  // ---------- Quick chat in games: emoji only ----------
+  // Everyone (strangers too) can only send one of these, by number, never their own words.
+  var QUICK_CHAT = ["😀", "😂", "😍", "😮", "😢", "😡", "👍", "👏", "🔥", "🤝"];
+  // the 💬 button in a game's top bar opens a row of emoji; onPick(i, emoji). A little pause stops spamming.
+  function quickPalette(wrap, onPick) {
+    var btn = wrap.querySelector(".pg-qcbtn"), pal = wrap.querySelector(".pg-qcpal"), last = 0;
+    if (!btn || !pal) return;
+    QUICK_CHAT.forEach(function (t, i) {
+      var c = document.createElement("button"); c.type = "button"; c.textContent = t; c.setAttribute("aria-label", "Send " + t);
+      c.addEventListener("click", function () { pal.hidden = true; if (Date.now() - last < 1200) return; last = Date.now(); onPick(i, t); });
+      pal.appendChild(c);
+    });
+    btn.addEventListener("click", function () { pal.hidden = !pal.hidden; });
+  }
+  // the big 5-4-3-2-1 before a game with other players (time to send an emoji); then(), unless stopped
+  function countdownFrom(msg, n, goText, timers, isOver, then) {
+    for (var k = 0; k <= n; k++) (function (k) {
+      timers.push(setTimeout(function () {
+        if (isOver()) return;
+        if (k < n) { msg.innerHTML = (n - k) + '<small>Get ready! Tap 💬 to send an emoji</small>'; return; }
+        msg.textContent = goText; then();
+        timers.push(setTimeout(function () { if (!isOver() && msg.textContent === goText) msg.textContent = ""; }, 600));
+      }, k * 1000));
+    })(k);
+  }
+
+  // ---------- Treat race (2 to 4 players) ----------
+  // A lane each and a treat at the end. Every tap on the big button moves your pet a step. Who won is decided by one
+  // referee (the player who sent the invites, or this phone against the bot) and given to everyone with result(),
+  // so two phones can never both say "You win".
+  // startTapRace({ players: [{ uid, pic, html, me }], steps, onTap(n), onFinish(), onQuick(i), onQuit() })
+  //   -> { wrap, start(), progress(uid, n), quick(uid, i), left(uid), result(order), status(text), close() }
+  var RACE_STEPS = 56;
   function startTapRace(opts) {
-    var steps = opts.steps || RACE_STEPS;
+    var steps = opts.steps || RACE_STEPS, me = null;
     var wrap = document.createElement("div"); wrap.className = "pg-game pg-race";
     wrap.innerHTML =
       '<div class="pg-gamehud"><span class="lbl">🏁 Treat race</span>' +
-        (opts.onQuick ? '<button type="button" class="pg-qcbtn" aria-label="Quick chat">💬</button>' : "") +
+        (opts.onQuick ? '<button type="button" class="pg-qcbtn" aria-label="Send an emoji">💬</button>' : "") +
         '<button type="button" class="pg-gamex" aria-label="Leave the race">✕</button></div>' +
       '<div class="pg-qcpal" hidden></div>' +
-      '<div class="pg-lanes">' +
-        '<div class="pg-lane them"><span class="who"></span><div class="track"><img alt=""><i class="treat">🍰</i></div></div>' +
-        '<div class="pg-lane me"><span class="who"></span><div class="track"><img alt=""><i class="treat">🍰</i></div></div>' +
-      "</div>" +
+      '<div class="pg-lanes"></div>' +
       '<div class="pg-gamemsg big">Get ready…</div>' +
       '<button type="button" class="pg-tapbtn" disabled>TAP!</button>';
     document.body.appendChild(wrap);
-    var lanes = wrap.querySelectorAll(".pg-lane"), msg = wrap.querySelector(".pg-gamemsg"), btn = wrap.querySelector(".pg-tapbtn");
-    // names arrive as ready-made HTML (with the rank badge, already escaped) or as plain text
-    lanes[0].querySelector(".who").innerHTML = opts.them.html || ""; if (!opts.them.html) lanes[0].querySelector(".who").textContent = opts.them.label;
-    lanes[1].querySelector(".who").innerHTML = (opts.me.html || "") + ' <small>(you)</small>'; if (!opts.me.html) lanes[1].querySelector(".who").textContent = opts.me.label + " (you)";
-    lanes[0].querySelector("img").src = opts.them.pic; lanes[1].querySelector("img").src = opts.me.pic;
-    // a speech bubble over a lane for a couple of seconds
-    function bubble(lane, text) {
+    var box = wrap.querySelector(".pg-lanes"), msg = wrap.querySelector(".pg-gamemsg"), btn = wrap.querySelector(".pg-tapbtn");
+    var lanes = {};
+    // others on top, you at the bottom (next to the button)
+    opts.players.filter(function (pl) { return !pl.me; }).concat(opts.players.filter(function (pl) { return pl.me; })).forEach(function (pl) {
+      var lane = document.createElement("div"); lane.className = "pg-lane" + (pl.me ? " me" : "");
+      lane.innerHTML = '<span class="who"></span><div class="track"><img alt=""><i class="treat">🍰</i><b class="place"></b></div>';
+      lane.querySelector(".who").innerHTML = (pl.html || "") + (pl.me ? " <small>(you)</small>" : "");
+      lane.querySelector("img").src = pl.pic;
+      box.appendChild(lane);
+      lanes[pl.uid] = { el: lane, n: 0 };
+      if (pl.me) me = pl.uid;
+    });
+    function place(uid) { var l = lanes[uid]; if (l) l.el.querySelector("img").style.left = "calc(" + (Math.min(1, l.n / steps) * 100) + "% * 0.82)"; }
+    Object.keys(lanes).forEach(place);
+    function bubble(uid, text) {
+      var l = lanes[uid]; if (!l) return;
       var b = document.createElement("span"); b.className = "pg-bubble"; b.textContent = text;
-      lane.appendChild(b); setTimeout(function () { b.remove(); }, 2600);
+      l.el.appendChild(b); setTimeout(function () { b.remove(); }, 2600);
     }
-    var qcBtn = wrap.querySelector(".pg-qcbtn"), pal = wrap.querySelector(".pg-qcpal"), lastQc = 0;
-    if (qcBtn) {
-      QUICK_CHAT.forEach(function (t, i) {
-        var c = document.createElement("button"); c.type = "button"; c.textContent = t;
-        c.addEventListener("click", function () {
-          pal.hidden = true;
-          if (Date.now() - lastQc < 1500) return;   // no spamming
-          lastQc = Date.now(); bubble(lanes[1], t); opts.onQuick(i);
-        });
-        pal.appendChild(c);
-      });
-      qcBtn.addEventListener("click", function () { pal.hidden = !pal.hidden; });
-    }
-    var mine = 0, theirs = 0, live = false, over = false, timers = [];
-    function place(lane, n) { lane.querySelector("img").style.left = "calc(" + (Math.min(1, n / steps) * 100) + "% * 0.82)"; }
-    place(lanes[0], 0); place(lanes[1], 0);
+    quickPalette(wrap, function (i, t) { bubble(me, t); opts.onQuick(i); });
+    var live = false, over = false, finished = false, timers = [];
     function tap(e) {
       if (e) e.preventDefault();
-      if (!live || over) return;
-      mine++; place(lanes[1], mine);
-      lanes[1].querySelector("img").classList.remove("hop"); void lanes[1].offsetWidth; lanes[1].querySelector("img").classList.add("hop");
-      if (typeof sfx === "function" && mine % 4 === 0) sfx("click");
-      if (opts.onTap) opts.onTap(mine);
-      if (mine >= steps) end(true);
+      if (!live || over || finished) return;
+      var l = lanes[me]; l.n++; place(me);
+      var img = l.el.querySelector("img"); img.classList.remove("hop"); void img.offsetWidth; img.classList.add("hop");
+      if (typeof sfx === "function" && l.n % 4 === 0) sfx("click");
+      if (opts.onTap) opts.onTap(l.n);
+      if (l.n >= steps) { finished = true; btn.disabled = true; msg.textContent = "🏁"; if (opts.onFinish) opts.onFinish(); }
     }
     btn.addEventListener("pointerdown", tap);
     function onKey(e) { if (e.key === " " || e.key === "Enter") tap(e); }
     window.addEventListener("keydown", onKey);
-    function end(won) {
-      if (over) return; over = true; live = false; btn.disabled = true;
-      msg.textContent = won ? "🏆 You win!" : opts.them.label + " wins!";
-      if (typeof sfx === "function") sfx(won ? "levelUp" : "pat");
-      timers.push(setTimeout(function () { opts.onEnd(won); }, 1200));
-    }
-    function close() {
-      over = true; live = false; timers.forEach(clearTimeout);
-      window.removeEventListener("keydown", onKey); wrap.remove();
-    }
+    function close() { over = true; live = false; timers.forEach(clearTimeout); window.removeEventListener("keydown", onKey); wrap.remove(); }
     wrap.querySelector(".pg-gamex").addEventListener("click", function () {
-      if (live && !confirm("Leave the race?")) return;
+      if (live && !over && !confirm("Leave the race?")) return;
       close(); if (opts.onQuit) opts.onQuit();
     });
     return {
-      wrap: wrap,
-      start: function () {
-        [["3", 0], ["2", 800], ["1", 1600], ["Tap!", 2400]].forEach(function (s) {
-          timers.push(setTimeout(function () {
-            if (over) return;
-            msg.textContent = s[0];
-            if (s[0] === "Tap!") { live = true; btn.disabled = false; timers.push(setTimeout(function () { if (!over) msg.textContent = ""; }, 600)); }
-          }, s[1]));
-        });
-      },
-      // the other player sent quick chat phrase number i
-      quick: function (i) { if (QUICK_CHAT[i]) bubble(lanes[0], QUICK_CHAT[i]); },
-      opp: function (n) { if (over) return; theirs = Math.max(theirs, n); place(lanes[0], theirs); if (theirs >= steps) end(false); },
-      oppLeft: function () { if (over) return; over = true; live = false; btn.disabled = true; msg.textContent = opts.them.label + " left the race"; timers.push(setTimeout(function () { opts.onEnd(null); }, 1500)); },
-      close: close
+      wrap: wrap, close: close,
+      start: function () { countdownFrom(msg, 5, "Tap!", timers, function () { return over; }, function () { live = true; btn.disabled = false; }); },
+      progress: function (uid, n) { var l = lanes[uid]; if (!l || over || uid === me) return; l.n = Math.max(l.n, n); place(uid); },
+      quick: function (uid, i) { if (QUICK_CHAT[i]) bubble(uid, QUICK_CHAT[i]); },
+      left: function (uid) { var l = lanes[uid]; if (l) { l.el.classList.add("gone"); l.el.querySelector(".place").textContent = "left"; } },
+      status: function (t) { msg.textContent = t; },
+      // the referee's word: order = player ids, first place first
+      result: function (order) {
+        if (over) return; over = true; live = false; btn.disabled = true;
+        order.forEach(function (uid, k) { var l = lanes[uid]; if (l) l.el.querySelector(".place").textContent = ["🥇", "🥈", "🥉", "4th"][k] || ""; });
+        var mine = order.indexOf(me);
+        msg.textContent = mine === 0 ? "🏆 You win!" : mine > 0 ? ["", "🥈 2nd place!", "🥉 3rd place", "4th place"][mine] : "";
+        if (typeof sfx === "function") sfx(mine === 0 ? "levelUp" : "pat");
+      }
     };
   }
-  // Bamboo the bot: taps about 7 times a second with the odd short pause (the whole race in about 6 seconds),
-  // so you need quick fingers to beat it
-  function botRacer(race) {
+  // Bamboo the bot: taps about 7 times a second with the odd short pause (the whole race in about 8 seconds)
+  function botRacer(race, uid, onFinish) {
     var n = 0, alive = true;
     function step() {
       if (!alive) return;
-      n++; race.opp(n);
-      if (n < RACE_STEPS) setTimeout(step, 120 + Math.random() * 50 + (Math.random() < 0.05 ? 220 : 0));
+      n++; race.progress(uid, n);
+      if (n >= RACE_STEPS) { onFinish(); return; }
+      setTimeout(step, 120 + Math.random() * 50 + (Math.random() < 0.05 ? 220 : 0));
     }
-    setTimeout(step, 2400 + 250);
-    return { stop: function () { alive = false; } };
+    setTimeout(step, 5000 + 250);
+    return { stop: function () { alive = false; }, n: function () { return n; } };
   }
 
   // ---------- Memory match ----------
-  // A 4x4 board of face-down cards: 8 pairs of things from the app (foods, hats, glasses, the red pandas). Flip two
-  // at a time; a pair stays face up. The score rewards few tries and a quick finish (0-150, like Bamboo catch).
-  // startMemoryGame({ pic, seed, live, them: {html}, limit, onPairs(n), onQuick(i), onEnd(result), onQuit() })
-  //   -> { wrap, start(), opp(pairs), quick(i), stop(), close() }
-  //   result: { score, pairs, moves, secs, done }   (done: the whole board was cleared)
-  // As a live duel both phones get the same board (shared seed); the game waits for start(); stop() ends it early
-  // (the other player cleared their board first).
-  var MEMORY_PAIRS = 8;
+  // 24 face-down cards: 12 pairs of things from the app (foods, hats, glasses, the red pandas). Flip two at a time;
+  // a pair stays face up.
+  //  * Solo: find them all; the score rewards few tries and a quick finish (0-150, like Bamboo catch).
+  //  * Taking turns (opts.turns = { players: [{ uid, html, me, bot }], first }): one player flips at a time. Find a
+  //    pair and you go again; miss and it's the other player's turn. Most pairs wins. Both phones get the same board
+  //    (shared seed) and apply the same flips in the same order, so they always agree. A turn lasts 20 seconds.
+  // startMemoryGame({ seed, turns, onFlip(i), onPass(), onQuick(i), onEnd(result), onQuit() })
+  //   -> { wrap, start(), flip(i), pass(), quick(i), stop(), close() }
+  //   solo result: { score, pairs, moves, secs, done }; turns result: { pairs: { uid: n }, winner: uid or null (draw) }
+  var MEMORY_PAIRS = 12, MEMORY_TURN = 20;
   var MEMORY_FACES = ["🍎", "🍌", "🥕", "🍓", "🍉", "🍇", "🧁", "🍪", "🍩", "🍑",
     "img:Beanie", "img:Cowboy", "img:Witch", "img:Santa", "img:Frog", "img:TopHat", "img:Aviator", "img:Heart", "img:Pixel",
     "img:panda_snowy", "img:panda_sakura", "img:panda_golden", "img:panda_moss"];
   function memoryScore(moves, secs) {
-    // 8 tries is perfect; each extra try costs 4, and up to 50 more for speed (finishing in 20 s or less)
-    return Math.max(10, Math.min(150, 100 - Math.max(0, moves - MEMORY_PAIRS) * 4 + Math.max(0, 50 - Math.max(0, secs - 20))));
+    // 12 tries is perfect; each extra try costs 3, and up to 50 more for speed (finishing in 45 s or less)
+    return Math.max(10, Math.min(150, 100 - Math.max(0, moves - MEMORY_PAIRS) * 3 + Math.max(0, 50 - Math.max(0, secs - 45))));
   }
   function startMemoryGame(opts) {
-    var rnd = opts.seed ? seeded(opts.seed) : Math.random, limit = opts.limit || 0;
-    // pick 8 faces and shuffle 16 cards (the same on both phones in a duel)
+    var rnd = opts.seed ? seeded(opts.seed) : Math.random, T = opts.turns || null;
     var pool = MEMORY_FACES.slice(), faces = [];
     while (faces.length < MEMORY_PAIRS) faces.push(pool.splice(Math.floor(rnd() * pool.length), 1)[0]);
     var deck = faces.concat(faces);
     for (var i = deck.length - 1; i > 0; i--) { var j = Math.floor(rnd() * (i + 1)), t = deck[i]; deck[i] = deck[j]; deck[j] = t; }
 
-    var wrap = document.createElement("div"); wrap.className = "pg-game pg-memory";
+    var wrap = document.createElement("div"); wrap.className = "pg-game pg-memory" + (T ? " turns" : "");
     wrap.innerHTML =
-      '<div class="pg-gamehud"><span class="pr">0/' + MEMORY_PAIRS + '</span>' +
-        (opts.live ? '<span class="op"><span class="nm"></span> <b class="opn">0/' + MEMORY_PAIRS + "</b></span>" : "") +
-        '<span class="tm">' + (limit ? limit + "s" : "0s") + "</span>" +
-        (opts.onQuick ? '<button type="button" class="pg-qcbtn" aria-label="Quick chat">💬</button>' : "") +
+      '<div class="pg-gamehud">' + (T ? '<span class="pg-memscores"></span>' : '<span class="pr">0/' + MEMORY_PAIRS + '</span><span class="tm">0s</span>') +
+        (opts.onQuick ? '<button type="button" class="pg-qcbtn" aria-label="Send an emoji">💬</button>' : "") +
         '<button type="button" class="pg-gamex" aria-label="Stop the game">✕</button></div>' +
       '<div class="pg-qcpal" hidden></div><div class="pg-duelbubbles"></div>' +
-      '<div class="pg-cards"></div><p class="pg-memhint">Tries: <b class="mv">0</b></p>' +
-      '<div class="pg-gamemsg big">' + (opts.live ? "Get ready…" : "") + "</div>";
+      (T ? '<p class="pg-turn" aria-live="polite"></p>' : "") +
+      '<div class="pg-cards"></div>' + (T ? "" : '<p class="pg-memhint">Tries: <b class="mv">0</b></p>') +
+      '<div class="pg-gamemsg big"></div>';
     document.body.appendChild(wrap);
-    if (opts.live) wrap.querySelector(".op .nm").innerHTML = opts.them.html || "";
-    var grid = wrap.querySelector(".pg-cards"), msg = wrap.querySelector(".pg-gamemsg");
-    var hudPairs = wrap.querySelector(".pr"), hudTime = wrap.querySelector(".tm"), hudMoves = wrap.querySelector(".mv"), opEl = wrap.querySelector(".opn");
-    var open = [], pairs = 0, moves = 0, t0 = 0, ticking = null, live = false, over = false, lock = false, timers = [];
+    var grid = wrap.querySelector(".pg-cards"), msg = wrap.querySelector(".pg-gamemsg"), turnEl = wrap.querySelector(".pg-turn");
     deck.forEach(function (f, k) {
       var c = document.createElement("button"); c.type = "button"; c.className = "pg-mcard"; c.disabled = true;
       c.setAttribute("aria-label", "Card " + (k + 1));
       var face = f.indexOf("img:") === 0 ? '<img alt="" src="icons/' + f.slice(4) + '.png">' : "<span>" + f + "</span>";
       c.innerHTML = '<i class="back">🐾</i><i class="front">' + face + "</i>";
-      c.dataset.face = f;
-      c.addEventListener("click", function () { flip(c); });
+      c.addEventListener("click", function () { tapCard(k); });
       grid.appendChild(c);
     });
     var cards = grid.querySelectorAll(".pg-mcard");
-    function flip(c) {
-      if (!live || over || lock || c.classList.contains("up")) return;
-      c.classList.add("up"); open.push(c);
+    var open = [], found = 0, moves = 0, t0 = 0, ticking = null, live = false, over = false, lockUntil = 0, timers = [], pending = {};
+    var turn = T ? T.first : null, pairsBy = {}, turnLeft = MEMORY_TURN, botSeen = {}, botBusy = false;
+    var byId = {};
+    if (T) T.players.forEach(function (pl) { byId[pl.uid] = pl; pairsBy[pl.uid] = 0; });
+    function mineTurn() { return !T || (byId[turn] && byId[turn].me); }
+    function nextTurn() { var ids = T.players.map(function (pl) { return pl.uid; }); return ids[(ids.indexOf(turn) + 1) % ids.length]; }
+    function showTurn() {
+      if (!T) return;
+      wrap.querySelector(".pg-memscores").innerHTML = T.players.map(function (pl) {
+        return '<span class="' + (pl.uid === turn ? "on" : "") + '">' + (pl.me ? "You" : pl.html) + " <b>" + pairsBy[pl.uid] + "</b></span>";
+      }).join("");
+      wrap.dataset.turn = turn;
+      wrap.classList.toggle("myturn", mineTurn());
+      if (!live || over) return;
+      turnEl.innerHTML = mineTurn() ? "👉 Your turn! <small>" + turnLeft + "s</small>" : "⏳ " + byId[turn].html + "'s turn… <small>" + turnLeft + "s</small>";
+    }
+    function tapCard(k) {
+      if (!live || over || Date.now() < lockUntil || cards[k].classList.contains("up")) return;
+      if (!mineTurn()) { turnEl.classList.remove("shake"); void turnEl.offsetWidth; turnEl.classList.add("shake"); return; }
+      reveal(k);
+      if (T && opts.onFlip) opts.onFlip(k);
+    }
+    // turn a card over (my tap, the other player's tap, or the bot's)
+    function reveal(k) {
+      var c = cards[k];
+      if (over || c.classList.contains("done") || open.indexOf(k) >= 0) return;
+      clearTimeout(pending[k]); c.classList.add("up"); open.push(k);
+      if (Math.random() < 0.6) botSeen[k] = deck[k];   // the bot forgets some of what it sees
       if (typeof sfx === "function") sfx("click");
+      turnLeft = MEMORY_TURN; showTurn();
       if (open.length < 2) return;
-      moves++; hudMoves.textContent = moves;
+      moves++; if (!T) wrap.querySelector(".mv").textContent = moves;
       var a = open[0], b = open[1]; open = [];
-      if (a.dataset.face === b.dataset.face) {
-        a.classList.add("done"); b.classList.add("done"); pairs++;
-        hudPairs.textContent = pairs + "/" + MEMORY_PAIRS;
+      if (deck[a] === deck[b]) {
+        cards[a].classList.add("done"); cards[b].classList.add("done"); found++;
+        delete botSeen[a]; delete botSeen[b];
+        if (T) pairsBy[turn]++; else wrap.querySelector(".pr").textContent = found + "/" + MEMORY_PAIRS;
         if (typeof sfx === "function") sfx("coin");
-        if (opts.onPairs) opts.onPairs(pairs);
-        if (pairs >= MEMORY_PAIRS) finish(true);
+        showTurn();
+        if (found >= MEMORY_PAIRS) finish(true);
+        else botMaybe();
       } else {
-        lock = true;
-        timers.push(setTimeout(function () { a.classList.remove("up"); b.classList.remove("up"); lock = false; }, 750));
+        lockUntil = Date.now() + 900;
+        [a, b].forEach(function (x) { pending[x] = setTimeout(function () { cards[x].classList.remove("up"); }, 900); });
+        if (T) { turn = nextTurn(); showTurn(); botMaybe(); }
       }
+    }
+    // a turn ran out (or the player passed): put back any open card, next player
+    function pass() {
+      if (!T || over) return;
+      open.forEach(function (x) { cards[x].classList.remove("up"); }); open = [];
+      turn = nextTurn(); turnLeft = MEMORY_TURN; showTurn(); botMaybe();
+    }
+    // Bamboo the bot: a remembered pair if it knows one, otherwise a guess
+    function botMaybe() {
+      if (!T || over || !byId[turn] || !byId[turn].bot || botBusy) return;
+      botBusy = true;
+      var who = turn;
+      function avail(k) { return !cards[k].classList.contains("done") && open.indexOf(k) < 0; }
+      function unknown() { var l = []; for (var k = 0; k < deck.length; k++) if (avail(k) && !(k in botSeen)) l.push(k); if (!l.length) for (k = 0; k < deck.length; k++) if (avail(k)) l.push(k); return l; }
+      function knownPair() {
+        var ks = Object.keys(botSeen).map(Number).filter(avail);
+        for (var x = 0; x < ks.length; x++) for (var y = x + 1; y < ks.length; y++) if (botSeen[ks[x]] === botSeen[ks[y]]) return [ks[x], ks[y]];
+        return null;
+      }
+      timers.push(setTimeout(function () {
+        if (over || turn !== who) { botBusy = false; return; }
+        var pair = knownPair(), first, l = unknown();
+        first = pair ? pair[0] : l[Math.floor(Math.random() * l.length)];
+        reveal(first);
+        timers.push(setTimeout(function () {
+          botBusy = false;
+          if (over || turn !== who) return;
+          var second = pair ? pair[1] : null;
+          if (second === null) {
+            var match = Object.keys(botSeen).map(Number).filter(function (k) { return k !== first && avail(k) && botSeen[k] === deck[first]; })[0];
+            if (match !== undefined) second = match;
+            else { var l2 = unknown().filter(function (k) { return k !== first; }); second = l2[Math.floor(Math.random() * l2.length)]; }
+          }
+          reveal(second);
+        }, 900));
+      }, 1300));
     }
     function secs() { return t0 ? Math.round((performance.now() - t0) / 1000) : 0; }
     function begin() {
       live = true; t0 = performance.now();
       Array.prototype.forEach.call(cards, function (c) { c.disabled = false; });
+      showTurn(); botMaybe();
       ticking = setInterval(function () {
-        var s = secs();
-        hudTime.textContent = limit ? Math.max(0, limit - s) + "s" : s + "s";
-        hudTime.classList.toggle("low", !!limit && limit - s <= 10);
-        if (limit && s >= limit) finish(false);
-      }, 250);
+        if (!T) { wrap.querySelector(".tm").textContent = secs() + "s"; return; }
+        turnLeft = Math.max(0, turnLeft - 1); showTurn();
+        // only the player whose turn it is moves things on (the other phone gets "pass")
+        if (turnLeft <= 0 && mineTurn()) { pass(); if (opts.onPass) opts.onPass(); }
+      }, 1000);
+      showTurn();
     }
     function finish(done) {
       if (over) return; over = true; live = false; clearInterval(ticking);
-      var s = secs();
-      msg.textContent = done ? "🎉 All pairs!" : "Time's up!";
-      var result = { score: done ? memoryScore(moves, s) : 0, pairs: pairs, moves: moves, secs: s, done: done };
+      var s = secs(), result;
+      if (T) {
+        var ids = Object.keys(pairsBy).sort(function (x, y) { return pairsBy[y] - pairsBy[x]; });
+        result = { pairs: pairsBy, winner: ids.length > 1 && pairsBy[ids[0]] === pairsBy[ids[1]] ? null : ids[0], done: done };
+        msg.textContent = !done ? "" : result.winner === null ? "🤝 A draw!" : byId[result.winner].me ? "🏆 You win!" : byId[result.winner].html.replace(/<[^>]+>/g, "") + " wins!";
+        if (turnEl) turnEl.textContent = "";
+      } else {
+        result = { score: done ? memoryScore(moves, s) : 0, pairs: found, moves: moves, secs: s, done: done };
+        msg.textContent = done ? "🎉 All pairs!" : "";
+      }
       timers.push(setTimeout(function () { opts.onEnd(result); }, 900));
     }
-    function close() { over = true; clearInterval(ticking); timers.forEach(clearTimeout); wrap.remove(); }
-    // quick chat (duels)
-    var bubbles = wrap.querySelector(".pg-duelbubbles"), pal = wrap.querySelector(".pg-qcpal"), lastQc = 0;
-    function bubble(text, mine) {
-      var b = document.createElement("span"); b.className = "pg-bubble" + (mine ? " mine" : ""); b.textContent = (mine ? "You: " : "") + text;
+    function close() { over = true; clearInterval(ticking); timers.forEach(clearTimeout); Object.keys(pending).forEach(function (k) { clearTimeout(pending[k]); }); wrap.remove(); }
+    // quick chat (taking turns)
+    var bubbles = wrap.querySelector(".pg-duelbubbles");
+    function bubble(text, who) {
+      var b = document.createElement("span"); b.className = "pg-bubble" + (who === null ? " mine" : ""); b.innerHTML = (who === null ? "You" : who) + " " + text;
       bubbles.appendChild(b); setTimeout(function () { b.remove(); }, 2600);
     }
-    if (opts.onQuick) {
-      QUICK_CHAT.forEach(function (t, i) {
-        var c = document.createElement("button"); c.type = "button"; c.textContent = t;
-        c.addEventListener("click", function () { pal.hidden = true; if (Date.now() - lastQc < 1500) return; lastQc = Date.now(); bubble(t, true); opts.onQuick(i); });
-        pal.appendChild(c);
-      });
-      wrap.querySelector(".pg-qcbtn").addEventListener("click", function () { pal.hidden = !pal.hidden; });
-    }
+    quickPalette(wrap, function (i, t) { bubble(t, null); opts.onQuick(i); });
     wrap.querySelector(".pg-gamex").addEventListener("click", function () {
-      if (live && !confirm(opts.live ? "Leave the duel?" : "Stop the game? This round won't count.")) return;
+      if (live && !over && !confirm(T ? "Leave the game?" : "Stop the game? This round won't count.")) return;
       close(); if (opts.onQuit) opts.onQuit();
     });
+    var cdStarted = false;
     function countdown() {
-      [["3", 0], ["2", 800], ["1", 1600], ["Go!", 2400]].forEach(function (s) {
+      if (cdStarted || over) return; cdStarted = true; showTurn();
+      if (T) countdownFrom(msg, 5, "Go!", timers, function () { return over; }, begin);
+      else [["3", 0], ["2", 800], ["1", 1600], ["Go!", 2400]].forEach(function (s) {
         timers.push(setTimeout(function () {
           if (over) return;
           msg.textContent = s[0];
@@ -4245,15 +4519,14 @@ html, body { background: #e6edf0; }
         }, s[1]));
       });
     }
-    var cdStarted = false;
-    if (!opts.live) { cdStarted = true; countdown(); }
+    if (!T) countdown(); else { msg.textContent = "Get ready…"; showTurn(); }
     return {
-      wrap: wrap, close: close,
-      start: function () { if (!cdStarted && !over) { cdStarted = true; countdown(); } },
-      opp: function (n) { if (opEl) opEl.textContent = n + "/" + MEMORY_PAIRS; },
-      quick: function (i) { if (QUICK_CHAT[i]) bubble(QUICK_CHAT[i], false); },
-      stop: function () { finish(pairs >= MEMORY_PAIRS); },
-      result: function () { return { pairs: pairs, moves: moves, secs: secs() }; }
+      wrap: wrap, close: close, start: countdown,
+      flip: function (k) { if (live && k >= 0 && k < deck.length) reveal(k); },
+      pass: pass,
+      quick: function (i, who) { if (QUICK_CHAT[i]) bubble(QUICK_CHAT[i], who || "🐾"); },
+      stop: function () { finish(false); },
+      result: function () { return T ? { pairs: pairsBy } : { pairs: found, moves: moves, secs: secs() }; }
     };
   }
 
@@ -4270,7 +4543,7 @@ html, body { background: #e6edf0; }
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261102073024";   // replaced by build_real.ps1
+    var APP_BUILD = "20261102214216";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -4739,17 +5012,19 @@ html, body { background: #e6edf0; }
     }
 
     // ---------- The Playground ----------
-    // Its own page: games, who's online right now, friends and today's Bamboo catch high scores.
-    //  * Online now: everyone with the app open (on any screen) and "Show my pet as online" on. Strangers only ever
-    //    see a pet (name, kind, level, race wins); rude pet names show as "A red panda". Friends see the player's name.
-    //  * Live races go over Supabase's live channels: a lobby ("playground") for who's online, invites and replies,
-    //    and a room per race for the taps. Live wins add to the pet's win counter (no paws: the server can't watch).
-    //  * Friends (by code, or "Add friend" on a pet) can be invited even when they're away: send-play-invite sends a
-    //    notification, and the invite waits 10 minutes (my_play_invites).
+    // Its own page: three games (each asks "Solo" or "With others"), your wins (tap them for the last 7 days of
+    // games) and today's high scores. Friends and chats live on the Social page (💬).
+    //  * Who's online: everyone with the app open and "Show me as online" on. Strangers only ever see a pet (name,
+    //    kind, level, wins); rude pet names show as "A red panda". Friends see the player's name.
+    //  * A live game goes over Supabase's live channels: a lobby ("playground") for who's online and invites, and a
+    //    room per game. The player who invites is the host: they seat the players who arrive, start the game and
+    //    referee it (who won is the host's call, sent to everyone). Live wins add to the pet's win counter (no paws).
+    //  * Invites to friends are also saved on the server with the room (and sent as a notification when they're
+    //    away), so a friend whose app was in the background still gets them (my_play_invites: every 15 s and on return).
     //  * Block hides a pet and its invites on this phone; Report also sends its name to the admin.
-    var GAME_PAID = 3, MEDALS = ["🥇", "🥈", "🥉"];
-    var SHOW_ONLINE_KEY = "petstreak.online", BLOCK_KEY = "petstreak.blocked", AWAY_SEEN_KEY = "petstreak.invitesseen";
-    var lobby = null, lobbyReady = false, online = {}, friends = [], myCode = null, raceNow = null, inviteOpen = null, sentInvites = {};
+    var GAME_PAID = 3, MEDALS = ["🥇", "🥈", "🥉"], PLACES = ["🥇 1st", "🥈 2nd", "🥉 3rd", "4th"];
+    var SHOW_ONLINE_KEY = "petstreak.online", BLOCK_KEY = "petstreak.blocked", INV_SEEN_KEY = "petstreak.invitesseen";
+    var lobby = null, lobbyReady = false, online = {}, friends = [], friendsAt = 0, myCode = null, raceNow = null, inviteOpen = null;
     var blocked = (function () { try { return JSON.parse(localStorage.getItem(BLOCK_KEY) || "[]"); } catch (e) { return []; } })();
     function saveBlocked() { try { localStorage.setItem(BLOCK_KEY, JSON.stringify(blocked)); } catch (e) {} }
     function showOnline() { try { return localStorage.getItem(SHOW_ONLINE_KEY) !== "off"; } catch (e) { return true; } }
@@ -4769,6 +5044,19 @@ html, body { background: #e6edf0; }
       var f = e && friendOf(e.uid);
       return tagHTML((e && e.level) || 1, f ? f.name : shownPetName(e && e.pet)) + (f ? ' <small class="pg-ofpet">' + esc(e.pet) + "</small>" : "");
     }
+    function friendTagHTML(f) { return tagHTML(f.pet ? f.pet.level : 1, f.name) + (f.pet ? ' <small class="pg-ofpet">' + esc(f.pet.name) + "</small>" : ""); }
+    var GAMES = {
+      bamboo: { name: "Bamboo catch", art: "🎋", max: 1, invite: "wants a Bamboo duel!",
+        solo: ["🙋 Play solo", "30 seconds. Catch the food, dodge the rocks, beat today's best."],
+        others: ["👫 Bamboo duel", "The same food falls for you both. Highest score wins."] },
+      race: { name: "Treat race", art: "🏁", max: 3, invite: "wants to race you!",
+        solo: ["🤖 Race the bot", "Tap as fast as you can to beat Bamboo the bot."],
+        others: ["👫 Race other players", "Up to 4 racers. Tap fastest to the treat!"] },
+      memory: { name: "Memory match", art: "🃏", max: 1, invite: "wants to play Memory match!",
+        solo: ["🙋 Play solo", "Find the 12 pairs in as few tries as you can."],
+        others: ["👫 Take turns", "Find a pair and go again. Most pairs wins."] }
+    };
+    function gameOf(g) { return GAMES[g] ? g : "race"; }
 
     // --- who's online (the lobby) ---
     function lobbyWanted() { return !!(sb && sb.channel && me && pet() && showOnline() && !document.hidden); }
@@ -4799,7 +5087,7 @@ html, body { background: #e6edf0; }
     function leaveLobby() {
       try { lobby.untrack(); sb.removeChannel(lobby); } catch (e) {}
       lobby = null; lobbyReady = false; lastTracked = ""; online = {};
-      if (!$("g-play").hidden) { renderOnline(); renderFriends(); }
+      refreshPeople();
     }
     function readPresence() {
       var st = lobby ? lobby.presenceState() : {};
@@ -4809,24 +5097,93 @@ html, body { background: #e6edf0; }
         if (!e || e.uid === me.id || blocked.indexOf(e.pet_id) >= 0) return;
         online[e.uid] = e;
       });
-      if (!$("g-play").hidden) { renderOnline(); renderFriends(); }
+      refreshPeople();
+    }
+    // whatever is showing people: the online count, the player picker, the Social page
+    function refreshPeople() {
+      if (!$("g-play").hidden) renderOnlineCount();
+      if (!$("g-pick").hidden) renderPick();
+      if (!$("g-social").hidden) renderSocial();
     }
     function sendLive(event, payload) { if (lobby && lobbyReady) lobby.send({ type: "broadcast", event: event, payload: payload }); }
 
-    // --- live invites: a Treat race ("race") or a Bamboo duel ("bamboo") ---
-    var GAME_NAMES = { race: "🏁 Treat race", bamboo: "🎋 Bamboo duel", memory: "🃏 Memory duel" };
-    function inviteToPlay(uid, game) {
-      var e = online[uid];
-      if (!e) { say("They just left. Invite them from Friends to call them back."); return; }
-      if (e.busy) { say(label(e) + " is playing right now. Try again in a moment."); return; }
-      if (raceNow) return;
-      var room = Math.random().toString(36).slice(2, 10);
-      sentInvites[room] = { uid: uid, game: game };
-      sendLive("invite", { to: uid, from: me.id, room: room, game: game, me: myPresence() });
-      say(GAME_NAMES[game] + " invite sent to " + label(e) + ". Waiting for them…");
-      setTimeout(function () { if (sentInvites[room]) { delete sentInvites[room]; say(label(e) + " didn't answer this time."); } }, 25000);
+    // --- tap a game: solo, or with others ---
+    function openMode(game) {
+      var g = GAMES[game], n = Object.keys(online).length;
+      $("g-modeart").textContent = g.art; $("g-modename").textContent = g.name;
+      $("g-modesolo").innerHTML = "<b>" + esc(g.solo[0]) + "</b><small>" + esc(g.solo[1]) + "</small>";
+      $("g-modeothers").innerHTML = "<b>" + esc(g.others[0]) + "</b><small>" + esc(g.others[1]) + "</small>" +
+        '<em class="' + (n ? "on" : "") + '">' + (showOnline() ? (n ? "🟢 " + n + " online now" : "🌙 Nobody online · invite a friend") : "🙈 You're hidden") + "</em>";
+      $("g-modesolo").onclick = function () { $("g-mode").hidden = true; playSolo(game); };
+      $("g-modeothers").onclick = function () {
+        if (!showOnline()) { say("Turn on \"Show me as online\" at the bottom of the Playground to play with others."); return; }
+        $("g-mode").hidden = true; openPick(game);
+      };
+      $("g-mode").hidden = false;
     }
-    // "Play" with someone: pick the game first
+    $("g-modeclose").addEventListener("click", function () { $("g-mode").hidden = true; });
+    Array.prototype.forEach.call(document.querySelectorAll(".pg-gamecard[data-game]"), function (b) {
+      b.addEventListener("click", function () { openMode(b.dataset.game); });
+    });
+    function playSolo(game) { if (game === "bamboo") startGame(); else if (game === "memory") startMemory(); else raceBot(); }
+    function playBot(game) { if (game === "bamboo") duelBot(); else if (game === "memory") memoryBot(); else raceBot(); }
+
+    // --- with others: pick who (online players, and friends who are away: they get a notification) ---
+    var pick = null;
+    function openPick(game, preUid) {
+      pick = { game: game, chosen: {} };
+      if (preUid) pick.chosen[preUid] = true;
+      var g = GAMES[game];
+      $("g-picktitle").textContent = g.art + " " + (game === "race" ? "Who's racing?" : "Who do you want to play?");
+      $("g-picksub").textContent = g.max > 1 ? "Pick up to " + g.max + " players. The race starts when they join." : "Pick a player. The game starts when they join.";
+      $("g-pick").hidden = false;
+      renderPick(); loadFriends();
+    }
+    function renderPick() {
+      if (!pick) return;
+      var box = $("g-picklist"); box.innerHTML = "";
+      var on = Object.keys(online).map(function (k) { return online[k]; });
+      on.sort(function (a, b) { return (friendOf(b.uid) ? 1 : 0) - (friendOf(a.uid) ? 1 : 0); });
+      if (on.length) box.appendChild(pickHead("🟢 Online now"));
+      on.forEach(function (e) {
+        box.appendChild(pickRow(e.uid, petPic(e.variant), petTagHTML(e),
+          e.busy ? "Playing right now…" : "Lv " + e.level + " · 🏁 " + (e.wins || 0) + (e.wins === 1 ? " win" : " wins"), e.busy, function () { openPetOpts(e); }));
+      });
+      var away = friends.filter(function (f) { return f.kind === "friend" && !online[f.id]; });
+      if (away.length) box.appendChild(pickHead("👫 Friends who are away · they'll get a notification"));
+      away.forEach(function (f) {
+        box.appendChild(pickRow(f.id, petPic(f.pet && f.pet.variant), friendTagHTML(f), "Away", false, function () { openFriendOpts(f); }));
+      });
+      if (!on.length && !away.length) {
+        box.innerHTML = '<li class="pg-logempty">🌙 Nobody\'s online right now.<br>Add friends with 💬 so you can invite them any time, or play the bot.</li>';
+      }
+      var n = Object.keys(pick.chosen).length;
+      $("g-picksend").disabled = !n;
+      $("g-picksend").textContent = n ? "🎮 Invite" + (n > 1 ? " " + n + " players" : "") : "Pick someone above";
+    }
+    function pickHead(text) { var li = document.createElement("li"); li.className = "pg-pickhead"; li.textContent = text; return li; }
+    function pickRow(uid, pic, html, sub, off, onPet) {
+      var li = document.createElement("li"), on = !!pick.chosen[uid];
+      li.className = "pg-pickrow" + (on ? " on" : "") + (off ? " off" : "");
+      li.innerHTML = '<button type="button" class="pg-petpick" aria-label="More about this pet"><img alt="" src="' + esc(pic) + '"></button>' +
+        '<button type="button" class="pg-pickmain" aria-pressed="' + on + '"' + (off ? " disabled" : "") + '><span class="pg-grow"><span class="ttl">' + html + "</span><small>" + esc(sub) + '</small></span><i class="tick" aria-hidden="true"></i></button>';
+      li.querySelector(".pg-petpick").addEventListener("click", onPet);
+      li.querySelector(".pg-pickmain").addEventListener("click", function () {
+        var max = GAMES[pick.game].max;
+        if (pick.chosen[uid]) delete pick.chosen[uid];
+        else {
+          if (max === 1) pick.chosen = {};
+          if (Object.keys(pick.chosen).length >= max) { say("You can pick up to " + max + " players."); return; }
+          pick.chosen[uid] = true;
+        }
+        renderPick();
+      });
+      return li;
+    }
+    $("g-picksend").addEventListener("click", function () { var p0 = pick; $("g-pick").hidden = true; pick = null; hostGame(p0.game, Object.keys(p0.chosen)); });
+    $("g-pickbot").addEventListener("click", function () { var g = pick ? pick.game : "race"; $("g-pick").hidden = true; pick = null; playBot(g); });
+    $("g-pickclose").addEventListener("click", function () { $("g-pick").hidden = true; pick = null; });
+    // "Play" from someone's card: pick the game, then invite just them
     function pickGame(then) {
       $("g-gamepick").hidden = false;
       $("g-pickrace").onclick = function () { $("g-gamepick").hidden = true; then("race"); };
@@ -4834,212 +5191,439 @@ html, body { background: #e6edf0; }
       $("g-pickmem").onclick = function () { $("g-gamepick").hidden = true; then("memory"); };
       $("g-pickno").onclick = function () { $("g-gamepick").hidden = true; };
     }
-    function gotInvite(m) {
-      if (!m || m.to !== me.id || !m.me || blocked.indexOf(m.me.pet_id) >= 0) return;
-      if (raceNow || inviteOpen) { sendLive("reply", { to: m.from, from: me.id, room: m.room, ok: false, busy: true }); return; }
-      var game = m.game === "bamboo" || m.game === "memory" ? m.game : "race";
-      var ask = { race: ["🏁 ", " wants to race!"], bamboo: ["🎋 ", " wants a Bamboo duel!"], memory: ["🃏 ", " wants a Memory duel!"] }[game];
-      showInvite({ live: m, game: game, pic: petPic(m.me.variant),
-        html: ask[0] + petTagHTML(m.me) + ask[1], canBlock: !friendOf(m.from) });
-      clearTimeout(gotInvite.t);
-      gotInvite.t = setTimeout(function () { if (inviteOpen && inviteOpen.live === m) answerInvite(false); }, 20000);
+
+    // --- sending invites: I host the game ---
+    function hostGame(game, uids) {
+      if (raceNow || !uids.length) return;
+      var room = Math.random().toString(36).slice(2, 10);
+      var guests = uids.map(function (uid) {
+        var e = online[uid], f = friendOf(uid);
+        return { uid: uid, html: e ? petTagHTML(e) : f ? friendTagHTML(f) : "A player", state: "wait" };
+      });
+      uids.forEach(function (uid) {
+        var f = friendOf(uid);
+        if (online[uid]) {
+          sendLive("invite", { to: uid, from: me.id, room: room, game: game, me: myPresence() });
+          // a friend's app might be in the background: the server keeps it for them too
+          if (f) rpc("invite_friend", { p_to: uid, p_game: game, p_room: room }).catch(function () {});
+        } else if (f) inviteFriendAway(f, game, room);
+      });
+      liveGame(game, room, true, { guests: guests });
     }
+    async function inviteFriendAway(f, game, room) {
+      var res = null, msg = null;
+      try { res = await sb.functions.invoke("send-play-invite", { body: { to: f.id, game: game || "race", room: room } }); }
+      catch (e) { msg = friendly(e && e.message); }
+      if (res && res.error) {
+        var status = res.error.context && res.error.context.status;
+        try { msg = (await res.error.context.json()).error; } catch (e) {}
+        if (!msg) msg = status === 404 ? "Invites to friends aren't switched on yet." : friendly(res.error.message);
+      }
+      if (raceNow && raceNow.room === room && raceNow.note) raceNow.note(f.id, msg ? "⚠️ " + msg : res.data && res.data.sent ? "🔔 Notified" : "📭 Will see it when they open the app");
+      else if (msg) say(msg);
+    }
+
+    // --- getting invites ---
+    function invSeen(key) { try { return JSON.parse(localStorage.getItem(INV_SEEN_KEY) || "[]").indexOf(String(key)) >= 0; } catch (e) { return false; } }
+    function markInv(key) {
+      if (key === undefined || key === null) return;
+      try { var s = JSON.parse(localStorage.getItem(INV_SEEN_KEY) || "[]"); s.push(String(key)); localStorage.setItem(INV_SEEN_KEY, JSON.stringify(s.slice(-80))); } catch (e) {}
+    }
+    function gotInvite(m) {
+      if (!m || m.to !== me.id || !m.me || !m.room || blocked.indexOf(m.me.pet_id) >= 0 || invSeen(m.room)) return;
+      if (raceNow || inviteOpen) { sendLive("reply", { to: m.from, from: me.id, room: m.room, ok: false, busy: true }); return; }
+      showInvite({ from: m.from, room: m.room, game: gameOf(m.game), pic: petPic(m.me.variant), html: petTagHTML(m.me), canBlock: !friendOf(m.from), pet: m.me });
+    }
+    // invites friends saved for me: a fresh one (with its room) joins the game; an older one offers to invite back
+    async function checkPlayInvites() {
+      if (!me || inviteOpen || raceNow) return;
+      var list;
+      try { list = await rpc("my_play_invites"); } catch (e) { return; }
+      var inv = (list || []).filter(function (i) { return !invSeen(i.id) && !(i.room && invSeen(i.room)); })[0];
+      if (!inv || inviteOpen || raceNow) return;
+      markInv(inv.id);
+      var f = friendOf(inv.from), fresh = inv.room && (inv.secs || 0) < 90;
+      showInvite({ from: inv.from, room: fresh ? inv.room : null, game: gameOf(inv.game), pic: petPic(f && f.pet && f.pet.variant),
+        html: f ? friendTagHTML(f) : esc(inv.name), canBlock: false, old: fresh ? 0 : Math.max(1, Math.round((inv.secs || 60) / 60)) });
+    }
+    var INVITE_SECS = 30;
     function showInvite(inv) {
+      var g = GAMES[inv.game];
       inviteOpen = inv;
-      $("g-invitepic").src = inv.pic;
-      if (inv.html) $("g-invitetext").innerHTML = inv.html; else $("g-invitetext").textContent = inv.text;
+      $("g-invitepic").src = inv.pic; $("g-invitegame").textContent = g.art;
+      $("g-invitewho").innerHTML = inv.html;
+      $("g-invitetext").textContent = inv.old ? "wanted to play " + g.name : g.invite;
+      $("g-invitesub").textContent = inv.old ? "That was " + inv.old + (inv.old === 1 ? " minute" : " minutes") + " ago." : g.others[1];
+      $("g-inviteyes").textContent = inv.old ? "🎮 Invite back" : "Let's play! " + g.art;
+      $("g-inviteno").textContent = inv.old ? "Close" : "Not now";
       $("g-inviteblock").hidden = !inv.canBlock;
-      $("g-inviteyes").textContent = inv.live ? (inv.game === "race" ? "🏁 Race!" : "🎮 Play!") : "🎮 Join";
+      var bar = $("g-invitebar"); bar.parentNode.hidden = !!inv.old;
+      bar.style.transition = "none"; bar.style.transform = "scaleX(1)"; void bar.offsetWidth;
+      bar.style.transition = "transform " + INVITE_SECS + "s linear"; bar.style.transform = "scaleX(0)";
       $("g-invite").hidden = false; wake(); sfx("happy");
+      try { if (navigator.vibrate) navigator.vibrate([60, 60, 60]); } catch (e) {}
+      clearTimeout(showInvite.t);
+      if (!inv.old) showInvite.t = setTimeout(function () { if (inviteOpen === inv) answerInvite(false); }, INVITE_SECS * 1000);
     }
     function answerInvite(ok) {
       var inv = inviteOpen; if (!inv) return;
-      inviteOpen = null; $("g-invite").hidden = true;
-      if (inv.live) {
-        var m = inv.live;
-        sendLive("reply", { to: m.from, from: me.id, room: m.room, ok: ok, me: ok ? myPresence() : null });
-        if (ok) playLive(inv.game, m.room, m.me, false);
-      } else if (ok) {
-        // a friend's invite from while I was away: go to the Playground and call them if they're still there
-        openPlay();
-        if (online[inv.from]) inviteToPlay(inv.from, inv.game || "race");
-        else say(inv.name + " isn't in the Playground right now. Tap 🎮 Invite next to them in Friends to call them back.");
-      }
+      inviteOpen = null; $("g-invite").hidden = true; clearTimeout(showInvite.t);
+      if (inv.old) { if (ok) { if (friendOf(inv.from)) hostGame(inv.game, [inv.from]); else { openPlay(); openPick(inv.game, inv.from); } } return; }
+      markInv(inv.room);
+      if (!ok) { sendLive("reply", { to: inv.from, from: me.id, room: inv.room, ok: false }); return; }
+      liveGame(inv.game, inv.room, false, { from: inv.from });
     }
     function gotReply(m) {
-      var sent = m && sentInvites[m.room];
-      if (!m || m.to !== me.id || !sent || sent.uid !== m.from) return;
-      delete sentInvites[m.room];
-      var e = online[m.from] || m.me || {};
-      if (!m.ok) { say(m.busy ? label(e) + " is busy right now." : label(e) + " said no thanks this time."); return; }
-      playLive(sent.game, m.room, m.me, true);
+      if (!m || m.to !== me.id || !raceNow || raceNow.room !== m.room || !raceNow.reply) return;
+      raceNow.reply(m);
     }
-    function playLive(game, room, them, host) {
-      if (game === "bamboo") runDuel(room, them, host); else if (game === "memory") runMemoryDuel(room, them, host); else runRace(room, them, host);
-    }
-    function playBot(game) { if (game === "bamboo") duelBot(); else if (game === "memory") memoryBot(); else raceBot(); }
     $("g-inviteyes").addEventListener("click", function () { answerInvite(true); });
     $("g-inviteno").addEventListener("click", function () { answerInvite(false); });
     $("g-inviteblock").addEventListener("click", function () {
-      var inv = inviteOpen; if (!inv || !inv.live) return;
+      var inv = inviteOpen; if (!inv || !inv.pet) return;
       answerInvite(false);
-      blockPet(inv.live.me);
+      blockPet(inv.pet);
     });
 
-    // --- a live race: the inviter hosts; the other player says "here", the host says "go", then taps fly both ways ---
-    function runRace(room, them, host) {
-      var p = pet(); if (!p || raceNow) return;
-      $("g-play").hidden = true;
-      var ch = sb.channel("pg-room-" + room, { config: { broadcast: { self: false } } });
-      var started = false, latest = 0, sent = 0, hereTimer = null, giveUp = null;
-      var race = startTapRace({
-        me: { pic: petPic(p.variant), label: p.name, html: tagHTML(p.level, p.name) },
-        them: { pic: petPic(them.variant), label: label(them), html: petTagHTML(them) },
-        onTap: function (n) { latest = n; },
-        onQuick: function (i) { ch.send({ type: "broadcast", event: "qc", payload: { i: i } }); },
-        onEnd: function (won) { finishRace(won, them); },
-        onQuit: function () { ch.send({ type: "broadcast", event: "bye", payload: {} }); cleanup(); openPlay(); }
-      });
-      raceNow = { ch: ch, race: race }; trackMe();
-      // my taps go out about 10 times a second (and the last one always does)
-      var pump = setInterval(function () { if (latest !== sent) { sent = latest; ch.send({ type: "broadcast", event: "p", payload: { n: sent } }); } }, 100);
-      function go() { if (started) return; started = true; clearInterval(hereTimer); clearTimeout(giveUp); race.start(); }
-      ch.on("broadcast", { event: "p" }, function (m) { race.opp(m.payload.n); })
-        .on("broadcast", { event: "qc" }, function (m) { race.quick(m.payload.i | 0); })
-        .on("broadcast", { event: "bye" }, function () { race.oppLeft(); })
-        .on("broadcast", { event: "go" }, function () { if (!host) go(); })
-        .on("broadcast", { event: "here" }, function () { if (host && !started) { ch.send({ type: "broadcast", event: "go", payload: {} }); go(); } })
-        .subscribe(function (status) {
-          if (status !== "SUBSCRIBED" || host) return;
-          ch.send({ type: "broadcast", event: "here", payload: {} });
-          hereTimer = setInterval(function () { ch.send({ type: "broadcast", event: "here", payload: {} }); }, 600);
-        });
-      giveUp = setTimeout(function () {
-        if (started) return;
-        say("Couldn't connect to " + label(them) + ". Try again in a moment.");
-        cleanup(); openPlay();
-      }, 12000);
-      function cleanup() {
-        clearInterval(pump); clearInterval(hereTimer); clearTimeout(giveUp);
-        if (raceNow) raceNow.race.close();
-        try { sb.removeChannel(ch); } catch (e) {}
-        raceNow = null; trackMe();
-      }
-      raceNow.cleanup = cleanup;
-    }
-    async function finishRace(won, them) {
-      var p = pet(), wins = p ? p.race_wins || 0 : 0;
-      if (won === true && p) {
-        try { wins = await rpc("record_race_win", { p_id: p.id }); p.race_wins = wins; } catch (e) {}
-      }
-      var wrap = raceNow && raceNow.race.wrap;
-      if (!wrap) return;
-      var stranger = them && them.uid && !friendOf(them.uid);
-      var end = document.createElement("div"); end.className = "pg-gameend";
-      end.innerHTML = "<div class=\"big\">" + (won === true ? "🏆" : won === false ? "🥈" : "👋") + "</div>" +
-        "<p>" + esc(won === true ? "You win! " + (p ? p.name : "") + " has " + wins + (wins === 1 ? " win" : " wins") + " 🏁"
-                    : won === false ? label(them) + " wins this time!" : label(them) + " left the race.") + "</p>" +
-        '<div class="pg-row"><button type="button" class="pg-btn pg-grow" data-a="done">Done</button>' +
-        (them && them.uid && online[them.uid] ? '<button type="button" class="pg-feed pg-grow" data-a="again">🏁 Race again</button>' : "") + "</div>" +
-        (stranger ? '<div class="pg-row pg-endextra"><button type="button" class="pg-linkbtn pg-small" data-a="friend">➕ Add friend</button>' +
-                    '<button type="button" class="pg-linkbtn pg-small" data-a="block">🚫 Block or report</button></div>' : "");
-      wrap.appendChild(end);
-      var done = function () { if (raceNow && raceNow.cleanup) raceNow.cleanup(); };
-      end.querySelector('[data-a="done"]').addEventListener("click", function () { done(); openPlay(); });
-      var again = end.querySelector('[data-a="again"]');
-      if (again) again.addEventListener("click", function () { done(); openPlay(); inviteToPlay(them.uid, "race"); });
-      var fr = end.querySelector('[data-a="friend"]');
-      if (fr) fr.addEventListener("click", async function () { if (await addFriendPet(them)) { fr.disabled = true; fr.textContent = "Request sent ✓"; } });
-      var bl = end.querySelector('[data-a="block"]');
-      if (bl) bl.addEventListener("click", function () { done(); openPlay(); blockPet(them); });
-    }
-    // practice: race Bamboo the bot (no wins counted)
-    function raceBot() {
-      var p = pet(); if (!p || raceNow) return;
-      $("g-play").hidden = true;
-      var bot;
-      var race = startTapRace({
-        me: { pic: petPic(p.variant), label: p.name, html: tagHTML(p.level, p.name) }, them: { pic: petPic("panda_golden"), label: "Bamboo the bot 🤖" },
-        onEnd: function (won) {
-          bot.stop();
-          var end = document.createElement("div"); end.className = "pg-gameend";
-          end.innerHTML = '<div class="big">' + (won ? "🏆" : "🤖") + "</div><p>" +
-            (won ? "You beat Bamboo the bot! Practice wins don't count, but you're ready for a real race." : "Bamboo the bot wins! Tap faster next time.") + "</p>" +
-            '<div class="pg-row"><button type="button" class="pg-btn pg-grow" data-a="done">Done</button><button type="button" class="pg-feed pg-grow" data-a="again">Race again</button></div>';
-          race.wrap.appendChild(end);
-          end.querySelector('[data-a="done"]').addEventListener("click", function () { race.close(); raceNow = null; trackMe(); openPlay(); });
-          end.querySelector('[data-a="again"]').addEventListener("click", function () { race.close(); raceNow = null; raceBot(); });
-        },
-        onQuit: function () { bot.stop(); raceNow = null; trackMe(); openPlay(); }
-      });
-      raceNow = { race: race }; trackMe();
-      race.start(); bot = botRacer(race);
-    }
-
-    // --- a live Bamboo duel: same handshake as the race; scores go both ways, then each sends its final score ---
+    // --- a live game: the waiting room, then the game ---
+    // The host waits for the invited players to arrive ("here"), seats them ("seat") and starts ("go", with the
+    // players and who goes first). Players who arrive say "here" until they're seated. Then each game sends its own
+    // moves; "qc" is an emoji, "bye" means someone left.
     function seedOf(room) { var h = 2166136261; for (var i = 0; i < room.length; i++) { h ^= room.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
-    function runDuel(room, them, host) {
-      var p = pet(); if (!p || raceNow) return;
-      $("g-play").hidden = true;
-      var ch = sb.channel("pg-room-" + room, { config: { broadcast: { self: false } } });
-      var started = false, latest = 0, sent = -1, hereTimer = null, giveUp = null, theirFinal = null, myFinal = null, finishWait = null, gone = false;
-      var game = startBambooGame({
-        pic: petPic(p.variant), seed: seedOf(room), live: true, them: { html: petTagHTML(them) },
-        onScore: function (n) { latest = n; },
-        onQuick: function (i) { ch.send({ type: "broadcast", event: "qc", payload: { i: i } }); },
-        onQuit: function () { ch.send({ type: "broadcast", event: "bye", payload: {} }); cleanup(); openPlay(); },
-        onEnd: function (score) {
-          myFinal = score;
-          ch.send({ type: "broadcast", event: "final", payload: { n: score } });
-          if (theirFinal !== null || gone) result();
-          else finishWait = setTimeout(result, 6000);   // their final is usually here within a second
-        }
+    function openRoom(room) {
+      var ch = sb.channel("pg-room-" + room, { config: { broadcast: { self: false } } }), hs = {};
+      var R = { on: function (ev, fn) { hs[ev] = fn; return R; },
+        send: function (ev, p) { ch.send({ type: "broadcast", event: ev, payload: p || {} }); },
+        close: function () { try { sb.removeChannel(ch); } catch (e) {} } };
+      ["here", "seat", "full", "go", "bye", "qc", "p", "fin", "result", "s", "final", "flip", "pass"].forEach(function (ev) {
+        ch.on("broadcast", { event: ev }, function (m) { if (hs[ev]) hs[ev](m.payload || {}); });
       });
-      raceNow = { ch: ch, race: game }; trackMe();
-      var pump = setInterval(function () { if (latest !== sent) { sent = latest; ch.send({ type: "broadcast", event: "s", payload: { n: sent } }); } }, 300);
-      function go() { if (started) return; started = true; clearInterval(hereTimer); clearTimeout(giveUp); game.start(); }
-      ch.on("broadcast", { event: "s" }, function (m) { game.opp(m.payload.n | 0); })
-        .on("broadcast", { event: "qc" }, function (m) { game.quick(m.payload.i | 0); })
-        .on("broadcast", { event: "final" }, function (m) { theirFinal = m.payload.n | 0; game.opp(theirFinal); if (myFinal !== null) result(); })
-        .on("broadcast", { event: "bye" }, function () { gone = true; if (myFinal !== null) result(); else say(label(them) + " left the duel. Finish your round!"); })
-        .on("broadcast", { event: "go" }, function () { if (!host) go(); })
-        .on("broadcast", { event: "here" }, function () { if (host && !started) { ch.send({ type: "broadcast", event: "go", payload: {} }); go(); } })
-        .subscribe(function (status) {
-          if (status !== "SUBSCRIBED" || host) return;
-          ch.send({ type: "broadcast", event: "here", payload: {} });
-          hereTimer = setInterval(function () { ch.send({ type: "broadcast", event: "here", payload: {} }); }, 600);
+      ch.subscribe(function (st) { if (st === "SUBSCRIBED" && hs.ready) hs.ready(); });
+      return R;
+    }
+    function hidePlayPages() { ["g-play", "g-social", "g-pick", "g-mode", "g-gamepick", "g-petopts", "g-chat"].forEach(function (id) { $(id).hidden = true; }); chatWith = null; }
+    function liveGame(game, room, host, info) {
+      var p = pet(); if (!p || raceNow) return;
+      hidePlayPages();
+      var R = openRoom(room), mine = myPresence(), G = GAMES[game];
+      var players = host ? [mine] : [], guests = host ? info.guests : [], hostUid = host ? me.id : info.from;
+      var started = false, done = false, timers = [], hereTimer = null, autoT = null, view = null;
+      var S = raceNow = { room: room, game: game };
+      trackMe();
+      // the waiting room: who's coming, emoji to say hi, and (for the host) Start
+      var wait = document.createElement("div"); wait.className = "pg-game pg-wait";
+      wait.innerHTML = '<div class="pg-gamehud"><span class="lbl">' + G.art + " " + esc(G.name) + "</span>" +
+        '<button type="button" class="pg-qcbtn" aria-label="Send an emoji">💬</button><button type="button" class="pg-gamex" aria-label="Leave">✕</button></div>' +
+        '<div class="pg-qcpal" hidden></div>' +
+        '<div class="pg-waitbody"><div class="pg-waitart" aria-hidden="true">' + G.art + '</div><h2 class="pg-waittitle"></h2>' +
+        '<ul class="pg-waitlist"></ul><p class="pg-waitnote"></p><div class="pg-waitacts"></div></div>';
+      document.body.appendChild(wait);
+      quickPalette(wait, function (i, t) { R.send("qc", { uid: me.id, i: i }); waitBubble(me.id, t); });
+      wait.querySelector(".pg-gamex").addEventListener("click", function () { leave(); openPlay(); });
+      function nameOf(uid) {
+        var x = players.filter(function (q) { return q.uid === uid; })[0];
+        if (x) return x.uid === me.id ? "You" : label(x);
+        var f = friendOf(uid); return f ? f.name : "Your friend";
+      }
+      function waitBubble(uid, t) {
+        var li = wait.querySelector('.pg-waitlist [data-uid="' + uid + '"]'); if (!li || !t) return;
+        var b = document.createElement("span"); b.className = "pg-bubble"; b.textContent = t;
+        li.appendChild(b); setTimeout(function () { b.remove(); }, 2600);
+      }
+      var notes = {};
+      S.note = function (uid, text) { notes[uid] = text; drawWait(); };
+      function drawWait(note, acts) {
+        if (started) return;
+        var list = wait.querySelector(".pg-waitlist"); list.innerHTML = "";
+        var rows = host ? [{ uid: me.id, html: tagHTML(p.level, p.name), state: "here" }].concat(guests)
+                        : players.map(function (x) { return { uid: x.uid, html: x.uid === me.id ? tagHTML(p.level, p.name) : petTagHTML(x), state: "here" }; });
+        rows.forEach(function (r) {
+          var x = players.filter(function (q) { return q.uid === r.uid; })[0];
+          var li = document.createElement("li"); li.dataset.uid = r.uid; li.className = "st-" + r.state;
+          li.innerHTML = '<img alt="" src="' + esc(petPic(x ? x.variant : (friendOf(r.uid) || {}).pet ? friendOf(r.uid).pet.variant : null)) + '">' +
+            '<span class="pg-grow"><span class="ttl">' + r.html + (r.uid === me.id ? " <small>(you)</small>" : "") + "</span>" +
+            "<small>" + esc({ here: r.uid === hostUid ? "Host · ready" : "Ready!", wait: notes[r.uid] || "Invite sent…", no: "Said no thanks", busy: "Busy right now", left: "Left" }[r.state] || "") + "</small></span>" +
+            '<i class="st">' + ({ here: "✅", wait: "⏳", no: "✖️", busy: "✖️", left: "👋" }[r.state] || "") + "</i>";
+          list.appendChild(li);
         });
-      giveUp = setTimeout(function () { if (started) return; say("Couldn't connect to " + label(them) + ". Try again in a moment."); cleanup(); openPlay(); }, 12000);
-      var shown = false;
-      async function result() {
-        if (shown) return; shown = true; clearTimeout(finishWait);
-        var mine = myFinal || 0, theirs = theirFinal;
-        var won = theirs === null ? (gone ? true : null) : mine > theirs ? true : mine < theirs ? false : "draw";
+        var ready = players.length;
+        wait.querySelector(".pg-waittitle").textContent = host
+          ? (ready > 1 ? "Ready when you are!" : "Waiting for players to join…")
+          : (players.length ? "Waiting for " + nameOf(hostUid) + " to start…" : "Joining…");
+        wait.querySelector(".pg-waitnote").textContent = note || (host && ready > 1 && guests.some(function (g) { return g.state === "wait"; }) ? "Start now, or wait for the others." : "Tap 💬 to say hi with an emoji.");
+        var box = wait.querySelector(".pg-waitacts"); box.innerHTML = "";
+        (acts || (host && ready > 1 ? [{ text: "▶ Start" + (ready > 2 ? " (" + ready + " players)" : ""), primary: true, go: startNow }] : [])).forEach(function (a) {
+          var b = document.createElement("button"); b.type = "button"; b.className = (a.primary ? "pg-feed" : "pg-btn") + " pg-wide"; b.textContent = a.text;
+          b.addEventListener("click", a.go); box.appendChild(b);
+        });
+      }
+      function nobody(text) {
+        drawWait(text, [{ text: "🤖 Play the bot instead", primary: true, go: function () { cleanup(); playBot(game); } },
+                        { text: "Back to the Playground", go: function () { leave(); openPlay(); } }]);
+      }
+      function maybeAutoStart() {
+        if (!host || started) return;
+        var waiting = guests.some(function (g) { return g.state === "wait"; });
+        if (waiting) return;
+        if (players.length > 1) { clearTimeout(autoT); autoT = setTimeout(startNow, 2500); }
+        else nobody("Nobody can play right now.");
+      }
+      drawWait();
+      // the host: players arrive
+      R.on("here", function (m) {
+        if (!host || !m.who) return;
+        var g = guests.filter(function (x) { return x.uid === m.who.uid; })[0];
+        if (!g || started) { R.send("full", { to: m.who.uid }); return; }
+        if (g.state !== "here") { g.state = "here"; players.push(m.who); g.html = petTagHTML(m.who); sfx("happy"); }
+        R.send("seat", { players: players });
+        drawWait(); maybeAutoStart();
+      });
+      S.reply = function (m) {   // a "no thanks" (or busy) from the lobby
+        var g = guests.filter(function (x) { return x.uid === m.from; })[0];
+        if (!g || g.state !== "wait" || m.ok) return;
+        g.state = m.busy ? "busy" : "no"; drawWait(); maybeAutoStart();
+      };
+      if (host) timers.push(setTimeout(function () {
+        if (started) return;
+        guests.forEach(function (g) { if (g.state === "wait") g.state = "no"; });
+        if (players.length > 1) { drawWait(); startNow(); } else nobody("Nobody joined this time.");
+      }, 60000));
+      // a guest: say "here" until seated
+      R.on("ready", function () {
+        if (host) return;
+        R.send("here", { who: mine });
+        hereTimer = setInterval(function () { R.send("here", { who: mine }); }, 800);
+        timers.push(setTimeout(function () { if (!players.length) { clearInterval(hereTimer); drawWait("This game has ended or couldn't be reached.", [{ text: "Back to the Playground", primary: true, go: function () { leave(); openPlay(); } }]); } }, 12000));
+      });
+      R.on("seat", function (m) {
+        if (host || !(m.players || []).some(function (x) { return x.uid === me.id; })) return;
+        clearInterval(hereTimer); players = m.players; drawWait();
+      });
+      R.on("full", function (m) {
+        if (host || m.to !== me.id || players.length) return;
+        clearInterval(hereTimer);
+        drawWait("Too late! That game has already started.", [{ text: "Back to the Playground", primary: true, go: function () { leave(); openPlay(); } }]);
+      });
+      R.on("go", function (m) { if (!host && !started && (m.players || []).some(function (x) { return x.uid === me.id; })) go(m); });
+      R.on("bye", function (m) {
+        if (started) { if (S.bye) S.bye(m.uid); return; }
+        if (host) {
+          var g = guests.filter(function (x) { return x.uid === m.uid; })[0];
+          if (g) { g.state = "left"; players = players.filter(function (x) { return x.uid !== m.uid; }); drawWait(); maybeAutoStart(); }
+        } else if (m.uid === hostUid) {
+          drawWait(nameOf(hostUid) + " left the game.", [{ text: "Back to the Playground", primary: true, go: function () { leave(); openPlay(); } }]);
+        } else { players = players.filter(function (x) { return x.uid !== m.uid; }); drawWait(); }
+      });
+      R.on("qc", function (m) { if (!started) waitBubble(m.uid, QUICK_CHAT[m.i | 0]); else if (S.quick) S.quick(m.uid, m.i | 0); });
+      function startNow() {
+        if (!host || started || players.length < 2) return;
+        var m = { players: players.slice(), first: players[Math.floor(Math.random() * players.length)].uid };
+        R.send("go", m);
+        go(m);
+        // (said three times: a player who misses it would wait forever)
+        timers.push(setTimeout(function () { R.send("go", m); }, 400), setTimeout(function () { R.send("go", m); }, 1200));
+      }
+      function go(m) {
+        started = true; clearInterval(hereTimer); clearTimeout(autoT);
+        timers.forEach(clearTimeout); timers = [];
+        wait.remove();
+        players = m.players;
+        if (game === "bamboo") goBamboo(m); else if (game === "memory") goMemory(m); else goRace(m);
+      }
+      function others() { return players.filter(function (x) { return x.uid !== me.id; }); }
+      function againUids() { return others().map(function (x) { return x.uid; }).filter(function (u) { return online[u] || friendOf(u); }); }
+
+      // the Treat race: the host referees (the first to reach the treat wins; the others by how far they got)
+      function goRace(m) {
+        var prog = {}, latest = 0, sentN = 0, gone = {};
+        var race = startTapRace({
+          players: m.players.map(function (x) { return { uid: x.uid, pic: petPic(x.variant), html: x.uid === me.id ? tagHTML(p.level, p.name) : petTagHTML(x), me: x.uid === me.id }; }),
+          onTap: function (n) { latest = n; prog[me.id] = n; },
+          onFinish: function () { if (host) referee(me.id); else { R.send("fin", { uid: me.id }); race.status("🏁 Waiting for the result…"); } },
+          onQuick: function (i) { R.send("qc", { uid: me.id, i: i }); },
+          onQuit: function () { leave(); openPlay(); }
+        });
+        view = race;
+        var pump = setInterval(function () { if (latest !== sentN) { sentN = latest; R.send("p", { uid: me.id, n: sentN }); } }, 100);
+        R.on("p", function (x) { prog[x.uid] = x.n | 0; race.progress(x.uid, x.n | 0); });
+        R.on("fin", function (x) { if (host) referee(x.uid); });
+        R.on("result", function (x) { if (!host) show(x.order || []); });
+        S.quick = function (uid, i) { race.quick(uid, i); };
+        function referee(first) {
+          if (done) return;
+          var order = [first].concat(m.players.map(function (x) { return x.uid; })
+            .filter(function (u) { return u !== first && !gone[u]; })
+            .sort(function (a, b) { return (prog[b] || 0) - (prog[a] || 0); }));
+          R.send("result", { order: order });
+          setTimeout(function () { R.send("result", { order: order }); }, 500);
+          show(order);
+        }
+        // nobody reached the treat after a minute and a half: whoever got furthest
+        if (host) timers.push(setTimeout(function () {
+          if (done) return;
+          var best = m.players.map(function (x) { return x.uid; }).sort(function (a, b) { return (prog[b] || 0) - (prog[a] || 0); })[0];
+          referee(best);
+        }, 95000));
+        function show(order) {
+          if (done) return; done = true; clearInterval(pump);
+          race.result(order);
+          var place = order.indexOf(me.id) + 1, winner = players.filter(function (x) { return x.uid === order[0]; })[0];
+          endCard(race.wrap, place === 1 ? true : false, {
+            place: place, big: place ? MEDALS[place - 1] || "🏁" : "🏁",
+            lost: (place ? PLACES[place - 1] + " place! " : "") + (winner ? label(winner) + " wins this time." : ""),
+            against: others().map(label).join(", "), again: "🏁 Race again"
+          });
+        }
+        S.bye = function (uid) {
+          gone[uid] = true; race.left(uid);
+          if (done) return;
+          if (uid === hostUid) { done = true; clearInterval(pump); race.status(""); endLeft(race.wrap, nameOf(uid) + " (the host) left, so the race stopped."); }
+          else if (host && others().every(function (x) { return gone[x.uid]; })) { done = true; clearInterval(pump); race.status(""); endLeft(race.wrap, "Everyone else left the race."); }
+        };
+        S.stop = function () { clearInterval(pump); race.close(); };
+        race.start();
+      }
+      // a Bamboo duel: both phones get the same falling food; the host compares the final scores
+      function goBamboo(m) {
+        var other = others()[0], latest = 0, sentN = -1, finals = {}, gone = false, judgeT = null;
+        var bam = startBambooGame({
+          pic: petPic(p.variant), seed: seedOf(room), live: true, them: { html: petTagHTML(other) },
+          onScore: function (n) { latest = n; },
+          onQuick: function (i) { R.send("qc", { uid: me.id, i: i }); },
+          onQuit: function () { leave(); openPlay(); },
+          onEnd: function (score) {
+            finals[me.id] = score; R.send("final", { uid: me.id, n: score });
+            if (host || gone) judge(gone); else judgeT = setTimeout(function () { show(finals); }, 7000);   // (no word from the host)
+          }
+        });
+        view = bam;
+        var pump = setInterval(function () { if (latest !== sentN) { sentN = latest; R.send("s", { uid: me.id, n: sentN }); } }, 300);
+        R.on("s", function (x) { if (x.uid === other.uid) bam.opp(x.n | 0); });
+        R.on("final", function (x) { if (x.uid !== other.uid) return; finals[other.uid] = x.n | 0; bam.opp(x.n | 0); if (host) judge(); });
+        R.on("result", function (x) { if (!host && x.scores) show(x.scores); });
+        S.quick = function (uid, i) { bam.quick(i); };
+        function judge(force) {
+          if (done || finals[me.id] === undefined) return;
+          if (finals[other.uid] === undefined && !force) { if (!judgeT) judgeT = setTimeout(function () { judge(true); }, 6000); return; }
+          var scores = {}; scores[me.id] = finals[me.id]; scores[other.uid] = finals[other.uid] === undefined ? null : finals[other.uid];
+          R.send("result", { scores: scores }); setTimeout(function () { R.send("result", { scores: scores }); }, 500);
+          show(scores);
+        }
+        function show(scores) {
+          if (done) return; done = true; clearTimeout(judgeT); clearInterval(pump);
+          var a = scores[me.id] | 0, b = scores[other.uid];
+          var won = b === null || b === undefined ? null : a > b ? true : a < b ? false : "draw";
+          if (won === null) { endLeft(bam.wrap, "We lost touch with " + label(other) + ". You scored " + a + "."); return; }
+          endCard(bam.wrap, won, { big: a + ' <small class="vs">vs ' + b + "</small>", lbl: "points", lost: label(other) + " wins this time!", score: a,
+            against: label(other), again: "🎋 Again" });
+        }
+        S.bye = function (uid) {
+          if (uid !== other.uid || done) return;
+          gone = true;
+          if (finals[me.id] !== undefined) judge(true); else say(label(other) + " left the duel. Finish your round!");
+        };
+        S.stop = function () { clearInterval(pump); clearTimeout(judgeT); bam.close(); };
+        bam.start();
+      }
+      // Memory match, taking turns: both phones apply the same flips in order, so they agree on the result
+      function goMemory(m) {
+        var other = others()[0];
+        var mem = startMemoryGame({
+          seed: seedOf(room),
+          turns: { players: m.players.map(function (x) { return { uid: x.uid, html: x.uid === me.id ? "You" : esc(label(x)), me: x.uid === me.id }; }), first: m.first },
+          onFlip: function (k) { R.send("flip", { k: k }); },
+          onPass: function () { R.send("pass", {}); },
+          onQuick: function (i) { R.send("qc", { uid: me.id, i: i }); },
+          onQuit: function () { leave(); openPlay(); },
+          onEnd: function (r) {
+            if (!r.done || done) return; done = true;
+            var a = r.pairs[me.id] || 0, b = r.pairs[other.uid] || 0;
+            endCard(mem.wrap, r.winner === null ? "draw" : r.winner === me.id, { big: a + ' <small class="vs">vs ' + b + "</small>", lbl: "pairs",
+              lost: label(other) + " wins this time!", score: a, against: label(other), again: "🃏 Again" });
+          }
+        });
+        view = mem;
+        R.on("flip", function (x) { mem.flip(x.k | 0); });
+        R.on("pass", function () { mem.pass(); });
+        S.quick = function (uid, i) { mem.quick(i, esc(label(other))); };
+        S.bye = function (uid) { if (uid !== other.uid || done) return; done = true; mem.stop(); endLeft(mem.wrap, label(other) + " left the game."); };
+        S.stop = function () { mem.close(); };
+        mem.start();
+      }
+      // the end of a live game: wins, history, and what next
+      async function endCard(wrap, won, o) {
         var wins = p.race_wins || 0;
         if (won === true) { try { wins = await rpc("record_race_win", { p_id: p.id }); p.race_wins = wins; } catch (e) {} }
+        logGame(game, "live", o.against, won === true ? "won" : won === "draw" ? "draw" : "lost", o.place || null, o.score);
+        var lone = others().length === 1 ? others()[0] : null, stranger = lone && !friendOf(lone.uid) ? lone : null, again = againUids();
         var end = document.createElement("div"); end.className = "pg-gameend";
-        end.innerHTML = '<div class="big">' + mine + (theirs !== null ? ' <small class="vs">vs ' + theirs + "</small>" : "") + "</div>" +
-          "<p>" + esc(won === true ? "🏆 You win! " + p.name + " has " + wins + (wins === 1 ? " win" : " wins") + " 🏁"
-                      : won === false ? label(them) + " wins this time!" : won === "draw" ? "🤝 It's a draw!" : "We lost touch with " + label(them) + ".") + "</p>" +
+        end.innerHTML = '<div class="big">' + o.big + "</div>" + (o.lbl ? '<p class="lbl">' + o.lbl + "</p>" : "") +
+          "<p>" + esc(won === true ? "🏆 You win! " + p.name + " has " + wins + (wins === 1 ? " win" : " wins") + " 🏁" : won === "draw" ? "🤝 It's a draw!" : o.lost) + "</p>" +
           '<div class="pg-row"><button type="button" class="pg-btn pg-grow" data-a="done">Done</button>' +
-          (them.uid && online[them.uid] ? '<button type="button" class="pg-feed pg-grow" data-a="again">🎋 Again</button>' : "") + "</div>";
-        game.wrap.appendChild(end);
+          (again.length ? '<button type="button" class="pg-feed pg-grow" data-a="again">' + o.again + "</button>" : "") + "</div>" +
+          (stranger ? '<div class="pg-row pg-endextra"><button type="button" class="pg-linkbtn pg-small" data-a="friend">➕ Add friend</button>' +
+                      '<button type="button" class="pg-linkbtn pg-small" data-a="block">🚫 Block or report</button></div>' : "");
+        wrap.appendChild(end);
         sfx(won === true ? "levelUp" : "pat");
         end.querySelector('[data-a="done"]').addEventListener("click", function () { cleanup(); openPlay(); });
-        var again = end.querySelector('[data-a="again"]');
-        if (again) again.addEventListener("click", function () { cleanup(); openPlay(); inviteToPlay(them.uid, "bamboo"); });
+        var ag = end.querySelector('[data-a="again"]');
+        if (ag) ag.addEventListener("click", function () { cleanup(); openPlay(); hostGame(game, again); });
+        var fr = end.querySelector('[data-a="friend"]');
+        if (fr) fr.addEventListener("click", async function () { if (await addFriendPet(stranger)) { fr.disabled = true; fr.textContent = "Request sent ✓"; } });
+        var bl = end.querySelector('[data-a="block"]');
+        if (bl) bl.addEventListener("click", function () { cleanup(); openPlay(); openPetOpts(stranger); });
       }
+      function endLeft(wrap, text) {
+        logGame(game, "live", others().map(label).join(", "), "left", null, null);
+        var end = document.createElement("div"); end.className = "pg-gameend";
+        end.innerHTML = '<div class="big">👋</div><p>' + esc(text) + '</p><div class="pg-row"><button type="button" class="pg-feed pg-grow" data-a="done">Done</button></div>';
+        wrap.appendChild(end);
+        end.querySelector('[data-a="done"]').addEventListener("click", function () { cleanup(); openPlay(); });
+      }
+      function leave() { R.send("bye", { uid: me.id }); cleanup(); }
       function cleanup() {
-        clearInterval(pump); clearInterval(hereTimer); clearTimeout(giveUp); clearTimeout(finishWait);
-        game.close();
-        try { sb.removeChannel(ch); } catch (e) {}
-        raceNow = null; trackMe();
+        if (S.closed) return; S.closed = true;
+        clearInterval(hereTimer); clearTimeout(autoT); timers.forEach(clearTimeout);
+        if (S.stop) S.stop(); else if (view) view.close();
+        wait.remove(); R.close();
+        if (raceNow === S) raceNow = null;
+        trackMe();
       }
+      S.cleanup = cleanup; S.leave = leave;
     }
-    // practice duel: Bamboo the bot catches something every second or so (about 20-25 points)
+
+    // --- practice against Bamboo the bot (no wins counted) ---
+    function botEnd(view, big, text, again, onDone) {
+      var end = document.createElement("div"); end.className = "pg-gameend";
+      end.innerHTML = '<div class="big">' + big + "</div><p>" + esc(text) + "</p>" +
+        '<div class="pg-row"><button type="button" class="pg-btn pg-grow" data-a="done">Done</button><button type="button" class="pg-feed pg-grow" data-a="again">Again</button></div>';
+      view.wrap.appendChild(end);
+      end.querySelector('[data-a="done"]').addEventListener("click", function () { view.close(); raceNow = null; trackMe(); openPlay(); });
+      end.querySelector('[data-a="again"]').addEventListener("click", function () { view.close(); raceNow = null; again(); });
+    }
+    function raceBot() {
+      var p = pet(); if (!p || raceNow) return;
+      hidePlayPages();
+      var bot = null, over = false;
+      var race = startTapRace({
+        players: [{ uid: "bot", pic: petPic("panda_golden"), html: "Bamboo the bot 🤖" }, { uid: me.id, pic: petPic(p.variant), html: tagHTML(p.level, p.name), me: true }],
+        onFinish: function () { finish([me.id, "bot"]); },
+        onQuit: function () { if (bot) bot.stop(); raceNow = null; trackMe(); openPlay(); }
+      });
+      function finish(order) {
+        if (over) return; over = true; bot.stop();
+        race.result(order);
+        var won = order[0] === me.id;
+        logGame("race", "bot", "Bamboo the bot", won ? "won" : "lost", won ? 1 : 2, null);
+        botEnd(race, won ? "🏆" : "🤖", won ? "You beat Bamboo the bot! Practice wins don't count, but you're ready for a real race." : "Bamboo the bot wins! Tap faster next time.", raceBot);
+      }
+      raceNow = { race: race }; trackMe();
+      race.start(); bot = botRacer(race, "bot", function () { finish(["bot", me.id]); });
+    }
+    // Bamboo the bot catches something every second or so (about 20-25 points)
     function duelBot() {
       var p = pet(); if (!p || raceNow) return;
-      $("g-play").hidden = true;
+      hidePlayPages();
       var botScore = 0, timer = null;
       var game = startBambooGame({
         pic: petPic(p.variant), seed: (Math.random() * 1e9) >>> 0, live: true, them: { html: "Bamboo the bot 🤖" },
@@ -5047,13 +5631,9 @@ html, body { background: #e6edf0; }
         onEnd: function (score) {
           clearTimeout(timer);
           var won = score > botScore ? true : score < botScore ? false : "draw";
-          var end = document.createElement("div"); end.className = "pg-gameend";
-          end.innerHTML = '<div class="big">' + score + ' <small class="vs">vs ' + botScore + "</small></div><p>" +
-            (won === true ? "You beat Bamboo the bot! Practice wins don't count, but you're ready for a real duel." : won === false ? "Bamboo the bot wins! Have another go." : "🤝 A draw with the bot!") + "</p>" +
-            '<div class="pg-row"><button type="button" class="pg-btn pg-grow" data-a="done">Done</button><button type="button" class="pg-feed pg-grow" data-a="again">Again</button></div>';
-          game.wrap.appendChild(end);
-          end.querySelector('[data-a="done"]').addEventListener("click", function () { game.close(); raceNow = null; trackMe(); openPlay(); });
-          end.querySelector('[data-a="again"]').addEventListener("click", function () { game.close(); raceNow = null; duelBot(); });
+          logGame("bamboo", "bot", "Bamboo the bot", won === true ? "won" : won === false ? "lost" : "draw", null, score);
+          botEnd(game, score + ' <small class="vs">vs ' + botScore + "</small>",
+            won === true ? "You beat Bamboo the bot! Practice wins don't count, but you're ready for a real duel." : won === false ? "Bamboo the bot wins! Have another go." : "🤝 A draw with the bot!", duelBot);
         }
       });
       raceNow = { race: game }; trackMe();
@@ -5063,126 +5643,75 @@ html, body { background: #e6edf0; }
         botScore = Math.max(0, botScore + (r < 0.1 ? 3 : r < 0.22 ? -2 : 1));
         game.opp(botScore);
         timer = setTimeout(step, 900 + Math.random() * 700);
-      }, 3800);
+      }, 5800);
+    }
+    // Memory match taking turns with Bamboo the bot (it remembers some of the cards it has seen)
+    function memoryBot() {
+      var p = pet(); if (!p || raceNow) return;
+      hidePlayPages();
+      var mem = startMemoryGame({
+        turns: { players: [{ uid: me.id, html: "You", me: true }, { uid: "bot", html: "Bamboo 🤖", bot: true }], first: me.id },
+        onQuit: function () { raceNow = null; trackMe(); openPlay(); },
+        onEnd: function (r) {
+          if (!r.done) return;
+          var a = r.pairs[me.id] || 0, b = r.pairs.bot || 0, won = r.winner === null ? "draw" : r.winner === me.id;
+          logGame("memory", "bot", "Bamboo the bot", won === true ? "won" : won === "draw" ? "draw" : "lost", null, a);
+          botEnd(mem, a + ' <small class="vs">vs ' + b + "</small>",
+            won === true ? "You beat Bamboo the bot! Practice wins don't count, but you're ready for a real game." : won === "draw" ? "🤝 A draw with the bot!" : "Bamboo the bot wins! Have another go.", memoryBot);
+        }
+      });
+      raceNow = { race: mem }; trackMe();
+      mem.start();
     }
 
-    // --- Memory match: solo (scores and paws like Bamboo catch), a live duel, and the bot ---
-    function memoryEnd(game, html, buttons) {
+    // --- solo games: scores and paws ---
+    function soloEnd(wrap, game, res, err, lead, html, again, close) {
       var end = document.createElement("div"); end.className = "pg-gameend";
-      end.innerHTML = html + '<div class="pg-row">' + buttons.map(function (b) {
-        return '<button type="button" class="' + (b.primary ? "pg-feed" : "pg-btn") + ' pg-grow" data-a="' + b.id + '">' + b.text + "</button>";
-      }).join("") + "</div>";
-      game.wrap.appendChild(end);
-      buttons.forEach(function (b) { end.querySelector('[data-a="' + b.id + '"]').addEventListener("click", b.go); });
+      end.innerHTML = html +
+        (res ? "<p>" + (res.new_best ? "🏆 Your best today!" : "Your best today: " + res.best) + "</p>" +
+               (res.paws ? '<p class="paws">+' + res.paws + " 🐾</p>" : "") + (lead ? "<p>" + esc(lead) + "</p>" : "")
+             : "<p>" + esc(err || "") + "</p>") +
+        '<div class="pg-row"><button type="button" class="pg-btn pg-grow" data-a="done">Done</button>' +
+        '<button type="button" class="pg-feed pg-grow" data-a="again">▶ Play again</button></div>';
+      wrap.appendChild(end);
+      if (res && res.paws) { sfx("coin"); loadAll({ quiet: true }); }
+      end.querySelector('[data-a="again"]').addEventListener("click", function () { close(); again(); });
+      end.querySelector('[data-a="done"]').addEventListener("click", function () { close(); boardGame = game; openPlay(); });
+    }
+    async function saveSolo(game, score) {
+      var res = null, err = null, lead = "";
+      try { res = await rpc("submit_score", { p_game: game, p_score: score, p_tz: tz() }); } catch (e) { err = e.message; }
+      if (res) {
+        try {
+          var b = (await playData(game)).board;
+          if (b.length > 1) lead = b[0].me ? "You're top of today's high scores! 🥇" : b[0].name + " leads today with " + b[0].best + ". Can you beat it?";
+        } catch (e) {}
+      }
+      logGame(game, "solo", null, null, null, score);
+      return { res: res, err: err, lead: lead };
+    }
+    function startGame() {
+      var p = pet(); if (!p) return;
+      hidePlayPages();
+      startBambooGame({
+        pic: petPic(p.variant),
+        onQuit: function () { openPlay(); },
+        onEnd: async function (score, close, wrap) {
+          var s = await saveSolo("bamboo", score);
+          soloEnd(wrap, "bamboo", s.res, s.err, s.lead, '<div class="big">' + score + '</div><p class="lbl">points</p>', startGame, close);
+        }
+      });
     }
     function startMemory() {
       var p = pet(); if (!p) return;
-      $("g-play").hidden = true;
+      hidePlayPages();
       var game = startMemoryGame({
-        pic: petPic(p.variant),
         onQuit: function () { openPlay(); },
         onEnd: async function (r) {
-          var res = null, err = null, lead = "";
-          try { res = await rpc("submit_score", { p_game: "memory", p_score: r.score, p_tz: tz() }); } catch (e) { err = e.message; }
-          if (res) {
-            try {
-              var b = (await playData("memory")).board;
-              if (b.length > 1) lead = b[0].me ? "You're top of today's Memory high scores! 🥇" : b[0].name + " leads today with " + b[0].best + ". Can you beat it?";
-            } catch (e) {}
-          }
-          memoryEnd(game, '<div class="big">' + r.score + '</div><p class="lbl">points · ' + r.moves + " tries · " + r.secs + " s</p>" +
-            (res ? "<p>" + (res.new_best ? "🏆 Your best today!" : "Your best today: " + res.best) + "</p>" +
-                   (res.paws ? '<p class="paws">+' + res.paws + " 🐾</p>" : "") + (lead ? "<p>" + esc(lead) + "</p>" : "")
-                 : "<p>" + esc(err || "") + "</p>"),
-            [{ id: "done", text: "Done", go: function () { game.close(); boardGame = "memory"; openPlay(); } },
-             { id: "again", text: "▶ Play again", primary: true, go: function () { game.close(); startMemory(); } }]);
-          if (res && res.paws) { sfx("coin"); loadAll({ quiet: true }); }
+          var s = await saveSolo("memory", r.score);
+          soloEnd(game.wrap, "memory", s.res, s.err, s.lead, '<div class="big">' + r.score + '</div><p class="lbl">points · ' + r.moves + " tries · " + r.secs + " s</p>", startMemory, game.close);
         }
       });
-    }
-    // a live Memory duel: the same board on both phones; first to clear it wins (or most pairs after 90 s)
-    var MEMORY_LIMIT = 90;
-    function runMemoryDuel(room, them, host) {
-      var p = pet(); if (!p || raceNow) return;
-      $("g-play").hidden = true;
-      var ch = sb.channel("pg-room-" + room, { config: { broadcast: { self: false } } });
-      var started = false, hereTimer = null, giveUp = null, mine = null, theirs = null, theirPairs = 0, gone = false, shown = false, wait = null;
-      var game = startMemoryGame({
-        pic: petPic(p.variant), seed: seedOf(room), live: true, limit: MEMORY_LIMIT, them: { html: petTagHTML(them) },
-        onPairs: function (n) { ch.send({ type: "broadcast", event: "pr", payload: { n: n } }); },
-        onQuick: function (i) { ch.send({ type: "broadcast", event: "qc", payload: { i: i } }); },
-        onQuit: function () { ch.send({ type: "broadcast", event: "bye", payload: {} }); cleanup(); openPlay(); },
-        onEnd: function (r) {
-          mine = r;
-          ch.send({ type: "broadcast", event: "final", payload: { pairs: r.pairs, secs: r.secs, done: r.done } });
-          if (theirs || gone) result(); else wait = setTimeout(result, 6000);
-        }
-      });
-      raceNow = { ch: ch, race: game }; trackMe();
-      function go() { if (started) return; started = true; clearInterval(hereTimer); clearTimeout(giveUp); game.start(); }
-      ch.on("broadcast", { event: "pr" }, function (m) { theirPairs = m.payload.n | 0; game.opp(theirPairs); })
-        .on("broadcast", { event: "qc" }, function (m) { game.quick(m.payload.i | 0); })
-        // they cleared their board (or their time ran out): that ends my round too
-        .on("broadcast", { event: "final" }, function (m) { theirs = m.payload; game.opp(theirs.pairs | 0); if (mine) result(); else game.stop(); })
-        .on("broadcast", { event: "bye" }, function () { gone = true; if (mine) result(); else say(label(them) + " left the duel. Finish your board!"); })
-        .on("broadcast", { event: "go" }, function () { if (!host) go(); })
-        .on("broadcast", { event: "here" }, function () { if (host && !started) { ch.send({ type: "broadcast", event: "go", payload: {} }); go(); } })
-        .subscribe(function (status) {
-          if (status !== "SUBSCRIBED" || host) return;
-          ch.send({ type: "broadcast", event: "here", payload: {} });
-          hereTimer = setInterval(function () { ch.send({ type: "broadcast", event: "here", payload: {} }); }, 600);
-        });
-      giveUp = setTimeout(function () { if (started) return; say("Couldn't connect to " + label(them) + ". Try again in a moment."); cleanup(); openPlay(); }, 12000);
-      async function result() {
-        if (shown) return; shown = true; clearTimeout(wait);
-        // who wins: whoever cleared the board (sooner if both did), otherwise more pairs, then fewer seconds
-        var won;
-        if (!theirs) won = gone || mine.done ? true : null;   // (no reply after I cleared my board: it's mine)
-        else if (mine.done !== !!theirs.done) won = mine.done;
-        else if (mine.pairs !== (theirs.pairs | 0)) won = mine.pairs > theirs.pairs;
-        else if (mine.secs !== (theirs.secs | 0)) won = mine.secs < theirs.secs;
-        else won = "draw";
-        var wins = p.race_wins || 0;
-        if (won === true) { try { wins = await rpc("record_race_win", { p_id: p.id }); p.race_wins = wins; } catch (e) {} }
-        sfx(won === true ? "levelUp" : "pat");
-        memoryEnd(game, '<div class="big">' + mine.pairs + (theirs ? ' <small class="vs">vs ' + (theirs.pairs | 0) + "</small>" : "") + '</div><p class="lbl">pairs</p>' +
-          "<p>" + esc(won === true ? "🏆 You win! " + p.name + " has " + wins + (wins === 1 ? " win" : " wins") + " 🏁"
-                      : won === false ? label(them) + " wins this time!" : won === "draw" ? "🤝 It's a draw!" : "We lost touch with " + label(them) + ".") + "</p>",
-          [{ id: "done", text: "Done", go: function () { cleanup(); openPlay(); } }].concat(them.uid && online[them.uid]
-            ? [{ id: "again", text: "🃏 Again", primary: true, go: function () { cleanup(); openPlay(); inviteToPlay(them.uid, "memory"); } }] : []));
-      }
-      function cleanup() {
-        clearInterval(hereTimer); clearTimeout(giveUp); clearTimeout(wait);
-        game.close();
-        try { sb.removeChannel(ch); } catch (e) {}
-        raceNow = null; trackMe();
-      }
-    }
-    // practice: Bamboo the bot finds a pair every 6 to 10 seconds (all 8 in about a minute)
-    function memoryBot() {
-      var p = pet(); if (!p || raceNow) return;
-      $("g-play").hidden = true;
-      var botPairs = 0, botSecs = 0, timer = null, t0 = 0, mine = null;
-      var game = startMemoryGame({
-        pic: petPic(p.variant), seed: (Math.random() * 1e9) >>> 0, live: true, limit: MEMORY_LIMIT, them: { html: "Bamboo the bot 🤖" },
-        onQuit: function () { clearTimeout(timer); raceNow = null; trackMe(); openPlay(); },
-        onEnd: function (r) {
-          clearTimeout(timer); mine = r;
-          var won = r.done && (botPairs < 8 || r.secs <= botSecs) ? true : r.pairs > botPairs ? true : r.pairs < botPairs ? false : "draw";
-          memoryEnd(game, '<div class="big">' + r.pairs + ' <small class="vs">vs ' + botPairs + '</small></div><p class="lbl">pairs</p><p>' +
-            (won === true ? "You beat Bamboo the bot! Practice wins don't count, but you're ready for a real duel." : won === false ? "Bamboo the bot wins! Have another go." : "🤝 A draw with the bot!") + "</p>",
-            [{ id: "done", text: "Done", go: function () { game.close(); raceNow = null; trackMe(); openPlay(); } },
-             { id: "again", text: "Again", primary: true, go: function () { game.close(); raceNow = null; memoryBot(); } }]);
-        }
-      });
-      raceNow = { race: game }; trackMe();
-      game.start(); t0 = performance.now() + 2400;
-      timer = setTimeout(function step() {
-        if (mine) return;
-        botPairs++; botSecs = Math.round((performance.now() - t0) / 1000); game.opp(botPairs);
-        if (botPairs >= 8) { game.stop(); return; }
-        timer = setTimeout(step, 6000 + Math.random() * 4000);
-      }, 2400 + 6000 + Math.random() * 4000);
     }
 
     // --- block, report, friends ---
@@ -5192,14 +5721,14 @@ html, body { background: #e6edf0; }
       if (blocked.indexOf(e.pet_id) < 0) { blocked.push(e.pet_id); saveBlocked(); }
       delete online[e.uid];
       say("Blocked.");
-      renderOnline();
+      refreshPeople();
     }
     function reportPetName(e) {
       if (!e || !e.pet_id) return;
       if (!confirm("Report the name \"" + e.pet + "\" as rude or unkind? The Pet Streak team will look at it.")) return;
       rpc("report_pet", { p_id: e.pet_id }).then(function () { say("Thanks for telling us. We'll take a look. 💛"); }, function (err) { say(err.message); });
     }
-    // a pet's card: what you can do with someone in the Playground
+    // a pet's card: what you can do with someone
     function petOpts(pic, titleHTML, sub, acts, emojis) {
       $("g-poimg").src = pic; $("g-potitle").innerHTML = titleHTML; $("g-posub").textContent = sub;
       var box = $("g-poacts"); box.innerHTML = "";
@@ -5222,10 +5751,11 @@ html, body { background: #e6edf0; }
       });
       $("g-petopts").hidden = false;
     }
+    function playWith(uid) { pickGame(function (g) { $("g-pick").hidden = true; hostGame(g, [uid]); }); }
     function openPetOpts(e) {
       var f = friendOf(e.uid), sent = friends.some(function (x) { return x.id === e.uid; });
       if (f) { openFriendOpts(f); return; }
-      var acts = [{ text: e.busy ? "Playing right now…" : "🎮 Play", primary: true, disabled: e.busy || !!raceNow, go: function () { pickGame(function (g) { inviteToPlay(e.uid, g); }); } }];
+      var acts = [{ text: e.busy ? "Playing right now…" : "🎮 Play", primary: true, disabled: e.busy || !!raceNow || !online[e.uid], go: function () { playWith(e.uid); } }];
       acts.push(sent ? { text: "Friend request sent ✓", disabled: true, go: function () {} } : { text: "➕ Add friend", go: function () { addFriendPet(e); } });
       acts.push({ text: "🚩 Report name", go: function () { reportPetName(e); } });
       acts.push({ text: "🚫 Block", danger: true, go: function () { blockPet(e); } });
@@ -5235,8 +5765,7 @@ html, body { background: #e6edf0; }
     function openFriendOpts(f) {
       var on = online[f.id], co = isCoParent(f.id);
       var acts = [{ text: "💬 Chat", primary: true, go: function () { openChat(f); } },
-        on ? { text: on.busy ? "Playing right now…" : "🎮 Play", disabled: on.busy || !!raceNow, go: function () { pickGame(function (g) { inviteToPlay(f.id, g); }); } }
-           : { text: "🎮 Invite to play", go: function () { pickGame(function (g) { inviteFriendAway(f, null, g); }); } }];
+        { text: on && on.busy ? "Playing right now…" : on ? "🎮 Play" : "🎮 Invite to play", disabled: (on && on.busy) || !!raceNow, go: function () { playWith(f.id); } }];
       // co-parents stay friends while they share a pet
       if (!co) {
         acts.push({ text: "Remove friend", go: function () {
@@ -5251,7 +5780,7 @@ html, body { background: #e6edf0; }
           }, function (err) { say(err.message); });
         } });
       }
-      petOpts(petPic(f.pet && f.pet.variant), tagHTML(f.pet ? f.pet.level : 1, f.name) + (f.pet ? ' <small class="pg-ofpet">' + esc(f.pet.name) + "</small>" : ""),
+      petOpts(petPic(f.pet && f.pet.variant), friendTagHTML(f),
         (on ? "🟢 Online · " : "") + (co ? "Co-parent · " : "Friend · ") + (f.pet ? "Lv " + f.pet.level + " · 🏁 " + (f.pet.wins || 0) : "No pet yet") + (on ? " · 🏆 " + (on.ach || 0) : ""), acts);
     }
     $("g-poclose").addEventListener("click", function () { $("g-petopts").hidden = true; });
@@ -5266,90 +5795,22 @@ html, body { background: #e6edf0; }
       } catch (err) { say(err.message); return false; }
     }
     async function loadFriends() {
-      try { friends = (await rpc("my_friends")) || []; } catch (e) { friends = []; }
-      if (!$("g-play").hidden) { renderFriends(); renderOnline(); }
-    }
-    async function inviteFriendAway(f, btn, game) {
-      if (btn) { btn.disabled = true; btn.textContent = "Sending…"; }
-      var res = null, msg = null;
-      try { res = await sb.functions.invoke("send-play-invite", { body: { to: f.id, game: game || "race" } }); }
-      catch (e) { msg = friendly(e && e.message); }
-      if (res && res.error) {
-        var status = res.error.context && res.error.context.status;
-        try { msg = (await res.error.context.json()).error; } catch (e) {}
-        if (!msg) msg = status === 404 ? "Invites to friends aren't switched on yet." : friendly(res.error.message);
-      }
-      if (btn) { btn.disabled = false; btn.textContent = "🎮 Invite"; }
-      if (msg) { say(msg); return; }
-      say(res.data && res.data.sent
-        ? "🎮 Invite sent! " + f.name + " will get a notification. Stay here so you can race when they arrive."
-        : "🎮 Invite sent. " + f.name + " doesn't have notifications on, so they'll see it next time they open the app (within 10 minutes).");
+      try { friends = (await rpc("my_friends")) || []; friendsAt = Date.now(); } catch (e) { friends = []; }
+      updateSocialBadge();
+      refreshPeople();
     }
 
-    // --- drawing the page ---
+    // --- the Playground page ---
     function openPlay() {
       if (!pet()) { say("Get a pet first, then you can play with it 🎮"); return; }
       $("g-play").hidden = false; $("g-menu").hidden = true;
       $("g-showonline").checked = showOnline();
       syncLobby();
       renderPlay(); loadFriends();
-      if (!myCode) rpc("my_friend_code").then(function (c) { myCode = c; $("g-mycode").textContent = c; }, function () { $("g-mycode").textContent = "—"; });
-      else $("g-mycode").textContent = myCode;
     }
-    function personRow(pic, title, sub, buttons, onOpen) {
-      var li = document.createElement("li");
-      // (title is ready-made HTML: the rank badge and an escaped name). Tapping the picture or name opens the
-      // pet's card (onOpen), where the less common things live (add friend, report, block)
-      li.innerHTML = '<button type="button" class="pg-petpick" aria-label="More about this pet"><img alt="" src="' + esc(pic) + '"><span class="pg-grow"><span class="ttl">' + title + "</span><small>" + esc(sub) + '</small></span></button><span class="acts"></span>';
-      var pick = li.querySelector(".pg-petpick");
-      if (onOpen) pick.addEventListener("click", onOpen); else pick.disabled = true;
-      var acts = li.querySelector(".acts");
-      buttons.forEach(function (b) {
-        var el = document.createElement("button"); el.type = "button"; el.className = "pg-btn" + (b.primary ? " pg-primary" : "");
-        el.textContent = b.text; if (b.label) el.setAttribute("aria-label", b.label); el.disabled = !!b.disabled;
-        el.addEventListener("click", function () { b.go(el); });
-        acts.appendChild(el);
-      });
-      return li;
-    }
-    function renderOnline() {
-      var box = $("g-online"); box.innerHTML = "";
-      if (!showOnline()) {
-        box.innerHTML = '<li class="pg-logempty">You\'re hidden. Turn on "Show my pet as online" to see who\'s here and race them.</li>';
-      } else {
-        var list = Object.keys(online).map(function (k) { return online[k]; });
-        list.forEach(function (e) {
-          var btns = [{ text: e.busy ? "Playing…" : "🎮 Play", primary: true, disabled: e.busy || !!raceNow, label: "Play with " + label(e), go: function () { pickGame(function (g) { inviteToPlay(e.uid, g); }); } }];
-          box.appendChild(personRow(petPic(e.variant), petTagHTML(e), "Lv " + e.level + " · 🏁 " + (e.wins || 0) + (e.wins === 1 ? " win" : " wins"), btns,
-            function () { openPetOpts(e); }));
-        });
-        var li = document.createElement("li"); li.className = "pg-botrow";
-        li.innerHTML = "<span>" + (list.length ? "Or practise first:" : "Nobody else is here right now.") + '</span><button type="button" class="pg-btn">🤖 Play Bamboo the bot</button>';
-        li.querySelector("button").addEventListener("click", function () { pickGame(playBot); });
-        box.appendChild(li);
-      }
-      $("g-onlinehead").textContent = "🟢 Online now" + (Object.keys(online).length ? " (" + Object.keys(online).length + ")" : "");
-    }
-    function renderFriends() {
-      var box = $("g-friends"); box.innerHTML = "";
-      friends.filter(function (f) { return f.kind === "request"; }).forEach(function (f) {
-        box.appendChild(personRow(petPic(f.pet && f.pet.variant), tagHTML(f.pet ? f.pet.level : 1, f.name), "wants to be friends" + (f.pet ? " · " + f.pet.name : ""), [
-          { text: "Accept", primary: true, go: function () { rpc("friend_respond", { p_from: f.id, p_accept: true }).then(function () { say("🎉 You're friends with " + f.name + "!"); loadFriends(); }, function (e) { say(e.message); }); } },
-          { text: "✕", label: "Decline", go: function () { rpc("friend_respond", { p_from: f.id, p_accept: false }).then(loadFriends, function (e) { say(e.message); }); } }
-        ]));
-      });
-      friends.filter(function (f) { return f.kind === "friend"; }).forEach(function (f) {
-        var on = online[f.id];
-        var sub = (on ? "🟢 Online · " : "") + (f.pet ? f.pet.name + " · Lv " + f.pet.level + " · 🏁 " + (f.pet.wins || 0) : "No pet yet");
-        var btn = on ? { text: on.busy ? "Playing…" : "🎮 Play", primary: true, disabled: on.busy || !!raceNow, go: function () { pickGame(function (g) { inviteToPlay(f.id, g); }); } }
-                     : { text: "🎮 Invite", go: function (el) { pickGame(function (g) { inviteFriendAway(f, el, g); }); } };
-        var chatBtn = { text: "💬" + (unread[f.id] ? " " + unread[f.id] : ""), label: "Chat with " + f.name, primary: !!unread[f.id], go: function () { openChat(f); } };
-        box.appendChild(personRow(petPic(f.pet && f.pet.variant), tagHTML(f.pet ? f.pet.level : 1, f.name), sub, [chatBtn, btn], function () { openFriendOpts(f); }));
-      });
-      friends.filter(function (f) { return f.kind === "sent"; }).forEach(function (f) {
-        box.appendChild(personRow(petPic(f.pet && f.pet.variant), f.pet ? tagHTML(f.pet.level, f.pet.name) : "A player", "Friend request sent", []));
-      });
-      if (!box.children.length) box.innerHTML = '<li class="pg-logempty">No friends yet. Share your friend code below, or tap ➕ on someone you meet here.</li>';
+    function renderOnlineCount() {
+      var n = Object.keys(online).length;
+      $("g-onlinecount").textContent = !showOnline() ? "🙈 You're hidden, so you can only play solo." : n ? "🟢 " + n + (n === 1 ? " player" : " players") + " online now" : "🌙 Nobody else is online right now";
     }
     // the high scores show one game at a time (tabs)
     var boardGame = "bamboo", BOARD_NAMES = { bamboo: "Bamboo catch", memory: "Memory match" };
@@ -5360,8 +5821,11 @@ html, body { background: #e6edf0; }
     }
     async function renderPlay() {
       var p = pet(); if (!p) return;
-      $("g-mepet").innerHTML = '<img alt="" src="' + esc(petPic(p.variant)) + '">' + esc(p.name) + " · 🏁 " + (p.race_wins || 0);
-      renderOnline(); renderFriends();
+      var w = p.race_wins || 0;
+      $("g-mepet").innerHTML = '<img alt="" src="' + esc(petPic(p.variant)) + '">' + tagHTML(p.level, p.name);
+      $("g-mywins").innerHTML = "🏁 <b>" + w + "</b> " + (w === 1 ? "win" : "wins") + ' <span aria-hidden="true">›</span>';
+      renderOnlineCount();
+      Array.prototype.forEach.call(document.querySelectorAll(".pg-boardtabs [data-board]"), function (b) { b.setAttribute("aria-selected", b.dataset.board === boardGame ? "true" : "false"); });
       var d;
       try { d = await playData(); }
       catch (e) {
@@ -5371,9 +5835,8 @@ html, body { background: #e6edf0; }
       }
       var paid = Math.max(0, GAME_PAID - d.plays);
       $("g-gamereward").textContent = paid
-        ? "🐾 Your next " + (paid === 1 ? BOARD_NAMES[boardGame] + " game pays" : paid + " " + BOARD_NAMES[boardGame] + " games pay") + " paws: 1 for every 10 points, up to 5."
+        ? "🐾 Solo " + BOARD_NAMES[boardGame] + ": your next " + (paid === 1 ? "game pays" : paid + " games pay") + " paws (1 for every 10 points, up to 5)."
         : "You've had today's 3 paw games of " + BOARD_NAMES[boardGame] + ". Keep playing for fun and a better score!";
-      Array.prototype.forEach.call(document.querySelectorAll(".pg-boardtabs [data-board]"), function (b) { b.setAttribute("aria-selected", b.dataset.board === boardGame ? "true" : "false"); });
       var box = $("g-board"); box.innerHTML = "";
       d.board.forEach(function (row, i) {
         var li = document.createElement("li");
@@ -5385,71 +5848,120 @@ html, body { background: #e6edf0; }
       });
       if (!d.board.length) box.innerHTML = '<li class="pg-logempty">Nobody has played today yet. Be the first! 🎋</li>';
     }
-    function startGame() {
-      var p = pet(); if (!p) return;
-      $("g-play").hidden = true;
-      startBambooGame({
-        pic: petPic(p.variant),
-        onQuit: function () { openPlay(); },
-        onEnd: async function (score, close, wrap) {
-          var res = null, err = null, lead = "";
-          try { res = await rpc("submit_score", { p_game: "bamboo", p_score: score, p_tz: tz() }); } catch (e) { err = e.message; }
-          if (res) {
-            try {
-              var b = (await playData("bamboo")).board;
-              if (b.length > 1) lead = b[0].me ? "You're top of today's high scores! 🥇" : b[0].name + " leads today with " + b[0].best + ". Can you beat it?";
-            } catch (e) {}
-          }
-          var end = document.createElement("div"); end.className = "pg-gameend";
-          end.innerHTML = "<div class=\"big\">" + score + "</div><p class=\"lbl\">points</p>" +
-            (res ? "<p>" + (res.new_best ? "🏆 Your best today!" : "Your best today: " + res.best) + "</p>" +
-                   (res.paws ? '<p class="paws">+' + res.paws + " 🐾</p>" : "") + (lead ? "<p>" + esc(lead) + "</p>" : "")
-                 : "<p>" + esc(err || "") + "</p>") +
-            '<div class="pg-row"><button type="button" class="pg-btn pg-grow" data-a="done">Done</button>' +
-            '<button type="button" class="pg-feed pg-grow" data-a="again">▶ Play again</button></div>';
-          wrap.appendChild(end);
-          if (res && res.paws) { sfx("coin"); loadAll({ quiet: true }); }
-          end.querySelector('[data-a="again"]').addEventListener("click", function () { close(); startGame(); });
-          end.querySelector('[data-a="done"]').addEventListener("click", function () { close(); openPlay(); });
-        }
-      });
-    }
-    // invites friends sent while I was away (shown once each)
-    async function checkPlayInvites() {
-      if (!me || inviteOpen || raceNow) return;
-      var list;
-      try { list = await rpc("my_play_invites"); } catch (e) { return; }
-      var seen = []; try { seen = JSON.parse(localStorage.getItem(AWAY_SEEN_KEY) || "[]"); } catch (e) {}
-      var inv = (list || []).filter(function (i) { return seen.indexOf(i.id) < 0; })[0];
-      if (!inv) return;
-      seen.push(inv.id); try { localStorage.setItem(AWAY_SEEN_KEY, JSON.stringify(seen.slice(-50))); } catch (e) {}
-      var f = friendOf(inv.from);
-      showInvite({ from: inv.from, name: inv.name, game: inv.game, pic: petPic(f && f.pet && f.pet.variant), canBlock: false,
-        text: "🎮 " + inv.name + " invited you to " + (inv.game === "bamboo" ? "a Bamboo duel" : inv.game === "memory" ? "a Memory duel" : "a Treat race") + "!" });
-    }
     $("g-playbtn").addEventListener("click", openPlay);
     $("g-playclose").addEventListener("click", function () { $("g-play").hidden = true; render(); });
-    $("g-gameplay").addEventListener("click", startGame);
-    $("g-memplay").addEventListener("click", startMemory);
+    $("g-playsocial").addEventListener("click", function () { openSocial(); });
+    $("g-mywins").addEventListener("click", openHistory);
     Array.prototype.forEach.call(document.querySelectorAll(".pg-boardtabs [data-board]"), function (b) {
       b.addEventListener("click", function () { boardGame = b.dataset.board; renderPlay(); });
     });
-    // the game tiles: play someone who's online, or the bot if nobody is
-    function findPlayer(game) {
-      if (!showOnline()) { say("Turn on \"Show my pet as online\" below to play other players."); return; }
-      if (!Object.keys(online).length) { playBot(game); return; }
-      $("g-onlinehead").scrollIntoView({ behavior: "smooth", block: "start" });
-      say("Tap 🎮 Play next to someone to invite them.");
-    }
-    $("g-racefind").addEventListener("click", function () { findPlayer("race"); });
-    $("g-duelfind").addEventListener("click", function () { findPlayer("bamboo"); });
     $("g-showonline").addEventListener("change", function () {
       try { localStorage.setItem(SHOW_ONLINE_KEY, $("g-showonline").checked ? "on" : "off"); } catch (e) {}
-      syncLobby(); renderOnline(); renderFriends();
+      syncLobby(); renderOnlineCount();
     });
+    document.addEventListener("visibilitychange", function () { syncLobby(); if (!document.hidden) checkPlayInvites(); });
+    setInterval(function () { if (me && !document.hidden) checkPlayInvites(); }, 15000);
+
+    // ---------- Social: chats, friends and adding friends (💬 on the main screen and in the Playground) ----------
+    var socialTab = "chats", chatList = null;
+    function openSocial(tab) {
+      if (tab) socialTab = tab;
+      $("g-social").hidden = false; $("g-menu").hidden = true;
+      syncLobby(); renderSocial(); loadFriends(); loadChatList();
+      if (!myCode) rpc("my_friend_code").then(function (c) { myCode = c; $("g-mycode").textContent = c; }, function () { $("g-mycode").textContent = "—"; });
+      else $("g-mycode").textContent = myCode;
+    }
+    async function loadChatList() {
+      try { chatList = await rpc("chat_list"); } catch (e) { chatList = null; }
+      renderSocial();
+    }
+    function personRow(pic, title, sub, buttons, onOpen) {
+      var li = document.createElement("li");
+      // (title is ready-made HTML: the rank badge and an escaped name). Tapping the picture or name opens onOpen
+      li.innerHTML = '<button type="button" class="pg-petpick" aria-label="More"><img alt="" src="' + esc(pic) + '"><span class="pg-grow"><span class="ttl">' + title + "</span><small>" + esc(sub) + '</small></span></button><span class="acts"></span>';
+      var pk = li.querySelector(".pg-petpick");
+      if (onOpen) pk.addEventListener("click", onOpen); else pk.disabled = true;
+      var acts = li.querySelector(".acts");
+      buttons.forEach(function (b) {
+        var el = document.createElement("button"); el.type = "button"; el.className = "pg-btn" + (b.primary ? " pg-primary" : "");
+        el.textContent = b.text; if (b.label) el.setAttribute("aria-label", b.label); el.disabled = !!b.disabled;
+        el.addEventListener("click", function () { b.go(el); });
+        acts.appendChild(el);
+      });
+      return li;
+    }
+    function ago(at) {
+      var s = (Date.now() - Date.parse(at)) / 1000;
+      return s < 60 ? "now" : s < 3600 ? Math.floor(s / 60) + "m" : s < 86400 ? Math.floor(s / 3600) + "h" : Math.floor(s / 86400) + "d";
+    }
+    function renderSocial() {
+      if ($("g-social").hidden) return;
+      Array.prototype.forEach.call(document.querySelectorAll("#g-soctabs [data-tab]"), function (b) { b.setAttribute("aria-selected", b.dataset.tab === socialTab ? "true" : "false"); });
+      $("g-socchats").hidden = socialTab !== "chats"; $("g-socfriends").hidden = socialTab !== "friends"; $("g-socadd").hidden = socialTab !== "add";
+      var reqs = friends.filter(function (f) { return f.kind === "request"; });
+      $("g-socreqdot").hidden = !reqs.length; $("g-socreqdot").textContent = reqs.length;
+      var un = Object.keys(unread).reduce(function (a, k) { return a + unread[k]; }, 0);
+      $("g-socchatdot").hidden = !un; $("g-socchatdot").textContent = un > 9 ? "9+" : un;
+      // chats: everyone you can message, the newest conversation first
+      var box = $("g-socchats"); box.innerHTML = "";
+      var list = chatList || friends.filter(function (f) { return f.kind === "friend"; }).map(function (f) { return { id: f.id, name: f.name, pet: f.pet }; });
+      list.forEach(function (c) {
+        var f = friendOf(c.id) || { id: c.id, kind: "friend", name: c.name, pet: c.pet }, n = unread[c.id] || c.unread || 0;
+        var li = document.createElement("li"); li.className = "pg-chatrow" + (n ? " new" : "");
+        li.innerHTML = '<button type="button" class="pg-petpick"><span class="pg-av"><img alt="" src="' + esc(petPic(c.pet && c.pet.variant)) + '">' + (online[c.id] ? '<i class="pg-ondot" aria-label="Online"></i>' : "") + "</span>" +
+          '<span class="pg-grow"><span class="ttl">' + tagHTML(c.pet ? c.pet.level : 1, c.name) + "</span><small>" + esc(c.blocked ? "Blocked" : c.last ? (c.last_me ? "You: " : "") + c.last : "Say hi! 👋") + "</small></span>" +
+          '<span class="pg-chatmeta">' + (c.at ? "<time>" + esc(ago(c.at)) + "</time>" : "") + (n ? '<b class="pg-unread">' + (n > 9 ? "9+" : n) + "</b>" : "") + "</span></button>";
+        li.querySelector("button").addEventListener("click", function () { openChat(f); });
+        box.appendChild(li);
+      });
+      if (!list.length) {
+        box.innerHTML = '<li class="pg-logempty">No chats yet. Add a friend to start chatting! 👋</li>';
+        var go = document.createElement("li"); go.className = "pg-center";
+        go.innerHTML = '<button type="button" class="pg-feed">➕ Add a friend</button>';
+        go.querySelector("button").addEventListener("click", function () { socialTab = "add"; renderSocial(); });
+        box.appendChild(go);
+      }
+      // friends: requests first, then friends (online first), then requests you sent
+      box = $("g-socfriends"); box.innerHTML = "";
+      reqs.forEach(function (f) {
+        box.appendChild(personRow(petPic(f.pet && f.pet.variant), tagHTML(f.pet ? f.pet.level : 1, f.name), "wants to be friends" + (f.pet ? " · " + f.pet.name : ""), [
+          { text: "Accept", primary: true, go: function () { rpc("friend_respond", { p_from: f.id, p_accept: true }).then(function () { say("🎉 You're friends with " + f.name + "!"); loadFriends(); loadChatList(); }, function (e) { say(e.message); }); } },
+          { text: "✕", label: "Decline", go: function () { rpc("friend_respond", { p_from: f.id, p_accept: false }).then(loadFriends, function (e) { say(e.message); }); } }
+        ]));
+      });
+      friends.filter(function (f) { return f.kind === "friend"; })
+        .sort(function (a, b) { return (online[b.id] ? 1 : 0) - (online[a.id] ? 1 : 0); })
+        .forEach(function (f) {
+          var on = online[f.id];
+          box.appendChild(personRow(petPic(f.pet && f.pet.variant), friendTagHTML(f),
+            (on ? (on.busy ? "🎮 Playing" : "🟢 Online") : "Away") + (f.pet ? " · Lv " + f.pet.level + " · 🏁 " + (f.pet.wins || 0) : ""),
+            [{ text: "💬", label: "Chat with " + f.name, go: function () { openChat(f); } },
+             { text: "🎮", label: "Play with " + f.name, primary: !!on, disabled: (on && on.busy) || !!raceNow, go: function () { playWith(f.id); } }],
+            function () { openFriendOpts(f); }));
+        });
+      friends.filter(function (f) { return f.kind === "sent"; }).forEach(function (f) {
+        box.appendChild(personRow(petPic(f.pet && f.pet.variant), f.pet ? tagHTML(f.pet.level, f.pet.name) : "A player", "Friend request sent", []));
+      });
+      if (!box.children.length) box.innerHTML = '<li class="pg-logempty">No friends yet. Tap ➕ Add to share your friend code.</li>';
+    }
+    function updateSocialBadge() {
+      var n = Object.keys(unread).reduce(function (a, k) { return a + unread[k]; }, 0) + friends.filter(function (f) { return f.kind === "request"; }).length;
+      ["g-socialdot", "g-playsocialdot"].forEach(function (id) { $(id).hidden = !n; $(id).textContent = n > 9 ? "9+" : n; });
+    }
+    Array.prototype.forEach.call(document.querySelectorAll("#g-soctabs [data-tab]"), function (b) {
+      b.addEventListener("click", function () { socialTab = b.dataset.tab; renderSocial(); });
+    });
+    $("g-socialbtn").addEventListener("click", function () { openSocial(); });
+    $("g-socialclose").addEventListener("click", function () { $("g-social").hidden = true; if (!$("g-play").hidden) renderPlay(); });
     $("g-copycode").addEventListener("click", async function () {
       if (!myCode) return;
       try { await navigator.clipboard.writeText(myCode); say("Friend code copied: " + myCode); } catch (e) { prompt("Your friend code:", myCode); }
+    });
+    $("g-sharecode").addEventListener("click", async function () {
+      if (!myCode) return;
+      var text = "Be my friend on Pet Streak! 🐾 My friend code is " + myCode;
+      if (navigator.share) { try { await navigator.share({ text: text, url: location.origin + location.pathname }); } catch (e) {} }
+      else { try { await navigator.clipboard.writeText(text); say("Copied! Paste it to your friend."); } catch (e) { prompt("Send this to your friend:", text); } }
     });
     $("g-addcode").addEventListener("submit", async function (e) {
       e.preventDefault();
@@ -5462,7 +5974,45 @@ html, body { background: #e6edf0; }
         loadFriends();
       } catch (err) { say(err.message); }
     });
-    document.addEventListener("visibilitychange", function () { syncLobby(); if (!document.hidden) checkPlayInvites(); });
+
+    // ---------- Game history (tap your wins in the Playground): the last 7 days ----------
+    function logGame(game, mode, against, result, place, score) {
+      rpc("record_game", { p_game: game, p_mode: mode, p_against: against || null, p_result: result || null, p_place: place || null,
+        p_score: score === undefined || score === null ? null : score }).catch(function () {});
+    }
+    async function openHistory() {
+      $("g-history").hidden = false;
+      var box = $("g-histlist"); box.innerHTML = '<li class="pg-logempty">Loading…</li>'; $("g-histsum").textContent = "";
+      var list;
+      try { list = (await rpc("my_game_history")) || []; }
+      catch (e) { box.innerHTML = '<li class="pg-logempty">' + esc(/my_game_history/.test(e.message) ? "Game history isn't switched on yet." : e.message) + "</li>"; return; }
+      var won = list.filter(function (g) { return g.mode === "live" && g.result === "won"; }).length, lives = list.filter(function (g) { return g.mode === "live"; }).length;
+      $("g-histsum").textContent = list.length ? list.length + (list.length === 1 ? " game" : " games") + " this week" + (lives ? " · " + won + " of " + lives + " live games won 🏆" : "") : "";
+      box.innerHTML = "";
+      if (!list.length) { box.innerHTML = '<li class="pg-logempty">No games in the last 7 days. Go play! 🎮</li>'; return; }
+      var lastDay = "";
+      list.forEach(function (g) {
+        var d = new Date(g.at), day = dayName(d);
+        if (day !== lastDay) { lastDay = day; var h = document.createElement("li"); h.className = "pg-histday"; h.textContent = day; box.appendChild(h); }
+        var G = GAMES[g.game] || GAMES.race, res, cls = "";
+        if (g.mode === "solo") res = (g.score || 0) + " pts";
+        else if (g.result === "left") { res = "Left"; cls = "left"; }
+        else if (g.place && g.game === "race") { res = PLACES[g.place - 1] || g.place + "th"; cls = g.place === 1 ? "won" : "lost"; }
+        else { res = { won: "🏆 Won", lost: "Lost", draw: "🤝 Draw" }[g.result] || ""; cls = g.result || ""; }
+        var li = document.createElement("li");
+        li.innerHTML = '<span class="gi" aria-hidden="true">' + G.art + '</span><span class="pg-grow"><b>' + esc(G.name) + (g.mode === "bot" ? " · practice" : g.mode === "solo" ? " · solo" : "") + "</b>" +
+          "<small>" + esc((g.against ? "with " + g.against + " · " : "") + d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })) + "</small></span>" +
+          '<span class="res ' + cls + '">' + esc(res) + "</span>";
+        box.appendChild(li);
+      });
+    }
+    function dayName(d) {
+      var t = new Date(); t.setHours(0, 0, 0, 0);
+      var x = new Date(d); x.setHours(0, 0, 0, 0);
+      var n = Math.round((t - x) / 86400000);
+      return n === 0 ? "Today" : n === 1 ? "Yesterday" : d.toLocaleDateString([], { weekday: "long" });
+    }
+    $("g-historyclose").addEventListener("click", function () { $("g-history").hidden = true; });
 
     // ---------- Chat with friends ----------
     // Only friends can type to each other; every message goes through the server (send_chat), which refuses phone
@@ -5473,9 +6023,9 @@ html, body { background: #e6edf0; }
     async function refreshUnread() {
       if (!me) return;
       try { unread = (await rpc("chat_unread")) || {}; } catch (e) { return; }
-      var n = Object.keys(unread).reduce(function (a, k) { return a + unread[k]; }, 0);
-      $("g-playdot").hidden = !n; $("g-playdot").textContent = n > 9 ? "9+" : n;
-      if (!$("g-play").hidden) renderFriends();
+      updateSocialBadge();
+      if (!$("g-social").hidden) { renderSocial(); loadChatList(); }
+      if (Date.now() - friendsAt > 60000) loadFriends();   // (friend requests count on the 💬 badge too)
       if (chatWith && unread[chatWith.id]) loadChat();
     }
     function openChat(f) {
@@ -5510,17 +6060,28 @@ html, body { background: #e6edf0; }
         try { localStorage.setItem(KIND_KEY, "1"); } catch (e) {}
       }
       if (!list.length) { var e0 = document.createElement("li"); e0.className = "pg-logempty"; e0.textContent = "Say hi to " + f.name + "! 👋"; box.appendChild(e0); }
-      list.forEach(function (m) {
-        var li = document.createElement("li"); li.className = m.me ? "me" : "them";
-        li.innerHTML = '<span class="b">' + esc(m.body) + "</span><time>" + esc(new Date(m.at).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })) + "</time>";
+      // (messages that couldn't be sent stay in their place, with the reason)
+      list.concat(chatFailed[f.id] || []).sort(function (a, b) { return a.at < b.at ? -1 : a.at > b.at ? 1 : 0; }).forEach(function (m) {
+        var li = document.createElement("li");
+        if (m.why) {
+          li.className = "me failed";
+          li.innerHTML = '<span class="b"></span><small class="why"></small>';
+          li.querySelector(".b").textContent = m.body;
+          li.querySelector(".why").textContent = "⚠️ Not sent: " + m.why + " Tap to edit.";
+          li.addEventListener("click", function () {
+            $("g-chatin").value = m.body; $("g-chatin").focus();
+            chatFailed[f.id] = (chatFailed[f.id] || []).filter(function (x) { return x !== m; }); li.remove();
+          });
+        } else {
+          li.className = m.me ? "me" : "them";
+          li.innerHTML = '<span class="b">' + esc(m.body) + "</span><time>" + esc(new Date(m.at).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })) + "</time>";
+        }
         box.appendChild(li);
       });
       box.scrollTop = box.scrollHeight;
     }
-    function refreshBadge() {
-      var n = Object.keys(unread).reduce(function (a, k) { return a + unread[k]; }, 0);
-      $("g-playdot").hidden = !n; $("g-playdot").textContent = n > 9 ? "9+" : n;
-    }
+    var chatFailed = {};
+    function refreshBadge() { updateSocialBadge(); }
     async function sendChat(text) {
       var f = chatWith; if (!f || !text.trim()) return;
       $("g-chatsend").disabled = true;
@@ -5530,11 +6091,16 @@ html, body { background: #e6edf0; }
         if (r.masked) say("Some words were hidden with *** to keep chat friendly.");
         sendLive("chat", { to: f.id, from: me.id });   // just a ping: they fetch the message from the server
         await loadChat();
-      } catch (e) { say(e.message); }
+      } catch (e) {
+        $("g-chatin").value = "";
+        (chatFailed[f.id] = chatFailed[f.id] || []).push({ body: text, why: friendly(e.message), at: new Date().toISOString(), me: true });
+        sfx("pat");
+        await loadChat();
+      }
       finally { $("g-chatsend").disabled = false; }
     }
     $("g-chatform").addEventListener("submit", function (e) { e.preventDefault(); sendChat($("g-chatin").value); });
-    $("g-chatback").addEventListener("click", function () { $("g-chat").hidden = true; chatWith = null; if (!$("g-play").hidden) renderFriends(); });
+    $("g-chatback").addEventListener("click", function () { $("g-chat").hidden = true; $("g-chatmenu").hidden = true; chatWith = null; if (!$("g-social").hidden) { renderSocial(); loadChatList(); } });
     $("g-chatmore").addEventListener("click", function () { $("g-chatmenu").hidden = !$("g-chatmenu").hidden; });
     $("g-chatreport").addEventListener("click", async function () {
       var f = chatWith; if (!f) return;
@@ -7099,12 +7665,12 @@ html, body { background: #e6edf0; }
     // tidying up runs). That tap only closes: it doesn't also pat the pet or press the button underneath.
     var CLOSABLE = [["g-menu", "g-menuclose"], ["g-store", "g-storeclose"], ["g-sheet", "g-close"], ["g-ranks", "g-ranksclose"],
                     ["g-share", "g-shareclose"], ["g-petsheet", "g-petsheetclose"], ["g-adoptinfo", "g-aiclose"], ["g-tray", "g-trayclose"],
-                    ["g-today", "g-todayclose"], ["g-achs", "g-achsclose"]];
+                    ["g-today", "g-todayclose"], ["g-achs", "g-achsclose"], ["g-history", "g-historyclose"]];
     var swallowClick = 0;
     document.addEventListener("pointerdown", function (e) {
       // a full-screen card (gift, join, name...) is on top: leave everything as it is
       // (also leave sheets alone for taps on an invite card or inside a game)
-      if (e.target.closest && e.target.closest(".pg-adopt, .pg-invite, .pg-game, .pg-playpage, .pg-chatpage")) return;
+      if (e.target.closest && e.target.closest(".pg-adopt, .pg-invite, .pg-game, .pg-playpage, .pg-chatpage, #g-history")) return;
       var open = CLOSABLE.filter(function (c) { return !$(c[0]).hidden && !$(c[0]).contains(e.target); });
       if (!open.length) return;
       open.forEach(function (c) { $(c[1]).click(); });
@@ -7114,6 +7680,40 @@ html, body { background: #e6edf0; }
     document.addEventListener("click", function (e) {
       if (swallowClick && Date.now() - swallowClick < 600) { swallowClick = 0; e.preventDefault(); e.stopPropagation(); }
     }, true);
+    // The phone's back button (Android's back swipe): close whatever is on top instead of leaving the app. A game
+    // asks first. On the main screen, a second back within 2 seconds closes the app.
+    var BACK = [["g-achpop", "g-achok"], ["g-invite", "g-inviteno"], ["g-ask", "g-askcancel"], ["g-join", "g-joincancel"],
+                ["g-giftsend", "g-gsdone"], ["g-petopts", "g-poclose"], ["g-gamepick", "g-pickno"], ["g-mode", "g-modeclose"],
+                ["g-pick", "g-pickclose"], ["g-history", "g-historyclose"], ".pg-game", ["g-chat", "g-chatback"],
+                ["g-social", "g-socialclose"], ["g-play", "g-playclose"], ["g-bath", "g-bathcancel"], ["g-howto", "g-howskip"],
+                ["g-getapp", "g-gaclose"], ["g-streakinfo", "g-siok"], ["g-bonusintro", "g-bonusok"]].concat(CLOSABLE);
+    function closeTop() {
+      for (var i = 0; i < BACK.length; i++) {
+        var b = BACK[i];
+        if (typeof b === "string") {
+          var games = document.querySelectorAll(b);
+          if (!games.length) continue;
+          var g = games[games.length - 1], btn = g.querySelector('.pg-gameend [data-a="done"]') || g.querySelector(".pg-gamex");
+          if (btn) btn.click();
+          return true;
+        }
+        if ($(b[0]) && !$(b[0]).hidden) { var x = $(b[1]); if (x && !x.hidden) x.click(); else $(b[0]).hidden = true; return true; }
+      }
+      return false;
+    }
+    var backAt = 0;
+    try {
+      history.replaceState({ ps: "base" }, "");
+      history.pushState({ ps: "app" }, "");
+      window.addEventListener("popstate", function () {
+        if (closeTop()) { history.pushState({ ps: "app" }, ""); return; }
+        if (Date.now() - backAt < 2000) { history.back(); return; }   // leave
+        backAt = Date.now();
+        say("Press back again to close Pet Streak");
+        history.pushState({ ps: "app" }, "");
+      });
+    } catch (e) {}
+
     $("g-savename").addEventListener("click", async function () {
       try { await rpc("set_name", { p_name: $("g-myname").value }); } catch (e) { say(e.message); return; }
       await loadAll(); renderMenu(); say("Name saved.");
