@@ -479,6 +479,41 @@ html, body { background: #e6edf0; }
 /* nudge a co-parent: a small button inside their chip */
 .pg-crew span .pg-nudge { margin-left: 6px; padding: 2px 8px; border: 0; border-radius: 999px; background: var(--brand); color: #fff; font-size: 0.78rem; font-weight: 700; }
 .pg-crew span .pg-nudge[disabled] { background: #e3eaed; color: #55666e; }
+/* the Playground */
+.pg-bottom .pg-playbtn { font-size: 1.3rem; }
+.pg-gamecard { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 16px; background: linear-gradient(135deg, #e9f8e6, #d6f0ff); border: 2px solid #bfe3c8; }
+.pg-gameart { font-size: 2.6rem; flex: none; }
+.pg-gamecard b { display: block; font-size: 1.05rem; color: #14232b; }
+.pg-gamecard small { display: block; color: #3b4b53; line-height: 1.35; margin-top: 2px; white-space: normal; overflow: visible; }
+.pg-gamecard .pg-feed { width: auto; padding: 12px 16px; flex: none; }
+#g-gamereward { margin: 10px 0 4px; }
+.pg-boardhead { margin: 14px 0 8px; font-size: 1rem; color: #14232b; }
+.pg-board { list-style: none; margin: 0 0 10px; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.pg-board li { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 12px; background: #f3f6f7; color: #14232b; }
+.pg-board li.me { background: var(--brand-tint); box-shadow: inset 0 0 0 2px var(--brand); }
+.pg-board .rk { width: 26px; text-align: center; font-weight: 800; }
+.pg-board .av { display: inline-block; width: 26px; height: 26px; border-radius: 50%; background: var(--brand) center/cover; color: #fff; font-size: 0.8rem; line-height: 26px; text-align: center; font-style: normal; flex: none; }
+.pg-board .nm { flex: 1; min-width: 0; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pg-board .pt { font-size: 1.05rem; }
+.pg-board .pg-logempty { justify-content: center; color: #55666e; background: none; }
+/* the game screen (full screen, above everything) */
+.pg-game { position: fixed; inset: 0; z-index: 50; background: #cfe8b8; touch-action: none; user-select: none; -webkit-user-select: none; }
+.pg-game canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+.pg-gamehud { position: absolute; top: calc(12px + env(safe-area-inset-top, 0px)); left: 12px; right: 12px; display: flex; align-items: center; gap: 10px; pointer-events: none; }
+.pg-gamehud span { padding: 8px 14px; border-radius: 999px; background: rgba(255,255,255,0.9); font-weight: 800; font-size: 1.1rem; color: #14232b; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+.pg-gamehud .sc::before { content: "⭐ "; }
+.pg-gamehud .tm { margin-left: auto; }
+.pg-gamehud .tm.low { background: #ffe1df; color: #b3261e; }
+.pg-gamex { pointer-events: auto; width: 40px; height: 40px; border-radius: 50%; border: 0; background: rgba(255,255,255,0.9); font-size: 1rem; font-weight: 800; color: #55666e; }
+.pg-gamemsg { position: absolute; left: 0; right: 0; top: 38%; text-align: center; pointer-events: none; font-family: var(--display); font-weight: 800; color: #fff; text-shadow: 0 3px 12px rgba(0,0,0,0.35); }
+.pg-gamemsg.big { font-size: 4rem; }
+.pg-gameend { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(86vw, 340px); padding: 22px; border-radius: 22px; background: #fff; text-align: center; box-shadow: 0 16px 40px rgba(0,0,0,0.25); animation: pg-bathin 0.3s ease-out; }
+.pg-gameend .big { font-family: var(--display); font-size: 3.4rem; font-weight: 800; color: #14232b; line-height: 1; }
+.pg-gameend .lbl { margin: 2px 0 10px; color: #55666e; font-weight: 600; }
+.pg-gameend p { margin: 6px 0; color: #14232b; font-weight: 600; }
+.pg-gameend .paws { font-size: 1.3rem; color: #a5521f; }
+.pg-gameend .pg-row { margin-top: 14px; }
+.pg-gameend .pg-feed { width: auto; }
 /* today's log */
 .pg-crew .pg-todaychip { border-style: solid; color: #14232b; }
 .pg-log { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
@@ -614,6 +649,9 @@ html, body { background: #e6edf0; }
 /* store and wardrobe category headings fold their items away */
 .pg-capbtn { display: grid; place-items: center; }
 .pg-capbtn svg { width: 24px; height: 24px; }
+/* icon-only buttons in the bottom bar stay compact, so Feed keeps its room */
+.pg-bottom .pg-capbtn { flex: none; width: 50px; padding: 0; }
+.pg-bottom { gap: 8px; }
 .pg-shareready { margin-top: 10px; padding: 12px; border-radius: 14px; background: var(--brand-tint); text-align: center; }
 .pg-shareready p { margin: 0 0 10px; font-weight: 700; }
 #g-adoptinfo { z-index: 6; }   /* over the store it was opened from */
@@ -721,6 +759,7 @@ html, body { background: #e6edf0; }
       <button type="button" class="pg-feed" id="g-feed">🍎 Feed</button>
       <button type="button" class="pg-wardrobe pg-bathbtn" id="g-bathbtn" hidden aria-label="Give your pet a bath">🛁<span class="pg-lbl"> Bath</span></button>
       <button type="button" class="pg-wardrobe" id="g-wardrobe" aria-label="Dress up">🎀<span class="pg-lbl"> Dress up</span></button>
+      <button type="button" class="pg-wardrobe pg-capbtn pg-playbtn" id="g-playbtn" aria-label="Playground: mini-games">🎮</button>
       <button type="button" class="pg-wardrobe pg-capbtn" id="g-sharebtn" aria-label="Capture and share your pet"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l1.6-2.4A1.5 1.5 0 0 1 9.9 5h4.2a1.5 1.5 0 0 1 1.3.6L17 8h3a1.5 1.5 0 0 1 1.5 1.5v8A1.5 1.5 0 0 1 20 19H4a1.5 1.5 0 0 1-1.5-1.5v-8A1.5 1.5 0 0 1 4 8z"/><circle cx="12" cy="13" r="3.6"/></svg></button>
     </div>
 
@@ -758,6 +797,22 @@ html, body { background: #e6edf0; }
         <button type="button" class="pg-btn pg-primary" id="g-tryonbtn">Wear it</button>
         <button type="button" class="pg-btn" id="g-tryonoff">Take off</button>
       </div>
+    </div>
+    <!-- the Playground: mini-games and today's best scores among your pet family -->
+    <div class="pg pg-card pg-sheet" id="g-play" hidden>
+      <h2>🎮 Playground <button type="button" class="pg-x" id="g-playclose" aria-label="Close the Playground">✕</button></h2>
+      <div class="pg-gamecard">
+        <div class="pg-gameart" aria-hidden="true">🎋</div>
+        <div class="pg-grow">
+          <b>Bamboo catch</b>
+          <small id="g-gamedesc">Catch the falling food with your pet. 30 seconds!</small>
+        </div>
+        <button type="button" class="pg-feed" id="g-gameplay">▶ Play</button>
+      </div>
+      <p class="pg-hint" id="g-gamereward"></p>
+      <h3 class="pg-boardhead">🏆 Today's best</h3>
+      <ol class="pg-board" id="g-board"></ol>
+      <p class="pg-note">Scores reset every day. You compete with everyone you look after a pet with.</p>
     </div>
     <!-- today's log: who fed, bathed, played and reminded, with the time -->
     <div class="pg pg-card pg-sheet" id="g-today" hidden>
@@ -3492,6 +3547,139 @@ html, body { background: #e6edf0; }
     });
   }
 
+  // ---------- Mini-games: Bamboo catch ----------
+  // 30 seconds, full screen. Drag (or use the arrow keys) to move your pet along the bottom and catch the falling
+  // food: +1 each, golden bamboo +3, and dodge the rocks (-2). Things fall faster as time runs out.
+  // startBambooGame({ pic, name, onEnd(score) }) builds its own screen; real.js saves the score and shows the board.
+  var BAMBOO_TIME = 30;
+  var BAMBOO_FOODS = ["🍎", "🍌", "🥕", "🍓", "🍉", "🍇", "🍑"];
+  function startBambooGame(opts) {
+    var wrap = document.createElement("div"); wrap.className = "pg-game";
+    wrap.innerHTML =
+      '<canvas aria-label="Bamboo catch: move your pet to catch the falling food"></canvas>' +
+      '<div class="pg-gamehud"><span class="sc">0</span><span class="tm">' + BAMBOO_TIME + 's</span>' +
+      '<button type="button" class="pg-gamex" aria-label="Stop the game">✕</button></div>' +
+      '<div class="pg-gamemsg"></div>';
+    document.body.appendChild(wrap);
+    var cv = wrap.querySelector("canvas"), g = cv.getContext("2d"), msg = wrap.querySelector(".pg-gamemsg");
+    var hudScore = wrap.querySelector(".sc"), hudTime = wrap.querySelector(".tm");
+    var W = 0, H = 0, dpr = Math.min(2, window.devicePixelRatio || 1);
+    function size() { W = wrap.clientWidth; H = wrap.clientHeight; cv.width = W * dpr; cv.height = H * dpr; g.setTransform(dpr, 0, 0, dpr, 0, 0); }
+    size(); window.addEventListener("resize", size);
+
+    var pet = new Image(); pet.src = opts.pic;
+    var P = 86;                                    // the pet's size on screen
+    var px = W / 2, tx = W / 2, score = 0, items = [], pops = [], shake = 0;
+    var state = "count", t0 = performance.now(), last = t0, spawnIn = 0, ended = false, running = true, keys = {};
+
+    // moving: drag anywhere, or the arrow keys
+    function aim(e) { var r = cv.getBoundingClientRect(); tx = Math.max(P / 2, Math.min(W - P / 2, e.clientX - r.left)); }
+    cv.addEventListener("pointerdown", function (e) { aim(e); cv.setPointerCapture && cv.setPointerCapture(e.pointerId); });
+    cv.addEventListener("pointermove", function (e) { if (e.buttons || e.pointerType === "touch") aim(e); });
+    function onKey(e) { if (e.key === "ArrowLeft" || e.key === "ArrowRight") { keys[e.key] = e.type === "keydown"; e.preventDefault(); } }
+    window.addEventListener("keydown", onKey); window.addEventListener("keyup", onKey);
+    // leaving the app pauses the clock
+    var pausedAt = 0;
+    function onVis() { if (document.hidden) pausedAt = performance.now(); else if (pausedAt) { var d = performance.now() - pausedAt; t0 += d; last += d; pausedAt = 0; } }
+    document.addEventListener("visibilitychange", onVis);
+
+    function spawn(elapsed) {
+      var r = Math.random(), kind = r < 0.1 ? "gold" : r < 0.1 + Math.min(0.28, 0.12 + elapsed / 120) ? "rock" : "food";
+      items.push({ x: 24 + Math.random() * (W - 48), y: -30, kind: kind,
+        icon: kind === "gold" ? "🎋" : kind === "rock" ? "🪨" : BAMBOO_FOODS[Math.floor(Math.random() * BAMBOO_FOODS.length)],
+        v: (H / 3.2) * (1 + elapsed / 22) * (0.85 + Math.random() * 0.3), spin: (Math.random() - 0.5) * 2 });
+    }
+    function pop(x, y, text, color) { pops.push({ x: x, y: y, text: text, color: color, t: 0 }); }
+
+    function drawScene(now) {
+      // sky, sun and bamboo stalks
+      var sky = g.createLinearGradient(0, 0, 0, H);
+      sky.addColorStop(0, "#bfe8ff"); sky.addColorStop(0.7, "#e9f8e6"); sky.addColorStop(1, "#cfe8b8");
+      g.fillStyle = sky; g.fillRect(0, 0, W, H);
+      g.fillStyle = "rgba(255,240,170,0.8)"; g.beginPath(); g.arc(W * 0.82, H * 0.12, 34, 0, 7); g.fill();
+      for (var i = 0; i < 6; i++) {
+        var bx = (i + 0.5) * W / 6 + Math.sin(i * 3.1) * 18, sway = Math.sin(now / 1400 + i) * 4;
+        g.strokeStyle = "rgba(95,150,80," + (0.18 + (i % 2) * 0.1) + ")"; g.lineWidth = 9;
+        g.beginPath(); g.moveTo(bx, H); g.quadraticCurveTo(bx + sway, H * 0.5, bx + sway * 2, H * 0.08); g.stroke();
+        for (var k = 1; k < 6; k++) { g.fillStyle = "rgba(70,120,60,0.18)"; g.fillRect(bx + sway * k / 3 - 6, H - k * H / 6, 12, 3); }
+      }
+      g.fillStyle = "#9fcf7f"; g.fillRect(0, H - 28, W, 28);
+    }
+    function gameFrame(now) {
+      if (!running) return;
+      requestAnimationFrame(gameFrame);
+      if (pausedAt) return;
+      var dt = Math.min(0.05, (now - last) / 1000); last = now;
+      var since = (now - t0) / 1000;
+      if (keys.ArrowLeft) tx = Math.max(P / 2, tx - 520 * dt);
+      if (keys.ArrowRight) tx = Math.min(W - P / 2, tx + 520 * dt);
+      px += (tx - px) * Math.min(1, dt * 14);
+      drawScene(now);
+
+      if (state === "count") {
+        var n = 3 - Math.floor(since);
+        msg.textContent = n > 0 ? n : "Go!";
+        msg.className = "pg-gamemsg big";
+        if (since >= 3.6) { state = "play"; t0 = now; msg.textContent = ""; msg.className = "pg-gamemsg"; }
+      } else if (state === "play") {
+        var left = Math.max(0, BAMBOO_TIME - since);
+        hudTime.textContent = Math.ceil(left) + "s";
+        hudTime.classList.toggle("low", left <= 5);
+        spawnIn -= dt;
+        if (spawnIn <= 0 && left > 0.4) { spawn(since); spawnIn = Math.max(0.28, 0.85 - since / 45) * (0.7 + Math.random() * 0.6); }
+        if (left <= 0) finish();
+      }
+
+      // falling things
+      var catchY = H - 28 - P * 0.62;
+      items = items.filter(function (it) {
+        it.y += it.v * dt;
+        if (state === "play" && it.y > catchY && it.y < catchY + P * 0.55 && Math.abs(it.x - px) < P * 0.55) {
+          if (it.kind === "rock") { score = Math.max(0, score - 2); pop(it.x, catchY, "-2", "#b3261e"); shake = 0.3; if (typeof sfx === "function") sfx("splat"); }
+          else { var add = it.kind === "gold" ? 3 : 1; score += add; pop(it.x, catchY, "+" + add, it.kind === "gold" ? "#c98a00" : "#2b8a3e"); if (typeof sfx === "function") sfx(it.kind === "gold" ? "coin" : "click"); }
+          hudScore.textContent = score;
+          return false;
+        }
+        if (it.y > H + 40) return false;
+        g.save(); g.translate(it.x, it.y); g.rotate(it.spin * it.y / 300);
+        g.font = (it.kind === "gold" ? 40 : 34) + "px system-ui, 'Apple Color Emoji', 'Segoe UI Emoji'"; g.textAlign = "center"; g.textBaseline = "middle";
+        g.fillText(it.icon, 0, 0); g.restore();
+        return true;
+      });
+      // the pet
+      var sx = shake > 0 ? Math.sin(now / 20) * 6 : 0; shake = Math.max(0, shake - dt);
+      g.fillStyle = "rgba(0,0,0,0.15)"; g.beginPath(); g.ellipse(px, H - 26, P * 0.42, 8, 0, 0, 7); g.fill();
+      if (pet.complete && pet.naturalWidth) g.drawImage(pet, px - P / 2 + sx, H - 28 - P + 6, P, P);
+      else { g.font = P * 0.8 + "px system-ui"; g.textAlign = "center"; g.fillText("🐾", px, H - 28 - P / 2); }
+      // +1 / -2 pops
+      pops = pops.filter(function (q) {
+        q.t += dt; if (q.t > 0.8) return false;
+        g.globalAlpha = 1 - q.t / 0.8; g.fillStyle = q.color; g.font = "800 24px system-ui"; g.textAlign = "center";
+        g.fillText(q.text, q.x, q.y - q.t * 60); g.globalAlpha = 1;
+        return true;
+      });
+    }
+    requestAnimationFrame(gameFrame);
+
+    function finish() {
+      if (ended) return; ended = true; state = "done";
+      hudTime.textContent = "0s";
+      msg.className = "pg-gamemsg big"; msg.textContent = "Time's up!";
+      setTimeout(function () { opts.onEnd(score, close, wrap); }, 900);
+    }
+    function close() {
+      running = false;
+      window.removeEventListener("resize", size); window.removeEventListener("keydown", onKey); window.removeEventListener("keyup", onKey);
+      document.removeEventListener("visibilitychange", onVis);
+      wrap.remove();
+    }
+    wrap.querySelector(".pg-gamex").addEventListener("click", function () {
+      if (state === "play" && !confirm("Stop the game? This score won't count.")) return;
+      close(); if (opts.onQuit) opts.onQuit();
+    });
+    return { close: close };
+  }
+
   // ---------- Pet Streak (real version) ----------
   // Sign in with an email link, share pets with co-parents, buy and adopt pets and wardrobe items with paws.
   // All rules run on the server (Supabase functions in pet-real/supabase/schema.sql); this file only shows
@@ -3505,7 +3693,7 @@ html, body { background: #e6edf0; }
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261102055632";   // replaced by build_real.ps1
+    var APP_BUILD = "20261102060531";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -3969,6 +4157,80 @@ html, body { background: #e6edf0; }
       var food = FOODS.filter(function (f) { return f.level > oldMax && f.level <= level; }).map(function (f) { return f.name; });
       return free.concat(food);
     }
+
+    // ---------- The Playground ----------
+    // Mini-games (games.js), and today's best scores among everyone you look after a pet with. The first 3 games
+    // a day pay paws (the server decides: score / 10, up to 5 each).
+    var GAME_PAID = 3, MEDALS = ["🥇", "🥈", "🥉"];
+    function openPlay() {
+      if (!pet()) { say("Get a pet first, then you can play with it 🎮"); return; }
+      $("g-gamedesc").textContent = "Catch the falling food with " + pet().name + ". Golden bamboo is +3, rocks are -2. 30 seconds!";
+      $("g-play").hidden = false;
+      renderPlay();
+    }
+    async function playData() {
+      var r = await Promise.all([rpc("my_games_today", { p_game: "bamboo", p_tz: tz() }), rpc("game_board", { p_game: "bamboo", p_tz: tz() })]);
+      return { plays: r[0] || 0, board: r[1] || [] };
+    }
+    async function renderPlay() {
+      var d;
+      try { d = await playData(); }
+      catch (e) {
+        $("g-gamereward").textContent = "";
+        $("g-board").innerHTML = '<li class="pg-logempty">' + esc(/my_games_today|game_board/.test(e.message) ? "The Playground isn't switched on yet." : e.message) + "</li>";
+        return;
+      }
+      var paid = Math.max(0, GAME_PAID - d.plays);
+      $("g-gamereward").textContent = paid
+        ? "🐾 Your next " + (paid === 1 ? "game pays" : paid + " games pay") + " paws: 1 for every 10 points, up to 5."
+        : "You've had today's 3 paw games. Keep playing for fun and a better score!";
+      var box = $("g-board"); box.innerHTML = "";
+      d.board.forEach(function (row, i) {
+        var li = document.createElement("li");
+        if (row.me) li.className = "me";
+        li.innerHTML = '<span class="rk">' + (row.best !== null && i < 3 ? MEDALS[i] : i + 1) + "</span>" +
+          avatarDot({ name: row.name, avatar: row.avatar }) + '<span class="nm">' + esc(row.me ? "You" : row.name) + "</span>" +
+          '<b class="pt">' + (row.best === null ? "—" : row.best) + "</b>";
+        box.appendChild(li);
+      });
+      if (d.board.length < 2) {
+        var li = document.createElement("li"); li.className = "pg-logempty";
+        li.textContent = "Invite a co-parent to compete with you! 🤝";
+        box.appendChild(li);
+      }
+    }
+    function startGame() {
+      var p = pet(); if (!p) return;
+      $("g-play").hidden = true;
+      startBambooGame({
+        pic: "icons/" + p.variant + ".png",
+        onQuit: function () { openPlay(); },
+        onEnd: async function (score, close, wrap) {
+          var res = null, err = null, lead = "";
+          try { res = await rpc("submit_score", { p_game: "bamboo", p_score: score, p_tz: tz() }); } catch (e) { err = e.message; }
+          if (res) {
+            try {
+              var b = (await playData()).board.filter(function (r) { return r.best !== null; });
+              if (b.length > 1) lead = b[0].me ? "You're top of your pet family today! 🥇" : b[0].name + " leads today with " + b[0].best + ". Can you beat it?";
+            } catch (e) {}
+          }
+          var end = document.createElement("div"); end.className = "pg-gameend";
+          end.innerHTML = "<div class=\"big\">" + score + "</div><p class=\"lbl\">points</p>" +
+            (res ? "<p>" + (res.new_best ? "🏆 Your best today!" : "Your best today: " + res.best) + "</p>" +
+                   (res.paws ? '<p class="paws">+' + res.paws + " 🐾</p>" : "") + (lead ? "<p>" + esc(lead) + "</p>" : "")
+                 : "<p>" + esc(err || "") + "</p>") +
+            '<div class="pg-row"><button type="button" class="pg-btn pg-grow" data-a="done">Done</button>' +
+            '<button type="button" class="pg-feed pg-grow" data-a="again">▶ Play again</button></div>';
+          wrap.appendChild(end);
+          if (res && res.paws) { sfx("coin"); loadAll({ quiet: true }); }
+          end.querySelector('[data-a="again"]').addEventListener("click", function () { close(); startGame(); });
+          end.querySelector('[data-a="done"]').addEventListener("click", function () { close(); openPlay(); });
+        }
+      });
+    }
+    $("g-playbtn").addEventListener("click", openPlay);
+    $("g-playclose").addEventListener("click", function () { $("g-play").hidden = true; });
+    $("g-gameplay").addEventListener("click", startGame);
 
     // ---------- Today's log ----------
     // What happened with the pet today, oldest first, then who still needs to feed and how long is left.
@@ -4582,7 +4844,7 @@ html, body { background: #e6edf0; }
       fb.disabled = away || youFed;
       fb.textContent = away ? "🏡 At the sanctuary"
         : youFed ? (fullToday(p) ? "✓ Fed today" : "✓ You fed today")
-        : "🍎 Feed " + p.name;
+        : dirtOf(p) ? "🍎 Feed" : "🍎 Feed " + p.name;   // shorter while the Bath button needs the room
       applyLook();
       if (!$("g-menu").hidden) renderMenu();
       if (!$("g-sheet").hidden) renderItems();
@@ -5359,7 +5621,7 @@ html, body { background: #e6edf0; }
     // tidying up runs). That tap only closes: it doesn't also pat the pet or press the button underneath.
     var CLOSABLE = [["g-menu", "g-menuclose"], ["g-store", "g-storeclose"], ["g-sheet", "g-close"], ["g-ranks", "g-ranksclose"],
                     ["g-share", "g-shareclose"], ["g-petsheet", "g-petsheetclose"], ["g-adoptinfo", "g-aiclose"], ["g-tray", "g-trayclose"],
-                    ["g-today", "g-todayclose"]];
+                    ["g-today", "g-todayclose"], ["g-play", "g-playclose"]];
     var swallowClick = 0;
     document.addEventListener("pointerdown", function (e) {
       // a full-screen card (gift, join, name...) is on top: leave everything as it is
