@@ -1127,6 +1127,27 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
 .pg-chatlist .pg-logempty { color: #44556b; }
 .pg-chatquick, .pg-chatform { background: #fff; }
 .pg-chatquick { border-top: 1px solid #d3dcea; }
+/* ---------- Update 22: the craving thought bubble ---------- */
+.pg-think { position: fixed; z-index: 4; pointer-events: none; animation: pg-thinkin 0.45s cubic-bezier(.2,1.5,.4,1); }
+.pg-think[hidden] { display: none; }
+@keyframes pg-thinkin { from { transform: scale(0.3); opacity: 0; } }
+.pg-think .cloud { position: relative; display: grid; place-items: center; width: 82px; height: 66px; border-radius: 50%;
+  background: #fff; box-shadow: 0 6px 18px rgba(20,35,43,0.18), inset 0 -3px 0 rgba(20,35,43,0.04);
+  animation: pg-thinkbob 2.6s ease-in-out infinite; }
+/* the bumpy cloud edge */
+.pg-think .cloud::before, .pg-think .cloud::after { content: ""; position: absolute; border-radius: 50%; background: #fff; z-index: -1; }
+.pg-think .cloud::before { width: 38px; height: 38px; left: -8px; top: 6px; }
+.pg-think .cloud::after { width: 42px; height: 42px; right: -10px; top: -6px; }
+.pg-think .cloud b { font-size: 2.3rem; line-height: 1; }
+.pg-think .cloud em { position: absolute; right: -6px; top: -10px; font-style: normal; font-size: 1.5rem; }
+/* the little thinking dots trailing down to the pet */
+.pg-think i { position: absolute; border-radius: 50%; background: #fff; box-shadow: 0 2px 6px rgba(20,35,43,0.15); }
+.pg-think .d1 { width: 16px; height: 16px; left: 4px; top: 62px; }
+.pg-think .d2 { width: 9px; height: 9px; left: -6px; top: 82px; }
+@keyframes pg-thinkbob { 50% { transform: translateY(-6px); } }
+.pg-think.yes .cloud { animation: pg-thinkyes 0.6s ease-out; box-shadow: 0 0 0 4px #ffd34d, 0 6px 18px rgba(20,35,43,0.18); }
+@keyframes pg-thinkyes { 40% { transform: scale(1.25); } }
+.pg-think.no .cloud { animation: pg-shake 0.4s; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -1181,6 +1202,8 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
     <div class="pg pg-card pg-mood" id="g-mood" role="status" hidden>😊 Happy</div>
     <div class="pg pg-crew" id="g-crew" hidden></div>
     <div class="pg pg-float" id="g-float" aria-hidden="true">+10 XP</div>
+    <!-- the craving: the pet thinks about a food (find it in the food tray) -->
+    <div class="pg pg-think" id="g-think" hidden role="img"><i class="d1"></i><i class="d2"></i><span class="cloud"><b id="g-thinkfood">🍓</b><em id="g-thinkmark"></em></span></div>
     <div class="pg pg-card pg-away" id="g-away" hidden>
       <div style="font-size:2.4rem">🏡</div>
       <h2 id="g-awaytitle">Mochi ran away</h2>
@@ -4814,7 +4837,7 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261102232621";   // replaced by build_real.ps1
+    var APP_BUILD = "20261102233809";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -4886,7 +4909,7 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
 
     var $ = function (id) { return document.getElementById(id); };
     var sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, detectSessionInUrl: true, flowType: "implicit" } }) : null;
-    var me = null, profile = null, pets = [], cur = 0, store = [], owned = {}, seen = {}, loaded = false, favs = {};
+    var me = null, profile = null, pets = [], cur = 0, store = [], owned = {}, seen = {}, loaded = false, favs = {}, cravDone = {};
     function pet() { return pets[cur] || null; }
     function tz() { try { return Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC"; } catch (e) { return "UTC"; } }
     function item(id) { return store.filter(function (s) { return s.id === id; })[0] || null; }
@@ -4941,9 +4964,13 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
         sb.rpc("my_pets"),
         sb.from("store_items").select("*").order("sort"),
         sb.from("owned_items").select("item_id"),
-        sb.rpc("todays_favourites")
+        sb.rpc("todays_cravings").then(function (x) { return x.error ? sb.rpc("todays_favourites").then(function (y) { y.old = true; return y; }) : x; })
       ]);
-      favs = r[4].error ? {} : (r[4].data || {});
+      favs = {}; cravDone = {};
+      if (!r[4].error) Object.keys(r[4].data || {}).forEach(function (k) {
+        var v = r[4].data[k];
+        if (r[4].old) favs[k] = v; else if (v) { favs[k] = v.food; cravDone[k] = !!v.done; }
+      });
       var err = r.slice(0, 4).filter(function (x) { return x.error; })[0];
       if (err) { say(friendly(err.error.message)); return; }
       // coins that came in while the app was open (a co-parent's feed completed the day)
@@ -5268,13 +5295,19 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
     async function feed(foodId) {
       var p = pet(); if (!p) return;
       var dish = FOODS.filter(function (f) { return f.id === foodId; })[0];
-      var oldMax = p.max_level;
+      var oldMax = p.max_level, crave = favFood(p), craveOpen = !!crave && !cravDone[p.id];
       setFoodChoice(dish ? dish.id : null);
       var r;
       try { r = await rpc("feed_pet", { p_id: p.id, p_food: foodId }); } catch (e) { say(e.message); return; }
       if (r.already) { say("You already fed " + p.name + " today. Come back tomorrow!"); return; }
       react(!!r.levelled);
       var yum = "Yum! " + p.name + (dish ? " loved the " + dish.name.toLowerCase() + "." : " is happy.");
+      if (craveOpen && dish === crave) { cravDone[p.id] = true; thinkPop("⭐"); yum = "⭐ Yes! " + p.name + " was craving the " + dish.name.toLowerCase() + "!"; }
+      else if (craveOpen) {
+        thinkPop("🤔");
+        var finders = others(p).filter(function (m) { return !m.fed_today; }).map(function (m) { return m.name; });
+        yum += " 💭 Not what " + p.name + " was craving though." + (finders.length ? " Maybe " + finders.join(" or ") + " can find it!" : "");
+      }
       if (r.counted) {
         floatText("+" + r.gain + " XP" + (r.coins ? "  +" + r.coins + " 🐾" : ""));
         var news = unlocksBetween(oldMax, r.level);
@@ -6195,11 +6228,11 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
       });
       $("g-petopts").hidden = false;
     }
-    function playWith(uid) { pickGame(function (g) { $("g-pick").hidden = true; hostGame(g, [uid]); }); }
+    function inviteToGame(uid) { pickGame(function (g) { $("g-pick").hidden = true; hostGame(g, [uid]); }); }
     function openPetOpts(e) {
       var f = friendOf(e.uid), sent = friends.some(function (x) { return x.id === e.uid; });
       if (f) { openFriendOpts(f); return; }
-      var acts = [{ text: e.busy ? "Playing right now…" : "🎮 Play", primary: true, disabled: e.busy || !!raceNow || !online[e.uid], go: function () { playWith(e.uid); } }];
+      var acts = [{ text: e.busy ? "Playing right now…" : "🎮 Play", primary: true, disabled: e.busy || !!raceNow || !online[e.uid], go: function () { inviteToGame(e.uid); } }];
       acts.push(sent ? { text: "Friend request sent ✓", disabled: true, go: function () {} } : { text: "➕ Add friend", go: function () { addFriendPet(e); } });
       acts.push({ text: "🚩 Report name", go: function () { reportPetName(e); } });
       acts.push({ text: "🚫 Block", danger: true, go: function () { blockPet(e); } });
@@ -6209,7 +6242,7 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
     function openFriendOpts(f) {
       var on = online[f.id], co = isCoParent(f.id);
       var acts = [{ text: "💬 Chat", primary: true, go: function () { openChat(f); } },
-        { text: on && on.busy ? "Playing right now…" : on ? "🎮 Play" : "🎮 Invite to play", disabled: (on && on.busy) || !!raceNow, go: function () { playWith(f.id); } }];
+        { text: on && on.busy ? "Playing right now…" : on ? "🎮 Play" : "🎮 Invite to play", disabled: (on && on.busy) || !!raceNow, go: function () { inviteToGame(f.id); } }];
       // co-parents stay friends while they share a pet
       if (!co) {
         acts.push({ text: "Remove friend", go: function () {
@@ -6382,7 +6415,7 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
           box.appendChild(personRow(petPic(f.pet && f.pet.variant), friendTagHTML(f),
             (on ? (on.busy ? "🎮 Playing" : "🟢 Online") : "Away") + (f.pet ? " · Lv " + f.pet.level + " · 🏁 " + (f.pet.wins || 0) : ""),
             [{ text: "💬", label: "Chat with " + f.name, go: function () { openChat(f); } },
-             { text: "🎮", label: "Play with " + f.name, primary: !!on, disabled: (on && on.busy) || !!raceNow, go: function () { playWith(f.id); } }],
+             { text: "🎮", label: "Play with " + f.name, primary: !!on, disabled: (on && on.busy) || !!raceNow, go: function () { inviteToGame(f.id); } }],
             function () { openFriendOpts(f); }));
         });
       friends.filter(function (f) { return f.kind === "sent"; }).forEach(function (f) {
@@ -7266,8 +7299,6 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
       $("g-mood").textContent = m === "fed"
         ? (fullToday(p) ? "😊 Fed today · XP earned ✓" : alone ? "😊 Fed · invite a co-parent to earn XP" : "😊 Fed · 1/" + FEEDS_PER_DAY + " for XP & streak")
         : { happy: "😊 Happy — waiting for food", hungry: "🥺 Hungry", sick: "🤒 Sick — losing levels", away: "🏡 At the sanctuary" }[m];
-      var crave = favFood(p);
-      if (crave && m !== "away" && !iFed(p)) $("g-mood").textContent += "  ·  💭 " + crave.icon;
       var dirt = dirtOf(p);
       // until the day counts, how long is left to feed (the pet's day ends at midnight in its time zone)
       var left = !fullToday(p) && m !== "away" ? minutesLeftToday(p) : null;
@@ -7369,9 +7400,7 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
       FOODS.filter(function (f) { return maxLv >= f.level; }).forEach(function (f) {
         var b = document.createElement("button");
         b.type = "button"; b.className = "pg-food";
-        var isFav = favFood(p) === f;
-        if (isFav) b.classList.add("pg-favfood");
-        b.innerHTML = (isFav ? '<em class="pg-favtag">⭐ Craving</em>' : "") + "<i>" + f.icon + "</i><span>" + f.name + "</span>";
+        b.innerHTML = "<i>" + f.icon + "</i><span>" + f.name + "</span>";
         b.setAttribute("aria-label", "Feed " + f.name);
         b.addEventListener("click", function () { $("g-tray").hidden = true; feed(f.id); });
         box.appendChild(b);
@@ -7439,7 +7468,47 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
       if (wake()) return;
       var m = mood(p);
       if ((m === "fed" || m === "happy") && !busy() && playWith(hit.point)) countPlay(p);
+      thinkNow();
     });
+
+    // ---------- The craving thought bubble ----------
+    // The pet thinks about the food it craves today: a bubble by its head now and then, when it's tapped, and all
+    // the time the food tray is open, so players look for that food in the tray themselves (the tray doesn't say
+    // which it is). It goes once anyone has fed it today, or once I've fed (then it's my co-parent's turn).
+    var thinkUntil = 0, thinkNext = Date.now() + 1500, thinkHold = 0, thinkHead = new THREE.Vector3();
+    function wantsCraving(p) { return !!(p && p.status === "home" && favFood(p) && !cravDone[p.id] && !iFed(p)); }
+    function placeThink() {
+      var el = $("g-think"), r = renderer.domElement.getBoundingClientRect();
+      thinkHead.set(0.3, 0.92, 0.1).project(camera);
+      var x = r.left + (thinkHead.x + 1) / 2 * r.width, y = r.top + (1 - thinkHead.y) / 2 * r.height;
+      el.style.left = Math.max(8, Math.min(window.innerWidth - 120, x)) + "px";
+      el.style.top = Math.max(165, y - 50) + "px";
+    }
+    function thinkTick() {
+      var p = pet(), el = $("g-think"), now = Date.now();
+      if (now < thinkHold) return;
+      var trayOpen = !$("g-tray").hidden;
+      var covered = !!bathing || $("g-top").hidden || !!document.querySelector(".pg-sheet:not([hidden]), .pg-adopt:not([hidden]), .pg-playpage:not([hidden]), .pg-chatpage:not([hidden]), .pg-panel:not([hidden]), .pg-game");
+      var want = wantsCraving(p) && !covered;
+      if (want && !trayOpen && now > thinkNext && now > thinkUntil) { thinkUntil = now + 7000; thinkNext = now + 30000; }
+      var show = want && (trayOpen || now < thinkUntil);
+      if (show) {
+        $("g-thinkfood").textContent = favFood(p).icon;
+        el.setAttribute("aria-label", p.name + " is thinking about a food");
+        placeThink();
+      }
+      if (el.hidden === show) el.hidden = !show;
+    }
+    setInterval(thinkTick, 400);
+    function thinkNow() { if (Date.now() > thinkUntil) thinkUntil = Date.now() + 7000; thinkTick(); }
+    // after feeding: ⭐ found it, or 🤔 not that one; then it goes
+    function thinkPop(mark) {
+      var el = $("g-think");
+      $("g-thinkmark").textContent = mark; el.className = "pg pg-think " + (mark === "⭐" ? "yes" : "no");
+      el.hidden = false; placeThink();
+      thinkHold = Date.now() + 2200; thinkUntil = 0;
+      setTimeout(function () { el.className = "pg pg-think"; $("g-thinkmark").textContent = ""; el.hidden = true; }, 2200);
+    }
     window.addEventListener("pointermove", function () { if (!asleep) lastPoke = performance.now(); }, { passive: true });
 
     // ---------- Bath time ----------
