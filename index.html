@@ -557,6 +557,51 @@ html, body { background: #e6edf0; }
 .pg-tapbtn:active { transform: translateY(6px); box-shadow: 0 4px 0 #b8325a; }
 .pg-tapbtn[disabled] { opacity: 0.5; }
 .pg-endextra { justify-content: space-between; margin-top: 6px !important; }
+/* other players' pets: the rank badge in front of the name */
+.pg-people .ttl { display: flex; align-items: center; gap: 4px; min-width: 0; font-weight: 700; color: #2b1d3a; }
+.pg-people .ttl .pg-tag { min-width: 0; }
+.pg-ofpet { color: #5b5470; font-weight: 600; font-size: 0.8rem; white-space: nowrap; }
+.pg-invite p .pg-tag, .pg-lane .who .pg-tag, #g-chattitle .pg-tag { vertical-align: middle; }
+.pg-lane .who { display: flex; align-items: center; gap: 6px; }
+/* unread messages on the 🎮 button */
+.pg-playbtn { position: relative; }
+.pg-dotcount { position: absolute; top: -4px; right: -4px; min-width: 20px; height: 20px; padding: 0 5px; border-radius: 999px; background: #e2456f; color: #fff; font-size: 0.72rem; font-weight: 800; line-height: 20px; text-align: center; box-shadow: 0 0 0 2px #fff; }
+.pg-dotcount[hidden] { display: none; }
+/* the chat page */
+.pg-chatpage { inset: 0; z-index: 15; display: flex; flex-direction: column; background: linear-gradient(170deg, #fff8ec, #f1e9ff); }
+.pg-chatpage[hidden] { display: none; }
+#g-chattitle { display: flex; align-items: center; gap: 6px; font-size: 1.1rem; min-width: 0; }
+.pg-chatmore { width: 42px; height: 42px; padding: 0; border-radius: 50%; font-size: 1.2rem; }
+.pg-chatmenu { display: flex; gap: 8px; padding: 0 14px 8px; }
+.pg-chatmenu[hidden] { display: none; }
+.pg-chatmenu .pg-btn { flex: 1; }
+.pg-chatlist { flex: 1; overflow-y: auto; list-style: none; margin: 0; padding: 8px 14px; display: flex; flex-direction: column; gap: 6px; }
+.pg-chatlist li { max-width: 78%; display: flex; flex-direction: column; }
+.pg-chatlist li .b { padding: 9px 13px; border-radius: 18px; background: #fff; color: #14232b; line-height: 1.35; word-wrap: break-word; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+.pg-chatlist li time { font-size: 0.72rem; color: #8a8399; margin: 2px 8px 0; }
+.pg-chatlist li.me { align-self: flex-end; align-items: flex-end; }
+.pg-chatlist li.me .b { background: var(--brand); color: #fff; border-bottom-right-radius: 6px; }
+.pg-chatlist li.them { align-self: flex-start; }
+.pg-chatlist li.them .b { border-bottom-left-radius: 6px; }
+.pg-chatlist .pg-logempty { align-self: center; max-width: none; color: #5b5470; }
+.pg-chatlist .pg-chatkind { align-self: stretch; max-width: none; padding: 10px 12px; border-radius: 14px; background: #fff3c4; color: #5a4300; font-size: 0.88rem; line-height: 1.4; }
+.pg-chatlist.small { padding: 6px 0; max-height: 160px; }
+.pg-chatlist.small li { max-width: none; display: block; font-size: 0.85rem; }
+.pg-chatquick { display: flex; gap: 6px; overflow-x: auto; padding: 6px 14px; flex: none; }
+.pg-chatquick button { flex: none; border: 1px solid #d9cff0; background: #fff; border-radius: 999px; padding: 7px 12px; font-size: 0.88rem; color: #2b1d3a; }
+.pg-chatform { flex: none; display: flex; gap: 8px; padding: 8px 14px calc(12px + env(safe-area-inset-bottom, 0px)); }
+.pg-chatform input { flex: 1; min-width: 0; font: inherit; font-size: 1rem; padding: 12px 14px; border-radius: 999px; border: 1px solid #d9cff0; background: #fff; color: #14232b; }
+.pg-chatform .pg-btn { width: 48px; padding: 0; border-radius: 50%; font-size: 1.1rem; }
+.pg-chatrep { padding: 10px; border-radius: 12px; background: #f7f9fa; margin-bottom: 8px; }
+/* quick chat in races: the 💬 button, the phrase picker and speech bubbles */
+.pg-qcbtn { pointer-events: auto; width: 40px; height: 40px; border-radius: 50%; border: 0; background: rgba(255,255,255,0.9); font-size: 1.1rem; }
+.pg-qcpal { position: absolute; top: calc(62px + env(safe-area-inset-top, 0px)); left: 12px; right: 12px; z-index: 3; display: flex; flex-wrap: wrap; gap: 6px; padding: 10px; border-radius: 18px; background: #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
+.pg-qcpal[hidden] { display: none; }
+.pg-qcpal button { border: 1px solid #f0d4dc; background: #fff7f9; border-radius: 999px; padding: 8px 12px; font-size: 0.92rem; color: #2b1d3a; }
+.pg-lane { position: relative; }
+.pg-bubble { position: absolute; right: 8px; top: -6px; z-index: 2; padding: 6px 12px; border-radius: 16px 16px 16px 4px; background: #fff; color: #2b1d3a; font-weight: 700; font-size: 0.95rem; box-shadow: 0 6px 16px rgba(0,0,0,0.15); animation: pg-bubblein 0.3s cubic-bezier(.2,1.6,.4,1); }
+@keyframes pg-bubblein { from { transform: scale(0.4); opacity: 0; } to { transform: none; opacity: 1; } }
+.pg-race .pg-gamehud { gap: 8px; }
 /* the game screen (full screen, above everything) */
 .pg-game { position: fixed; inset: 0; z-index: 50; background: #cfe8b8; touch-action: none; user-select: none; -webkit-user-select: none; }
 .pg-game canvas { display: block; width: 100%; height: 100%; touch-action: none; }
@@ -820,7 +865,7 @@ html, body { background: #e6edf0; }
       <button type="button" class="pg-feed" id="g-feed">🍎 Feed</button>
       <button type="button" class="pg-wardrobe pg-bathbtn" id="g-bathbtn" hidden aria-label="Give your pet a bath">🛁<span class="pg-lbl"> Bath</span></button>
       <button type="button" class="pg-wardrobe" id="g-wardrobe" aria-label="Dress up">🎀<span class="pg-lbl"> Dress up</span></button>
-      <button type="button" class="pg-wardrobe pg-capbtn pg-playbtn" id="g-playbtn" aria-label="Playground: mini-games">🎮</button>
+      <button type="button" class="pg-wardrobe pg-capbtn pg-playbtn" id="g-playbtn" aria-label="Playground: mini-games">🎮<span class="pg-dotcount" id="g-playdot" hidden></span></button>
       <button type="button" class="pg-wardrobe pg-capbtn" id="g-sharebtn" aria-label="Capture and share your pet"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l1.6-2.4A1.5 1.5 0 0 1 9.9 5h4.2a1.5 1.5 0 0 1 1.3.6L17 8h3a1.5 1.5 0 0 1 1.5 1.5v8A1.5 1.5 0 0 1 20 19H4a1.5 1.5 0 0 1-1.5-1.5v-8A1.5 1.5 0 0 1 4 8z"/><circle cx="12" cy="13" r="3.6"/></svg></button>
     </div>
 
@@ -906,6 +951,24 @@ html, body { background: #e6edf0; }
         <ol class="pg-board" id="g-board"></ol>
         <p class="pg-note">Scores reset every day. Other players only ever see your pet, never your name, unless you're friends.</p>
       </div>
+    </div>
+    <!-- chat with a friend (strangers only get quick chat in games) -->
+    <div class="pg pg-chatpage" id="g-chat" hidden>
+      <header class="pg-playhead">
+        <button type="button" class="pg-playback" id="g-chatback" aria-label="Back">←</button>
+        <h2 id="g-chattitle">Chat</h2>
+        <button type="button" class="pg-btn pg-chatmore" id="g-chatmore" aria-label="Block or report">⋯</button>
+      </header>
+      <div class="pg-chatmenu" id="g-chatmenu" hidden>
+        <button type="button" class="pg-btn" id="g-chatreport">🚩 Report this chat</button>
+        <button type="button" class="pg-btn pg-danger" id="g-chatblock">🚫 Block</button>
+      </div>
+      <ol class="pg-chatlist" id="g-chatlist" aria-live="polite"></ol>
+      <div class="pg-chatquick" id="g-chatquick"></div>
+      <form class="pg-chatform" id="g-chatform">
+        <input id="g-chatin" maxlength="200" autocomplete="off" placeholder="Say something nice…" aria-label="Message">
+        <button type="submit" class="pg-btn pg-primary" id="g-chatsend" aria-label="Send">➤</button>
+      </form>
     </div>
     <!-- a live invite (anywhere in the app) or a friend's invite from when you were away -->
     <div class="pg pg-card pg-invite" id="g-invite" hidden role="alertdialog" aria-labelledby="g-invitetext">
@@ -1114,6 +1177,10 @@ html, body { background: #e6edf0; }
           <h3>Send feedback</h3>
           <textarea id="g-fbtext" rows="3" maxlength="2000" placeholder="Found a bug or have an idea? Tell us…" aria-label="Feedback"></textarea>
           <button type="button" class="pg-btn pg-wide" id="g-fbsend">💬 Send feedback</button>
+        </section>
+        <section class="pg-sec" id="g-adminchat" hidden>
+          <h3>Admin: reported chats</h3>
+          <div id="g-chatreps"></div>
         </section>
         <section class="pg-sec" id="g-adminrep" hidden>
           <h3>Admin: reported pet names</h3>
@@ -3793,11 +3860,16 @@ html, body { background: #e6edf0; }
   // startTapRace({ me: {pic, label}, them: {pic, label}, steps, onTap(n), onEnd(won), onQuit() })
   //   -> { start(), opp(n), oppLeft(), close() }   start() runs the 3-2-1 (both phones get it at the same moment)
   var RACE_STEPS = 40;
+  // quick chat: set phrases only (a stranger can only send one of these, by number, never their own words)
+  var QUICK_CHAT = ["Good luck! 🍀", "Good game! 🤝", "Rematch? 🏁", "So close! 😮", "You're fast! ⚡", "Wow! 🤩", "😂", "❤️", "👋 Hi!", "Thanks! 😊"];
   function startTapRace(opts) {
     var steps = opts.steps || RACE_STEPS;
     var wrap = document.createElement("div"); wrap.className = "pg-game pg-race";
     wrap.innerHTML =
-      '<div class="pg-gamehud"><span class="lbl">🏁 Treat race</span><button type="button" class="pg-gamex" aria-label="Leave the race">✕</button></div>' +
+      '<div class="pg-gamehud"><span class="lbl">🏁 Treat race</span>' +
+        (opts.onQuick ? '<button type="button" class="pg-qcbtn" aria-label="Quick chat">💬</button>' : "") +
+        '<button type="button" class="pg-gamex" aria-label="Leave the race">✕</button></div>' +
+      '<div class="pg-qcpal" hidden></div>' +
       '<div class="pg-lanes">' +
         '<div class="pg-lane them"><span class="who"></span><div class="track"><img alt=""><i class="treat">🍰</i></div></div>' +
         '<div class="pg-lane me"><span class="who"></span><div class="track"><img alt=""><i class="treat">🍰</i></div></div>' +
@@ -3806,8 +3878,28 @@ html, body { background: #e6edf0; }
       '<button type="button" class="pg-tapbtn" disabled>TAP!</button>';
     document.body.appendChild(wrap);
     var lanes = wrap.querySelectorAll(".pg-lane"), msg = wrap.querySelector(".pg-gamemsg"), btn = wrap.querySelector(".pg-tapbtn");
-    lanes[0].querySelector(".who").textContent = opts.them.label; lanes[0].querySelector("img").src = opts.them.pic;
-    lanes[1].querySelector(".who").textContent = opts.me.label + " (you)"; lanes[1].querySelector("img").src = opts.me.pic;
+    // names arrive as ready-made HTML (with the rank badge, already escaped) or as plain text
+    lanes[0].querySelector(".who").innerHTML = opts.them.html || ""; if (!opts.them.html) lanes[0].querySelector(".who").textContent = opts.them.label;
+    lanes[1].querySelector(".who").innerHTML = (opts.me.html || "") + ' <small>(you)</small>'; if (!opts.me.html) lanes[1].querySelector(".who").textContent = opts.me.label + " (you)";
+    lanes[0].querySelector("img").src = opts.them.pic; lanes[1].querySelector("img").src = opts.me.pic;
+    // a speech bubble over a lane for a couple of seconds
+    function bubble(lane, text) {
+      var b = document.createElement("span"); b.className = "pg-bubble"; b.textContent = text;
+      lane.appendChild(b); setTimeout(function () { b.remove(); }, 2600);
+    }
+    var qcBtn = wrap.querySelector(".pg-qcbtn"), pal = wrap.querySelector(".pg-qcpal"), lastQc = 0;
+    if (qcBtn) {
+      QUICK_CHAT.forEach(function (t, i) {
+        var c = document.createElement("button"); c.type = "button"; c.textContent = t;
+        c.addEventListener("click", function () {
+          pal.hidden = true;
+          if (Date.now() - lastQc < 1500) return;   // no spamming
+          lastQc = Date.now(); bubble(lanes[1], t); opts.onQuick(i);
+        });
+        pal.appendChild(c);
+      });
+      qcBtn.addEventListener("click", function () { pal.hidden = !pal.hidden; });
+    }
     var mine = 0, theirs = 0, live = false, over = false, timers = [];
     function place(lane, n) { lane.querySelector("img").style.left = "calc(" + (Math.min(1, n / steps) * 100) + "% * 0.82)"; }
     place(lanes[0], 0); place(lanes[1], 0);
@@ -3848,6 +3940,8 @@ html, body { background: #e6edf0; }
           }, s[1]));
         });
       },
+      // the other player sent quick chat phrase number i
+      quick: function (i) { if (QUICK_CHAT[i]) bubble(lanes[0], QUICK_CHAT[i]); },
       opp: function (n) { if (over) return; theirs = Math.max(theirs, n); place(lanes[0], theirs); if (theirs >= steps) end(false); },
       oppLeft: function () { if (over) return; over = true; live = false; btn.disabled = true; msg.textContent = opts.them.label + " left the race"; timers.push(setTimeout(function () { opts.onEnd(null); }, 1500)); },
       close: close
@@ -3878,7 +3972,7 @@ html, body { background: #e6edf0; }
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261102063511";   // replaced by build_real.ps1
+    var APP_BUILD = "20261102064520";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -4024,6 +4118,7 @@ html, body { background: #e6edf0; }
       if (opts && opts.quiet) noticeOthers(gained);
       if (!loaded) pawsWhileAway();
       showNudges();
+      refreshUnread();
       if (!$("g-today").hidden) renderToday();   // keep an open log up to date
       try { localStorage.setItem(COINS_KEY + me.id, String(profile ? profile.coins : 0)); } catch (e) {}
       remember();
@@ -4368,6 +4463,12 @@ html, body { background: #e6edf0; }
     function friendOf(uid) { return friends.filter(function (f) { return f.kind === "friend" && f.id === uid; })[0] || null; }
     function label(e) { var f = e && friendOf(e.uid); return f ? f.name + "'s " + e.pet : shownPetName(e && e.pet); }
     function petPic(variant) { return "icons/" + (variant || "panda_classic") + ".png"; }
+    // a player's pet as others see it: its rank badge, then the name (a friend's own name, with their pet's name
+    // small after it; for a stranger, the pet's name only)
+    function petTagHTML(e) {
+      var f = e && friendOf(e.uid);
+      return tagHTML((e && e.level) || 1, f ? f.name : shownPetName(e && e.pet)) + (f ? ' <small class="pg-ofpet">' + esc(e.pet) + "</small>" : "");
+    }
 
     // --- who's online (the lobby) ---
     function lobbyWanted() { return !!(sb && sb.channel && me && pet() && showOnline() && !document.hidden); }
@@ -4385,6 +4486,7 @@ html, body { background: #e6edf0; }
       lobby.on("presence", { event: "sync" }, readPresence)
         .on("broadcast", { event: "invite" }, function (m) { gotInvite(m.payload); })
         .on("broadcast", { event: "reply" }, function (m) { gotReply(m.payload); })
+        .on("broadcast", { event: "chat" }, function (m) { if (m.payload && m.payload.to === me.id) { sfx("pat"); refreshUnread(); } })
         .subscribe(function (status) { if (status === "SUBSCRIBED") { lobbyReady = true; trackMe(); } });
     }
     var lastTracked = "";
@@ -4427,13 +4529,14 @@ html, body { background: #e6edf0; }
       if (!m || m.to !== me.id || !m.me || blocked.indexOf(m.me.pet_id) >= 0) return;
       if (raceNow || inviteOpen) { sendLive("reply", { to: m.from, from: me.id, room: m.room, ok: false, busy: true }); return; }
       showInvite({ live: m, pic: petPic(m.me.variant),
-        text: "🏁 " + label(m.me) + " (Lv " + m.me.level + ") wants to race!", canBlock: !friendOf(m.from) });
+        html: "🏁 " + petTagHTML(m.me) + " wants to race!", canBlock: !friendOf(m.from) });
       clearTimeout(gotInvite.t);
       gotInvite.t = setTimeout(function () { if (inviteOpen && inviteOpen.live === m) answerInvite(false); }, 20000);
     }
     function showInvite(inv) {
       inviteOpen = inv;
-      $("g-invitepic").src = inv.pic; $("g-invitetext").textContent = inv.text;
+      $("g-invitepic").src = inv.pic;
+      if (inv.html) $("g-invitetext").innerHTML = inv.html; else $("g-invitetext").textContent = inv.text;
       $("g-inviteblock").hidden = !inv.canBlock;
       $("g-inviteyes").textContent = inv.live ? "🏁 Race!" : "🎮 Join";
       $("g-invite").hidden = false; wake(); sfx("happy");
@@ -4474,8 +4577,10 @@ html, body { background: #e6edf0; }
       var ch = sb.channel("pg-room-" + room, { config: { broadcast: { self: false } } });
       var started = false, latest = 0, sent = 0, hereTimer = null, giveUp = null;
       var race = startTapRace({
-        me: { pic: petPic(p.variant), label: p.name }, them: { pic: petPic(them.variant), label: label(them) },
+        me: { pic: petPic(p.variant), label: p.name, html: tagHTML(p.level, p.name) },
+        them: { pic: petPic(them.variant), label: label(them), html: petTagHTML(them) },
         onTap: function (n) { latest = n; },
+        onQuick: function (i) { ch.send({ type: "broadcast", event: "qc", payload: { i: i } }); },
         onEnd: function (won) { finishRace(won, them); },
         onQuit: function () { ch.send({ type: "broadcast", event: "bye", payload: {} }); cleanup(); openPlay(); }
       });
@@ -4484,6 +4589,7 @@ html, body { background: #e6edf0; }
       var pump = setInterval(function () { if (latest !== sent) { sent = latest; ch.send({ type: "broadcast", event: "p", payload: { n: sent } }); } }, 100);
       function go() { if (started) return; started = true; clearInterval(hereTimer); clearTimeout(giveUp); race.start(); }
       ch.on("broadcast", { event: "p" }, function (m) { race.opp(m.payload.n); })
+        .on("broadcast", { event: "qc" }, function (m) { race.quick(m.payload.i | 0); })
         .on("broadcast", { event: "bye" }, function () { race.oppLeft(); })
         .on("broadcast", { event: "go" }, function () { if (!host) go(); })
         .on("broadcast", { event: "here" }, function () { if (host && !started) { ch.send({ type: "broadcast", event: "go", payload: {} }); go(); } })
@@ -4537,7 +4643,7 @@ html, body { background: #e6edf0; }
       $("g-play").hidden = true;
       var bot;
       var race = startTapRace({
-        me: { pic: petPic(p.variant), label: p.name }, them: { pic: petPic("panda_golden"), label: "Bamboo the bot 🤖" },
+        me: { pic: petPic(p.variant), label: p.name, html: tagHTML(p.level, p.name) }, them: { pic: petPic("panda_golden"), label: "Bamboo the bot 🤖" },
         onEnd: function (won) {
           bot.stop();
           var end = document.createElement("div"); end.className = "pg-gameend";
@@ -4605,7 +4711,8 @@ html, body { background: #e6edf0; }
     }
     function personRow(pic, title, sub, buttons) {
       var li = document.createElement("li");
-      li.innerHTML = '<img alt="" src="' + esc(pic) + '"><span class="pg-grow"><b>' + esc(title) + "</b><small>" + esc(sub) + '</small></span><span class="acts"></span>';
+      // (title is ready-made HTML: the rank badge and an escaped name)
+      li.innerHTML = '<img alt="" src="' + esc(pic) + '"><span class="pg-grow"><span class="ttl">' + title + "</span><small>" + esc(sub) + '</small></span><span class="acts"></span>';
       var acts = li.querySelector(".acts");
       buttons.forEach(function (b) {
         var el = document.createElement("button"); el.type = "button"; el.className = "pg-btn" + (b.primary ? " pg-primary" : "");
@@ -4626,7 +4733,7 @@ html, body { background: #e6edf0; }
           var btns = [{ text: e.busy ? "Racing…" : "🏁 Race", primary: true, disabled: e.busy || !!raceNow, label: "Race " + label(e), go: function () { inviteToRace(e.uid); } }];
           if (!f && !sent) btns.push({ text: "➕", label: "Add " + shownPetName(e.pet) + " as a friend", go: function (el) { el.disabled = true; addFriendPet(e); } });
           if (!f) btns.push({ text: "🚫", label: "Block or report " + shownPetName(e.pet), go: function () { blockPet(e); } });
-          box.appendChild(personRow(petPic(e.variant), label(e), "Lv " + e.level + " · 🏁 " + (e.wins || 0) + (e.wins === 1 ? " win" : " wins"), btns));
+          box.appendChild(personRow(petPic(e.variant), petTagHTML(e), "Lv " + e.level + " · 🏁 " + (e.wins || 0) + (e.wins === 1 ? " win" : " wins"), btns));
         });
         var li = document.createElement("li"); li.className = "pg-botrow";
         li.innerHTML = "<span>" + (list.length ? "Or practise first:" : "Nobody else is here right now.") + '</span><button type="button" class="pg-btn">🤖 Race Bamboo the bot</button>';
@@ -4638,7 +4745,7 @@ html, body { background: #e6edf0; }
     function renderFriends() {
       var box = $("g-friends"); box.innerHTML = "";
       friends.filter(function (f) { return f.kind === "request"; }).forEach(function (f) {
-        box.appendChild(personRow(petPic(f.pet && f.pet.variant), f.name, "wants to be friends" + (f.pet ? " · " + f.pet.name : ""), [
+        box.appendChild(personRow(petPic(f.pet && f.pet.variant), tagHTML(f.pet ? f.pet.level : 1, f.name), "wants to be friends" + (f.pet ? " · " + f.pet.name : ""), [
           { text: "Accept", primary: true, go: function () { rpc("friend_respond", { p_from: f.id, p_accept: true }).then(function () { say("🎉 You're friends with " + f.name + "!"); loadFriends(); }, function (e) { say(e.message); }); } },
           { text: "✕", label: "Decline", go: function () { rpc("friend_respond", { p_from: f.id, p_accept: false }).then(loadFriends, function (e) { say(e.message); }); } }
         ]));
@@ -4648,10 +4755,11 @@ html, body { background: #e6edf0; }
         var sub = (on ? "🟢 Online · " : "") + (f.pet ? f.pet.name + " · Lv " + f.pet.level + " · 🏁 " + (f.pet.wins || 0) : "No pet yet");
         var btn = on ? { text: on.busy ? "Racing…" : "🏁 Race", primary: true, disabled: on.busy || !!raceNow, go: function () { inviteToRace(f.id); } }
                      : { text: "🎮 Invite", go: function (el) { inviteFriendAway(f, el); } };
-        box.appendChild(personRow(petPic(f.pet && f.pet.variant), f.name, sub, [btn]));
+        var chatBtn = { text: "💬" + (unread[f.id] ? " " + unread[f.id] : ""), label: "Chat with " + f.name, primary: !!unread[f.id], go: function () { openChat(f); } };
+        box.appendChild(personRow(petPic(f.pet && f.pet.variant), tagHTML(f.pet ? f.pet.level : 1, f.name), sub, [chatBtn, btn]));
       });
       friends.filter(function (f) { return f.kind === "sent"; }).forEach(function (f) {
-        box.appendChild(personRow(petPic(f.pet && f.pet.variant), f.pet ? f.pet.name : "A player", "Friend request sent", []));
+        box.appendChild(personRow(petPic(f.pet && f.pet.variant), f.pet ? tagHTML(f.pet.level, f.pet.name) : "A player", "Friend request sent", []));
       });
       if (!box.children.length) box.innerHTML = '<li class="pg-logempty">No friends yet. Share your friend code below, or tap ➕ on someone you meet here.</li>';
     }
@@ -4756,6 +4864,116 @@ html, body { background: #e6edf0; }
       } catch (err) { say(err.message); }
     });
     document.addEventListener("visibilitychange", function () { syncLobby(); if (!document.hidden) checkPlayInvites(); });
+
+    // ---------- Chat with friends ----------
+    // Only friends can type to each other; every message goes through the server (send_chat), which refuses phone
+    // numbers, emails, links and other apps, and masks rude words. A new message is announced over the live lobby
+    // as a bare "you have a message" ping (never the text), and the 20-second refresh catches anything missed.
+    var unread = {}, chatWith = null, KIND_KEY = "petstreak.chatkind";
+    var CHAT_QUICK = ["Hi! 👋", "Feed Mochi? 🍎", "Race? 🏁", "Good game! 🤝", "😂", "❤️"];
+    async function refreshUnread() {
+      if (!me) return;
+      try { unread = (await rpc("chat_unread")) || {}; } catch (e) { return; }
+      var n = Object.keys(unread).reduce(function (a, k) { return a + unread[k]; }, 0);
+      $("g-playdot").hidden = !n; $("g-playdot").textContent = n > 9 ? "9+" : n;
+      if (!$("g-play").hidden) renderFriends();
+      if (chatWith && unread[chatWith.id]) loadChat();
+    }
+    function openChat(f) {
+      chatWith = f;
+      var pp = f.pet;
+      $("g-chattitle").innerHTML = tagHTML(pp ? pp.level : 1, f.name) + (pp ? ' <small class="pg-ofpet">' + esc(pp.name) + "</small>" : "");
+      $("g-chatmenu").hidden = true; $("g-chatin").value = "";
+      $("g-chatquick").innerHTML = "";
+      CHAT_QUICK.forEach(function (t) {
+        var b = document.createElement("button"); b.type = "button"; b.textContent = t.replace("Mochi", pet() ? pet().name : "our pet");
+        b.addEventListener("click", function () { sendChat(b.textContent); });
+        $("g-chatquick").appendChild(b);
+      });
+      $("g-chat").hidden = false;
+      $("g-chatlist").innerHTML = '<li class="pg-logempty">Loading…</li>';
+      loadChat();
+    }
+    async function loadChat() {
+      var f = chatWith; if (!f) return;
+      var list;
+      try { list = await rpc("chat_history", { p_other: f.id }); }
+      catch (e) { $("g-chatlist").innerHTML = '<li class="pg-logempty">' + esc(/chat_history/.test(e.message) ? "Chat isn't switched on yet." : e.message) + "</li>"; return; }
+      if (chatWith !== f) return;
+      delete unread[f.id]; refreshBadge();
+      var box = $("g-chatlist"); box.innerHTML = "";
+      // the first time: a kind reminder about staying safe
+      var seen = false; try { seen = !!localStorage.getItem(KIND_KEY); } catch (e) {}
+      if (!seen) {
+        var k = document.createElement("li"); k.className = "pg-chatkind";
+        k.textContent = "💛 Be kind, and keep it in Pet Streak: never share your address, school, phone number or other apps. Tap ⋯ to block or report anyone who makes you feel uncomfortable.";
+        box.appendChild(k);
+        try { localStorage.setItem(KIND_KEY, "1"); } catch (e) {}
+      }
+      if (!list.length) { var e0 = document.createElement("li"); e0.className = "pg-logempty"; e0.textContent = "Say hi to " + f.name + "! 👋"; box.appendChild(e0); }
+      list.forEach(function (m) {
+        var li = document.createElement("li"); li.className = m.me ? "me" : "them";
+        li.innerHTML = '<span class="b">' + esc(m.body) + "</span><time>" + esc(new Date(m.at).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })) + "</time>";
+        box.appendChild(li);
+      });
+      box.scrollTop = box.scrollHeight;
+    }
+    function refreshBadge() {
+      var n = Object.keys(unread).reduce(function (a, k) { return a + unread[k]; }, 0);
+      $("g-playdot").hidden = !n; $("g-playdot").textContent = n > 9 ? "9+" : n;
+    }
+    async function sendChat(text) {
+      var f = chatWith; if (!f || !text.trim()) return;
+      $("g-chatsend").disabled = true;
+      try {
+        var r = await rpc("send_chat", { p_to: f.id, p_body: text });
+        $("g-chatin").value = "";
+        if (r.masked) say("Some words were hidden with *** to keep chat friendly.");
+        sendLive("chat", { to: f.id, from: me.id });   // just a ping: they fetch the message from the server
+        await loadChat();
+      } catch (e) { say(e.message); }
+      finally { $("g-chatsend").disabled = false; }
+    }
+    $("g-chatform").addEventListener("submit", function (e) { e.preventDefault(); sendChat($("g-chatin").value); });
+    $("g-chatback").addEventListener("click", function () { $("g-chat").hidden = true; chatWith = null; if (!$("g-play").hidden) renderFriends(); });
+    $("g-chatmore").addEventListener("click", function () { $("g-chatmenu").hidden = !$("g-chatmenu").hidden; });
+    $("g-chatreport").addEventListener("click", async function () {
+      var f = chatWith; if (!f) return;
+      if (!confirm("Report this chat with " + f.name + "? The Pet Streak team will read the recent messages.")) return;
+      try { await rpc("chat_report", { p_other: f.id }); say("Thanks for telling us. We'll take a look. 💛"); } catch (e) { say(e.message); }
+      $("g-chatmenu").hidden = true;
+    });
+    $("g-chatblock").addEventListener("click", async function () {
+      var f = chatWith; if (!f) return;
+      if (!confirm("Block " + f.name + "? You won't get messages from each other any more, and you won't be friends.")) return;
+      try { await rpc("chat_block", { p_other: f.id }); } catch (e) { say(e.message); return; }
+      $("g-chat").hidden = true; chatWith = null;
+      say("Blocked. You won't hear from " + f.name + " again.");
+      loadFriends();
+    });
+
+    // admin: reported chats (read the messages, dismiss, or stop the player chatting)
+    async function loadChatReports() {
+      var box = $("g-chatreps"), list;
+      try { list = await rpc("admin_chat_reports"); } catch (e) { $("g-adminchat").hidden = true; return; }
+      $("g-adminchat").hidden = false; box.innerHTML = "";
+      if (!list.length) { box.innerHTML = '<p class="pg-note">No reported chats. 🎉</p>'; return; }
+      list.forEach(function (r) {
+        var d = document.createElement("div"); d.className = "pg-chatrep";
+        d.innerHTML = "<b>" + esc(r.reporter) + " reported " + esc(r.reported) + "</b>" + (r.banned ? " · chat stopped" : "") +
+          '<ol class="pg-chatlist small">' + r.messages.map(function (m) { return "<li><b>" + esc(m.from) + ":</b> " + esc(m.body) + "</li>"; }).join("") + "</ol>" +
+          '<div class="pg-row"><button type="button" class="pg-btn" data-a="ok">Dismiss</button>' +
+          '<button type="button" class="pg-btn pg-danger" data-a="ban">' + (r.banned ? "Allow chat again" : "Stop " + esc(r.reported) + " chatting") + "</button></div>";
+        d.querySelector('[data-a="ok"]').addEventListener("click", async function () {
+          try { await rpc("admin_dismiss_chat_report", { p_id: r.id }); } catch (e) { say(e.message); } loadChatReports();
+        });
+        d.querySelector('[data-a="ban"]').addEventListener("click", async function () {
+          try { await rpc("admin_chat_ban", { p_user: r.reported_id, p_ban: !r.banned }); say(r.banned ? "Chat allowed again." : "Chat stopped for " + r.reported + "."); } catch (e) { say(e.message); }
+          loadChatReports();
+        });
+        box.appendChild(d);
+      });
+    }
 
     // ---------- Today's log ----------
     // What happened with the pet today, oldest first, then who still needs to feed and how long is left.
@@ -6120,7 +6338,7 @@ html, body { background: #e6edf0; }
     }
     async function openMenu() {
       renderMenu(); $("g-menu").hidden = false; renderReminders();
-      if (profile && profile.is_admin) { loadFeedback(); loadReports(); }
+      if (profile && profile.is_admin) { loadFeedback(); loadReports(); loadChatReports(); }
       try { sentGifts = await rpc("my_gifts"); } catch (e) { sentGifts = []; }
       renderMenu();
     }
@@ -6152,7 +6370,7 @@ html, body { background: #e6edf0; }
     document.addEventListener("pointerdown", function (e) {
       // a full-screen card (gift, join, name...) is on top: leave everything as it is
       // (also leave sheets alone for taps on an invite card or inside a game)
-      if (e.target.closest && e.target.closest(".pg-adopt, .pg-invite, .pg-game, .pg-playpage")) return;
+      if (e.target.closest && e.target.closest(".pg-adopt, .pg-invite, .pg-game, .pg-playpage, .pg-chatpage")) return;
       var open = CLOSABLE.filter(function (c) { return !$(c[0]).hidden && !$(c[0]).contains(e.target); });
       if (!open.length) return;
       open.forEach(function (c) { $(c[1]).click(); });
