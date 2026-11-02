@@ -428,6 +428,79 @@ html, body { background: #e6edf0; }
 .pg-adopt form { margin: 0; }
 /* questions (name a pet, open a gift, join as co-parent) always sit above "Get your first pet" and the store */
 #g-ask, #g-join, #g-giftsend { z-index: 9; }
+/* bath time: a soft aqua look, separate from the app's theme colour so it always reads as "water" */
+.pg-bottom .pg-bathbtn { background: linear-gradient(140deg, #6fd3f7, #3a9be8); border-color: transparent; color: #fff; padding: 0 14px;
+  box-shadow: 0 6px 16px rgba(58,155,232,0.4); animation: pg-bathpulse 1.8s ease-in-out infinite; }
+.pg-bottom .pg-bathbtn[hidden] { display: none; }
+.pg-bottom.muddy #g-wardrobe .pg-lbl { display: none; }   /* make room for the Bath button */
+@keyframes pg-bathpulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+.pg-bath { inset: 0; pointer-events: none; z-index: 6; }
+/* the bath card at the top: progress ring, what to do, and a way out */
+.pg-bathtop { position: absolute; top: calc(70px + env(safe-area-inset-top, 0px)); left: 12px; right: 12px; max-width: 460px; margin: 0 auto;
+  display: flex; align-items: center; gap: 12px; padding: 10px 10px 10px 12px; border-radius: 22px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.96), rgba(228,246,255,0.94)); border: 1.5px solid rgba(111,211,247,0.55);
+  box-shadow: 0 10px 28px rgba(40,120,180,0.18); pointer-events: auto; animation: pg-bathin 0.35s ease-out; }
+@keyframes pg-bathin { from { transform: translateY(-14px); opacity: 0; } to { transform: none; opacity: 1; } }
+.pg-bathwords { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.pg-bathwords b { font-family: var(--display); font-size: 1.1rem; color: #12405e; }
+.pg-bathwords small { font-size: 0.85rem; color: #3f6b84; font-weight: 600; }
+.pg-bathring { --p: 0; width: 56px; height: 56px; flex: none; border-radius: 50%; display: grid; place-items: center;
+  background: conic-gradient(#3a9be8 0, #6fd3f7 calc(var(--p) * 1%), #dbeef8 0); transition: background 0.2s; }
+.pg-bathring span { width: 44px; height: 44px; border-radius: 50%; background: #fff; display: grid; place-items: center; font-size: 0.85rem; font-weight: 800; color: #12405e; }
+.pg-bathring.full { background: conic-gradient(#36c38a 0 100%); box-shadow: 0 0 0 5px rgba(54,195,138,0.18); }
+.pg-bathring.full span { color: #1f8a5e; }
+.pg-bathx { flex: none; width: 36px; height: 36px; border-radius: 50%; border: 0; background: rgba(18,64,94,0.08); color: #3f6b84; font-size: 1rem; font-weight: 700; }
+.pg-bathx[hidden] { visibility: hidden; display: block; }
+/* first-time help: a sponge sweeping side to side until they start scrubbing */
+.pg-bathhint { position: absolute; left: 50%; top: 54%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.pg-bathhint[hidden] { display: none; }
+.pg-bathhint span { font-size: 54px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.25)); animation: pg-bathswipe 1.3s ease-in-out infinite; }
+.pg-bathhint em { font-style: normal; font-weight: 700; font-size: 0.9rem; color: #12405e; background: rgba(255,255,255,0.92); padding: 6px 12px; border-radius: 999px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+@keyframes pg-bathswipe { 0%, 100% { transform: translateX(-46px) rotate(-18deg); } 50% { transform: translateX(46px) rotate(12deg); } }
+/* bubbles drifting up the screen during the bath */
+.pg-bathbubbles i { position: absolute; bottom: -40px; width: 22px; height: 22px; border-radius: 50%;
+  background: radial-gradient(circle at 32% 30%, rgba(255,255,255,0.95) 0 14%, rgba(255,255,255,0.25) 32%, rgba(140,210,245,0.25) 70%, rgba(111,190,235,0.55) 100%);
+  border: 1px solid rgba(150,210,240,0.6); animation: pg-bubbleup 7s linear infinite; opacity: 0.85; }
+.pg-bathbubbles i:nth-child(1) { left: 4%; animation-delay: 0s; transform: scale(0.8); }
+.pg-bathbubbles i:nth-child(2) { left: 14%; animation-delay: 2.4s; width: 14px; height: 14px; }
+.pg-bathbubbles i:nth-child(3) { left: 24%; animation-delay: 4.1s; width: 30px; height: 30px; }
+.pg-bathbubbles i:nth-child(4) { left: 82%; animation-delay: 1.1s; }
+.pg-bathbubbles i:nth-child(5) { left: 91%; animation-delay: 3.3s; width: 16px; height: 16px; }
+.pg-bathbubbles i:nth-child(6) { left: 72%; animation-delay: 5.2s; width: 26px; height: 26px; }
+.pg-bathbubbles i:nth-child(7) { left: 8%; animation-delay: 5.9s; width: 12px; height: 12px; }
+.pg-bathbubbles i:nth-child(8) { left: 95%; animation-delay: 6.4s; width: 20px; height: 20px; }
+.pg-bathbubbles i:nth-child(9) { left: 18%; animation-delay: 1.7s; width: 18px; height: 18px; }
+.pg-bathbubbles i:nth-child(10) { left: 86%; animation-delay: 4.6s; width: 12px; height: 12px; }
+@keyframes pg-bubbleup { 0% { transform: translate(0, 0); opacity: 0; } 10% { opacity: 0.85; }
+  50% { transform: translate(14px, -50vh); } 100% { transform: translate(-6px, -105vh); opacity: 0; } }
+/* the rinse: a showerhead with water pouring down over the pet */
+.pg-shower { position: absolute; inset: 0; }
+.pg-shower[hidden] { display: none; }
+.pg-shower .head { position: absolute; left: 50%; top: calc(150px + env(safe-area-inset-top, 0px)); font-size: 52px; transform: translateX(-50%) rotate(-30deg);
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2)); animation: pg-bathin 0.3s ease-out; }
+.pg-shower .rain { position: absolute; left: 50%; top: calc(200px + env(safe-area-inset-top, 0px)); width: min(70%, 300px); height: 52vh; transform: translateX(-50%);
+  background: repeating-linear-gradient(100deg, transparent 0 14px, rgba(120,195,245,0.55) 14px 16px, transparent 16px 30px);
+  background-size: 100% 120px; -webkit-mask: linear-gradient(transparent, #000 12%, #000 75%, transparent); mask: linear-gradient(transparent, #000 12%, #000 75%, transparent);
+  animation: pg-rain 0.35s linear infinite; }
+@keyframes pg-rain { from { background-position: 0 0; } to { background-position: -8px 120px; } }
+.pg-bathdone { position: absolute; left: 50%; top: calc(178px + env(safe-area-inset-top, 0px)); transform: translate(-50%, -50%); padding: 12px 22px; border-radius: 999px;
+  background: linear-gradient(135deg, #fff, #e6fff3); color: #1f8a5e; font-family: var(--display); font-size: 1.3rem; font-weight: 800;
+  box-shadow: 0 10px 30px rgba(31,138,94,0.25); animation: pg-pop 0.45s cubic-bezier(.2,1.6,.4,1); white-space: nowrap; }
+.pg-bathdone[hidden] { display: none; }
+@keyframes pg-pop { from { transform: translate(-50%, -50%) scale(0.4); opacity: 0; } to { transform: translate(-50%, -50%) scale(1); opacity: 1; } }
+.pg-bath .pg-rinse { position: absolute; left: 50%; transform: translateX(-50%); bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  width: min(86%, 340px); padding: 16px; border: 0; border-radius: 18px; pointer-events: auto; font: inherit; font-size: 1.1rem; font-weight: 800; color: #fff;
+  background: linear-gradient(140deg, #6fd3f7, #3a9be8); box-shadow: 0 10px 24px rgba(58,155,232,0.45); animation: pg-rinsein 0.4s cubic-bezier(.2,1.5,.4,1), pg-rinseglow 1.6s ease-in-out 0.4s infinite; }
+.pg-bath .pg-rinse[hidden] { display: none; }
+@keyframes pg-rinsein { from { transform: translate(-50%, 30px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
+@keyframes pg-rinseglow { 0%, 100% { box-shadow: 0 10px 24px rgba(58,155,232,0.45); } 50% { box-shadow: 0 10px 34px rgba(58,155,232,0.75); } }
+.pg-sponge { position: fixed; left: 0; top: 0; font-size: 50px; pointer-events: none; z-index: 7; transform: translate(-50%, -60%) rotate(-15deg);
+  filter: drop-shadow(0 4px 5px rgba(0,0,0,0.25)); }
+.pg-sponge[hidden] { display: none; }
+@media (prefers-reduced-motion: reduce) {
+  .pg-bathbubbles, .pg-shower .rain { display: none; }
+  .pg-bottom .pg-bathbtn, .pg-bath .pg-rinse, .pg-bathhint span { animation: none; }
+}
 /* sign-in code and the gift sheet */
 .pg-adopt input.pg-codein { font-size: 1.6rem; letter-spacing: 0.3em; font-weight: 700; }
 .pg-adopt .pg-hint { font-size: 0.8rem; margin: 0 0 4px; }
@@ -549,9 +622,28 @@ html, body { background: #e6edf0; }
     </div>
     <div class="pg pg-bottom" id="g-bottom" hidden>
       <button type="button" class="pg-feed" id="g-feed">🍎 Feed</button>
-      <button type="button" class="pg-wardrobe" id="g-wardrobe">🎀 Wardrobe</button>
+      <button type="button" class="pg-wardrobe pg-bathbtn" id="g-bathbtn" hidden aria-label="Give your pet a bath">🛁<span class="pg-lbl"> Bath</span></button>
+      <button type="button" class="pg-wardrobe" id="g-wardrobe" aria-label="Wardrobe">🎀<span class="pg-lbl"> Wardrobe</span></button>
       <button type="button" class="pg-wardrobe pg-capbtn" id="g-sharebtn" aria-label="Capture and share your pet"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l1.6-2.4A1.5 1.5 0 0 1 9.9 5h4.2a1.5 1.5 0 0 1 1.3.6L17 8h3a1.5 1.5 0 0 1 1.5 1.5v8A1.5 1.5 0 0 1 20 19H4a1.5 1.5 0 0 1-1.5-1.5v-8A1.5 1.5 0 0 1 4 8z"/><circle cx="12" cy="13" r="3.6"/></svg></button>
     </div>
+
+    <!-- bath time: rub the pet with the sponge until the ring fills, then rinse -->
+    <div class="pg pg-bath" id="g-bath" hidden>
+      <div class="pg-bathbubbles" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="pg-bathtop">
+        <div class="pg-bathring" id="g-bathring"><span id="g-bathpct">0%</span></div>
+        <div class="pg-bathwords">
+          <b id="g-bathtitle">Bath time!</b>
+          <small id="g-bathtext">Rub all over to scrub</small>
+        </div>
+        <button type="button" class="pg-bathx" id="g-bathcancel" aria-label="Stop the bath">✕</button>
+      </div>
+      <div class="pg-bathhint" id="g-bathhint" aria-hidden="true"><span>🧽</span><em>Swipe back and forth on your pet</em></div>
+      <div class="pg-shower" id="g-shower" hidden aria-hidden="true"><span class="head">🚿</span><span class="rain"></span></div>
+      <div class="pg-bathdone" id="g-bathdone" hidden>✨ All clean! ✨</div>
+      <button type="button" class="pg-rinse" id="g-rinse" hidden>🚿 Rinse off the bubbles</button>
+    </div>
+    <div class="pg-sponge" id="g-sponge" hidden aria-hidden="true">🧽</div>
 
     <!-- sheets -->
     <div class="pg pg-card pg-sheet" id="g-sheet" hidden>
@@ -568,6 +660,7 @@ html, body { background: #e6edf0; }
         <li>🤝 <b>Fed together</b> +5 — two co-parents feed within an hour</li>
         <li>👨‍👩‍👧 <b>Bigger family</b> +5 — for each 3rd and 4th co-parent who feeds</li>
         <li>🎾 <b>Playtime</b> +3 — play with your pet 5 times (each co-parent)</li>
+        <li>🛁 <b>Bath time</b> +3 — your pet gets muddy once a day: give it a bath</li>
       </ul>
       <p class="pg-note">Bonus XP counts on days 2 co-parents feed.</p>
     </div>
@@ -603,6 +696,7 @@ html, body { background: #e6edf0; }
           <li>🤝 <b>Fed together</b> +5 — two co-parents feed within an hour</li>
           <li>👨‍👩‍👧 <b>Bigger family</b> +5 — for each 3rd and 4th co-parent</li>
           <li>🎾 <b>Playtime</b> +3 — play with your pet 5 times</li>
+          <li>🛁 <b>Bath time</b> +3 — clean your pet when it gets muddy</li>
         </ul>
         <p class="pg-note">Tap the XP bar any time to see this again.</p>
         <button type="button" class="pg-feed" id="g-bonusok">Got it</button>
@@ -1904,6 +1998,7 @@ html, body { background: #e6edf0; }
       } else if (/RedPanda/i.test(name)) {
         if (!classicMap) classicMap = lit.map;
         mats.forEach(function (m) { if (bodyMats.indexOf(m) < 0) bodyMats.push(m); });
+        hookMud(mats);   // bath.js
         // the sheen needs lighting, so only the lit material gets it
         addShaderStep(lit, function (s) { lookUniforms(s); s.fragmentShader = s.fragmentShader.replace("#include <tonemapping_fragment>", FUR_GLSL); });
         lit.roughness = Math.max(lit.roughness, 0.85);
@@ -2879,7 +2974,13 @@ html, body { background: #e6edf0; }
     playBow: function () { tone(260, 1.3, 0.32, "sine", 0.16, 720, [14, 30]); },
     shake:   function () { noise(0.05, 0.75, 0.09, 1100, 0.9, "bandpass", 0.05); tone(70, 0.05, 0.7, "sawtooth", 0.035, 60, [28, 12]); },
     yawn:    function () { tone(520, 0.25, 1.15, "sine", 0.08, 230, [5, 10]); noise(0.25, 1.1, 0.03, 700, 0.8, "lowpass", 0.3); },
-    flick:   function () { noise(0.1, 0.04, 0.05, 3500, 2); }
+    flick:   function () { noise(0.1, 0.04, 0.05, 3500, 2); },
+    // bath time: a muddy splat, a squishy scrub, popping bubbles, the shower and a clean sparkle
+    splat:   function () { noise(0, 0.22, 0.22, 380, 0.8, "lowpass", 0.004); tone(140, 0, 0.18, "sine", 0.12, 70); squeak(900, 0.28, 0.14, 0.06, 0.8); },
+    scrub:   function () { noise(0, 0.12, 0.07, 1800 + Math.random() * 900, 1.4, "bandpass", 0.02); },
+    bubbles: function () { for (var i = 0; i < 3; i++) tone(1400 + Math.random() * 900, i * 0.06 + Math.random() * 0.03, 0.05, "sine", 0.05, 2600); },
+    shower:  function () { noise(0, 1.9, 0.09, 5200, 0.5, "highpass", 0.25); noise(0, 1.9, 0.05, 1600, 0.6, "bandpass", 0.25); },
+    sparkle: function () { [2093, 2637, 3136, 2637, 3520].forEach(function (f, i) { tone(f, i * 0.07, 0.25, "sine", 0.05); }); }
   };
   function sfx(name) { if (audioReady() && SFX[name]) { try { duckMusic(name === "click" ? 0.6 : 0.35); SFX[name](); } catch (e) {} } }
   // the music dips while a button makes a sound, then glides back up
@@ -2970,6 +3071,244 @@ html, body { background: #e6edf0; }
     if (musicOn) { wakeAudio(); startMusic(); } else stopMusic();
   }
 
+  // ---------- Bath time: mud on the fur, stink lines, a fly, bubbles and the shower ----------
+  // The mud is painted by the fur shader: muddy paws, plus splotches with little drips at spots picked on the
+  // pet's own surface (different for each pet, never on the face). It fades as the pet is scrubbed and rinsed.
+  // real.js runs the bath itself (buttons, scrubbing, the server); this file only draws.
+  var MUD_SPOTS = 12;
+  var mudFx = { amt: { value: 0 }, spots: { value: [] }, dbg: { value: 0 } };   // amt: 0 clean, 1 muddy, 2 very muddy
+  for (var mi = 0; mi < MUD_SPOTS; mi++) mudFx.spots.value.push(new THREE.Vector4(0, -9, 0, 0));
+  var mudTarget = 0, mudSeed = null;
+  var MUD_GLSL_V = "varying vec3 vMudP;\n";
+  var MUD_GLSL_F = "varying vec3 vMudP;\nuniform float mudAmt;\nuniform float mudDbg;\nuniform vec4 mudSpots[" + MUD_SPOTS + "];\n" +
+    "float mudH( vec3 p ) { return fract( sin( dot( p, vec3( 127.1, 311.7, 74.7 ) ) ) * 43758.5453 ); }\n" +
+    "float mudN( vec3 p ) { vec3 i = floor( p ), f = fract( p ); f = f * f * ( 3.0 - 2.0 * f );\n" +
+    "  return mix( mix( mix( mudH( i ), mudH( i + vec3( 1, 0, 0 ) ), f.x ), mix( mudH( i + vec3( 0, 1, 0 ) ), mudH( i + vec3( 1, 1, 0 ) ), f.x ), f.y ),\n" +
+    "              mix( mix( mudH( i + vec3( 0, 0, 1 ) ), mudH( i + vec3( 1, 0, 1 ) ), f.x ), mix( mudH( i + vec3( 0, 1, 1 ) ), mudH( i + vec3( 1, 1, 1 ) ), f.x ), f.y ), f.z ); }\n";
+  // h: 0 at the feet, 1 at the ear tips. Each spot (centre xyz, radius w) makes a blob with a ragged edge that
+  // runs down into a drip; very muddy shows all the spots and a higher tide on the paws.
+  var MUD_APPLY = "#include <map_fragment>\n" +
+    "if ( mudAmt > 0.001 || mudDbg > 0.5 ) {\n" +
+    "  vec3 p = vMudP;\n" +
+    "  float h = ( p.y - " + "MUD_FLOOR" + " ) / " + "MUD_TALL" + ";\n" +
+    "  float heavy = clamp( mudAmt - 1.0, 0.0, 1.0 );\n" +
+    "  float rag = mudN( p * 30.0 ) - 0.5;\n" +
+    // muddy paws: a wavy tide line, higher when very muddy
+    "  float tide = 0.13 + 0.06 * heavy + 0.04 * ( mudN( p * 9.0 ) - 0.5 );\n" +
+    "  float m = 1.0 - smoothstep( tide - 0.01, tide + 0.01, h + rag * 0.025 );\n" +
+    "  float drops = step( 0.8, mudN( p * 58.0 ) );\n" +
+    "  for ( int i = 0; i < " + MUD_SPOTS + "; i ++ ) {\n" +
+    "    vec4 s = mudSpots[ i ];\n" +
+    "    if ( s.w <= 0.0 ) continue;\n" +
+    "    float a = i < 5 ? 1.0 : heavy;\n" +          // muddy: 5 splotches; very muddy: all of them
+    "    if ( a <= 0.0 ) continue;\n" +
+    "    vec3 q = p - s.xyz;\n" +
+    // a little drip runs down from the middle
+    "    if ( q.y < 0.0 ) q.y *= mix( 1.0, 0.4, smoothstep( 0.015, -0.01, abs( q.x ) - s.w * 0.2 ) );\n" +
+    "    float d = length( q ) + rag * s.w * 0.7;\n" +
+    "    float blob = 1.0 - smoothstep( s.w * 0.75, s.w, d );\n" +
+    // splash droplets around it
+    "    float ring = smoothstep( s.w * 2.4, s.w * 1.2, length( q ) ) * drops;\n" +
+    "    m = max( m, max( blob, ring ) * a );\n" +
+    "  }\n" +
+    "  m *= min( mudAmt, 1.0 );\n" +
+    "  if ( mudDbg > 0.5 ) m = 1.0;\n" +
+    // the mud takes the fur's light and dark, so the strands still show through it
+    "  float fur = dot( diffuseColor.rgb, vec3( 0.2126, 0.7152, 0.0722 ) );\n" +
+    "  float wet = 0.5 + 0.5 * mudN( p * 13.0 );\n" +
+    "  vec3 mud = mix( vec3( 0.2, 0.115, 0.05 ), vec3( 0.1, 0.055, 0.025 ), wet ) * clamp( 0.55 + fur * 1.6, 0.55, 1.35 );\n" +
+    "  diffuseColor.rgb = mix( diffuseColor.rgb, mud, m * 0.88 );\n" +
+    "}\n";
+  // heights on the model: the feet stand at 0 (the tail hangs lower, so not the lowest point) up to the ear tips
+  var mudFloor = 0, mudTall = 1.2, mudBody = null;
+  // the fur body: the skinned mesh called RedPanda (else the biggest skinned mesh)
+  function findMudBody() {
+    if (mudBody || !modelRoot) return mudBody;
+    var best = null;
+    modelRoot.traverse(function (o) {
+      if (!o.isSkinnedMesh) return;
+      if (o.name === "RedPanda") best = o;
+      else if (!best || (best.name !== "RedPanda" && o.geometry.attributes.position.count > best.geometry.attributes.position.count)) best = o;
+    });
+    mudBody = best;
+    if (mudBody) { mudBody.geometry.computeBoundingBox(); mudTall = mudBody.geometry.boundingBox.max.y; }
+    return mudBody;
+  }
+  function hookMud(mats) {
+    findMudBody();
+    var src = MUD_APPLY.replace("MUD_FLOOR", mudFloor.toFixed(4)).replace("MUD_TALL", mudTall.toFixed(4));
+    mats.forEach(function (m) {
+      addShaderStep(m, function (s) {
+        s.uniforms.mudAmt = mudFx.amt; s.uniforms.mudSpots = mudFx.spots; s.uniforms.mudDbg = mudFx.dbg;
+        s.vertexShader = MUD_GLSL_V + s.vertexShader.replace("#include <begin_vertex>", "#include <begin_vertex>\nvMudP = position;");
+        s.fragmentShader = MUD_GLSL_F + s.fragmentShader.replace("#include <map_fragment>", src);
+      });
+    });
+  }
+  // pick this pet's mud spots on its own surface: on the body and the cheeks/sides the camera sees, never on the
+  // face, spread apart (the same spots every time for the same pet)
+  function setMudSeed(id) {
+    if (!id || id === mudSeed || !findMudBody()) return;
+    mudSeed = id;
+    var seed = 0;
+    for (var c = 0; c < id.length; c++) seed = (seed * 31 + id.charCodeAt(c)) >>> 0;
+    function rnd() { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; }
+    // shoot rays at the pet from the front and slightly to the sides: the first hit is fur the camera can see
+    // (picking mesh points directly can land inside the mouth or ears)
+    var picked = [], v, tries = 0, ray = new THREE.Raycaster(), o = new THREE.Vector3(), d = new THREE.Vector3();
+    modelRoot.updateMatrixWorld(true);
+    while (picked.length < MUD_SPOTS && tries++ < 400) {
+      var side = (rnd() - 0.5) * 1.4;
+      o.set(side * 0.6, 0.2 + rnd() * 0.75, 2.5); d.set(-side * 0.5, 0, -1).normalize();
+      ray.set(modelRoot.localToWorld(o.clone()), d.transformDirection(modelRoot.matrixWorld));
+      var hit = ray.intersectObject(mudBody, false)[0];
+      if (!hit) continue;
+      v = mudBody.worldToLocal(hit.point.clone());
+      var h = (v.y - mudFloor) / mudTall;
+      if (h < 0.18 || h > 0.8) continue;                                    // above the paws, below the ear tips
+      if (v.z > 0.12 && h > 0.36 && h < 0.72 && Math.abs(v.x) < 0.32) continue;   // never on the face
+      if (picked.some(function (q) { return q.distanceTo(v) < 0.2; })) continue;
+      picked.push(v);
+    }
+    mudFx.spots.value.forEach(function (s, i) {
+      var q = picked[i];
+      if (q) s.set(q.x, q.y, q.z, 0.04 + rnd() * 0.035); else s.set(0, -9, 0, 0);
+    });
+  }
+  function setMud(level, now) { mudTarget = level; if (now) mudFx.amt.value = level; }
+
+  // little canvas pictures for sprites
+  function spriteTex(w, h, draw) {
+    var c = document.createElement("canvas"); c.width = w; c.height = h;
+    draw(c.getContext("2d"), w, h);
+    var t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding; return t;
+  }
+  function makeSprite(tex, sx, sy) {
+    var s = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false, toneMapped: false }));
+    s.scale.set(sx, sy || sx, 1); return s;
+  }
+  var bathFx = null;
+  function bathSetup() {
+    if (bathFx || !modelRoot) return;
+    var stinkTex = spriteTex(64, 128, function (g, w, h) {
+      g.strokeStyle = "rgba(104,130,52,0.95)"; g.lineWidth = 8; g.lineCap = "round";
+      g.beginPath();
+      for (var y = h - 6; y > 6; y -= 2) { var x = w / 2 + Math.sin(y / 12) * 14; if (y === h - 6) g.moveTo(x, y); else g.lineTo(x, y); }
+      g.stroke();
+    });
+    var flyTex = spriteTex(48, 48, function (g) {
+      g.fillStyle = "rgba(220,235,245,0.75)"; g.strokeStyle = "rgba(120,140,150,0.8)"; g.lineWidth = 1.5;
+      g.beginPath(); g.ellipse(17, 16, 10, 6, -0.6, 0, 7); g.fill(); g.stroke();
+      g.beginPath(); g.ellipse(31, 16, 10, 6, 0.6, 0, 7); g.fill(); g.stroke();
+      g.fillStyle = "#1d1f22"; g.beginPath(); g.ellipse(24, 28, 7, 9, 0, 0, 7); g.fill();
+      g.beginPath(); g.arc(24, 18, 5, 0, 7); g.fill();
+    });
+    var bubbleTex = spriteTex(64, 64, function (g) {
+      var gr = g.createRadialGradient(26, 24, 2, 32, 32, 30);
+      gr.addColorStop(0, "rgba(255,255,255,0.95)"); gr.addColorStop(0.25, "rgba(255,255,255,0.55)");
+      gr.addColorStop(0.8, "rgba(225,240,255,0.5)"); gr.addColorStop(1, "rgba(200,225,255,0)");
+      g.fillStyle = gr; g.beginPath(); g.arc(32, 32, 30, 0, 7); g.fill();
+      g.strokeStyle = "rgba(170,210,240,0.8)"; g.lineWidth = 2; g.beginPath(); g.arc(32, 32, 27, 0, 7); g.stroke();
+    });
+    var dropTex = spriteTex(16, 48, function (g) {
+      var gr = g.createLinearGradient(0, 0, 0, 48);
+      gr.addColorStop(0, "rgba(140,200,255,0)"); gr.addColorStop(1, "rgba(120,190,255,0.95)");
+      g.fillStyle = gr; g.beginPath(); g.ellipse(8, 30, 4, 17, 0, 0, 7); g.fill();
+    });
+    var starTex = spriteTex(64, 64, function (g) {
+      g.fillStyle = "#ffe27a"; g.beginPath();
+      for (var i = 0; i < 10; i++) { var a = i * Math.PI / 5 - Math.PI / 2, r = i % 2 ? 11 : 30; g.lineTo(32 + Math.cos(a) * r, 32 + Math.sin(a) * r); }
+      g.fill();
+    });
+    var stink = [0, 1, 2].map(function (i) { var s = makeSprite(stinkTex, 0.12, 0.24); s.visible = false; modelRoot.add(s); return s; });
+    var fly = makeSprite(flyTex, 0.07); fly.visible = false; modelRoot.add(fly);
+    bathFx = { stink: stink, fly: fly, bubbleTex: bubbleTex, dropTex: dropTex, starTex: starTex, bubbles: [], drops: [], stars: [], hidden: false };
+  }
+  var STINK_AT = [[0.5, 0.62, 0.1], [-0.52, 0.5, 0.05], [0.0, 1.12, 0.0]];
+
+  // scrub foam: a bubble where the sponge touched (point in the pet's own frame)
+  function addBubble(local) {
+    if (!bathFx || bathFx.bubbles.length > 70) return;
+    var s = makeSprite(bathFx.bubbleTex, 0.01);
+    s.position.copy(local);
+    s.userData = { size: 0.035 + Math.random() * 0.045, born: performance.now(), wob: Math.random() * 6 };
+    modelRoot.add(s); bathFx.bubbles.push(s);
+  }
+  // the shower: drops fall for a while and the foam slides off
+  var showerUntil = 0, rinseStart = 0;
+  function startShower(ms) { showerUntil = performance.now() + ms; rinseStart = performance.now(); }
+  function sparkleBurst() {
+    if (!bathFx) return;
+    for (var i = 0; i < 9; i++) {
+      var s = makeSprite(bathFx.starTex, 0.01), a = i / 9 * Math.PI * 2;
+      s.position.set(Math.cos(a) * 0.42, 0.45 + Math.sin(a) * 0.42, 0.25);
+      s.userData = { born: performance.now() + i * 40 };
+      modelRoot.add(s); bathFx.stars.push(s);
+    }
+  }
+  function clearBath() {
+    if (!bathFx) return;
+    bathFx.bubbles.concat(bathFx.drops, bathFx.stars).forEach(function (s) { modelRoot.remove(s); s.material.dispose(); });
+    bathFx.bubbles = []; bathFx.drops = []; bathFx.stars = []; showerUntil = 0;
+  }
+  // every frame: fade the mud, wiggle the stink lines, fly the fly, pop the foam, rain the shower
+  function updateBath(now, dt, show, bathing) {
+    if (!modelRoot) return;
+    bathSetup();
+    var a = mudFx.amt;
+    a.value += (mudTarget - a.value) * Math.min(1, dt * 3);
+    if (Math.abs(mudTarget - a.value) < 0.002) a.value = mudTarget;
+    var smelly = show && !bathing && mudTarget > 0.5, t = now / 1000;
+    bathFx.stink.forEach(function (s, i) {
+      s.visible = smelly && (i < 2 || mudTarget > 1.5);
+      if (!s.visible) return;
+      var ph = (t * 0.45 + i * 0.37) % 1, at = STINK_AT[i];
+      s.position.set(at[0] + Math.sin(t * 2 + i) * 0.02, at[1] + ph * 0.16, at[2]);
+      s.material.opacity = Math.sin(ph * Math.PI) * 0.75;
+      s.scale.set(0.12 * (1 + 0.15 * Math.sin(t * 3 + i)), 0.24, 1);
+    });
+    bathFx.fly.visible = smelly;
+    if (smelly) {
+      bathFx.fly.position.set(Math.sin(t * 1.7) * 0.42 + Math.sin(t * 7.3) * 0.03, 0.82 + Math.sin(t * 2.3) * 0.16 + Math.sin(t * 11) * 0.02, 0.18 + Math.cos(t * 1.7) * 0.25);
+      bathFx.fly.material.rotation = Math.sin(t * 9) * 0.4;
+    }
+    // foam pops in, wobbles; during the rinse it slides down and fades
+    var rinsing = rinseStart && now - rinseStart < 2200;
+    bathFx.bubbles = bathFx.bubbles.filter(function (s) {
+      var u = s.userData, k = Math.min(1, (now - u.born) / 180);
+      var size = u.size * (k < 1 ? k * 1.15 : 1 + 0.06 * Math.sin(t * 4 + u.wob));
+      if (rinsing) {
+        var r = (now - rinseStart) / 1600;
+        s.position.y -= dt * (0.25 + r * 0.5); s.material.opacity = Math.max(0, 1 - r);
+        if (r >= 1) { modelRoot.remove(s); s.material.dispose(); return false; }
+      }
+      s.scale.set(size, size, 1);
+      return true;
+    });
+    if (now < showerUntil) {
+      for (var i = 0; i < 3; i++) {
+        var d = makeSprite(bathFx.dropTex, 0.025, 0.075);
+        d.position.set((Math.random() - 0.5) * 0.9, 1.55 + Math.random() * 0.2, (Math.random() - 0.3) * 0.5);
+        d.userData = { v: 2.2 + Math.random() * 0.8 };
+        modelRoot.add(d); bathFx.drops.push(d);
+      }
+    } else if (!rinsing) rinseStart = 0;
+    bathFx.drops = bathFx.drops.filter(function (d) {
+      d.position.y -= d.userData.v * dt;
+      if (d.position.y > -0.05) return true;
+      modelRoot.remove(d); d.material.dispose(); return false;
+    });
+    bathFx.stars = bathFx.stars.filter(function (s) {
+      var age = (now - s.userData.born) / 900;
+      if (age < 0) { s.visible = false; return true; }
+      s.visible = true;
+      if (age >= 1) { modelRoot.remove(s); s.material.dispose(); return false; }
+      var sz = 0.09 * Math.sin(age * Math.PI);
+      s.scale.set(sz, sz, 1); s.material.rotation = age * 3;
+      return true;
+    });
+  }
+
   // ---------- Pet Streak (real version) ----------
   // Sign in with an email link, share pets with co-parents, buy and adopt pets and wardrobe items with paws.
   // All rules run on the server (Supabase functions in pet-real/supabase/schema.sql); this file only shows
@@ -2983,7 +3322,7 @@ html, body { background: #e6edf0; }
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261101202951";   // replaced by build_real.ps1
+    var APP_BUILD = "20261101224918";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -3226,7 +3565,7 @@ html, body { background: #e6edf0; }
       }
     }
     // ---------- Bonus XP ----------
-    var BONUS_NAMES = { fav: "⭐ Favourite food", together: "🤝 Fed together", family: "👨‍👩‍👧 Bigger family", play: "🎾 Playtime" };
+    var BONUS_NAMES = { fav: "⭐ Favourite food", together: "🤝 Fed together", family: "👨‍👩‍👧 Bigger family", play: "🎾 Playtime", bath: "🛁 Bath time" };
     function bonusText(list) {
       return list.map(function (b) { return BONUS_NAMES[String(b.kind).split(":")[0]] + " +" + b.xp; }).join("  ·  ");
     }
@@ -3587,7 +3926,8 @@ html, body { background: #e6edf0; }
       el.classList.remove("go"); void el.offsetWidth; el.classList.add("go");
     }
     function applyLook() {
-      var p = pet(), b = item(p ? p.backdrop : "mist") || { color: "#e6edf0" };
+      // bath time happens in the Bubble bath room, for those who have it
+      var p = pet(), b = item(bathing && owned.bg_bath ? "bg_bath" : p ? p.backdrop : "mist") || { color: "#e6edf0" };
       // a scene background is drawn behind the (see-through) 3D view
       var scene = !!SCENE_DRAW[b.id];
       renderer.setClearColor(new THREE.Color(b.color), scene ? 0 : 1);
@@ -3605,6 +3945,9 @@ html, body { background: #e6edf0; }
       $("g-bar").hidden = !signedIn;
       var p = pet();
       ["g-top", "g-mood", "g-crew", "g-bottom"].forEach(function (id) { $(id).hidden = !signedIn || !p; });
+      if (bathing && (!p || p.id !== bathing.p.id)) endBath();   // switched pets mid-bath
+      // the bath has the screen to itself: the cards come back when it's done
+      if (bathing) ["g-top", "g-mood", "g-crew", "g-bottom"].forEach(function (id) { $(id).hidden = true; });
       $("g-empty").hidden = !signedIn || !loaded || !!p || !$("g-store").hidden || !$("g-join").hidden;
       if (!signedIn) { $("g-away").hidden = true; return; }
       $("g-coinnum").textContent = profile ? profile.coins : 0;
@@ -3633,7 +3976,12 @@ html, body { background: #e6edf0; }
         : { happy: "😊 Happy — waiting for food", hungry: "🥺 Hungry", sick: "🤒 Sick — losing levels", away: "🏡 At the sanctuary" }[m];
       var crave = favFood(p);
       if (crave && m !== "away" && !iFed(p)) $("g-mood").textContent += "  ·  💭 " + crave.icon;
-      $("g-mood").hidden = m === "away";
+      var dirt = dirtOf(p);
+      if (dirt) $("g-mood").textContent += dirt > 1 ? "  ·  🟤 Very muddy, feeling grubby" : "  ·  🟤 Muddy";
+      else if (bathedToday(p)) $("g-mood").textContent += "  ·  🛁 " + (p.last_bather === me.id ? "Bathed" : "Bathed by " + p.bathed_by);
+      $("g-mood").hidden = m === "away" || !!bathing;
+      $("g-bathbtn").hidden = !dirt || !!bathing;
+      $("g-bottom").classList.toggle("muddy", !!dirt);
       // co-parents and who fed today
       var crew = $("g-crew"); crew.innerHTML = "";
       (p.members || []).forEach(function (mb) {
@@ -3647,7 +3995,7 @@ html, body { background: #e6edf0; }
         var ib = document.createElement("button"); ib.type = "button"; ib.textContent = "＋ Invite";
         ib.addEventListener("click", invite); crew.appendChild(ib);
       }
-      crew.hidden = m === "away";
+      crew.hidden = m === "away" || !!bathing;
       // the sanctuary
       var away = m === "away";
       $("g-away").hidden = !away;
@@ -3682,7 +4030,7 @@ html, body { background: #e6edf0; }
         var face = { fed: "😊", happy: "😊", hungry: "🥺", sick: "🤒", away: "🏡" }[m];
         var today = m === "away" ? "At the sanctuary" : iFed(q) ? (fullToday(q) ? "Fed today · XP earned" : "You fed today") : "Not fed by you yet";
         b.innerHTML = '<img alt="" src="icons/' + esc(q.variant) + '.png">' +
-          "<span>" + tagHTML(q.level, q.name) + "<small>Lv " + q.level + " · " + face + " " + esc(today) + " · 🔥 " + q.streak + "</small></span>" +
+          "<span>" + tagHTML(q.level, q.name) + "<small>Lv " + q.level + " · " + face + " " + esc(today) + " · 🔥 " + q.streak + (dirtOf(q) ? " · 🟤 Needs a bath" : "") + "</small></span>" +
           '<span class="tag' + (q.my_role === "owner" ? "" : " co") + '">' + (q.my_role === "owner" ? "Owner" : "Co-parent") + "</span>";
         b.addEventListener("click", function () {
           cur = i; localStorage.setItem(PET_KEY, q.id); $("g-tray").hidden = true; $("g-petsheet").hidden = true; render();
@@ -3750,7 +4098,7 @@ html, body { background: #e6edf0; }
     }
     renderer.domElement.addEventListener("pointerdown", function (e) { tapAt = { x: e.clientX, y: e.clientY, t: performance.now() }; });
     renderer.domElement.addEventListener("pointerup", function (e) {
-      if (!tapAt) return;
+      if (!tapAt || bathing) return;
       var tap = Math.abs(e.clientX - tapAt.x) + Math.abs(e.clientY - tapAt.y) < 10 && performance.now() - tapAt.t < 350;
       tapAt = null;
       var p = pet();
@@ -3765,6 +4113,139 @@ html, body { background: #e6edf0; }
       if ((m === "fed" || m === "happy") && !busy() && playWith(hit.point)) countPlay(p);
     });
     window.addEventListener("pointermove", function () { if (!asleep) lastPoke = performance.now(); }, { passive: true });
+
+    // ---------- Bath time ----------
+    // Once a day, at a time the server picks (the same for every co-parent), the pet gets muddy. Mud nobody
+    // cleans stays, and the next day's makes it very muddy. Any co-parent can bathe it: rub it all over with the
+    // sponge until the ring fills, then rinse. +3 bonus XP (paid once the day counts, like playtime).
+    function dirtOf(p) { return p && p.status === "home" ? (p.dirt || 0) : 0; }
+    function bathedToday(p) {
+      return !!p && p.status === "home" && !!p.bathed_by && !!p.last_bath && new Date(p.last_bath).toDateString() === new Date().toDateString();
+    }
+    // the mud arrives on time while the app is open (between the regular check-ins with the server)
+    setInterval(function () {
+      pets.forEach(function (q) {
+        if (q.status !== "home" || !q.next_dirt_at || Date.now() < Date.parse(q.next_dirt_at)) return;
+        q.dirt = Math.min(2, (q.dirt || 0) + 1);
+        q.dirt_at = q.next_dirt_at;
+        q.next_dirt_at = new Date(Date.parse(q.next_dirt_at) + 864e5).toISOString();   // corrected at the next check-in
+        if (q === pet() && !bathing) {
+          wake(); sfx("splat");
+          say("Oh no! " + q.name + " rolled in the mud 🐾 Tap 🛁 Bath to clean them (+3 XP).");
+          render();
+        }
+      });
+    }, 5000);
+
+    var SCRUB_PX = 1500;   // how far the sponge must travel over the pet (in screen pixels): about 10 seconds of rubbing
+    var bathing = null, bathRay = new THREE.Raycaster(), bathNdc = new THREE.Vector2(), bathCamDir = new THREE.Vector3();
+    function startBath() {
+      var p = pet();
+      if (!p || !dirtOf(p) || bathing || !moodRig || !moodRig.body) return;
+      wake();
+      bathing = { p: p, level: dirtOf(p), mud: dirtOf(p), progress: 0, last: null, rubbing: false, sinceBubble: 0, scrubSnd: 0, rinsed: false };
+      $("g-bottom").hidden = true; $("g-bathbtn").hidden = true;
+      $("g-bath").hidden = false; $("g-rinse").hidden = true; $("g-bathcancel").hidden = false;
+      $("g-shower").hidden = true; $("g-bathdone").hidden = true; $("g-bathhint").hidden = false;
+      $("g-bathtitle").textContent = "Bath time! 🛁";
+      $("g-bathtext").textContent = "Rub " + p.name + " all over with the sponge";
+      $("g-bathring").classList.remove("full");
+      bathRing();
+      render();   // hides the cards and switches to the Bubble bath room if they have it
+      sfx("bubbles");
+    }
+    function bathRing() {
+      var pct = Math.round(bathing.progress * 100);
+      $("g-bathring").style.setProperty("--p", pct); $("g-bathpct").textContent = pct + "%";
+    }
+    function endBath() {
+      if (!bathing) return;
+      bathing = null;
+      $("g-bath").hidden = true; $("g-sponge").hidden = true; $("g-bottom").hidden = false;
+      clearBath();
+      applyLook(); render();
+    }
+    // where the finger is on the pet (in the pet's own frame, nudged toward the camera so the foam sits on the fur)
+    function bathHit(x, y) {
+      var r = renderer.domElement.getBoundingClientRect();
+      bathNdc.set((x - r.left) / r.width * 2 - 1, -((y - r.top) / r.height * 2 - 1));
+      bathRay.setFromCamera(bathNdc, camera);
+      var hit = bathRay.intersectObject(moodRig.body, false)[0];
+      if (!hit) return null;
+      bathCamDir.copy(camera.position).sub(hit.point).normalize().multiplyScalar(0.04);
+      return modelRoot.worldToLocal(hit.point.add(bathCamDir));
+    }
+    function moveSponge(x, y) { var s = $("g-sponge"); s.hidden = false; s.style.left = x + "px"; s.style.top = y + "px"; }
+    renderer.domElement.addEventListener("pointerdown", function (e) {
+      if (!bathing || bathing.progress >= 1) return;
+      bathing.rubbing = true; bathing.last = { x: e.clientX, y: e.clientY };
+      moveSponge(e.clientX, e.clientY);
+      var at = bathHit(e.clientX, e.clientY);
+      if (at) addBubble(at);
+    });
+    window.addEventListener("pointermove", function (e) {
+      if (!bathing || !bathing.rubbing || bathing.progress >= 1) return;
+      moveSponge(e.clientX, e.clientY);
+      var d = Math.hypot(e.clientX - bathing.last.x, e.clientY - bathing.last.y);
+      bathing.last = { x: e.clientX, y: e.clientY };
+      var at = bathHit(e.clientX, e.clientY);
+      if (!at) return;
+      bathing.progress = Math.min(1, bathing.progress + d / SCRUB_PX);
+      if (bathing.progress > 0.04) $("g-bathhint").hidden = true;   // they've got it
+      bathing.mud = bathing.level * (1 - 0.65 * bathing.progress);   // the mud loosens as you scrub; the rinse takes the rest
+      bathing.sinceBubble += d;
+      if (bathing.sinceBubble > 22) { bathing.sinceBubble = 0; addBubble(at); }
+      var now = performance.now();
+      if (now - bathing.scrubSnd > 170) { bathing.scrubSnd = now; sfx(Math.random() < 0.25 ? "bubbles" : "scrub"); }
+      bathRing();
+      if (bathing.progress >= 1) {
+        bathing.rubbing = false; $("g-sponge").hidden = true; $("g-bathhint").hidden = true;
+        $("g-bathring").classList.add("full"); $("g-bathpct").textContent = "✓";
+        $("g-bathtitle").textContent = "Squeaky clean!";
+        $("g-bathtext").textContent = "Now rinse off the bubbles";
+        $("g-rinse").hidden = false;
+        sfx("happy");
+      }
+    }, { passive: true });
+    window.addEventListener("pointerup", function () { if (bathing) { bathing.rubbing = false; $("g-sponge").hidden = true; } });
+    window.addEventListener("pointercancel", function () { if (bathing) { bathing.rubbing = false; $("g-sponge").hidden = true; } });
+    $("g-bathbtn").addEventListener("click", startBath);
+    $("g-bathcancel").addEventListener("click", endBath);
+    $("g-rinse").addEventListener("click", async function () {
+      if (!bathing || bathing.rinsed) return;
+      var b = bathing, p = b.p;
+      b.rinsed = true;
+      $("g-rinse").hidden = true; $("g-bathcancel").hidden = true;
+      $("g-bathtitle").textContent = "Splish splash! 💦";
+      $("g-bathtext").textContent = "Rinsing " + p.name + " off";
+      $("g-shower").hidden = false;
+      setTimeout(function () { $("g-shower").hidden = true; }, 1800);
+      startShower(1700); sfx("shower");
+      b.mud = 0;
+      var res = null, err = null;
+      try { res = await rpc("bathe_pet", { p_id: p.id }); } catch (e) { err = e; }
+      await new Promise(function (r) { setTimeout(r, 1900); });
+      if (bathing !== b) return;
+      // then the shake-off, a sparkle, and done
+      playOnce("Shake");
+      await new Promise(function (r) { setTimeout(r, 1100); });
+      if (bathing !== b) return;
+      if (err) { say(err.message); endBath(); return; }
+      sparkleBurst(); sfx("sparkle");
+      $("g-bathtitle").textContent = "All clean! ✨";
+      $("g-bathtext").textContent = p.name + " feels so fresh";
+      $("g-bathdone").hidden = false;
+      // (the pet list may have been refreshed during the bath: mark both copies clean)
+      [p, pet()].forEach(function (q) {
+        if (!q || q.id !== p.id) return;
+        q.dirt = 0; q.last_bath = new Date().toISOString(); q.last_bather = me.id; q.bathed_by = profile ? profile.display_name : "you";
+      });
+      if (res && res.clean) say((res.by || "A co-parent") + " already gave " + p.name + " a bath. Now they're extra clean ✨");
+      else if (res && res.paid) { floatText("+3 XP 🛁"); say("🛁 Bath time bonus! +3 XP for cleaning " + p.name + "."); if (res.ranked_up) rankUp({ name: p.name, level: res.level }); }
+      else if (res && res.bonus) say("🛁 Bath bonus saved! +3 XP once " + FEEDS_PER_DAY + " of you have fed " + p.name + " today.");
+      else say(p.name + " is all clean ✨");
+      setTimeout(function () { if (bathing === b) { endBath(); loadAll({ quiet: true }); } }, 1400);
+    });
 
     // The eyes follow the finger, then after a few seconds with no touch they drift back to look straight out
     // at you: the point they aim at eases back to the pet's own face on the screen.
@@ -3814,8 +4295,14 @@ html, body { background: #e6edf0; }
       // the upper lids rest a touch lower even when content, so the pet looks at you rather than just above you
       moodDroop = m === "hungry" ? 0.28 : m === "sick" ? 0.45 : 0.15;
       sadTarget = m === "hungry" ? 0.55 : m === "sick" ? 1 : 0;
+      // muddy: a little droopy; mud left from an earlier day: grubby and a bit sad
+      var dirt = home && !bathing ? dirtOf(p) : 0;
+      if (dirt) { moodDroop += 0.05 * dirt; sadTarget = Math.max(sadTarget, dirt > 1 ? 0.3 : 0); }
+      if (p) setMudSeed(p.id);
+      setMud(bathing ? bathing.mud : home ? dirtOf(p) : 0);
+      updateBath(now, dt, home, !!bathing);
       var calm = home && (m === "fed" || m === "happy");
-      if (!calm) lastPoke = now;
+      if (!calm || bathing) lastPoke = now;
       if (!busy()) asleep = calm && now - lastPoke > SLEEP_AFTER;
       // hungry is a softer sad: the Sad loop at 60%, blended with the rest pose
       setBaseMood(asleep ? { Sleep: 1 } : m === "hungry" ? { Sad: 0.6 } : m === "sick" ? { Sick: 1 } : {});
@@ -3824,7 +4311,7 @@ html, body { background: #e6edf0; }
       hushMusic(busy());   // the music steps out while the pet does something (not for the small idle moves)
       // left alone and calm: every so often a little fidget (never the same one twice in a row)
       var firstIdle = fidgetPoke !== lastPoke;
-      if (calm && !asleep && !busy() && !fidgeting() && (firstIdle ? now - lastPoke > FIRST_LOOK_AFTER : now - lastPoke > IDLE_AFTER && now > nextFidget)) {
+      if (calm && !bathing && !asleep && !busy() && !fidgeting() && (firstIdle ? now - lastPoke > FIRST_LOOK_AFTER : now - lastPoke > IDLE_AFTER && now > nextFidget)) {
         var pick = firstIdle ? ["LookUpLeft", "LookUpRight"] : FIDGETS.filter(function (n) { return n !== lastFidget; });
         fidgetPoke = lastPoke;
         lastFidget = pick[Math.floor(Math.random() * pick.length)];
