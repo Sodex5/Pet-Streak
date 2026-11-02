@@ -476,6 +476,11 @@ html, body { background: #e6edf0; }
 .pg-tryon span { flex: 1; min-width: 0; font-weight: 700; font-size: 0.9rem; color: #5a4300; line-height: 1.3; }
 .pg-tryon .pg-btn { padding: 9px 12px; white-space: nowrap; font-size: 0.9rem; }
 .pg-tryon .pg-btn[hidden] { display: none; }
+/* nudge a co-parent: a small button inside their chip */
+.pg-crew span .pg-nudge { margin-left: 6px; padding: 2px 8px; border: 0; border-radius: 999px; background: var(--brand); color: #fff; font-size: 0.78rem; font-weight: 700; }
+.pg-crew span .pg-nudge[disabled] { background: #e3eaed; color: #55666e; }
+/* food tray: what unlocks next */
+.pg-foodnext { grid-column: 1 / -1; margin: 4px 0 0; padding: 10px 12px; border-radius: 12px; background: #f3f6f7; color: #3b4b53; font-size: 0.88rem; line-height: 1.4; }
 /* get the app */
 #g-getapp { z-index: 10; }
 .pg-gasteps { text-align: left; margin: 0 0 16px; padding-left: 0; list-style: none; counter-reset: gastep; display: flex; flex-direction: column; gap: 10px; }
@@ -2024,7 +2029,7 @@ html, body { background: #e6edf0; }
   // eyes). Classic keeps the textures inside the model. On top, for every pet: soft studio reflections from a
   // small generated environment, a velvety sheen where the fur turns away from the camera, and filmic tones.
   var PET_LOOKS = {
-    panda_classic:  { tex: null,       eye: null,      lid: null },
+    panda_classic:  { tex: null,       eye: null,      lid: "#b5643a" },   // warmer than the texture's pale lid, so closed eyes blend in
     panda_snowy:    { tex: "arctic",   eye: "#5fb2ff", lid: "#ccd3e0" },
     panda_golden:   { tex: "honey",    eye: "#9a5a1e", lid: "#daa54e" },
     panda_cocoa:    { tex: "cocoa",    eye: "#e09a3a", lid: "#945944" },
@@ -2110,10 +2115,15 @@ html, body { background: #e6edf0; }
     }
   }
 
-  // chain a change onto whatever shader changes a material already has (blinking, eye shading)
+  // chain a change onto whatever shader changes a material already has (blinking, eye shading).
+  // three.js reuses a compiled shader when two materials' cache keys match, and the key is the text of
+  // onBeforeCompile, which is the same little wrapper for every chained material. Without a key of its own,
+  // a material could be drawn with a shader that lacks its changes (that happened to the eyelids).
   function addShaderStep(m, step) {
     var prev = m.onBeforeCompile;
+    var key = (m.customProgramCacheKey ? m.customProgramCacheKey() : "") + "|" + step.toString();
     m.onBeforeCompile = function (shader, r) { if (prev) prev.call(m, shader, r); step(shader); };
+    m.customProgramCacheKey = function () { return key; };
     m.needsUpdate = true;
   }
   var LOOK_UNIFORMS = "uniform vec3 eyeTint;\nuniform float eyeMix;\nuniform vec3 lidTint;\nuniform float lidMix;\nuniform vec2 furSheen;\n";
@@ -2140,7 +2150,7 @@ html, body { background: #e6edf0; }
     "  gl_FragColor.rgb += diffuseColor.rgb * edge * furSheen.x + vec3( edge * edge ) * furSheen.y; }\n#include <tonemapping_fragment>";
 
   var LID_SHADE_GLSL = "{ float lnv = clamp( dot( normalize( normal ), normalize( vViewPosition ) ), 0.0, 1.0 );\n" +
-    "  gl_FragColor.rgb *= mix( 0.5, 1.0, smoothstep( 0.05, 0.85, lnv ) ); }\n#include <tonemapping_fragment>";
+    "  gl_FragColor.rgb *= mix( 0.38, 1.0, smoothstep( 0.15, 0.95, lnv ) ); }\n#include <tonemapping_fragment>";
 
   function hookLooks() {
     lookHooked = true;
@@ -3479,7 +3489,7 @@ html, body { background: #e6edf0; }
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261102045614";   // replaced by build_real.ps1
+    var APP_BUILD = "20261102053028";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -3564,17 +3574,39 @@ html, body { background: #e6edf0; }
     // XP and the streak only count on days when 2 co-parents fed
     function fullToday(p) { return !!p && p.last_full === p.today; }
 
+    // minutes until the pet's day ends (midnight in the pet's time zone)
+    function minutesLeftToday(p) {
+      try {
+        var parts = new Intl.DateTimeFormat("en-GB", { timeZone: p.tz || "UTC", hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).formatToParts(new Date());
+        var h = +parts.filter(function (x) { return x.type === "hour"; })[0].value, mi = +parts.filter(function (x) { return x.type === "minute"; })[0].value;
+        return 24 * 60 - (h * 60 + mi);
+      } catch (e) { return null; }
+    }
+    function leftText(min) {
+      if (min < 60) return min + " min";
+      var h = Math.floor(min / 60);
+      return h < 3 && min % 60 ? h + " h " + (min % 60) + " min" : h + " h";
+    }
     function mood(p) {
       if (!p || p.status !== "home") return "away";
       if (p.last_fed === p.today) return "fed";
       return p.unfrozen === 0 ? "happy" : p.unfrozen === 1 ? "hungry" : "sick";
     }
 
+    // a dropped connection shows as a plain message, not a technical one
+    var OFFLINE_MSG = "No internet connection. Check it and try again.";
+    function friendly(msg) {
+      return /failed to fetch|networkerror|load failed|network request failed|network connection was lost|fetch failed/i.test(String(msg || "")) || !navigator.onLine
+        ? OFFLINE_MSG : msg;
+    }
     async function rpc(name, args) {
-      var res = await sb.rpc(name, args || {});
-      if (res.error) throw new Error(res.error.message);
+      var res;
+      try { res = await sb.rpc(name, args || {}); } catch (e) { throw new Error(friendly(e && e.message)); }
+      if (res.error) throw new Error(friendly(res.error.message));
       return res.data;
     }
+    window.addEventListener("offline", function () { say("You're offline. Your pet will be right here when you're back 🐾"); });
+    window.addEventListener("online", function () { if (me) { say("Back online ✓"); loadAll({ quiet: true }); } });
 
     // ---------- Loading everything ----------
     async function loadAll(opts) {
@@ -3588,7 +3620,7 @@ html, body { background: #e6edf0; }
       ]);
       favs = r[4].error ? {} : (r[4].data || {});
       var err = r.slice(0, 4).filter(function (x) { return x.error; })[0];
-      if (err) { say(err.error.message); return; }
+      if (err) { say(friendly(err.error.message)); return; }
       // coins that came in while the app was open (a co-parent's feed completed the day)
       var before = profile ? profile.coins : null, gained = 0;
       profile = r[0].data; store = r[2].data || [];
@@ -3602,6 +3634,7 @@ html, body { background: #e6edf0; }
       cur = Math.max(0, pets.map(function (p) { return p.id; }).indexOf(keepId));
       if (opts && opts.quiet) noticeOthers(gained);
       if (!loaded) pawsWhileAway();
+      showNudges();
       try { localStorage.setItem(COINS_KEY + me.id, String(profile ? profile.coins : 0)); } catch (e) {}
       remember();
       loaded = true;
@@ -3918,6 +3951,42 @@ html, body { background: #e6edf0; }
       var free = store.filter(function (s) { return s.kind === "wardrobe" && s.price === 0 && s.level_req > oldMax && s.level_req <= level; }).map(function (s) { return s.name; });
       var food = FOODS.filter(function (f) { return f.level > oldMax && f.level <= level; }).map(function (f) { return f.name; });
       return free.concat(food);
+    }
+
+    // ---------- Nudging a co-parent ----------
+    // The send-nudge function checks it's allowed (both look after the pet, they haven't fed, once a day), records it
+    // and sends them a notification. Without notifications on, they see it when they next open the app.
+    async function nudge(p, mb, btn) {
+      if (btn) { btn.disabled = true; btn.textContent = "👋 Sending…"; }
+      var res = null, msg = null;
+      try { res = await sb.functions.invoke("send-nudge", { body: { pet: p.id, to: mb.id } }); }
+      catch (e) { msg = friendly(e && e.message); }
+      if (res && res.error) {
+        var status = res.error.context && res.error.context.status;
+        try { msg = (await res.error.context.json()).error; } catch (e) {}
+        if (!msg) msg = status === 404 ? "Reminders to co-parents aren't switched on yet." : friendly(res.error.message);
+      }
+      if (msg) {
+        say(msg);
+        if (btn) { btn.disabled = /already reminded/i.test(msg); btn.textContent = btn.disabled ? "👋 Reminded" : "👋 Remind"; }
+        return;
+      }
+      mb.nudged = true;
+      sfx("happy");
+      say(res.data && res.data.sent
+        ? "👋 Sent! " + mb.name + " will get a notification to feed " + p.name + "."
+        : "👋 Reminder sent. " + mb.name + " doesn't have notifications on, so they'll see it next time they open the app.");
+      render();
+    }
+    // someone nudged me: say so once a day per pet, until I've fed
+    function showNudges() {
+      pets.forEach(function (q) {
+        var by = q.nudged_by || [];
+        if (!by.length || iFed(q) || q.status !== "home") return;
+        var key = "petstreak.nudgeseen." + q.id + "." + q.today;
+        try { if (localStorage.getItem(key)) return; localStorage.setItem(key, "1"); } catch (e) { return; }
+        setTimeout(function () { say("👋 " + by.join(" and ") + " reminded you to feed " + q.name + "!"); }, 2200);
+      });
     }
 
     async function rescue() {
@@ -4393,6 +4462,9 @@ html, body { background: #e6edf0; }
       var crave = favFood(p);
       if (crave && m !== "away" && !iFed(p)) $("g-mood").textContent += "  ·  💭 " + crave.icon;
       var dirt = dirtOf(p);
+      // until the day counts, how long is left to feed (the pet's day ends at midnight in its time zone)
+      var left = !fullToday(p) && m !== "away" ? minutesLeftToday(p) : null;
+      if (left !== null && (left <= 180 || !iFed(p))) $("g-mood").textContent += "  ·  ⏰ " + leftText(left) + " left";
       if (dirt) $("g-mood").textContent += dirt > 1 ? "  ·  🟤 Very muddy, feeling grubby" : "  ·  🟤 Muddy";
       else if (bathedToday(p)) $("g-mood").textContent += "  ·  🛁 " + (p.last_bather === me.id ? "Bathed" : "Bathed by " + p.bathed_by);
       $("g-mood").hidden = m === "away" || !!bathing;
@@ -4404,6 +4476,15 @@ html, body { background: #e6edf0; }
         var s = document.createElement("span");
         s.innerHTML = avatarDot(mb) + esc(mb.me ? "You" : mb.name) + (mb.fed_today ? " ✓" : "");
         if (mb.fed_today) s.className = "fed";
+        // a co-parent who hasn't fed yet can be nudged (once a day)
+        if (!mb.me && !mb.fed_today && m !== "away") {
+          var nb = document.createElement("button"); nb.type = "button"; nb.className = "pg-nudge";
+          nb.textContent = mb.nudged ? "👋 Reminded" : "👋 Remind";
+          nb.disabled = !!mb.nudged;
+          nb.setAttribute("aria-label", mb.nudged ? "You reminded " + mb.name + " today" : "Remind " + mb.name + " to feed " + p.name);
+          nb.addEventListener("click", function (e) { e.stopPropagation(); nudge(p, mb, nb); });
+          s.appendChild(nb);
+        }
         crew.appendChild(s);
       });
       // only the owner chooses co-parents
@@ -4460,20 +4541,27 @@ html, body { background: #e6edf0; }
     $("g-petsheetclose").addEventListener("click", function () { $("g-petsheet").hidden = true; });
     $("g-morepets").addEventListener("click", function () { $("g-petsheet").hidden = true; openStore("pets"); });
 
+    // only the foods the pet can have, plus one line saying what unlocks next (not a wall of padlocks)
     function renderFoods() {
       var p = pet(), box = $("g-foods"); box.innerHTML = "";
-      FOODS.forEach(function (f) {
+      var maxLv = p ? p.max_level : 1;
+      FOODS.filter(function (f) { return maxLv >= f.level; }).forEach(function (f) {
         var b = document.createElement("button");
         b.type = "button"; b.className = "pg-food";
-        var open = p && p.max_level >= f.level;
-        b.disabled = !open;
-        var isFav = open && favFood(p) === f;
+        var isFav = favFood(p) === f;
         if (isFav) b.classList.add("pg-favfood");
-        b.innerHTML = (isFav ? '<em class="pg-favtag">⭐ Craving</em>' : "") + "<i>" + (open ? f.icon : "🔒") + "</i><span>" + (open ? f.name : "Lv " + f.level) + "</span>";
-        b.setAttribute("aria-label", open ? "Feed " + f.name : f.name + ", unlocks at level " + f.level);
+        b.innerHTML = (isFav ? '<em class="pg-favtag">⭐ Craving</em>' : "") + "<i>" + f.icon + "</i><span>" + f.name + "</span>";
+        b.setAttribute("aria-label", "Feed " + f.name);
         b.addEventListener("click", function () { $("g-tray").hidden = true; feed(f.id); });
         box.appendChild(b);
       });
+      var next = FOODS.filter(function (f) { return f.level > maxLv; }).sort(function (a, b) { return a.level - b.level; })[0];
+      if (next) {
+        var more = FOODS.filter(function (f) { return f.level > maxLv; }).length;
+        var n = document.createElement("p"); n.className = "pg-foodnext";
+        n.textContent = "🔒 " + more + " more foods unlock as " + (p ? p.name : "your pet") + " levels up. Next: " + next.icon + " " + next.name + " at level " + next.level + ".";
+        box.appendChild(n);
+      }
     }
 
     // ---------- 3D reactions (same as the prototype) ----------
@@ -4697,7 +4785,8 @@ html, body { background: #e6edf0; }
       requestAnimationFrame(frame);
       var now = performance.now(), dt = Math.min(0.1, (now - lastT) / 1000); lastT = now;
       if (!modelRoot) return;
-      if (!moodRig) { setupMoodRig(modelRoot); groundShadow(); }
+      // the model has just arrived: put on the pet's look now (fur, eyes, lids), not at the next refresh
+      if (!moodRig) { setupMoodRig(modelRoot); groundShadow(); applyLook(); }
       if (hopAt >= 0 && now >= hopAt) { hopStart = now; hopAt = -1; }
       var y = 0;
       if (hopStart >= 0) {
@@ -4852,8 +4941,16 @@ html, body { background: #e6edf0; }
     $("g-emptystore").addEventListener("click", function () { openStore("pets"); });
     $("g-storeclose").addEventListener("click", function () { $("g-store").hidden = true; render(); });
     Array.prototype.forEach.call(document.querySelectorAll("#g-store [data-tab]"), function (b) {
-      b.addEventListener("click", function () { storeTab = b.getAttribute("data-tab"); renderStore(); });
+      b.addEventListener("click", function () {
+        // hats, glasses and rooms are browsed, tried on and bought in one place: Dress up
+        if (b.getAttribute("data-tab") === "wardrobe") { openDress(); return; }
+        storeTab = b.getAttribute("data-tab"); renderStore();
+      });
     });
+    function openDress() {
+      if (!pet()) { say("Get a pet first, then you can dress it up 🎀"); return; }
+      $("g-store").hidden = true; tryOn = null; $("g-sheet").hidden = false; renderItems();
+    }
     // ---------- Reminders (web push) ----------
     // sw.js shows the notifications; the server decides when (send-reminders, every hour)
     var swReady = null;
@@ -5020,6 +5117,7 @@ html, body { background: #e6edf0; }
     });
     $("g-sharebtn").addEventListener("click", function () {
       if (!pet()) return;
+      wake();   // a dozing pet opens its eyes for the photo
       $("g-sharenote").textContent = ""; $("g-shareready").hidden = true; readyFile = null;
       $("g-shareclip").hidden = !(window.MediaRecorder && HTMLCanvasElement.prototype.captureStream);
       $("g-share").hidden = false; startPreview();
@@ -5028,6 +5126,7 @@ html, body { background: #e6edf0; }
     ["g-sh-badge", "g-sh-level", "g-sh-streak", "g-sh-crew"].forEach(function (id) { $(id).addEventListener("change", drawPreview); });
     $("g-sharephoto").addEventListener("click", async function () {
       $("g-shareready").hidden = true;
+      wake();
       var c = document.createElement("canvas"); c.width = 1080; c.height = 1350;
       drawShareCard(c.getContext("2d"), 1080, 1350, 3, shareOpts(), await badgeImg(rankIndex(pet().level)));
       c.toBlob(function (b) { if (b) shareFile(new File([b], fileName("png"), { type: "image/png" }), "Picture"); }, "image/png");
@@ -5303,7 +5402,7 @@ html, body { background: #e6edf0; }
       var back = location.origin + location.pathname + (gift ? "?gift=" + gift : join ? "?join=" + join : "");
       var res = await sb.auth.signInWithOtp({ email: email, options: { emailRedirectTo: back } });
       if (res.error) {
-        say(/rate|limit|seconds/i.test(res.error.message) ? "Too many emails just now. Wait a minute, then try again." : res.error.message);
+        say(/rate|limit|seconds/i.test(res.error.message) ? "Too many emails just now. Wait a minute, then try again." : friendly(res.error.message));
         return false;
       }
       localStorage.setItem(SIGNIN_KEY, JSON.stringify({ email: email, at: Date.now() }));
@@ -5329,7 +5428,7 @@ html, body { background: #e6edf0; }
       $("g-codeok").disabled = true; $("g-codeok").textContent = "Signing in…";
       var res = await sb.auth.verifyOtp({ email: email, token: token, type: "email" });
       $("g-codeok").disabled = false; $("g-codeok").textContent = "Sign in";
-      if (res.error) { say(/expired|invalid/i.test(res.error.message) ? "That code didn't work. Check it, or send a new one." : res.error.message); return; }
+      if (res.error) { say(/expired|invalid/i.test(res.error.message) ? "That code didn't work. Check it, or send a new one." : friendly(res.error.message)); return; }
       localStorage.removeItem(SIGNIN_KEY);   // the sign-in event takes it from here
     });
     $("g-resend").addEventListener("click", async function () {
