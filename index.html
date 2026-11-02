@@ -428,6 +428,35 @@ html, body { background: #e6edf0; }
 .pg-adopt form { margin: 0; }
 /* questions (name a pet, open a gift, join as co-parent) always sit above "Get your first pet" and the store */
 #g-ask, #g-join, #g-giftsend { z-index: 9; }
+/* how to play: one card at a time, swipe or tap Next */
+#g-howto, #g-streakinfo { z-index: 10; }
+.pg-howto { position: relative; padding-top: 30px !important; width: min(88vw, 360px) !important; min-width: 0; box-sizing: border-box; overflow: hidden; }
+.pg-howskip { position: absolute; top: 10px; right: 12px; border: 0; background: none; color: #55666e; font-weight: 700; font-size: 0.9rem; padding: 6px; }
+.pg-howslides { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; margin: 0 -22px; }
+.pg-howslides::-webkit-scrollbar { display: none; }
+.pg-howslides section { flex: 0 0 100%; scroll-snap-align: center; padding: 0 22px; box-sizing: border-box; }
+.pg-howslides p { font-size: 1rem; line-height: 1.45; color: #2c3d45 !important; min-height: 6.6em; }
+.pg-howicon { font-size: 3rem; line-height: 1.2; margin-bottom: 4px; }
+.pg-howdots { display: flex; justify-content: center; gap: 7px; margin: 0 0 14px; }
+.pg-howdots i { width: 8px; height: 8px; border-radius: 50%; background: #d6e0e4; transition: width 0.2s, background 0.2s; }
+.pg-howdots i.on { width: 22px; border-radius: 4px; background: var(--brand); }
+#g-howback[disabled] { visibility: hidden; }
+.pg-adopt #g-howto .pg-row .pg-feed, #g-howto .pg-row .pg-feed { width: auto; }
+/* the streak card can be tapped for an explanation */
+.pg-stats { cursor: pointer; }
+.pg-stats:active { transform: scale(0.97); }
+#g-streakinfo p { font-size: 1rem; line-height: 1.45; color: #2c3d45; }
+.pg-sifreeze { background: #eef6fb; border-radius: 12px; padding: 10px 12px; }
+/* alone with a pet: the invite button stands out */
+.pg-crew button.hot { background: var(--brand); color: #fff; border-color: var(--brand); font-weight: 700; }
+/* the Paws tab: how to earn paws */
+.pg-earn { grid-column: 1 / -1; display: flex; flex-direction: column; gap: 8px; }
+.pg-earn div { display: flex; gap: 12px; align-items: center; padding: 12px; border-radius: 14px; background: #fff; border: 2px solid #d6e0e4; }
+.pg-earn div > span { font-size: 1.6rem; flex: none; }
+.pg-earn b { display: block; color: #14232b; }
+.pg-earn small { color: #55666e; font-size: 0.85rem; }
+/* messages: tap to close */
+.pg-msg.show { pointer-events: auto; cursor: pointer; }
 /* bath time: a soft aqua look, separate from the app's theme colour so it always reads as "water" */
 .pg-bottom .pg-bathbtn { background: linear-gradient(140deg, #6fd3f7, #3a9be8); border-color: transparent; color: #fff; padding: 0 14px;
   box-shadow: 0 6px 16px rgba(58,155,232,0.4); animation: pg-bathpulse 1.8s ease-in-out infinite; }
@@ -590,7 +619,7 @@ html, body { background: #e6edf0; }
           <span class="pg-lv" id="g-lv">Lv 1</span>
         </div>
       </div>
-      <div class="pg-card pg-stats">
+      <div class="pg-card pg-stats" id="g-stats" role="button" tabindex="0" aria-label="What the streak and freezes mean">
         <div>🔥 <span id="g-streak">0</span> <small>day streak</small></div>
         <div>❄️ <span id="g-freezes">0</span> <small id="g-frzlbl">freezes</small></div>
       </div>
@@ -684,6 +713,39 @@ html, body { background: #e6edf0; }
           <button type="button" class="pg-btn pg-grow pg-primary" id="g-sharego">📤 Share</button>
           <button type="button" class="pg-btn pg-grow" id="g-savego">⬇️ Download</button>
         </div>
+      </div>
+    </div>
+    <!-- how to play: a few cards on first launch, and again from the menu -->
+    <div class="pg pg-adopt" id="g-howto" hidden>
+      <div class="pg-card pg-howto" role="dialog" aria-labelledby="g-howtotitle">
+        <button type="button" class="pg-howskip" id="g-howskip">Skip</button>
+        <div class="pg-howslides" id="g-howslides">
+          <section><div class="pg-howicon">🐾</div><h2 id="g-howtotitle">Welcome to Pet Streak!</h2>
+            <p>Raise a cute red panda together with your friends. Here's how it works.</p></section>
+          <section><div class="pg-howicon">🍎</div><h2>Feed it every day</h2>
+            <p>Tap <b>Feed</b> once a day. When <b>2 of you</b> feed on the same day, your pet earns XP, its 🔥 streak grows, and you each get 🐾 paws.</p></section>
+          <section><div class="pg-howicon">🤝</div><h2>Raise it together</h2>
+            <p>XP only counts when 2 people feed, so <b>invite a friend</b> as a co-parent straight away. Up to 4 of you can share a pet.</p></section>
+          <section><div class="pg-howicon">🥺</div><h2>Don't miss a day</h2>
+            <p>A missed day makes your pet hungry. More missed days make it sick and it loses levels. After a week it runs away to the sanctuary. A ❄️ <b>freeze</b> saves your streak for one missed day.</p></section>
+          <section><div class="pg-howicon">✨</div><h2>Have fun with it</h2>
+            <p>Feed its favourite food 💭, play with it, bathe it when it's muddy 🛁 and dress it up 🎀. Bonus XP helps it rank up for big paw rewards.</p></section>
+        </div>
+        <div class="pg-howdots" id="g-howdots" aria-hidden="true"></div>
+        <div class="pg-row">
+          <button type="button" class="pg-btn pg-grow" id="g-howback">Back</button>
+          <button type="button" class="pg-feed pg-grow" id="g-hownext">Next</button>
+        </div>
+      </div>
+    </div>
+    <!-- what the streak and freezes mean (tap the streak card) -->
+    <div class="pg pg-adopt" id="g-streakinfo" hidden>
+      <div class="pg-card" role="dialog">
+        <div class="pg-howicon">🔥</div>
+        <h2 id="g-sititle">Day streak</h2>
+        <p id="g-sistreak"></p>
+        <p class="pg-sifreeze" id="g-sifreeze"></p>
+        <button type="button" class="pg-feed" id="g-siok">Got it</button>
       </div>
     </div>
     <div class="pg pg-adopt" id="g-bonusintro" hidden>
@@ -782,6 +844,10 @@ html, body { background: #e6edf0; }
         <section class="pg-sec" id="g-giftsec" hidden>
           <h3>Gifts you've sent</h3>
           <div id="g-gifts"></div>
+        </section>
+        <section class="pg-sec">
+          <h3>Help</h3>
+          <button type="button" class="pg-btn pg-wide" id="g-howbtn">❓ How to play</button>
         </section>
         <section class="pg-sec">
           <h3>Send feedback</h3>
@@ -3322,7 +3388,7 @@ html, body { background: #e6edf0; }
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261101224918";   // replaced by build_real.ps1
+    var APP_BUILD = "20261102035956";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -3516,7 +3582,7 @@ html, body { background: #e6edf0; }
     // a one-time card explaining bonus XP (after this update, or after a new player's first feed)
     var BONUS_INTRO_KEY = "petstreak.bonusintro";
     function maybeBonusIntro() {
-      try { if (localStorage.getItem(BONUS_INTRO_KEY)) return; } catch (e) { return; }
+      try { if (localStorage.getItem(BONUS_INTRO_KEY) || !localStorage.getItem(HOWTO_KEY)) return; } catch (e) { return; }   // How to play covers it
       if (!pet() || !$("g-join").hidden || !$("g-ask").hidden) return;
       $("g-bonusintro").hidden = false;
     }
@@ -3524,6 +3590,59 @@ html, body { background: #e6edf0; }
       $("g-bonusintro").hidden = true;
       try { localStorage.setItem(BONUS_INTRO_KEY, "1"); } catch (e) {}
     });
+
+    // ---------- How to play ----------
+    // A few swipeable cards the first time someone opens the app (new and existing players alike), and any time
+    // from the menu. It waits while another question is on screen (naming a gift, joining as a co-parent).
+    var HOWTO_KEY = "petstreak.howto", howSlides = $("g-howslides").children, howAt = 0;
+    Array.prototype.forEach.call(howSlides, function () { $("g-howdots").appendChild(document.createElement("i")); });
+    function howShow(i) {
+      howAt = Math.max(0, Math.min(howSlides.length - 1, i));
+      $("g-howslides").scrollTo({ left: howSlides[howAt].offsetLeft - $("g-howslides").offsetLeft, behavior: "smooth" });
+      howDots();
+    }
+    function howDots() {
+      Array.prototype.forEach.call($("g-howdots").children, function (d, k) { d.classList.toggle("on", k === howAt); });
+      $("g-howback").disabled = howAt === 0;
+      $("g-hownext").textContent = howAt === howSlides.length - 1 ? "Let's go! 🐾" : "Next";
+    }
+    // swiping moves the dots too
+    $("g-howslides").addEventListener("scroll", function () {
+      var w = $("g-howslides").clientWidth || 1, i = Math.round($("g-howslides").scrollLeft / w);
+      if (i !== howAt) { howAt = i; howDots(); }
+    }, { passive: true });
+    function openHowTo() {
+      $("g-howto").hidden = false; $("g-menu").hidden = true;
+      $("g-howslides").scrollLeft = 0; howAt = 0; howDots();
+    }
+    function closeHowTo() {
+      $("g-howto").hidden = true;
+      try { localStorage.setItem(HOWTO_KEY, "1"); localStorage.setItem(BONUS_INTRO_KEY, "1"); } catch (e) {}
+    }
+    function maybeHowTo(tries) {
+      try { if (localStorage.getItem(HOWTO_KEY)) return; } catch (e) { return; }
+      var busyNow = !$("g-ask").hidden || !$("g-join").hidden || !$("g-giftsend").hidden || !$("g-signin").hidden;
+      if (busyNow) { if ((tries || 0) < 40) setTimeout(function () { maybeHowTo((tries || 0) + 1); }, 3000); return; }
+      openHowTo();
+    }
+    $("g-hownext").addEventListener("click", function () { if (howAt >= howSlides.length - 1) closeHowTo(); else howShow(howAt + 1); });
+    $("g-howback").addEventListener("click", function () { howShow(howAt - 1); });
+    $("g-howskip").addEventListener("click", closeHowTo);
+    $("g-howbtn").addEventListener("click", openHowTo);
+
+    // ---------- What the streak and freezes mean ----------
+    function openStreakInfo() {
+      var p = pet(); if (!p) return;
+      $("g-sititle").textContent = p.streak === 1 ? "1 day streak" : p.streak + " day streak";
+      $("g-sistreak").textContent = "The number of days in a row that " + FEEDS_PER_DAY + " of you fed " + p.name +
+        ". Reach 7, 30, 100, 365 and 730 days for bonus paws (from 50 up to 2,000).";
+      $("g-sifreeze").textContent = "❄️ You have " + p.freezes + (p.freezes === 1 ? " freeze" : " freezes") + " (up to 2). " +
+        "A freeze saves the streak if a day is missed. You earn one for every 7 days of streak.";
+      $("g-streakinfo").hidden = false;
+    }
+    $("g-stats").addEventListener("click", openStreakInfo);
+    $("g-stats").addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openStreakInfo(); } });
+    $("g-siok").addEventListener("click", function () { $("g-streakinfo").hidden = true; });
 
     // ---------- Actions ----------
     async function feed(foodId) {
@@ -3777,12 +3896,22 @@ html, body { background: #e6edf0; }
           box.appendChild(c);
         });
       } else if (storeTab === "coins") {
-        $("g-storehint").textContent = "Paws buy pets, gifts, rescues and wardrobe items.";
-        COIN_PACKS.forEach(function (k) { card(box, "🐾 " + k.coins + " paws", null, k.price + " · coming soon", null, null); });
+        // until paws can be bought, this tab explains how to earn them
+        $("g-storehint").textContent = "Paws buy pets, gifts, rescues and wardrobe items. Here's how to earn them:";
+        var earn = document.createElement("div"); earn.className = "pg-earn";
+        [["🍎", "10 paws a day", "Each day " + FEEDS_PER_DAY + " of you feed your pet"],
+         ["⬆️", "25 paws a level", "Every time your pet levels up (up to 100 paws a day from feeding and levels)"],
+         ["🏅", "50 to 3,000 paws", "When your pet reaches a new rank. Everyone who fed that day gets it"],
+         ["🔥", "50 to 2,000 paws", "At 7, 30, 100, 365 and 730 days of streak"]].forEach(function (e) {
+          var d = document.createElement("div");
+          d.innerHTML = "<span>" + e[0] + "</span><p style=\"margin:0\"><b>" + esc(e[1]) + "</b><small>" + esc(e[2]) + "</small></p>";
+          earn.appendChild(d);
+        });
+        box.appendChild(earn);
         var note = document.createElement("div"); note.className = "pg-empty-note";
         note.textContent = profile && profile.is_admin
-          ? "Payments aren't connected yet. As the admin you can give paws to anyone from the menu (☰)."
-          : "Payments aren't connected yet. While we test, ask the admin for paws.";
+          ? "Buying paws isn't available yet. As the admin you can give paws to anyone from the menu (☰)."
+          : "Buying paws is coming later.";
         box.appendChild(note);
       } else if (storeTab === "sanctuary") {
         $("g-storehint").textContent = "Pets whose owners left them, or that waited too long at the sanctuary. They come home at half their old level.";
@@ -3915,11 +4044,13 @@ html, body { background: #e6edf0; }
 
     // ---------- Showing the state ----------
     var msgTimer = null;
+    // a message stays long enough to read (longer ones longer), and a tap closes it
     function say(text) {
       var el = $("g-msg"); el.textContent = text; el.classList.add("show");
       if (msgTimer) clearTimeout(msgTimer);
-      msgTimer = setTimeout(function () { el.classList.remove("show"); }, 3500);
+      msgTimer = setTimeout(function () { el.classList.remove("show"); }, Math.min(10000, Math.max(4000, String(text).length * 80)));
     }
+    $("g-msg").addEventListener("click", function () { $("g-msg").classList.remove("show"); if (msgTimer) clearTimeout(msgTimer); });
     function floatText(text) {
       if (/🐾/.test(text)) setTimeout(function () { sfx("coin"); }, 250);
       var el = $("g-float"); el.textContent = text;
@@ -3971,8 +4102,10 @@ html, body { background: #e6edf0; }
       $("g-freezes").textContent = p.freezes;
       $("g-frzlbl").textContent = p.freezes === 1 ? "freeze" : "freezes";
       // fed (1 feed) keeps it healthy; the 2nd co-parent's feed earns XP and grows the streak
+      // on their own, XP can never count: say what to do about it instead of "1/2"
+      var alone = (p.members || []).length < FEEDS_PER_DAY;
       $("g-mood").textContent = m === "fed"
-        ? (fullToday(p) ? "😊 Fed today · XP earned ✓" : "😊 Fed · 1/" + FEEDS_PER_DAY + " for XP & streak")
+        ? (fullToday(p) ? "😊 Fed today · XP earned ✓" : alone ? "😊 Fed · invite a co-parent to earn XP" : "😊 Fed · 1/" + FEEDS_PER_DAY + " for XP & streak")
         : { happy: "😊 Happy — waiting for food", hungry: "🥺 Hungry", sick: "🤒 Sick — losing levels", away: "🏡 At the sanctuary" }[m];
       var crave = favFood(p);
       if (crave && m !== "away" && !iFed(p)) $("g-mood").textContent += "  ·  💭 " + crave.icon;
@@ -3992,7 +4125,9 @@ html, body { background: #e6edf0; }
       });
       // only the owner chooses co-parents
       if (isOwner(p) && (p.members || []).length < 4) {
-        var ib = document.createElement("button"); ib.type = "button"; ib.textContent = "＋ Invite";
+        var ib = document.createElement("button"); ib.type = "button";
+        ib.textContent = alone ? "＋ Invite a co-parent to earn XP" : "＋ Invite";
+        if (alone) ib.className = "hot";
         ib.addEventListener("click", invite); crew.appendChild(ib);
       }
       crew.hidden = m === "away" || !!bathing;
@@ -4955,6 +5090,7 @@ html, body { background: #e6edf0; }
       await checkGift();
       await checkInbox();
       checkJoin();
+      setTimeout(maybeHowTo, 1200);
       refreshSub();
       // co-parents feed on their own phones: check for news every 20 s while the app is open
       if (!polling) { polling = true; setInterval(function () { if (me && !document.hidden) loadAll({ quiet: true }); }, 20000); }
