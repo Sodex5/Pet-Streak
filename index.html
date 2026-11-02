@@ -515,7 +515,29 @@ html, body { background: #e6edf0; }
 .pg-gametile.race { background: linear-gradient(150deg, #ff8a5c, #e2456f); }
 .pg-gametile.soon { background: linear-gradient(150deg, #b9b2d6, #8f88b3); }
 .pg-gametile.duel { background: linear-gradient(150deg, #3fb5a3, #2c6fbf); }
-/* which game? */
+.pg-gametile.memory { background: linear-gradient(150deg, #b06ad9, #6b4fd1); }
+.pg-boardtabs { margin: 0 0 8px; }
+.pg-boardtabs button { background: rgba(255,255,255,0.85); }
+/* Memory match: a 4x4 board of cards that flip */
+.pg-game.pg-memory { background: linear-gradient(170deg, #efe4ff, #ffe6f0); display: flex; flex-direction: column; }
+.pg-memory .pg-gamehud .pr::before { content: "🃏 "; }
+.pg-memory .pg-gamehud .pr { padding: 8px 14px; border-radius: 999px; background: rgba(255,255,255,0.9); font-weight: 800; font-size: 1.1rem; color: #14232b; }
+.pg-cards { flex: none; display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; width: min(92vw, 420px); margin: calc(86px + env(safe-area-inset-top, 0px)) auto 0; }
+.pg-mcard { position: relative; aspect-ratio: 3 / 4; border: 0; padding: 0; background: none; perspective: 600px; cursor: pointer; }
+.pg-mcard i { position: absolute; inset: 0; display: grid; place-items: center; border-radius: 14px; backface-visibility: hidden; -webkit-backface-visibility: hidden;
+  transition: transform 0.35s ease; font-style: normal; box-shadow: 0 4px 10px rgba(80,40,140,0.15); }
+.pg-mcard .back { background: linear-gradient(150deg, #b06ad9, #6b4fd1); color: rgba(255,255,255,0.85); font-size: 1.6rem; }
+.pg-mcard .front { background: #fff; transform: rotateY(180deg); font-size: 2rem; }
+.pg-mcard .front img { width: 82%; height: 82%; object-fit: contain; }
+.pg-mcard.up .back { transform: rotateY(180deg); }
+.pg-mcard.up .front { transform: rotateY(360deg); }
+.pg-mcard.done .front { box-shadow: 0 0 0 3px #36c38a, 0 4px 10px rgba(54,195,138,0.35); }
+.pg-mcard[disabled] { cursor: default; }
+.pg-memhint { text-align: center; margin: 14px 0 0; font-weight: 700; color: #4b3d66; }
+.pg-memory .pg-gamemsg { top: 45%; color: #2b1d3a; text-shadow: 0 2px 0 #fff; }
+.pg-gameend .lbl { margin: 2px 0 10px; }
+/* which game? (above the Playground page and the chat) */
+#g-gamepick { z-index: 20; }
 .pg-pickgames { display: flex; gap: 10px; margin: 6px 0 4px; }
 .pg-pickgames .pg-gametile { flex: 1; border: 0; text-align: left; font: inherit; cursor: pointer; }
 /* a duel: the other player's live score, and quick chat bubbles at the top */
@@ -949,7 +971,12 @@ html, body { background: #e6edf0; }
             <small>Live · same 30 s, highest score wins</small>
             <button type="button" class="pg-feed" id="g-duelfind">Find a player</button>
           </div>
-          <div class="pg-gametile soon"><span class="art" aria-hidden="true">🃏</span><b>Memory match</b><small>Coming soon</small></div>
+          <div class="pg-gametile memory">
+            <span class="art" aria-hidden="true">🃏</span>
+            <b>Memory match</b>
+            <small>Solo · find the 8 pairs fast</small>
+            <button type="button" class="pg-feed" id="g-memplay">▶ Play</button>
+          </div>
           <div class="pg-gametile soon"><span class="art" aria-hidden="true">⚽</span><b>Ball pass</b><small>Coming soon</small></div>
         </div>
         <p class="pg-hint" id="g-gamereward"></p>
@@ -969,7 +996,11 @@ html, body { background: #e6edf0; }
           <button type="submit" class="pg-btn">Add</button>
         </form>
 
-        <h3 class="pg-playh">🏆 Bamboo catch today</h3>
+        <h3 class="pg-playh">🏆 Today's best</h3>
+        <div class="pg-tabs pg-boardtabs" role="tablist">
+          <button type="button" role="tab" data-board="bamboo" aria-selected="true">🎋 Bamboo catch</button>
+          <button type="button" role="tab" data-board="memory" aria-selected="false">🃏 Memory match</button>
+        </div>
         <ol class="pg-board" id="g-board"></ol>
         <p class="pg-note">Scores reset every day. Other players only ever see your pet, never your name, unless you're friends.</p>
       </div>
@@ -999,6 +1030,7 @@ html, body { background: #e6edf0; }
         <div class="pg-pickgames">
           <button type="button" class="pg-gametile race" id="g-pickrace"><span class="art" aria-hidden="true">🏁</span><b>Treat race</b><small>Tap fastest to the treat</small></button>
           <button type="button" class="pg-gametile duel" id="g-pickduel"><span class="art" aria-hidden="true">🎋⚔️</span><b>Bamboo duel</b><small>Highest score in 30 s</small></button>
+          <button type="button" class="pg-gametile memory" id="g-pickmem"><span class="art" aria-hidden="true">🃏</span><b>Memory duel</b><small>First to find all pairs</small></button>
         </div>
         <button type="button" class="pg-linkbtn" id="g-pickno">Cancel</button>
       </div>
@@ -4028,6 +4060,131 @@ html, body { background: #e6edf0; }
     return { stop: function () { alive = false; } };
   }
 
+  // ---------- Memory match ----------
+  // A 4x4 board of face-down cards: 8 pairs of things from the app (foods, hats, glasses, the red pandas). Flip two
+  // at a time; a pair stays face up. The score rewards few tries and a quick finish (0-150, like Bamboo catch).
+  // startMemoryGame({ pic, seed, live, them: {html}, limit, onPairs(n), onQuick(i), onEnd(result), onQuit() })
+  //   -> { wrap, start(), opp(pairs), quick(i), stop(), close() }
+  //   result: { score, pairs, moves, secs, done }   (done: the whole board was cleared)
+  // As a live duel both phones get the same board (shared seed); the game waits for start(); stop() ends it early
+  // (the other player cleared their board first).
+  var MEMORY_PAIRS = 8;
+  var MEMORY_FACES = ["🍎", "🍌", "🥕", "🍓", "🍉", "🍇", "🧁", "🍪", "🍩", "🍑",
+    "img:Beanie", "img:Cowboy", "img:Witch", "img:Santa", "img:Frog", "img:TopHat", "img:Aviator", "img:Heart", "img:Pixel",
+    "img:panda_snowy", "img:panda_sakura", "img:panda_golden", "img:panda_moss"];
+  function memoryScore(moves, secs) {
+    // 8 tries is perfect; each extra try costs 4, and up to 50 more for speed (finishing in 20 s or less)
+    return Math.max(10, Math.min(150, 100 - Math.max(0, moves - MEMORY_PAIRS) * 4 + Math.max(0, 50 - Math.max(0, secs - 20))));
+  }
+  function startMemoryGame(opts) {
+    var rnd = opts.seed ? seeded(opts.seed) : Math.random, limit = opts.limit || 0;
+    // pick 8 faces and shuffle 16 cards (the same on both phones in a duel)
+    var pool = MEMORY_FACES.slice(), faces = [];
+    while (faces.length < MEMORY_PAIRS) faces.push(pool.splice(Math.floor(rnd() * pool.length), 1)[0]);
+    var deck = faces.concat(faces);
+    for (var i = deck.length - 1; i > 0; i--) { var j = Math.floor(rnd() * (i + 1)), t = deck[i]; deck[i] = deck[j]; deck[j] = t; }
+
+    var wrap = document.createElement("div"); wrap.className = "pg-game pg-memory";
+    wrap.innerHTML =
+      '<div class="pg-gamehud"><span class="pr">0/' + MEMORY_PAIRS + '</span>' +
+        (opts.live ? '<span class="op"><span class="nm"></span> <b class="opn">0/' + MEMORY_PAIRS + "</b></span>" : "") +
+        '<span class="tm">' + (limit ? limit + "s" : "0s") + "</span>" +
+        (opts.onQuick ? '<button type="button" class="pg-qcbtn" aria-label="Quick chat">💬</button>' : "") +
+        '<button type="button" class="pg-gamex" aria-label="Stop the game">✕</button></div>' +
+      '<div class="pg-qcpal" hidden></div><div class="pg-duelbubbles"></div>' +
+      '<div class="pg-cards"></div><p class="pg-memhint">Tries: <b class="mv">0</b></p>' +
+      '<div class="pg-gamemsg big">' + (opts.live ? "Get ready…" : "") + "</div>";
+    document.body.appendChild(wrap);
+    if (opts.live) wrap.querySelector(".op .nm").innerHTML = opts.them.html || "";
+    var grid = wrap.querySelector(".pg-cards"), msg = wrap.querySelector(".pg-gamemsg");
+    var hudPairs = wrap.querySelector(".pr"), hudTime = wrap.querySelector(".tm"), hudMoves = wrap.querySelector(".mv"), opEl = wrap.querySelector(".opn");
+    var open = [], pairs = 0, moves = 0, t0 = 0, ticking = null, live = false, over = false, lock = false, timers = [];
+    deck.forEach(function (f, k) {
+      var c = document.createElement("button"); c.type = "button"; c.className = "pg-mcard"; c.disabled = true;
+      c.setAttribute("aria-label", "Card " + (k + 1));
+      var face = f.indexOf("img:") === 0 ? '<img alt="" src="icons/' + f.slice(4) + '.png">' : "<span>" + f + "</span>";
+      c.innerHTML = '<i class="back">🐾</i><i class="front">' + face + "</i>";
+      c.dataset.face = f;
+      c.addEventListener("click", function () { flip(c); });
+      grid.appendChild(c);
+    });
+    var cards = grid.querySelectorAll(".pg-mcard");
+    function flip(c) {
+      if (!live || over || lock || c.classList.contains("up")) return;
+      c.classList.add("up"); open.push(c);
+      if (typeof sfx === "function") sfx("click");
+      if (open.length < 2) return;
+      moves++; hudMoves.textContent = moves;
+      var a = open[0], b = open[1]; open = [];
+      if (a.dataset.face === b.dataset.face) {
+        a.classList.add("done"); b.classList.add("done"); pairs++;
+        hudPairs.textContent = pairs + "/" + MEMORY_PAIRS;
+        if (typeof sfx === "function") sfx("coin");
+        if (opts.onPairs) opts.onPairs(pairs);
+        if (pairs >= MEMORY_PAIRS) finish(true);
+      } else {
+        lock = true;
+        timers.push(setTimeout(function () { a.classList.remove("up"); b.classList.remove("up"); lock = false; }, 750));
+      }
+    }
+    function secs() { return t0 ? Math.round((performance.now() - t0) / 1000) : 0; }
+    function begin() {
+      live = true; t0 = performance.now();
+      Array.prototype.forEach.call(cards, function (c) { c.disabled = false; });
+      ticking = setInterval(function () {
+        var s = secs();
+        hudTime.textContent = limit ? Math.max(0, limit - s) + "s" : s + "s";
+        hudTime.classList.toggle("low", !!limit && limit - s <= 10);
+        if (limit && s >= limit) finish(false);
+      }, 250);
+    }
+    function finish(done) {
+      if (over) return; over = true; live = false; clearInterval(ticking);
+      var s = secs();
+      msg.textContent = done ? "🎉 All pairs!" : "Time's up!";
+      var result = { score: done ? memoryScore(moves, s) : 0, pairs: pairs, moves: moves, secs: s, done: done };
+      timers.push(setTimeout(function () { opts.onEnd(result); }, 900));
+    }
+    function close() { over = true; clearInterval(ticking); timers.forEach(clearTimeout); wrap.remove(); }
+    // quick chat (duels)
+    var bubbles = wrap.querySelector(".pg-duelbubbles"), pal = wrap.querySelector(".pg-qcpal"), lastQc = 0;
+    function bubble(text, mine) {
+      var b = document.createElement("span"); b.className = "pg-bubble" + (mine ? " mine" : ""); b.textContent = (mine ? "You: " : "") + text;
+      bubbles.appendChild(b); setTimeout(function () { b.remove(); }, 2600);
+    }
+    if (opts.onQuick) {
+      QUICK_CHAT.forEach(function (t, i) {
+        var c = document.createElement("button"); c.type = "button"; c.textContent = t;
+        c.addEventListener("click", function () { pal.hidden = true; if (Date.now() - lastQc < 1500) return; lastQc = Date.now(); bubble(t, true); opts.onQuick(i); });
+        pal.appendChild(c);
+      });
+      wrap.querySelector(".pg-qcbtn").addEventListener("click", function () { pal.hidden = !pal.hidden; });
+    }
+    wrap.querySelector(".pg-gamex").addEventListener("click", function () {
+      if (live && !confirm(opts.live ? "Leave the duel?" : "Stop the game? This round won't count.")) return;
+      close(); if (opts.onQuit) opts.onQuit();
+    });
+    function countdown() {
+      [["3", 0], ["2", 800], ["1", 1600], ["Go!", 2400]].forEach(function (s) {
+        timers.push(setTimeout(function () {
+          if (over) return;
+          msg.textContent = s[0];
+          if (s[0] === "Go!") { begin(); timers.push(setTimeout(function () { if (!over) msg.textContent = ""; }, 500)); }
+        }, s[1]));
+      });
+    }
+    var cdStarted = false;
+    if (!opts.live) { cdStarted = true; countdown(); }
+    return {
+      wrap: wrap, close: close,
+      start: function () { if (!cdStarted && !over) { cdStarted = true; countdown(); } },
+      opp: function (n) { if (opEl) opEl.textContent = n + "/" + MEMORY_PAIRS; },
+      quick: function (i) { if (QUICK_CHAT[i]) bubble(QUICK_CHAT[i], false); },
+      stop: function () { finish(pairs >= MEMORY_PAIRS); },
+      result: function () { return { pairs: pairs, moves: moves, secs: secs() }; }
+    };
+  }
+
   // ---------- Pet Streak (real version) ----------
   // Sign in with an email link, share pets with co-parents, buy and adopt pets and wardrobe items with paws.
   // All rules run on the server (Supabase functions in pet-real/supabase/schema.sql); this file only shows
@@ -4041,7 +4198,7 @@ html, body { background: #e6edf0; }
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261102065609";   // replaced by build_real.ps1
+    var APP_BUILD = "20261102071024";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -4583,7 +4740,7 @@ html, body { background: #e6edf0; }
     function sendLive(event, payload) { if (lobby && lobbyReady) lobby.send({ type: "broadcast", event: event, payload: payload }); }
 
     // --- live invites: a Treat race ("race") or a Bamboo duel ("bamboo") ---
-    var GAME_NAMES = { race: "🏁 Treat race", bamboo: "🎋 Bamboo duel" };
+    var GAME_NAMES = { race: "🏁 Treat race", bamboo: "🎋 Bamboo duel", memory: "🃏 Memory duel" };
     function inviteToPlay(uid, game) {
       var e = online[uid];
       if (!e) { say("They just left. Invite them from Friends to call them back."); return; }
@@ -4600,14 +4757,16 @@ html, body { background: #e6edf0; }
       $("g-gamepick").hidden = false;
       $("g-pickrace").onclick = function () { $("g-gamepick").hidden = true; then("race"); };
       $("g-pickduel").onclick = function () { $("g-gamepick").hidden = true; then("bamboo"); };
+      $("g-pickmem").onclick = function () { $("g-gamepick").hidden = true; then("memory"); };
       $("g-pickno").onclick = function () { $("g-gamepick").hidden = true; };
     }
     function gotInvite(m) {
       if (!m || m.to !== me.id || !m.me || blocked.indexOf(m.me.pet_id) >= 0) return;
       if (raceNow || inviteOpen) { sendLive("reply", { to: m.from, from: me.id, room: m.room, ok: false, busy: true }); return; }
-      var game = m.game === "bamboo" ? "bamboo" : "race";
+      var game = m.game === "bamboo" || m.game === "memory" ? m.game : "race";
+      var ask = { race: ["🏁 ", " wants to race!"], bamboo: ["🎋 ", " wants a Bamboo duel!"], memory: ["🃏 ", " wants a Memory duel!"] }[game];
       showInvite({ live: m, game: game, pic: petPic(m.me.variant),
-        html: (game === "bamboo" ? "🎋 " : "🏁 ") + petTagHTML(m.me) + (game === "bamboo" ? " wants a Bamboo duel!" : " wants to race!"), canBlock: !friendOf(m.from) });
+        html: ask[0] + petTagHTML(m.me) + ask[1], canBlock: !friendOf(m.from) });
       clearTimeout(gotInvite.t);
       gotInvite.t = setTimeout(function () { if (inviteOpen && inviteOpen.live === m) answerInvite(false); }, 20000);
     }
@@ -4616,7 +4775,7 @@ html, body { background: #e6edf0; }
       $("g-invitepic").src = inv.pic;
       if (inv.html) $("g-invitetext").innerHTML = inv.html; else $("g-invitetext").textContent = inv.text;
       $("g-inviteblock").hidden = !inv.canBlock;
-      $("g-inviteyes").textContent = inv.live ? (inv.game === "bamboo" ? "🎋 Play!" : "🏁 Race!") : "🎮 Join";
+      $("g-inviteyes").textContent = inv.live ? (inv.game === "race" ? "🏁 Race!" : "🎮 Play!") : "🎮 Join";
       $("g-invite").hidden = false; wake(); sfx("happy");
     }
     function answerInvite(ok) {
@@ -4641,7 +4800,10 @@ html, body { background: #e6edf0; }
       if (!m.ok) { say(m.busy ? label(e) + " is busy right now." : label(e) + " said no thanks this time."); return; }
       playLive(sent.game, m.room, m.me, true);
     }
-    function playLive(game, room, them, host) { if (game === "bamboo") runDuel(room, them, host); else runRace(room, them, host); }
+    function playLive(game, room, them, host) {
+      if (game === "bamboo") runDuel(room, them, host); else if (game === "memory") runMemoryDuel(room, them, host); else runRace(room, them, host);
+    }
+    function playBot(game) { if (game === "bamboo") duelBot(); else if (game === "memory") memoryBot(); else raceBot(); }
     $("g-inviteyes").addEventListener("click", function () { answerInvite(true); });
     $("g-inviteno").addEventListener("click", function () { answerInvite(false); });
     $("g-inviteblock").addEventListener("click", function () {
@@ -4830,6 +4992,125 @@ html, body { background: #e6edf0; }
       }, 3800);
     }
 
+    // --- Memory match: solo (scores and paws like Bamboo catch), a live duel, and the bot ---
+    function memoryEnd(game, html, buttons) {
+      var end = document.createElement("div"); end.className = "pg-gameend";
+      end.innerHTML = html + '<div class="pg-row">' + buttons.map(function (b) {
+        return '<button type="button" class="' + (b.primary ? "pg-feed" : "pg-btn") + ' pg-grow" data-a="' + b.id + '">' + b.text + "</button>";
+      }).join("") + "</div>";
+      game.wrap.appendChild(end);
+      buttons.forEach(function (b) { end.querySelector('[data-a="' + b.id + '"]').addEventListener("click", b.go); });
+    }
+    function startMemory() {
+      var p = pet(); if (!p) return;
+      $("g-play").hidden = true;
+      var game = startMemoryGame({
+        pic: petPic(p.variant),
+        onQuit: function () { openPlay(); },
+        onEnd: async function (r) {
+          var res = null, err = null, lead = "";
+          try { res = await rpc("submit_score", { p_game: "memory", p_score: r.score, p_tz: tz() }); } catch (e) { err = e.message; }
+          if (res) {
+            try {
+              var b = (await playData("memory")).board;
+              if (b.length > 1) lead = b[0].me ? "You're top of today's Memory high scores! 🥇" : b[0].name + " leads today with " + b[0].best + ". Can you beat it?";
+            } catch (e) {}
+          }
+          memoryEnd(game, '<div class="big">' + r.score + '</div><p class="lbl">points · ' + r.moves + " tries · " + r.secs + " s</p>" +
+            (res ? "<p>" + (res.new_best ? "🏆 Your best today!" : "Your best today: " + res.best) + "</p>" +
+                   (res.paws ? '<p class="paws">+' + res.paws + " 🐾</p>" : "") + (lead ? "<p>" + esc(lead) + "</p>" : "")
+                 : "<p>" + esc(err || "") + "</p>"),
+            [{ id: "done", text: "Done", go: function () { game.close(); boardGame = "memory"; openPlay(); } },
+             { id: "again", text: "▶ Play again", primary: true, go: function () { game.close(); startMemory(); } }]);
+          if (res && res.paws) { sfx("coin"); loadAll({ quiet: true }); }
+        }
+      });
+    }
+    // a live Memory duel: the same board on both phones; first to clear it wins (or most pairs after 90 s)
+    var MEMORY_LIMIT = 90;
+    function runMemoryDuel(room, them, host) {
+      var p = pet(); if (!p || raceNow) return;
+      $("g-play").hidden = true;
+      var ch = sb.channel("pg-room-" + room, { config: { broadcast: { self: false } } });
+      var started = false, hereTimer = null, giveUp = null, mine = null, theirs = null, theirPairs = 0, gone = false, shown = false, wait = null;
+      var game = startMemoryGame({
+        pic: petPic(p.variant), seed: seedOf(room), live: true, limit: MEMORY_LIMIT, them: { html: petTagHTML(them) },
+        onPairs: function (n) { ch.send({ type: "broadcast", event: "pr", payload: { n: n } }); },
+        onQuick: function (i) { ch.send({ type: "broadcast", event: "qc", payload: { i: i } }); },
+        onQuit: function () { ch.send({ type: "broadcast", event: "bye", payload: {} }); cleanup(); openPlay(); },
+        onEnd: function (r) {
+          mine = r;
+          ch.send({ type: "broadcast", event: "final", payload: { pairs: r.pairs, secs: r.secs, done: r.done } });
+          if (theirs || gone) result(); else wait = setTimeout(result, 6000);
+        }
+      });
+      raceNow = { ch: ch, race: game }; trackMe();
+      function go() { if (started) return; started = true; clearInterval(hereTimer); clearTimeout(giveUp); game.start(); }
+      ch.on("broadcast", { event: "pr" }, function (m) { theirPairs = m.payload.n | 0; game.opp(theirPairs); })
+        .on("broadcast", { event: "qc" }, function (m) { game.quick(m.payload.i | 0); })
+        // they cleared their board (or their time ran out): that ends my round too
+        .on("broadcast", { event: "final" }, function (m) { theirs = m.payload; game.opp(theirs.pairs | 0); if (mine) result(); else game.stop(); })
+        .on("broadcast", { event: "bye" }, function () { gone = true; if (mine) result(); else say(label(them) + " left the duel. Finish your board!"); })
+        .on("broadcast", { event: "go" }, function () { if (!host) go(); })
+        .on("broadcast", { event: "here" }, function () { if (host && !started) { ch.send({ type: "broadcast", event: "go", payload: {} }); go(); } })
+        .subscribe(function (status) {
+          if (status !== "SUBSCRIBED" || host) return;
+          ch.send({ type: "broadcast", event: "here", payload: {} });
+          hereTimer = setInterval(function () { ch.send({ type: "broadcast", event: "here", payload: {} }); }, 600);
+        });
+      giveUp = setTimeout(function () { if (started) return; say("Couldn't connect to " + label(them) + ". Try again in a moment."); cleanup(); openPlay(); }, 12000);
+      async function result() {
+        if (shown) return; shown = true; clearTimeout(wait);
+        // who wins: whoever cleared the board (sooner if both did), otherwise more pairs, then fewer seconds
+        var won;
+        if (!theirs) won = gone || mine.done ? true : null;   // (no reply after I cleared my board: it's mine)
+        else if (mine.done !== !!theirs.done) won = mine.done;
+        else if (mine.pairs !== (theirs.pairs | 0)) won = mine.pairs > theirs.pairs;
+        else if (mine.secs !== (theirs.secs | 0)) won = mine.secs < theirs.secs;
+        else won = "draw";
+        var wins = p.race_wins || 0;
+        if (won === true) { try { wins = await rpc("record_race_win", { p_id: p.id }); p.race_wins = wins; } catch (e) {} }
+        sfx(won === true ? "levelUp" : "pat");
+        memoryEnd(game, '<div class="big">' + mine.pairs + (theirs ? ' <small class="vs">vs ' + (theirs.pairs | 0) + "</small>" : "") + '</div><p class="lbl">pairs</p>' +
+          "<p>" + esc(won === true ? "🏆 You win! " + p.name + " has " + wins + (wins === 1 ? " win" : " wins") + " 🏁"
+                      : won === false ? label(them) + " wins this time!" : won === "draw" ? "🤝 It's a draw!" : "We lost touch with " + label(them) + ".") + "</p>",
+          [{ id: "done", text: "Done", go: function () { cleanup(); openPlay(); } }].concat(them.uid && online[them.uid]
+            ? [{ id: "again", text: "🃏 Again", primary: true, go: function () { cleanup(); openPlay(); inviteToPlay(them.uid, "memory"); } }] : []));
+      }
+      function cleanup() {
+        clearInterval(hereTimer); clearTimeout(giveUp); clearTimeout(wait);
+        game.close();
+        try { sb.removeChannel(ch); } catch (e) {}
+        raceNow = null; trackMe();
+      }
+    }
+    // practice: Bamboo the bot finds a pair every 6 to 10 seconds (all 8 in about a minute)
+    function memoryBot() {
+      var p = pet(); if (!p || raceNow) return;
+      $("g-play").hidden = true;
+      var botPairs = 0, botSecs = 0, timer = null, t0 = 0, mine = null;
+      var game = startMemoryGame({
+        pic: petPic(p.variant), seed: (Math.random() * 1e9) >>> 0, live: true, limit: MEMORY_LIMIT, them: { html: "Bamboo the bot 🤖" },
+        onQuit: function () { clearTimeout(timer); raceNow = null; trackMe(); openPlay(); },
+        onEnd: function (r) {
+          clearTimeout(timer); mine = r;
+          var won = r.done && (botPairs < 8 || r.secs <= botSecs) ? true : r.pairs > botPairs ? true : r.pairs < botPairs ? false : "draw";
+          memoryEnd(game, '<div class="big">' + r.pairs + ' <small class="vs">vs ' + botPairs + '</small></div><p class="lbl">pairs</p><p>' +
+            (won === true ? "You beat Bamboo the bot! Practice wins don't count, but you're ready for a real duel." : won === false ? "Bamboo the bot wins! Have another go." : "🤝 A draw with the bot!") + "</p>",
+            [{ id: "done", text: "Done", go: function () { game.close(); raceNow = null; trackMe(); openPlay(); } },
+             { id: "again", text: "Again", primary: true, go: function () { game.close(); raceNow = null; memoryBot(); } }]);
+        }
+      });
+      raceNow = { race: game }; trackMe();
+      game.start(); t0 = performance.now() + 2400;
+      timer = setTimeout(function step() {
+        if (mine) return;
+        botPairs++; botSecs = Math.round((performance.now() - t0) / 1000); game.opp(botPairs);
+        if (botPairs >= 8) { game.stop(); return; }
+        timer = setTimeout(step, 6000 + Math.random() * 4000);
+      }, 2400 + 6000 + Math.random() * 4000);
+    }
+
     // --- block, report, friends ---
     function blockPet(e) {
       if (!e || !e.pet_id) return;
@@ -4910,7 +5191,7 @@ html, body { background: #e6edf0; }
         });
         var li = document.createElement("li"); li.className = "pg-botrow";
         li.innerHTML = "<span>" + (list.length ? "Or practise first:" : "Nobody else is here right now.") + '</span><button type="button" class="pg-btn">🤖 Play Bamboo the bot</button>';
-        li.querySelector("button").addEventListener("click", function () { pickGame(function (g) { if (g === "bamboo") duelBot(); else raceBot(); }); });
+        li.querySelector("button").addEventListener("click", function () { pickGame(playBot); });
         box.appendChild(li);
       }
       $("g-onlinehead").textContent = "🟢 Online now" + (Object.keys(online).length ? " (" + Object.keys(online).length + ")" : "");
@@ -4936,8 +5217,11 @@ html, body { background: #e6edf0; }
       });
       if (!box.children.length) box.innerHTML = '<li class="pg-logempty">No friends yet. Share your friend code below, or tap ➕ on someone you meet here.</li>';
     }
-    async function playData() {
-      var r = await Promise.all([rpc("my_games_today", { p_game: "bamboo", p_tz: tz() }), rpc("game_board", { p_game: "bamboo", p_tz: tz() })]);
+    // the high scores show one game at a time (tabs)
+    var boardGame = "bamboo", BOARD_NAMES = { bamboo: "Bamboo catch", memory: "Memory match" };
+    async function playData(game) {
+      game = game || boardGame;
+      var r = await Promise.all([rpc("my_games_today", { p_game: game, p_tz: tz() }), rpc("game_board", { p_game: game, p_tz: tz() })]);
       return { plays: r[0] || 0, board: r[1] || [] };
     }
     async function renderPlay() {
@@ -4953,8 +5237,9 @@ html, body { background: #e6edf0; }
       }
       var paid = Math.max(0, GAME_PAID - d.plays);
       $("g-gamereward").textContent = paid
-        ? "🐾 Your next " + (paid === 1 ? "Bamboo catch game pays" : paid + " Bamboo catch games pay") + " paws: 1 for every 10 points, up to 5."
-        : "You've had today's 3 paw games. Keep playing for fun and a better score!";
+        ? "🐾 Your next " + (paid === 1 ? BOARD_NAMES[boardGame] + " game pays" : paid + " " + BOARD_NAMES[boardGame] + " games pay") + " paws: 1 for every 10 points, up to 5."
+        : "You've had today's 3 paw games of " + BOARD_NAMES[boardGame] + ". Keep playing for fun and a better score!";
+      Array.prototype.forEach.call(document.querySelectorAll(".pg-boardtabs [data-board]"), function (b) { b.setAttribute("aria-selected", b.dataset.board === boardGame ? "true" : "false"); });
       var box = $("g-board"); box.innerHTML = "";
       d.board.forEach(function (row, i) {
         var li = document.createElement("li");
@@ -4977,7 +5262,7 @@ html, body { background: #e6edf0; }
           try { res = await rpc("submit_score", { p_game: "bamboo", p_score: score, p_tz: tz() }); } catch (e) { err = e.message; }
           if (res) {
             try {
-              var b = (await playData()).board;
+              var b = (await playData("bamboo")).board;
               if (b.length > 1) lead = b[0].me ? "You're top of today's high scores! 🥇" : b[0].name + " leads today with " + b[0].best + ". Can you beat it?";
             } catch (e) {}
           }
@@ -5006,15 +5291,19 @@ html, body { background: #e6edf0; }
       seen.push(inv.id); try { localStorage.setItem(AWAY_SEEN_KEY, JSON.stringify(seen.slice(-50))); } catch (e) {}
       var f = friendOf(inv.from);
       showInvite({ from: inv.from, name: inv.name, game: inv.game, pic: petPic(f && f.pet && f.pet.variant), canBlock: false,
-        text: "🎮 " + inv.name + " invited you to " + (inv.game === "bamboo" ? "a Bamboo duel" : "a Treat race") + "!" });
+        text: "🎮 " + inv.name + " invited you to " + (inv.game === "bamboo" ? "a Bamboo duel" : inv.game === "memory" ? "a Memory duel" : "a Treat race") + "!" });
     }
     $("g-playbtn").addEventListener("click", openPlay);
     $("g-playclose").addEventListener("click", function () { $("g-play").hidden = true; render(); });
     $("g-gameplay").addEventListener("click", startGame);
+    $("g-memplay").addEventListener("click", startMemory);
+    Array.prototype.forEach.call(document.querySelectorAll(".pg-boardtabs [data-board]"), function (b) {
+      b.addEventListener("click", function () { boardGame = b.dataset.board; renderPlay(); });
+    });
     // the game tiles: play someone who's online, or the bot if nobody is
     function findPlayer(game) {
       if (!showOnline()) { say("Turn on \"Show my pet as online\" below to play other players."); return; }
-      if (!Object.keys(online).length) { if (game === "bamboo") duelBot(); else raceBot(); return; }
+      if (!Object.keys(online).length) { playBot(game); return; }
       $("g-onlinehead").scrollIntoView({ behavior: "smooth", block: "start" });
       say("Tap 🎮 Play next to someone to invite them.");
     }
