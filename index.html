@@ -4666,7 +4666,8 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
   // startBallPass({ me: { pic, html }, them: { pic, html, bot }, iServe, live, versus, onHit(n, fast), onDrop(n), onQuick(i), onEnd(score, why, points), onQuit() })
   //   -> { wrap, start(), hit(n, fast), drop(), quick(i), left(), close() }
   var BALL_POINTS = 5;
-  function ballTravel(n) { return Math.max(520, 1500 * Math.pow(0.955, n)); }   // ms for pass n
+  // ms for pass n (versus speeds up faster and gets quicker at the top)
+  function ballTravel(n, vs) { return vs ? Math.max(470, 1400 * Math.pow(0.94, n)) : Math.max(520, 1500 * Math.pow(0.955, n)); }
   function startBallPass(opts) {
     var VS = !!opts.versus;
     var wrap = document.createElement("div"); wrap.className = "pg-game pg-ball" + (VS ? " vs" : "");
@@ -4702,19 +4703,19 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
     // send the ball on its way: to "me" or to "them", as pass n (fast: a perfect hit's quicker, curvier shot)
     function launch(to, n, fast) {
       ball.classList.remove("fall", "out");
-      flight = { to: to, n: n, t0: performance.now(), dur: ballTravel(n) * (fast ? 0.8 : 1), fast: !!fast,
+      flight = { to: to, n: n, t0: performance.now(), dur: ballTravel(n, VS) * (fast ? 0.78 : 1), fast: !!fast,
                  sway: (Math.random() < 0.5 ? -1 : 1) * (fast ? 0.28 + Math.random() * 0.08 : 0.12 + Math.random() * 0.16) };
       clearTimeout(lateT);
       if (to === "them" && opts.them.bot) {
         // Bamboo the bot: never misses together; in versus it misses more as the rally speeds up
         // (its level, 1-5: how often it misses, more as the rally speeds up and on power shots, and how often it sends one)
         var L = Math.max(1, Math.min(5, opts.them.level || 2)) - 1;
-        var f = flight, miss = VS && Math.random() < Math.min(0.5, [0.05, 0.035, 0.022, 0.014, 0.008][L] + n * [0.03, 0.022, 0.016, 0.011, 0.007][L] + (fast ? [0.14, 0.11, 0.09, 0.07, 0.05][L] : 0));
+        var f = flight, miss = VS && Math.random() < Math.min(0.45, [0.045, 0.018, 0.01, 0.005, 0.003][L] + n * [0.018, 0.008, 0.005, 0.003, 0.0025][L] + (fast ? [0.1, 0.06, 0.04, 0.03, 0.025][L] : 0));
         timers.push(setTimeout(function () {
           if (flight !== f || over) return;
           if (miss) { pointTo("me"); return; }
           if (!VS) { score++; showScore(); }
-          pop(themEl); launch("me", f.n + 1, VS && Math.random() < [0.12, 0.2, 0.27, 0.34, 0.4][L]);
+          pop(themEl); launch("me", f.n + 1, VS && Math.random() < [0.15, 0.3, 0.4, 0.5, 0.55][L]);
         }, f.dur + (miss ? 180 : Math.random() * 80 - 40)));
       } else if (to === "them") {
         // no word from the other phone long after the ball got there: we've lost touch
@@ -4722,7 +4723,8 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
       }
     }
     function pop(el) { var img = el.querySelector("img"); img.classList.remove("kick"); void img.offsetWidth; img.classList.add("kick"); if (typeof sfx === "function") sfx("click"); }
-    function windowMs(n) { return Math.max(110, 220 - n * 5); }   // how close to the ball's arrival a tap must be
+    // how close to the ball's arrival a tap must be (tighter in versus as the rally goes on)
+    function windowMs(n) { return VS ? Math.max(100, 200 - n * 7) : Math.max(110, 220 - n * 5); }
     function ballFrame(now) {
       raf = requestAnimationFrame(ballFrame);
       if (!flight) { ring.style.opacity = 0; return; }
@@ -4837,7 +4839,7 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261102233809";   // replaced by build_real.ps1
+    var APP_BUILD = "20261102235640";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -5470,8 +5472,7 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
       $("g-modeart").textContent = g.art; $("g-modename").textContent = g.name;
       $("g-modevs").hidden = game !== "ball";
       Array.prototype.forEach.call(document.querySelectorAll("#g-modevs [data-vs]"), function (b) { b.setAttribute("aria-selected", (b.dataset.vs === "1") === ballVs ? "true" : "false"); });
-      var lvl = (game === "race" || game === "ball" && vs) ? " · Lv " + botLv(game) : "";
-      $("g-modesolo").innerHTML = "<b>" + esc(solo[0] + lvl) + "</b><small>" + esc(solo[1]) + "</small>";
+      $("g-modesolo").innerHTML = "<b>" + esc(solo[0]) + "</b><small>" + esc(solo[1]) + "</small>";
       $("g-modeothers").innerHTML = "<b>" + esc(oth[0]) + "</b><small>" + esc(oth[1]) + "</small>" +
         '<em class="' + (n ? "on" : "") + '">' + (showOnline() ? (n ? "🟢 " + n + " online now" : "🌙 Nobody online · invite a friend") : "🙈 You're hidden") + "</em>";
       $("g-modesolo").onclick = function () { $("g-mode").hidden = true; playSolo(game); };
@@ -6023,17 +6024,20 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
     }
 
     // --- practice against Bamboo the bot (no wins counted) ---
-    // The bot has a level per game (1-5, starting at 2, remembered on this phone): beat it and it goes up a level,
-    // lose and it comes down one, so it stays about as good as you are.
-    var BOT_KEY = "petstreak.botlevel.";
-    function botLv(game) { var n = 2; try { n = +localStorage.getItem(BOT_KEY + game) || 2; } catch (e) {} return Math.max(1, Math.min(5, n)); }
-    function botName(game) { return "Bamboo the bot 🤖 Lv " + botLv(game); }
+    // The bot has a hidden level per game (1-5, starting at 3, remembered on this phone): beat it and it goes up a
+    // level; lose 3 games in a row and it comes down one, so it stays a challenge without getting frustrating.
+    var BOT_KEY = "petstreak.botlevel.", BOT_LOSS_KEY = "petstreak.botlosses.", BOT_EASIER_AFTER = 3;
+    function botLv(game) { var n = 3; try { n = +localStorage.getItem(BOT_KEY + game) || 3; } catch (e) {} return Math.max(1, Math.min(5, n)); }
+    function botName(game) { return "Bamboo the bot 🤖"; }   // (its level stays hidden)
     // after a game: the new level, and what to say about it
     function botResult(game, won, winText, loseText, drawText) {
-      var lv = botLv(game), next = won === true ? Math.min(5, lv + 1) : won === false ? Math.max(1, lv - 1) : lv;
-      try { localStorage.setItem(BOT_KEY + game, String(next)); } catch (e) {}
-      if (won === true) return lv === 5 ? "🏆 You beat Bamboo the bot at its hardest! Ready for real players?" : winText + " Bamboo the bot levels up to Lv " + next + " 💪";
-      if (won === false) return loseText + (next < lv ? " (It goes down to Lv " + next + " for your next try.)" : "");
+      var lv = botLv(game), next = lv, losses = 0;
+      try { losses = +localStorage.getItem(BOT_LOSS_KEY + game) || 0; } catch (e) {}
+      if (won === true) { next = Math.min(5, lv + 1); losses = 0; }
+      else if (won === false) { losses++; if (losses >= BOT_EASIER_AFTER) { next = Math.max(1, lv - 1); losses = 0; } }
+      try { localStorage.setItem(BOT_KEY + game, String(next)); localStorage.setItem(BOT_LOSS_KEY + game, String(losses)); } catch (e) {}
+      if (won === true) return lv === 5 ? "🏆 You beat Bamboo the bot at its hardest! Ready for real players?" : winText + " It'll play harder next time 💪";
+      if (won === false) return loseText + (next < lv ? " Bamboo will go a little easier on you." : "");
       return drawText;
     }
     function botEnd(view, big, text, again, onDone) {
@@ -6126,7 +6130,7 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
       hidePlayPages();
       var lv = botLv("memory");
       var mem = startMemoryGame({
-        turns: { players: [{ uid: me.id, html: "You", me: true }, { uid: "bot", html: "Bamboo 🤖 Lv " + lv, bot: true }], first: me.id,
+        turns: { players: [{ uid: me.id, html: "You", me: true }, { uid: "bot", html: "Bamboo 🤖", bot: true }], first: me.id,
                  botMemory: [0.5, 0.65, 0.78, 0.88, 0.95][lv - 1] },
         onQuit: function () { raceNow = null; trackMe(); openPlay(); },
         onEnd: function (r) {
