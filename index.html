@@ -536,6 +536,26 @@ html, body { background: #e6edf0; }
 .pg-memhint { text-align: center; margin: 14px 0 0; font-weight: 700; color: #4b3d66; }
 .pg-memory .pg-gamemsg { top: 45%; color: #2b1d3a; text-shadow: 0 2px 0 #fff; }
 .pg-gameend .lbl { margin: 2px 0 10px; }
+/* achievements: the shelf (earned in colour, the rest greyed with how to get them) and the pop-up */
+.pg-achbtn { margin-top: 8px; }
+.pg-achbtn span { color: #55666e; font-weight: 600; margin-left: 4px; }
+#g-achcount { color: #55666e; font-family: var(--body); font-size: 0.9rem; }
+.pg-achgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
+.pg-ach { display: flex; flex-direction: column; gap: 2px; padding: 10px; border-radius: 14px; background: #f3f6f7; color: #55666e; }
+.pg-ach .ic { font-size: 1.8rem; filter: grayscale(1); opacity: 0.45; }
+.pg-ach b { color: #3b4b53; }
+.pg-ach small { font-size: 0.8rem; line-height: 1.3; flex: 1; }
+.pg-ach em { font-style: normal; font-weight: 700; font-size: 0.8rem; margin-top: 4px; }
+.pg-ach.got { background: linear-gradient(150deg, #fff6d8, #ffe7f0); color: #5a4300; box-shadow: inset 0 0 0 2px #f5c542; }
+.pg-ach.got .ic { filter: none; opacity: 1; }
+.pg-ach.got b { color: #2b1d3a; }
+.pg-ach.got em { color: #1f8a5e; }
+#g-achpop { z-index: 30; }
+.pg-achpop { text-align: center; }
+.pg-achburst { font-size: 4rem; line-height: 1.1; animation: pg-achin 0.6s cubic-bezier(.2,1.6,.4,1); }
+@keyframes pg-achin { from { transform: scale(0.2) rotate(-30deg); opacity: 0; } to { transform: none; opacity: 1; } }
+.pg-achsmall { margin: 4px 0 0 !important; font-weight: 800; color: #c98a00 !important; text-transform: uppercase; letter-spacing: 0.06em; font-size: 0.8rem; }
+.pg-achpaws { font-size: 1.4rem; font-weight: 800; color: #a5521f !important; }
 /* which game? and a pet's card (above the Playground page and the chat) */
 #g-gamepick, #g-petopts { z-index: 20; }
 /* in a row, the pet's picture and name are one big button that opens its card */
@@ -1033,6 +1053,22 @@ html, body { background: #e6edf0; }
         <button type="submit" class="pg-btn pg-primary" id="g-chatsend" aria-label="Send">➤</button>
       </form>
     </div>
+    <!-- achievements: the badge shelf, and the pop-up when one is earned -->
+    <div class="pg pg-card pg-sheet" id="g-achs" hidden>
+      <h2><span>🏆 Achievements <small id="g-achcount"></small></span> <button type="button" class="pg-x" id="g-achsclose" aria-label="Close achievements">✕</button></h2>
+      <p class="pg-hint">Earn badges by looking after your pets and playing. Each one pays paws once.</p>
+      <div class="pg-achgrid" id="g-achgrid"></div>
+    </div>
+    <div class="pg pg-adopt" id="g-achpop" hidden>
+      <div class="pg-card pg-achpop">
+        <div class="pg-achburst" id="g-achicon">🏆</div>
+        <p class="pg-achsmall">Achievement unlocked!</p>
+        <h2 id="g-achname"></h2>
+        <p id="g-achhow"></p>
+        <p class="pg-achpaws" id="g-achpaws"></p>
+        <button type="button" class="pg-feed" id="g-achok">Yay! 🎉</button>
+      </div>
+    </div>
     <!-- tap a pet in the Playground: what you can do with it -->
     <div class="pg pg-adopt" id="g-petopts" hidden>
       <div class="pg-card pg-petopts">
@@ -1223,6 +1259,7 @@ html, body { background: #e6edf0; }
             <input id="g-myname" maxlength="24" autocomplete="nickname" aria-label="Your name" placeholder="Your name">
             <button type="button" class="pg-btn" id="g-savename">Save</button>
           </div>
+          <button type="button" class="pg-btn pg-wide pg-achbtn" id="g-achbtn">🏆 Achievements <span id="g-achmenu"></span></button>
         </section>
         <section class="pg-sec" id="g-petsec">
           <h3 id="g-pethead">Mochi</h3>
@@ -4218,7 +4255,7 @@ html, body { background: #e6edf0; }
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261102071413";   // replaced by build_real.ps1
+    var APP_BUILD = "20261102072301";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -4365,6 +4402,7 @@ html, body { background: #e6edf0; }
       if (!loaded) pawsWhileAway();
       showNudges();
       refreshUnread();
+      checkAch(!(opts && opts.quiet));
       if (!$("g-today").hidden) renderToday();   // keep an open log up to date
       try { localStorage.setItem(COINS_KEY + me.id, String(profile ? profile.coins : 0)); } catch (e) {}
       remember();
@@ -4725,7 +4763,7 @@ html, body { background: #e6edf0; }
     }
     function myPresence() {
       var p = pet();
-      return { uid: me.id, pet_id: p.id, pet: p.name, variant: p.variant, level: p.level, wins: p.race_wins || 0, busy: !!raceNow };
+      return { uid: me.id, pet_id: p.id, pet: p.name, variant: p.variant, level: p.level, wins: p.race_wins || 0, ach: achCount(), busy: !!raceNow };
     }
     function joinLobby() {
       lobby = sb.channel("playground", { config: { presence: { key: me.id }, broadcast: { self: false } } });
@@ -5165,7 +5203,7 @@ html, body { background: #e6edf0; }
       acts.push(sent ? { text: "Friend request sent ✓", disabled: true, go: function () {} } : { text: "➕ Add friend", go: function () { addFriendPet(e); } });
       acts.push({ text: "🚩 Report name", go: function () { reportPetName(e); } });
       acts.push({ text: "🚫 Block", danger: true, go: function () { blockPet(e); } });
-      petOpts(petPic(e.variant), petTagHTML(e), "Lv " + e.level + " · 🏁 " + (e.wins || 0) + (e.wins === 1 ? " win" : " wins"), acts);
+      petOpts(petPic(e.variant), petTagHTML(e), "Lv " + e.level + " · 🏁 " + (e.wins || 0) + (e.wins === 1 ? " win" : " wins") + " · 🏆 " + (e.ach || 0) + (e.ach === 1 ? " badge" : " badges"), acts);
     }
     function isCoParent(uid) { return pets.some(function (q) { return (q.members || []).some(function (m) { return m.id === uid; }); }); }
     function openFriendOpts(f) {
@@ -5188,7 +5226,7 @@ html, body { background: #e6edf0; }
         } });
       }
       petOpts(petPic(f.pet && f.pet.variant), tagHTML(f.pet ? f.pet.level : 1, f.name) + (f.pet ? ' <small class="pg-ofpet">' + esc(f.pet.name) + "</small>" : ""),
-        (on ? "🟢 Online · " : "") + (co ? "Co-parent · " : "Friend · ") + (f.pet ? "Lv " + f.pet.level + " · 🏁 " + (f.pet.wins || 0) : "No pet yet"), acts);
+        (on ? "🟢 Online · " : "") + (co ? "Co-parent · " : "Friend · ") + (f.pet ? "Lv " + f.pet.level + " · 🏁 " + (f.pet.wins || 0) : "No pet yet") + (on ? " · 🏆 " + (on.ach || 0) : ""), acts);
     }
     $("g-poclose").addEventListener("click", function () { $("g-petopts").hidden = true; });
     // asks first: a friend request shares your name with them once they accept
@@ -5509,6 +5547,70 @@ html, body { background: #e6edf0; }
         box.appendChild(d);
       });
     }
+
+    // ---------- Achievements ----------
+    // The server decides what's earned (check_achievements) from what the game already saves, and pays each badge
+    // once. The app asks after loading (at most every 45 s, or straight away after something big) and celebrates.
+    var ACHIEVEMENTS = [
+      { id: "first_meal",   icon: "🍎", name: "First meal",     how: "Feed a pet for the first time",              paws: 10 },
+      { id: "foodie",       icon: "🍽️", name: "Foodie",         how: "Feed 10 different foods",                    paws: 30 },
+      { id: "team_player",  icon: "🤝", name: "Team player",    how: "Feed within an hour of a co-parent",         paws: 15 },
+      { id: "week_streak",  icon: "🔥", name: "Week streak",    how: "Reach a 7-day streak",                       paws: 25 },
+      { id: "month_streak", icon: "🌟", name: "Month streak",   how: "Reach a 30-day streak",                      paws: 100 },
+      { id: "squeaky",      icon: "🛁", name: "Squeaky clean",  how: "Give a muddy pet a bath",                    paws: 15 },
+      { id: "playful",      icon: "🎾", name: "Playful",        how: "Earn the playtime bonus",                    paws: 10 },
+      { id: "big_family",   icon: "👨‍👩‍👧", name: "Big family", how: "Look after a pet with 3 or more co-parents",  paws: 20 },
+      { id: "legendary",    icon: "🏅", name: "Legendary pet",  how: "Help a pet reach level 15",                  paws: 50 },
+      { id: "fashionista",  icon: "🎀", name: "Fashionista",    how: "Own 5 items to dress up in",                 paws: 20 },
+      { id: "generous",     icon: "💌", name: "Generous",       how: "Send someone a pet as a gift",               paws: 20 },
+      { id: "friendly",     icon: "👫", name: "Friendly",       how: "Make 3 friends in the Playground",           paws: 15 },
+      { id: "bamboo_pro",   icon: "🎋", name: "Bamboo pro",     how: "Score 40 or more in Bamboo catch",           paws: 20 },
+      { id: "sharp_memory", icon: "🃏", name: "Sharp memory",   how: "Score 140 or more in Memory match",          paws: 25 },
+      { id: "first_win",    icon: "🎮", name: "First win",      how: "Win a live game against another player",    paws: 10 },
+      { id: "champion",     icon: "🏆", name: "Champion",       how: "Win 10 live games",                          paws: 30 }
+    ];
+    var myAchs = {}, achChecked = 0, achQueue = [], achShowing = false;
+    function achById(id) { return ACHIEVEMENTS.filter(function (a) { return a.id === id; })[0]; }
+    function achCount() { return Object.keys(myAchs).length; }
+    async function checkAch(force) {
+      if (!me || (!force && Date.now() - achChecked < 45000)) return;
+      achChecked = Date.now();
+      var fresh;
+      try { fresh = (await rpc("check_achievements")) || []; myAchs = (await rpc("my_achievements")) || {}; } catch (e) { return; }
+      $("g-achmenu").textContent = achCount() + "/" + ACHIEVEMENTS.length;
+      trackMe();   // others see the badge count on my pet's card
+      if (!fresh.length) return;
+      fresh.forEach(function (f) { achQueue.push(f); });
+      showNextAch();
+      loadAll({ quiet: true });   // the paws
+    }
+    function showNextAch() {
+      // one at a time, and not on top of a game
+      if (achShowing || !achQueue.length || document.querySelector(".pg-game")) { if (achQueue.length) setTimeout(showNextAch, 3000); return; }
+      var f = achQueue.shift(), a = achById(f.id) || { icon: "🏆", name: f.id, how: "" };
+      achShowing = true;
+      $("g-achicon").textContent = a.icon; $("g-achname").textContent = a.name; $("g-achhow").textContent = a.how;
+      $("g-achpaws").textContent = "+" + f.paws + " 🐾";
+      $("g-achpop").hidden = false;
+      sfx("rankUp"); wake(); playOnce("Happy");
+    }
+    $("g-achok").addEventListener("click", function () { $("g-achpop").hidden = true; achShowing = false; setTimeout(showNextAch, 400); });
+    function openAchs() {
+      $("g-menu").hidden = true;
+      var box = $("g-achgrid"); box.innerHTML = "";
+      $("g-achcount").textContent = achCount() + "/" + ACHIEVEMENTS.length;
+      ACHIEVEMENTS.forEach(function (a) {
+        var got = myAchs[a.id], d = document.createElement("div");
+        d.className = "pg-ach" + (got ? " got" : "");
+        d.innerHTML = '<span class="ic">' + a.icon + "</span><b>" + esc(a.name) + "</b><small>" + esc(a.how) + "</small>" +
+          '<em>' + (got ? "✓ " + esc(new Date(got).toLocaleDateString()) : "🐾 " + a.paws) + "</em>";
+        box.appendChild(d);
+      });
+      $("g-achs").hidden = false;
+      checkAch(true);
+    }
+    $("g-achbtn").addEventListener("click", openAchs);
+    $("g-achsclose").addEventListener("click", function () { $("g-achs").hidden = true; });
 
     // ---------- Today's log ----------
     // What happened with the pet today, oldest first, then who still needs to feed and how long is left.
@@ -6900,7 +7002,7 @@ html, body { background: #e6edf0; }
     // tidying up runs). That tap only closes: it doesn't also pat the pet or press the button underneath.
     var CLOSABLE = [["g-menu", "g-menuclose"], ["g-store", "g-storeclose"], ["g-sheet", "g-close"], ["g-ranks", "g-ranksclose"],
                     ["g-share", "g-shareclose"], ["g-petsheet", "g-petsheetclose"], ["g-adoptinfo", "g-aiclose"], ["g-tray", "g-trayclose"],
-                    ["g-today", "g-todayclose"]];
+                    ["g-today", "g-todayclose"], ["g-achs", "g-achsclose"]];
     var swallowClick = 0;
     document.addEventListener("pointerdown", function (e) {
       // a full-screen card (gift, join, name...) is on top: leave everything as it is
