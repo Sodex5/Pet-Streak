@@ -496,6 +496,67 @@ html, body { background: #e6edf0; }
 .pg-board .nm { flex: 1; min-width: 0; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .pg-board .pt { font-size: 1.05rem; }
 .pg-board .pg-logempty { justify-content: center; color: #55666e; background: none; }
+/* the Playground page: its own bright look */
+.pg-playpage { inset: 0; z-index: 12; display: flex; flex-direction: column; background: linear-gradient(170deg, #fff4d6 0%, #ffe0ec 45%, #dcefff 100%); }
+.pg-playhead { flex: none; display: flex; align-items: center; gap: 10px; padding: calc(12px + env(safe-area-inset-top, 0px)) 14px 10px; }
+.pg-playhead h2 { flex: 1; margin: 0; font-family: var(--display); font-size: 1.35rem; color: #2b1d3a; }
+.pg-playback { width: 42px; height: 42px; border-radius: 50%; border: 0; background: rgba(255,255,255,0.85); font-size: 1.3rem; font-weight: 800; color: #2b1d3a; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+.pg-mepet { display: flex; align-items: center; gap: 6px; padding: 4px 10px 4px 4px; border-radius: 999px; background: rgba(255,255,255,0.85); font-weight: 700; font-size: 0.85rem; color: #2b1d3a; max-width: 45%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pg-mepet img { width: 28px; height: 28px; border-radius: 50%; background: #fff; object-fit: contain; }
+.pg-playbody { flex: 1; overflow-y: auto; padding: 4px 14px calc(24px + env(safe-area-inset-bottom, 0px)); -webkit-overflow-scrolling: touch; }
+.pg-playh { margin: 16px 2px 8px; font-size: 1.05rem; color: #2b1d3a; }
+.pg-gamerow { display: flex; gap: 10px; overflow-x: auto; padding: 2px 2px 8px; scroll-snap-type: x mandatory; }
+.pg-gametile { flex: 0 0 158px; scroll-snap-align: start; display: flex; flex-direction: column; gap: 4px; padding: 14px; border-radius: 20px; color: #fff; box-shadow: 0 8px 20px rgba(60,30,90,0.15); }
+.pg-gametile .art { font-size: 2.6rem; line-height: 1.1; }
+.pg-gametile b { font-size: 1.05rem; }
+.pg-gametile small { opacity: 0.92; font-size: 0.82rem; line-height: 1.3; flex: 1; }
+.pg-gametile .pg-feed { width: 100%; margin-top: 8px; padding: 10px 8px; background: #fff; color: #2b1d3a; box-shadow: none; font-size: 0.92rem; }
+.pg-gametile.bamboo { background: linear-gradient(150deg, #5fbf6a, #2f8f5b); }
+.pg-gametile.race { background: linear-gradient(150deg, #ff8a5c, #e2456f); }
+.pg-gametile.soon { background: linear-gradient(150deg, #b9b2d6, #8f88b3); }
+.pg-gametile.soon small { font-weight: 700; }
+.pg-people { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.pg-people li { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 16px; background: rgba(255,255,255,0.88); box-shadow: 0 2px 10px rgba(60,30,90,0.06); }
+.pg-people li img { width: 42px; height: 42px; flex: none; border-radius: 50%; background: #f6f1ff; object-fit: contain; }
+.pg-people li b { display: block; color: #2b1d3a; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pg-people li small { display: block; color: #5b5470; font-size: 0.82rem; }
+.pg-people .acts { display: flex; gap: 6px; flex: none; }
+.pg-people .acts .pg-btn { padding: 8px 10px; font-size: 0.88rem; }
+.pg-people .pg-logempty { justify-content: center; text-align: center; color: #5b5470; background: rgba(255,255,255,0.6); box-shadow: none; }
+.pg-people .pg-botrow { justify-content: space-between; background: rgba(255,255,255,0.6); box-shadow: none; color: #5b5470; font-size: 0.9rem; }
+.pg-switch { display: flex; align-items: center; gap: 8px; margin: 10px 4px 0; font-weight: 600; color: #2b1d3a; font-size: 0.92rem; }
+.pg-switch input { width: 20px; height: 20px; accent-color: var(--brand); }
+.pg-friendcode { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 10px 0 8px; padding: 10px 12px; border-radius: 14px; background: rgba(255,255,255,0.7); color: #2b1d3a; font-size: 0.92rem; }
+.pg-friendcode b { letter-spacing: 0.05em; margin-left: 4px; }
+.pg-playpage .pg-board li { background: rgba(255,255,255,0.88); }
+.pg-playpage .pg-note { margin-top: 8px; color: #5b5470; }
+/* an invite (live race, or a friend's from while you were away), on top of anything */
+.pg-invite { left: 12px; right: 12px; top: calc(12px + env(safe-area-inset-top, 0px)); max-width: 420px; margin: 0 auto; z-index: 60; padding: 14px; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; border-radius: 20px; box-shadow: 0 14px 40px rgba(0,0,0,0.25); animation: pg-bathin 0.3s ease-out; }
+.pg-invite[hidden] { display: none; }
+.pg-invite img { width: 64px; height: 64px; object-fit: contain; }
+.pg-invite p { margin: 0; font-weight: 700; color: #14232b; font-size: 1.05rem; }
+.pg-invite .pg-row { width: 100%; }
+.pg-invite .pg-row .pg-btn { flex: 1; }
+.pg-invite .pg-linkbtn[hidden] { display: none; }
+/* the race screen */
+.pg-game.pg-race { background: linear-gradient(170deg, #fff4d6, #ffe0ec); display: flex; flex-direction: column; }
+.pg-race .pg-gamemsg.big { font-size: 2.8rem; }
+/* once the result card is up, the big message steps aside */
+.pg-game:has(.pg-gameend) .pg-gamemsg { display: none; }
+.pg-race .pg-gamehud .lbl { margin-right: auto; }
+.pg-lanes { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 28px; padding: 90px 16px 20px; }
+.pg-lane .who { display: block; margin: 0 0 6px 4px; font-weight: 800; color: #2b1d3a; }
+.pg-lane .track { position: relative; height: 84px; border-radius: 999px; background: repeating-linear-gradient(90deg, rgba(255,255,255,0.9) 0 18px, rgba(255,255,255,0.65) 18px 36px); box-shadow: inset 0 2px 6px rgba(0,0,0,0.08); }
+.pg-lane.me .track { box-shadow: inset 0 0 0 3px var(--brand); }
+.pg-lane img { position: absolute; left: 0; top: 2px; width: 80px; height: 80px; object-fit: contain; transition: left 0.12s ease-out; }
+.pg-lane img.hop { animation: pg-hop 0.18s ease-out; }
+@keyframes pg-hop { 50% { transform: translateY(-10px); } }
+.pg-lane .treat { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); font-size: 2.2rem; font-style: normal; }
+.pg-race .pg-gamemsg { top: 22%; color: #2b1d3a; text-shadow: 0 2px 0 #fff; }
+.pg-tapbtn { flex: none; margin: 0 16px calc(24px + env(safe-area-inset-bottom, 0px)); height: 120px; border: 0; border-radius: 28px; background: linear-gradient(150deg, #ff8a5c, #e2456f); color: #fff; font-family: var(--display); font-size: 2.2rem; font-weight: 800; box-shadow: 0 10px 0 #b8325a, 0 16px 30px rgba(226,69,111,0.35); touch-action: manipulation; user-select: none; -webkit-user-select: none; }
+.pg-tapbtn:active { transform: translateY(6px); box-shadow: 0 4px 0 #b8325a; }
+.pg-tapbtn[disabled] { opacity: 0.5; }
+.pg-endextra { justify-content: space-between; margin-top: 6px !important; }
 /* the game screen (full screen, above everything) */
 .pg-game { position: fixed; inset: 0; z-index: 50; background: #cfe8b8; touch-action: none; user-select: none; -webkit-user-select: none; }
 .pg-game canvas { display: block; width: 100%; height: 100%; touch-action: none; }
@@ -799,20 +860,62 @@ html, body { background: #e6edf0; }
       </div>
     </div>
     <!-- the Playground: mini-games and today's best scores among your pet family -->
-    <div class="pg pg-card pg-sheet" id="g-play" hidden>
-      <h2>🎮 Playground <button type="button" class="pg-x" id="g-playclose" aria-label="Close the Playground">✕</button></h2>
-      <div class="pg-gamecard">
-        <div class="pg-gameart" aria-hidden="true">🎋</div>
-        <div class="pg-grow">
-          <b>Bamboo catch</b>
-          <small id="g-gamedesc">Catch the falling food with your pet. 30 seconds!</small>
+    <!-- the Playground: its own page, with games, who's online right now, friends and high scores -->
+    <div class="pg pg-playpage" id="g-play" hidden>
+      <header class="pg-playhead">
+        <button type="button" class="pg-playback" id="g-playclose" aria-label="Back to your pet">←</button>
+        <h2>🎮 Playground</h2>
+        <span class="pg-mepet" id="g-mepet"></span>
+      </header>
+      <div class="pg-playbody">
+        <h3 class="pg-playh">Games</h3>
+        <div class="pg-gamerow">
+          <div class="pg-gametile bamboo">
+            <span class="art" aria-hidden="true">🎋</span>
+            <b>Bamboo catch</b>
+            <small>Solo · beat today's high score</small>
+            <button type="button" class="pg-feed" id="g-gameplay">▶ Play</button>
+          </div>
+          <div class="pg-gametile race">
+            <span class="art" aria-hidden="true">🏁</span>
+            <b>Treat race</b>
+            <small>Live · tap fastest to the treat</small>
+            <button type="button" class="pg-feed" id="g-racefind">Find a racer</button>
+          </div>
+          <div class="pg-gametile soon"><span class="art" aria-hidden="true">🃏</span><b>Memory match</b><small>Coming soon</small></div>
+          <div class="pg-gametile soon"><span class="art" aria-hidden="true">⚽</span><b>Ball pass</b><small>Coming soon</small></div>
         </div>
-        <button type="button" class="pg-feed" id="g-gameplay">▶ Play</button>
+        <p class="pg-hint" id="g-gamereward"></p>
+
+        <h3 class="pg-playh" id="g-onlinehead">🟢 Online now</h3>
+        <ul class="pg-people" id="g-online"></ul>
+        <label class="pg-switch"><input type="checkbox" id="g-showonline" checked> Show my pet as online</label>
+
+        <h3 class="pg-playh">👫 Friends</h3>
+        <ul class="pg-people" id="g-friends"></ul>
+        <div class="pg-friendcode">
+          <span>Your friend code <b id="g-mycode">…</b></span>
+          <button type="button" class="pg-btn" id="g-copycode">Copy</button>
+        </div>
+        <form class="pg-row" id="g-addcode">
+          <input id="g-codein" placeholder="Add a friend: PANDA-XXXXX" autocapitalize="characters" autocomplete="off" spellcheck="false" aria-label="A friend's code">
+          <button type="submit" class="pg-btn">Add</button>
+        </form>
+
+        <h3 class="pg-playh">🏆 Bamboo catch today</h3>
+        <ol class="pg-board" id="g-board"></ol>
+        <p class="pg-note">Scores reset every day. Other players only ever see your pet, never your name, unless you're friends.</p>
       </div>
-      <p class="pg-hint" id="g-gamereward"></p>
-      <h3 class="pg-boardhead">🏆 Today's best</h3>
-      <ol class="pg-board" id="g-board"></ol>
-      <p class="pg-note">Scores reset every day. You compete with everyone you look after a pet with.</p>
+    </div>
+    <!-- a live invite (anywhere in the app) or a friend's invite from when you were away -->
+    <div class="pg pg-card pg-invite" id="g-invite" hidden role="alertdialog" aria-labelledby="g-invitetext">
+      <img id="g-invitepic" alt="">
+      <p id="g-invitetext"></p>
+      <div class="pg-row">
+        <button type="button" class="pg-btn" id="g-inviteno">No thanks</button>
+        <button type="button" class="pg-btn pg-primary" id="g-inviteyes">Accept</button>
+      </div>
+      <button type="button" class="pg-linkbtn pg-small" id="g-inviteblock">Block this pet</button>
     </div>
     <!-- today's log: who fed, bathed, played and reminded, with the time -->
     <div class="pg pg-card pg-sheet" id="g-today" hidden>
@@ -1011,6 +1114,10 @@ html, body { background: #e6edf0; }
           <h3>Send feedback</h3>
           <textarea id="g-fbtext" rows="3" maxlength="2000" placeholder="Found a bug or have an idea? Tell us…" aria-label="Feedback"></textarea>
           <button type="button" class="pg-btn pg-wide" id="g-fbsend">💬 Send feedback</button>
+        </section>
+        <section class="pg-sec" id="g-adminrep" hidden>
+          <h3>Admin: reported pet names</h3>
+          <div id="g-replist"></div>
         </section>
         <section class="pg-sec" id="g-adminfb" hidden>
           <h3>Admin: feedback <span id="g-fbcount"></span></h3>
@@ -3680,6 +3787,84 @@ html, body { background: #e6edf0; }
     return { close: close };
   }
 
+  // ---------- Treat race (live, two players) ----------
+  // Two lanes, a treat at the end. Every tap on the big button moves your pet a step; the other pet moves as the
+  // other player taps (their taps arrive over the live channel, or come from Bamboo the bot). First to the treat wins.
+  // startTapRace({ me: {pic, label}, them: {pic, label}, steps, onTap(n), onEnd(won), onQuit() })
+  //   -> { start(), opp(n), oppLeft(), close() }   start() runs the 3-2-1 (both phones get it at the same moment)
+  var RACE_STEPS = 40;
+  function startTapRace(opts) {
+    var steps = opts.steps || RACE_STEPS;
+    var wrap = document.createElement("div"); wrap.className = "pg-game pg-race";
+    wrap.innerHTML =
+      '<div class="pg-gamehud"><span class="lbl">🏁 Treat race</span><button type="button" class="pg-gamex" aria-label="Leave the race">✕</button></div>' +
+      '<div class="pg-lanes">' +
+        '<div class="pg-lane them"><span class="who"></span><div class="track"><img alt=""><i class="treat">🍰</i></div></div>' +
+        '<div class="pg-lane me"><span class="who"></span><div class="track"><img alt=""><i class="treat">🍰</i></div></div>' +
+      "</div>" +
+      '<div class="pg-gamemsg big">Get ready…</div>' +
+      '<button type="button" class="pg-tapbtn" disabled>TAP!</button>';
+    document.body.appendChild(wrap);
+    var lanes = wrap.querySelectorAll(".pg-lane"), msg = wrap.querySelector(".pg-gamemsg"), btn = wrap.querySelector(".pg-tapbtn");
+    lanes[0].querySelector(".who").textContent = opts.them.label; lanes[0].querySelector("img").src = opts.them.pic;
+    lanes[1].querySelector(".who").textContent = opts.me.label + " (you)"; lanes[1].querySelector("img").src = opts.me.pic;
+    var mine = 0, theirs = 0, live = false, over = false, timers = [];
+    function place(lane, n) { lane.querySelector("img").style.left = "calc(" + (Math.min(1, n / steps) * 100) + "% * 0.82)"; }
+    place(lanes[0], 0); place(lanes[1], 0);
+    function tap(e) {
+      if (e) e.preventDefault();
+      if (!live || over) return;
+      mine++; place(lanes[1], mine);
+      lanes[1].querySelector("img").classList.remove("hop"); void lanes[1].offsetWidth; lanes[1].querySelector("img").classList.add("hop");
+      if (typeof sfx === "function" && mine % 4 === 0) sfx("click");
+      if (opts.onTap) opts.onTap(mine);
+      if (mine >= steps) end(true);
+    }
+    btn.addEventListener("pointerdown", tap);
+    function onKey(e) { if (e.key === " " || e.key === "Enter") tap(e); }
+    window.addEventListener("keydown", onKey);
+    function end(won) {
+      if (over) return; over = true; live = false; btn.disabled = true;
+      msg.textContent = won ? "🏆 You win!" : opts.them.label + " wins!";
+      if (typeof sfx === "function") sfx(won ? "levelUp" : "pat");
+      timers.push(setTimeout(function () { opts.onEnd(won); }, 1200));
+    }
+    function close() {
+      over = true; live = false; timers.forEach(clearTimeout);
+      window.removeEventListener("keydown", onKey); wrap.remove();
+    }
+    wrap.querySelector(".pg-gamex").addEventListener("click", function () {
+      if (live && !confirm("Leave the race?")) return;
+      close(); if (opts.onQuit) opts.onQuit();
+    });
+    return {
+      wrap: wrap,
+      start: function () {
+        [["3", 0], ["2", 800], ["1", 1600], ["Tap!", 2400]].forEach(function (s) {
+          timers.push(setTimeout(function () {
+            if (over) return;
+            msg.textContent = s[0];
+            if (s[0] === "Tap!") { live = true; btn.disabled = false; timers.push(setTimeout(function () { if (!over) msg.textContent = ""; }, 600)); }
+          }, s[1]));
+        });
+      },
+      opp: function (n) { if (over) return; theirs = Math.max(theirs, n); place(lanes[0], theirs); if (theirs >= steps) end(false); },
+      oppLeft: function () { if (over) return; over = true; live = false; btn.disabled = true; msg.textContent = opts.them.label + " left the race"; timers.push(setTimeout(function () { opts.onEnd(null); }, 1500)); },
+      close: close
+    };
+  }
+  // Bamboo the bot: taps 5 to 7 times a second, with little pauses, so it's beatable but not a walkover
+  function botRacer(race) {
+    var n = 0, alive = true;
+    function step() {
+      if (!alive) return;
+      n++; race.opp(n);
+      if (n < RACE_STEPS) setTimeout(step, 140 + Math.random() * 70 + (Math.random() < 0.08 ? 300 : 0));
+    }
+    setTimeout(step, 2400 + 250);
+    return { stop: function () { alive = false; } };
+  }
+
   // ---------- Pet Streak (real version) ----------
   // Sign in with an email link, share pets with co-parents, buy and adopt pets and wardrobe items with paws.
   // All rules run on the server (Supabase functions in pet-real/supabase/schema.sql); this file only shows
@@ -3693,7 +3878,7 @@ html, body { background: #e6edf0; }
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261102060531";   // replaced by build_real.ps1
+    var APP_BUILD = "20261102063511";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -4159,20 +4344,325 @@ html, body { background: #e6edf0; }
     }
 
     // ---------- The Playground ----------
-    // Mini-games (games.js), and today's best scores among everyone you look after a pet with. The first 3 games
-    // a day pay paws (the server decides: score / 10, up to 5 each).
+    // Its own page: games, who's online right now, friends and today's Bamboo catch high scores.
+    //  * Online now: everyone with the app open (on any screen) and "Show my pet as online" on. Strangers only ever
+    //    see a pet (name, kind, level, race wins); rude pet names show as "A red panda". Friends see the player's name.
+    //  * Live races go over Supabase's live channels: a lobby ("playground") for who's online, invites and replies,
+    //    and a room per race for the taps. Live wins add to the pet's win counter (no paws: the server can't watch).
+    //  * Friends (by code, or "Add friend" on a pet) can be invited even when they're away: send-play-invite sends a
+    //    notification, and the invite waits 10 minutes (my_play_invites).
+    //  * Block hides a pet and its invites on this phone; Report also sends its name to the admin.
     var GAME_PAID = 3, MEDALS = ["🥇", "🥈", "🥉"];
+    var SHOW_ONLINE_KEY = "petstreak.online", BLOCK_KEY = "petstreak.blocked", AWAY_SEEN_KEY = "petstreak.invitesseen";
+    var lobby = null, lobbyReady = false, online = {}, friends = [], myCode = null, raceNow = null, inviteOpen = null, sentInvites = {};
+    var blocked = (function () { try { return JSON.parse(localStorage.getItem(BLOCK_KEY) || "[]"); } catch (e) { return []; } })();
+    function saveBlocked() { try { localStorage.setItem(BLOCK_KEY, JSON.stringify(blocked)); } catch (e) {} }
+    function showOnline() { try { return localStorage.getItem(SHOW_ONLINE_KEY) !== "off"; } catch (e) { return true; } }
+    // rude pet names are shown to strangers as "A red panda" (the admin can also reset reported names)
+    // whole words only (so "Grape" and "Peacock" are fine), with look-alike letters undone (sh1t, @ss)
+    var RUDE = /\b(fu+c?k\w*|fuk\w*|sh[i]+t\w*|bitch\w*|cunts?|dick(head)?s?|cocks?|puss(y|ies)|ass(hole)?s?|bastards?|nigg\w*|fag\w*|sluts?|whores?|porn\w*|sexy|penis|vagina|rap(e|ist)|nazis?|hitler|retard\w*)\b/i;
+    function shownPetName(name) {
+      var n = String(name || "").toLowerCase().replace(/1|!/g, "i").replace(/0/g, "o").replace(/3/g, "e").replace(/@|4/g, "a").replace(/\$|5/g, "s");
+      return RUDE.test(n) ? "A red panda" : name;
+    }
+    function friendOf(uid) { return friends.filter(function (f) { return f.kind === "friend" && f.id === uid; })[0] || null; }
+    function label(e) { var f = e && friendOf(e.uid); return f ? f.name + "'s " + e.pet : shownPetName(e && e.pet); }
+    function petPic(variant) { return "icons/" + (variant || "panda_classic") + ".png"; }
+
+    // --- who's online (the lobby) ---
+    function lobbyWanted() { return !!(sb && sb.channel && me && pet() && showOnline() && !document.hidden); }
+    function syncLobby() {
+      if (lobbyWanted() && !lobby) joinLobby();
+      else if (!lobbyWanted() && lobby) leaveLobby();
+      else if (lobby && lobbyReady) trackMe();
+    }
+    function myPresence() {
+      var p = pet();
+      return { uid: me.id, pet_id: p.id, pet: p.name, variant: p.variant, level: p.level, wins: p.race_wins || 0, busy: !!raceNow };
+    }
+    function joinLobby() {
+      lobby = sb.channel("playground", { config: { presence: { key: me.id }, broadcast: { self: false } } });
+      lobby.on("presence", { event: "sync" }, readPresence)
+        .on("broadcast", { event: "invite" }, function (m) { gotInvite(m.payload); })
+        .on("broadcast", { event: "reply" }, function (m) { gotReply(m.payload); })
+        .subscribe(function (status) { if (status === "SUBSCRIBED") { lobbyReady = true; trackMe(); } });
+    }
+    var lastTracked = "";
+    function trackMe() {
+      if (!lobby || !lobbyReady || !pet()) return;
+      var p = myPresence(), k = JSON.stringify(p);
+      if (k === lastTracked) return;
+      lastTracked = k; lobby.track(p);
+    }
+    function leaveLobby() {
+      try { lobby.untrack(); sb.removeChannel(lobby); } catch (e) {}
+      lobby = null; lobbyReady = false; lastTracked = ""; online = {};
+      if (!$("g-play").hidden) { renderOnline(); renderFriends(); }
+    }
+    function readPresence() {
+      var st = lobby ? lobby.presenceState() : {};
+      online = {};
+      Object.keys(st).forEach(function (k) {
+        var e = st[k][st[k].length - 1];
+        if (!e || e.uid === me.id || blocked.indexOf(e.pet_id) >= 0) return;
+        online[e.uid] = e;
+      });
+      if (!$("g-play").hidden) { renderOnline(); renderFriends(); }
+    }
+    function sendLive(event, payload) { if (lobby && lobbyReady) lobby.send({ type: "broadcast", event: event, payload: payload }); }
+
+    // --- live race invites ---
+    function inviteToRace(uid) {
+      var e = online[uid];
+      if (!e) { say("They just left. Invite them from Friends to call them back."); return; }
+      if (e.busy) { say(label(e) + " is in a race right now. Try again in a moment."); return; }
+      if (raceNow) return;
+      var room = Math.random().toString(36).slice(2, 10);
+      sentInvites[room] = uid;
+      sendLive("invite", { to: uid, from: me.id, room: room, game: "race", me: myPresence() });
+      say("🏁 Race invite sent to " + label(e) + ". Waiting for them…");
+      setTimeout(function () { if (sentInvites[room]) { delete sentInvites[room]; say(label(e) + " didn't answer this time."); } }, 25000);
+    }
+    function gotInvite(m) {
+      if (!m || m.to !== me.id || !m.me || blocked.indexOf(m.me.pet_id) >= 0) return;
+      if (raceNow || inviteOpen) { sendLive("reply", { to: m.from, from: me.id, room: m.room, ok: false, busy: true }); return; }
+      showInvite({ live: m, pic: petPic(m.me.variant),
+        text: "🏁 " + label(m.me) + " (Lv " + m.me.level + ") wants to race!", canBlock: !friendOf(m.from) });
+      clearTimeout(gotInvite.t);
+      gotInvite.t = setTimeout(function () { if (inviteOpen && inviteOpen.live === m) answerInvite(false); }, 20000);
+    }
+    function showInvite(inv) {
+      inviteOpen = inv;
+      $("g-invitepic").src = inv.pic; $("g-invitetext").textContent = inv.text;
+      $("g-inviteblock").hidden = !inv.canBlock;
+      $("g-inviteyes").textContent = inv.live ? "🏁 Race!" : "🎮 Join";
+      $("g-invite").hidden = false; wake(); sfx("happy");
+    }
+    function answerInvite(ok) {
+      var inv = inviteOpen; if (!inv) return;
+      inviteOpen = null; $("g-invite").hidden = true;
+      if (inv.live) {
+        var m = inv.live;
+        sendLive("reply", { to: m.from, from: me.id, room: m.room, ok: ok, me: ok ? myPresence() : null });
+        if (ok) runRace(m.room, m.me, false);
+      } else if (ok) {
+        // a friend's invite from while I was away: go to the Playground and call them if they're still there
+        openPlay();
+        if (online[inv.from]) inviteToRace(inv.from);
+        else say(inv.name + " isn't in the Playground right now. Tap 🎮 Invite next to them in Friends to call them back.");
+      }
+    }
+    function gotReply(m) {
+      if (!m || m.to !== me.id || sentInvites[m.room] !== m.from) return;
+      delete sentInvites[m.room];
+      var e = online[m.from] || m.me || {};
+      if (!m.ok) { say(m.busy ? label(e) + " is busy right now." : label(e) + " said no thanks this time."); return; }
+      runRace(m.room, m.me, true);
+    }
+    $("g-inviteyes").addEventListener("click", function () { answerInvite(true); });
+    $("g-inviteno").addEventListener("click", function () { answerInvite(false); });
+    $("g-inviteblock").addEventListener("click", function () {
+      var inv = inviteOpen; if (!inv || !inv.live) return;
+      answerInvite(false);
+      blockPet(inv.live.me);
+    });
+
+    // --- a live race: the inviter hosts; the other player says "here", the host says "go", then taps fly both ways ---
+    function runRace(room, them, host) {
+      var p = pet(); if (!p || raceNow) return;
+      $("g-play").hidden = true;
+      var ch = sb.channel("pg-room-" + room, { config: { broadcast: { self: false } } });
+      var started = false, latest = 0, sent = 0, hereTimer = null, giveUp = null;
+      var race = startTapRace({
+        me: { pic: petPic(p.variant), label: p.name }, them: { pic: petPic(them.variant), label: label(them) },
+        onTap: function (n) { latest = n; },
+        onEnd: function (won) { finishRace(won, them); },
+        onQuit: function () { ch.send({ type: "broadcast", event: "bye", payload: {} }); cleanup(); openPlay(); }
+      });
+      raceNow = { ch: ch, race: race }; trackMe();
+      // my taps go out about 10 times a second (and the last one always does)
+      var pump = setInterval(function () { if (latest !== sent) { sent = latest; ch.send({ type: "broadcast", event: "p", payload: { n: sent } }); } }, 100);
+      function go() { if (started) return; started = true; clearInterval(hereTimer); clearTimeout(giveUp); race.start(); }
+      ch.on("broadcast", { event: "p" }, function (m) { race.opp(m.payload.n); })
+        .on("broadcast", { event: "bye" }, function () { race.oppLeft(); })
+        .on("broadcast", { event: "go" }, function () { if (!host) go(); })
+        .on("broadcast", { event: "here" }, function () { if (host && !started) { ch.send({ type: "broadcast", event: "go", payload: {} }); go(); } })
+        .subscribe(function (status) {
+          if (status !== "SUBSCRIBED" || host) return;
+          ch.send({ type: "broadcast", event: "here", payload: {} });
+          hereTimer = setInterval(function () { ch.send({ type: "broadcast", event: "here", payload: {} }); }, 600);
+        });
+      giveUp = setTimeout(function () {
+        if (started) return;
+        say("Couldn't connect to " + label(them) + ". Try again in a moment.");
+        cleanup(); openPlay();
+      }, 12000);
+      function cleanup() {
+        clearInterval(pump); clearInterval(hereTimer); clearTimeout(giveUp);
+        if (raceNow) raceNow.race.close();
+        try { sb.removeChannel(ch); } catch (e) {}
+        raceNow = null; trackMe();
+      }
+      raceNow.cleanup = cleanup;
+    }
+    async function finishRace(won, them) {
+      var p = pet(), wins = p ? p.race_wins || 0 : 0;
+      if (won === true && p) {
+        try { wins = await rpc("record_race_win", { p_id: p.id }); p.race_wins = wins; } catch (e) {}
+      }
+      var wrap = raceNow && raceNow.race.wrap;
+      if (!wrap) return;
+      var stranger = them && them.uid && !friendOf(them.uid);
+      var end = document.createElement("div"); end.className = "pg-gameend";
+      end.innerHTML = "<div class=\"big\">" + (won === true ? "🏆" : won === false ? "🥈" : "👋") + "</div>" +
+        "<p>" + esc(won === true ? "You win! " + (p ? p.name : "") + " has " + wins + (wins === 1 ? " win" : " wins") + " 🏁"
+                    : won === false ? label(them) + " wins this time!" : label(them) + " left the race.") + "</p>" +
+        '<div class="pg-row"><button type="button" class="pg-btn pg-grow" data-a="done">Done</button>' +
+        (them && them.uid && online[them.uid] ? '<button type="button" class="pg-feed pg-grow" data-a="again">🏁 Race again</button>' : "") + "</div>" +
+        (stranger ? '<div class="pg-row pg-endextra"><button type="button" class="pg-linkbtn pg-small" data-a="friend">➕ Add friend</button>' +
+                    '<button type="button" class="pg-linkbtn pg-small" data-a="block">🚫 Block or report</button></div>' : "");
+      wrap.appendChild(end);
+      var done = function () { if (raceNow && raceNow.cleanup) raceNow.cleanup(); };
+      end.querySelector('[data-a="done"]').addEventListener("click", function () { done(); openPlay(); });
+      var again = end.querySelector('[data-a="again"]');
+      if (again) again.addEventListener("click", function () { done(); openPlay(); inviteToRace(them.uid); });
+      var fr = end.querySelector('[data-a="friend"]');
+      if (fr) fr.addEventListener("click", function () { addFriendPet(them); fr.disabled = true; fr.textContent = "Request sent ✓"; });
+      var bl = end.querySelector('[data-a="block"]');
+      if (bl) bl.addEventListener("click", function () { done(); openPlay(); blockPet(them); });
+    }
+    // practice: race Bamboo the bot (no wins counted)
+    function raceBot() {
+      var p = pet(); if (!p || raceNow) return;
+      $("g-play").hidden = true;
+      var bot;
+      var race = startTapRace({
+        me: { pic: petPic(p.variant), label: p.name }, them: { pic: petPic("panda_golden"), label: "Bamboo the bot 🤖" },
+        onEnd: function (won) {
+          bot.stop();
+          var end = document.createElement("div"); end.className = "pg-gameend";
+          end.innerHTML = '<div class="big">' + (won ? "🏆" : "🤖") + "</div><p>" +
+            (won ? "You beat Bamboo the bot! Practice wins don't count, but you're ready for a real race." : "Bamboo the bot wins! Tap faster next time.") + "</p>" +
+            '<div class="pg-row"><button type="button" class="pg-btn pg-grow" data-a="done">Done</button><button type="button" class="pg-feed pg-grow" data-a="again">Race again</button></div>';
+          race.wrap.appendChild(end);
+          end.querySelector('[data-a="done"]').addEventListener("click", function () { race.close(); raceNow = null; trackMe(); openPlay(); });
+          end.querySelector('[data-a="again"]').addEventListener("click", function () { race.close(); raceNow = null; raceBot(); });
+        },
+        onQuit: function () { bot.stop(); raceNow = null; trackMe(); openPlay(); }
+      });
+      raceNow = { race: race }; trackMe();
+      race.start(); bot = botRacer(race);
+    }
+
+    // --- block, report, friends ---
+    function blockPet(e) {
+      if (!e || !e.pet_id) return;
+      if (!confirm("Block " + shownPetName(e.pet) + "? You won't see it in the Playground or get invites from it on this phone.")) return;
+      if (blocked.indexOf(e.pet_id) < 0) { blocked.push(e.pet_id); saveBlocked(); }
+      delete online[e.uid];
+      if (confirm("Also report its name as rude or unkind? The Pet Streak team will look at it.")) {
+        rpc("report_pet", { p_id: e.pet_id }).then(function () { say("Thanks. Blocked and reported."); }, function (err) { say(err.message); });
+      } else say("Blocked.");
+      renderOnline();
+    }
+    async function addFriendPet(e) {
+      try {
+        var r = await rpc("friend_request_pet", { p_pet: e.pet_id });
+        say(r.status === "friends" ? "🎉 You're friends with " + r.name + " now!" : "➕ Friend request sent. You'll see their name once they accept.");
+        loadFriends();
+      } catch (err) { say(err.message); }
+    }
+    async function loadFriends() {
+      try { friends = (await rpc("my_friends")) || []; } catch (e) { friends = []; }
+      if (!$("g-play").hidden) { renderFriends(); renderOnline(); }
+    }
+    async function inviteFriendAway(f, btn) {
+      if (btn) { btn.disabled = true; btn.textContent = "Sending…"; }
+      var res = null, msg = null;
+      try { res = await sb.functions.invoke("send-play-invite", { body: { to: f.id, game: "race" } }); }
+      catch (e) { msg = friendly(e && e.message); }
+      if (res && res.error) {
+        var status = res.error.context && res.error.context.status;
+        try { msg = (await res.error.context.json()).error; } catch (e) {}
+        if (!msg) msg = status === 404 ? "Invites to friends aren't switched on yet." : friendly(res.error.message);
+      }
+      if (btn) { btn.disabled = false; btn.textContent = "🎮 Invite"; }
+      if (msg) { say(msg); return; }
+      say(res.data && res.data.sent
+        ? "🎮 Invite sent! " + f.name + " will get a notification. Stay here so you can race when they arrive."
+        : "🎮 Invite sent. " + f.name + " doesn't have notifications on, so they'll see it next time they open the app (within 10 minutes).");
+    }
+
+    // --- drawing the page ---
     function openPlay() {
       if (!pet()) { say("Get a pet first, then you can play with it 🎮"); return; }
-      $("g-gamedesc").textContent = "Catch the falling food with " + pet().name + ". Golden bamboo is +3, rocks are -2. 30 seconds!";
-      $("g-play").hidden = false;
-      renderPlay();
+      $("g-play").hidden = false; $("g-menu").hidden = true;
+      $("g-showonline").checked = showOnline();
+      syncLobby();
+      renderPlay(); loadFriends();
+      if (!myCode) rpc("my_friend_code").then(function (c) { myCode = c; $("g-mycode").textContent = c; }, function () { $("g-mycode").textContent = "—"; });
+      else $("g-mycode").textContent = myCode;
+    }
+    function personRow(pic, title, sub, buttons) {
+      var li = document.createElement("li");
+      li.innerHTML = '<img alt="" src="' + esc(pic) + '"><span class="pg-grow"><b>' + esc(title) + "</b><small>" + esc(sub) + '</small></span><span class="acts"></span>';
+      var acts = li.querySelector(".acts");
+      buttons.forEach(function (b) {
+        var el = document.createElement("button"); el.type = "button"; el.className = "pg-btn" + (b.primary ? " pg-primary" : "");
+        el.textContent = b.text; if (b.label) el.setAttribute("aria-label", b.label); el.disabled = !!b.disabled;
+        el.addEventListener("click", function () { b.go(el); });
+        acts.appendChild(el);
+      });
+      return li;
+    }
+    function renderOnline() {
+      var box = $("g-online"); box.innerHTML = "";
+      if (!showOnline()) {
+        box.innerHTML = '<li class="pg-logempty">You\'re hidden. Turn on "Show my pet as online" to see who\'s here and race them.</li>';
+      } else {
+        var list = Object.keys(online).map(function (k) { return online[k]; });
+        list.forEach(function (e) {
+          var f = friendOf(e.uid), sent = friends.some(function (x) { return x.id === e.uid; });
+          var btns = [{ text: e.busy ? "Racing…" : "🏁 Race", primary: true, disabled: e.busy || !!raceNow, label: "Race " + label(e), go: function () { inviteToRace(e.uid); } }];
+          if (!f && !sent) btns.push({ text: "➕", label: "Add " + shownPetName(e.pet) + " as a friend", go: function (el) { el.disabled = true; addFriendPet(e); } });
+          if (!f) btns.push({ text: "🚫", label: "Block or report " + shownPetName(e.pet), go: function () { blockPet(e); } });
+          box.appendChild(personRow(petPic(e.variant), label(e), "Lv " + e.level + " · 🏁 " + (e.wins || 0) + (e.wins === 1 ? " win" : " wins"), btns));
+        });
+        var li = document.createElement("li"); li.className = "pg-botrow";
+        li.innerHTML = "<span>" + (list.length ? "Or practise first:" : "Nobody else is here right now.") + '</span><button type="button" class="pg-btn">🤖 Race Bamboo the bot</button>';
+        li.querySelector("button").addEventListener("click", raceBot);
+        box.appendChild(li);
+      }
+      $("g-onlinehead").textContent = "🟢 Online now" + (Object.keys(online).length ? " (" + Object.keys(online).length + ")" : "");
+    }
+    function renderFriends() {
+      var box = $("g-friends"); box.innerHTML = "";
+      friends.filter(function (f) { return f.kind === "request"; }).forEach(function (f) {
+        box.appendChild(personRow(petPic(f.pet && f.pet.variant), f.name, "wants to be friends" + (f.pet ? " · " + f.pet.name : ""), [
+          { text: "Accept", primary: true, go: function () { rpc("friend_respond", { p_from: f.id, p_accept: true }).then(function () { say("🎉 You're friends with " + f.name + "!"); loadFriends(); }, function (e) { say(e.message); }); } },
+          { text: "✕", label: "Decline", go: function () { rpc("friend_respond", { p_from: f.id, p_accept: false }).then(loadFriends, function (e) { say(e.message); }); } }
+        ]));
+      });
+      friends.filter(function (f) { return f.kind === "friend"; }).forEach(function (f) {
+        var on = online[f.id];
+        var sub = (on ? "🟢 Online · " : "") + (f.pet ? f.pet.name + " · Lv " + f.pet.level + " · 🏁 " + (f.pet.wins || 0) : "No pet yet");
+        var btn = on ? { text: on.busy ? "Racing…" : "🏁 Race", primary: true, disabled: on.busy || !!raceNow, go: function () { inviteToRace(f.id); } }
+                     : { text: "🎮 Invite", go: function (el) { inviteFriendAway(f, el); } };
+        box.appendChild(personRow(petPic(f.pet && f.pet.variant), f.name, sub, [btn]));
+      });
+      friends.filter(function (f) { return f.kind === "sent"; }).forEach(function (f) {
+        box.appendChild(personRow(petPic(f.pet && f.pet.variant), f.pet ? f.pet.name : "A player", "Friend request sent", []));
+      });
+      if (!box.children.length) box.innerHTML = '<li class="pg-logempty">No friends yet. Share your friend code below, or tap ➕ on someone you meet here.</li>';
     }
     async function playData() {
       var r = await Promise.all([rpc("my_games_today", { p_game: "bamboo", p_tz: tz() }), rpc("game_board", { p_game: "bamboo", p_tz: tz() })]);
       return { plays: r[0] || 0, board: r[1] || [] };
     }
     async function renderPlay() {
+      var p = pet(); if (!p) return;
+      $("g-mepet").innerHTML = '<img alt="" src="' + esc(petPic(p.variant)) + '">' + esc(p.name) + " · 🏁 " + (p.race_wins || 0);
+      renderOnline(); renderFriends();
       var d;
       try { d = await playData(); }
       catch (e) {
@@ -4182,36 +4672,32 @@ html, body { background: #e6edf0; }
       }
       var paid = Math.max(0, GAME_PAID - d.plays);
       $("g-gamereward").textContent = paid
-        ? "🐾 Your next " + (paid === 1 ? "game pays" : paid + " games pay") + " paws: 1 for every 10 points, up to 5."
+        ? "🐾 Your next " + (paid === 1 ? "Bamboo catch game pays" : paid + " Bamboo catch games pay") + " paws: 1 for every 10 points, up to 5."
         : "You've had today's 3 paw games. Keep playing for fun and a better score!";
       var box = $("g-board"); box.innerHTML = "";
       d.board.forEach(function (row, i) {
         var li = document.createElement("li");
         if (row.me) li.className = "me";
-        li.innerHTML = '<span class="rk">' + (row.best !== null && i < 3 ? MEDALS[i] : i + 1) + "</span>" +
+        li.innerHTML = '<span class="rk">' + (i < 3 ? MEDALS[i] : i + 1) + "</span>" +
           avatarDot({ name: row.name, avatar: row.avatar }) + '<span class="nm">' + esc(row.me ? "You" : row.name) + "</span>" +
-          '<b class="pt">' + (row.best === null ? "—" : row.best) + "</b>";
+          '<b class="pt">' + row.best + "</b>";
         box.appendChild(li);
       });
-      if (d.board.length < 2) {
-        var li = document.createElement("li"); li.className = "pg-logempty";
-        li.textContent = "Invite a co-parent to compete with you! 🤝";
-        box.appendChild(li);
-      }
+      if (!d.board.length) box.innerHTML = '<li class="pg-logempty">Nobody has played today yet. Be the first! 🎋</li>';
     }
     function startGame() {
       var p = pet(); if (!p) return;
       $("g-play").hidden = true;
       startBambooGame({
-        pic: "icons/" + p.variant + ".png",
+        pic: petPic(p.variant),
         onQuit: function () { openPlay(); },
         onEnd: async function (score, close, wrap) {
           var res = null, err = null, lead = "";
           try { res = await rpc("submit_score", { p_game: "bamboo", p_score: score, p_tz: tz() }); } catch (e) { err = e.message; }
           if (res) {
             try {
-              var b = (await playData()).board.filter(function (r) { return r.best !== null; });
-              if (b.length > 1) lead = b[0].me ? "You're top of your pet family today! 🥇" : b[0].name + " leads today with " + b[0].best + ". Can you beat it?";
+              var b = (await playData()).board;
+              if (b.length > 1) lead = b[0].me ? "You're top of today's high scores! 🥇" : b[0].name + " leads today with " + b[0].best + ". Can you beat it?";
             } catch (e) {}
           }
           var end = document.createElement("div"); end.className = "pg-gameend";
@@ -4228,9 +4714,48 @@ html, body { background: #e6edf0; }
         }
       });
     }
+    // invites friends sent while I was away (shown once each)
+    async function checkPlayInvites() {
+      if (!me || inviteOpen || raceNow) return;
+      var list;
+      try { list = await rpc("my_play_invites"); } catch (e) { return; }
+      var seen = []; try { seen = JSON.parse(localStorage.getItem(AWAY_SEEN_KEY) || "[]"); } catch (e) {}
+      var inv = (list || []).filter(function (i) { return seen.indexOf(i.id) < 0; })[0];
+      if (!inv) return;
+      seen.push(inv.id); try { localStorage.setItem(AWAY_SEEN_KEY, JSON.stringify(seen.slice(-50))); } catch (e) {}
+      var f = friendOf(inv.from);
+      showInvite({ from: inv.from, name: inv.name, pic: petPic(f && f.pet && f.pet.variant), canBlock: false,
+        text: "🎮 " + inv.name + " invited you to " + (inv.game === "race" ? "a Treat race" : "play") + "!" });
+    }
     $("g-playbtn").addEventListener("click", openPlay);
-    $("g-playclose").addEventListener("click", function () { $("g-play").hidden = true; });
+    $("g-playclose").addEventListener("click", function () { $("g-play").hidden = true; render(); });
     $("g-gameplay").addEventListener("click", startGame);
+    $("g-racefind").addEventListener("click", function () {
+      var n = Object.keys(online).length;
+      if (!showOnline()) { say("Turn on \"Show my pet as online\" below to race other players."); return; }
+      if (!n) { raceBot(); return; }
+      $("g-onlinehead").scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+    $("g-showonline").addEventListener("change", function () {
+      try { localStorage.setItem(SHOW_ONLINE_KEY, $("g-showonline").checked ? "on" : "off"); } catch (e) {}
+      syncLobby(); renderOnline(); renderFriends();
+    });
+    $("g-copycode").addEventListener("click", async function () {
+      if (!myCode) return;
+      try { await navigator.clipboard.writeText(myCode); say("Friend code copied: " + myCode); } catch (e) { prompt("Your friend code:", myCode); }
+    });
+    $("g-addcode").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      var c = $("g-codein").value.trim(); if (!c) return;
+      if (!/^PANDA-/i.test(c)) c = "PANDA-" + c;
+      try {
+        var r = await rpc("friend_request_code", { p_code: c });
+        $("g-codein").value = "";
+        say(r.status === "friends" ? "🎉 You're friends with " + r.name + "!" : "➕ Friend request sent to " + r.name + ".");
+        loadFriends();
+      } catch (err) { say(err.message); }
+    });
+    document.addEventListener("visibilitychange", function () { syncLobby(); if (!document.hidden) checkPlayInvites(); });
 
     // ---------- Today's log ----------
     // What happened with the pet today, oldest first, then who still needs to feed and how long is left.
@@ -4763,6 +5288,7 @@ html, body { background: #e6edf0; }
       $("g-petcount").textContent = pets.length > 1 ? "(" + pets.length + ")" : "";
       if (!$("g-petsheet").hidden) renderPetList();
       showAppButtons();
+      syncLobby();   // be online in the Playground lobby (or not)
       if (!p) { $("g-away").hidden = true; applyLook(); return; }
       localStorage.setItem(PET_KEY, p.id);
       var m = mood(p);
@@ -5594,7 +6120,7 @@ html, body { background: #e6edf0; }
     }
     async function openMenu() {
       renderMenu(); $("g-menu").hidden = false; renderReminders();
-      if (profile && profile.is_admin) loadFeedback();
+      if (profile && profile.is_admin) { loadFeedback(); loadReports(); }
       try { sentGifts = await rpc("my_gifts"); } catch (e) { sentGifts = []; }
       renderMenu();
     }
@@ -5621,11 +6147,12 @@ html, body { background: #e6edf0; }
     // tidying up runs). That tap only closes: it doesn't also pat the pet or press the button underneath.
     var CLOSABLE = [["g-menu", "g-menuclose"], ["g-store", "g-storeclose"], ["g-sheet", "g-close"], ["g-ranks", "g-ranksclose"],
                     ["g-share", "g-shareclose"], ["g-petsheet", "g-petsheetclose"], ["g-adoptinfo", "g-aiclose"], ["g-tray", "g-trayclose"],
-                    ["g-today", "g-todayclose"], ["g-play", "g-playclose"]];
+                    ["g-today", "g-todayclose"]];
     var swallowClick = 0;
     document.addEventListener("pointerdown", function (e) {
       // a full-screen card (gift, join, name...) is on top: leave everything as it is
-      if (e.target.closest && e.target.closest(".pg-adopt")) return;
+      // (also leave sheets alone for taps on an invite card or inside a game)
+      if (e.target.closest && e.target.closest(".pg-adopt, .pg-invite, .pg-game, .pg-playpage")) return;
       var open = CLOSABLE.filter(function (c) { return !$(c[0]).hidden && !$(c[0]).contains(e.target); });
       if (!open.length) return;
       open.forEach(function (c) { $(c[1]).click(); });
@@ -5667,6 +6194,29 @@ html, body { background: #e6edf0; }
       finally { $("g-fbsend").disabled = false; }
       if (profile && profile.is_admin) loadFeedback();
     });
+    // admin: pets reported for a rude name, to reset the name or dismiss the report
+    async function loadReports() {
+      var box = $("g-replist"), list;
+      try { list = await rpc("admin_pet_reports"); } catch (e) { $("g-adminrep").hidden = true; return; }
+      $("g-adminrep").hidden = false; box.innerHTML = "";
+      if (!list.length) { box.innerHTML = '<p class="pg-note">No reported pet names. 🎉</p>'; return; }
+      list.forEach(function (r) {
+        var row = document.createElement("div"); row.className = "pg-person";
+        row.innerHTML = '<div class="pg-grow"><b>' + esc(r.name) + "</b><small>Reported " + r.reports + (r.reports === 1 ? " time" : " times") + "</small></div>";
+        var reset = document.createElement("button"); reset.type = "button"; reset.className = "rm"; reset.textContent = "Reset name";
+        reset.addEventListener("click", async function () {
+          if (!confirm("Rename \"" + r.name + "\" to \"Red panda\"?")) return;
+          try { await rpc("admin_reset_pet_name", { p_id: r.pet_id }); say("Name reset."); } catch (e) { say(e.message); }
+          loadReports();
+        });
+        var ok = document.createElement("button"); ok.type = "button"; ok.className = "rm"; ok.style.color = "var(--brand)"; ok.textContent = "It's fine";
+        ok.addEventListener("click", async function () {
+          try { await rpc("admin_dismiss_pet_reports", { p_id: r.pet_id }); } catch (e) { say(e.message); }
+          loadReports();
+        });
+        row.appendChild(reset); row.appendChild(ok); box.appendChild(row);
+      });
+    }
     async function loadFeedback() {
       var list;
       try { list = await rpc("admin_feedback"); } catch (e) { return; }
@@ -5806,6 +6356,7 @@ html, body { background: #e6edf0; }
       await checkInbox();
       checkJoin();
       setTimeout(maybeHowTo, 1200);
+      setTimeout(checkPlayInvites, 3000);
       refreshSub();
       // co-parents feed on their own phones: check for news every 20 s while the app is open
       if (!polling) { polling = true; setInterval(function () { if (me && !document.hidden) loadAll({ quiet: true }); }, 20000); }
