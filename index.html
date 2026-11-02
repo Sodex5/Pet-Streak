@@ -1043,6 +1043,13 @@ span.pg-headicon { background: none; box-shadow: none; }
 .pg-memory .pg-mcard .back { font-size: 1.3rem; }
 .pg-people[hidden], .pg-socadd[hidden], .pg-waitacts:empty { display: none; }
 .pg-histsheet { background: #fff; max-height: 80dvh; display: flex; flex-direction: column; }
+/* "2 players online now · See who": opens the list */
+button.pg-onlinenow { display: flex; align-items: center; gap: 6px; width: 100%; margin: 10px 0 4px; padding: 8px 12px; border: 0; border-radius: 14px; background: rgba(255,255,255,0.6); font: inherit; font-weight: 700; color: #4a4060; font-size: 0.92rem; text-align: left; }
+button.pg-onlinenow .see { margin-left: auto; color: var(--brand); font-weight: 800; }
+button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 10px rgba(60,30,90,0.06); }
+#g-picksend[hidden], #g-pickbot[hidden] { display: none; }
+.pg-pickrow.look .tick::before { content: "›"; color: #8a8399; font-size: 1.3rem; }
+.pg-pickrow.look .tick { border: 0; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -1167,7 +1174,7 @@ span.pg-headicon { background: none; box-shadow: none; }
           <span class="pg-mepet" id="g-mepet"></span>
           <button type="button" class="pg-winsbtn" id="g-mywins" aria-label="Your games this week">🏁 0 wins</button>
         </div>
-        <p class="pg-onlinenow" id="g-onlinecount"></p>
+        <button type="button" class="pg-onlinenow" id="g-onlinecount" aria-label="See who's online"></button>
         <div class="pg-gamegrid">
           <button type="button" class="pg-gamecard bamboo" data-game="bamboo"><span class="art" aria-hidden="true">🎋</span><b>Bamboo catch</b><small>Catch the falling food</small></button>
           <button type="button" class="pg-gamecard race" data-game="race"><span class="art" aria-hidden="true">🏁</span><b>Treat race</b><small>Tap fastest · up to 4</small></button>
@@ -4543,7 +4550,7 @@ span.pg-headicon { background: none; box-shadow: none; }
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261102214216";   // replaced by build_real.ps1
+    var APP_BUILD = "20261102215709";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -5136,11 +5143,33 @@ span.pg-headicon { background: none; box-shadow: none; }
       var g = GAMES[game];
       $("g-picktitle").textContent = g.art + " " + (game === "race" ? "Who's racing?" : "Who do you want to play?");
       $("g-picksub").textContent = g.max > 1 ? "Pick up to " + g.max + " players. The race starts when they join." : "Pick a player. The game starts when they join.";
+      $("g-picksend").hidden = false; $("g-pickbot").hidden = false; $("g-pickclose").textContent = "Cancel";
+      $("g-pick").hidden = false;
+      renderPick(); loadFriends();
+    }
+    // tap "🟢 N players online" in the Playground: the same list, just to look (tap someone for their card)
+    function openOnlineList() {
+      if (!showOnline()) { say("Turn on \"Show me as online\" at the bottom of the Playground to see who's here."); return; }
+      pick = { game: null, chosen: {} };
+      $("g-picktitle").textContent = "🟢 Online now";
+      $("g-picksub").textContent = "Tap someone to play with them, add a friend and more.";
+      $("g-picksend").hidden = true; $("g-pickbot").hidden = true; $("g-pickclose").textContent = "Close";
       $("g-pick").hidden = false;
       renderPick(); loadFriends();
     }
     function renderPick() {
       if (!pick) return;
+      if (!pick.game) {   // just looking: everyone online, a tap opens their card
+        var lb = $("g-picklist"); lb.innerHTML = "";
+        var all = Object.keys(online).map(function (k) { return online[k]; });
+        all.sort(function (a, b) { return (friendOf(b.uid) ? 1 : 0) - (friendOf(a.uid) ? 1 : 0); });
+        all.forEach(function (e) {
+          lb.appendChild(pickRow(e.uid, petPic(e.variant), petTagHTML(e),
+            (e.busy ? "🎮 Playing right now" : (friendOf(e.uid) ? "👫 Friend · " : "") + "Lv " + e.level + " · 🏁 " + (e.wins || 0) + (e.wins === 1 ? " win" : " wins")), false, function () { openPetOpts(e); }));
+        });
+        if (!all.length) lb.innerHTML = '<li class="pg-logempty">🌙 Nobody else is online right now.<br>Check back later, or invite a friend from 💬.</li>';
+        return;
+      }
       var box = $("g-picklist"); box.innerHTML = "";
       var on = Object.keys(online).map(function (k) { return online[k]; });
       on.sort(function (a, b) { return (friendOf(b.uid) ? 1 : 0) - (friendOf(a.uid) ? 1 : 0); });
@@ -5168,7 +5197,9 @@ span.pg-headicon { background: none; box-shadow: none; }
       li.innerHTML = '<button type="button" class="pg-petpick" aria-label="More about this pet"><img alt="" src="' + esc(pic) + '"></button>' +
         '<button type="button" class="pg-pickmain" aria-pressed="' + on + '"' + (off ? " disabled" : "") + '><span class="pg-grow"><span class="ttl">' + html + "</span><small>" + esc(sub) + '</small></span><i class="tick" aria-hidden="true"></i></button>';
       li.querySelector(".pg-petpick").addEventListener("click", onPet);
+      if (!pick.game) li.classList.add("look");
       li.querySelector(".pg-pickmain").addEventListener("click", function () {
+        if (!pick.game) { onPet(); return; }
         var max = GAMES[pick.game].max;
         if (pick.chosen[uid]) delete pick.chosen[uid];
         else {
@@ -5810,7 +5841,8 @@ span.pg-headicon { background: none; box-shadow: none; }
     }
     function renderOnlineCount() {
       var n = Object.keys(online).length;
-      $("g-onlinecount").textContent = !showOnline() ? "🙈 You're hidden, so you can only play solo." : n ? "🟢 " + n + (n === 1 ? " player" : " players") + " online now" : "🌙 Nobody else is online right now";
+      $("g-onlinecount").innerHTML = !showOnline() ? "🙈 You're hidden, so you can only play solo." : n ? "🟢 " + n + (n === 1 ? " player" : " players") + ' online now <span class="see">See who ›</span>' : "🌙 Nobody else is online right now";
+      $("g-onlinecount").classList.toggle("has", !!n && showOnline());
     }
     // the high scores show one game at a time (tabs)
     var boardGame = "bamboo", BOARD_NAMES = { bamboo: "Bamboo catch", memory: "Memory match" };
@@ -5852,6 +5884,7 @@ span.pg-headicon { background: none; box-shadow: none; }
     $("g-playclose").addEventListener("click", function () { $("g-play").hidden = true; render(); });
     $("g-playsocial").addEventListener("click", function () { openSocial(); });
     $("g-mywins").addEventListener("click", openHistory);
+    $("g-onlinecount").addEventListener("click", openOnlineList);
     Array.prototype.forEach.call(document.querySelectorAll(".pg-boardtabs [data-board]"), function (b) {
       b.addEventListener("click", function () { boardGame = b.dataset.board; renderPlay(); });
     });
