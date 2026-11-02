@@ -514,6 +514,22 @@ html, body { background: #e6edf0; }
 .pg-gametile.bamboo { background: linear-gradient(150deg, #5fbf6a, #2f8f5b); }
 .pg-gametile.race { background: linear-gradient(150deg, #ff8a5c, #e2456f); }
 .pg-gametile.soon { background: linear-gradient(150deg, #b9b2d6, #8f88b3); }
+.pg-gametile.duel { background: linear-gradient(150deg, #3fb5a3, #2c6fbf); }
+/* which game? */
+.pg-pickgames { display: flex; gap: 10px; margin: 6px 0 4px; }
+.pg-pickgames .pg-gametile { flex: 1; border: 0; text-align: left; font: inherit; cursor: pointer; }
+/* a duel: the other player's live score, and quick chat bubbles at the top */
+.pg-gamehud .op { display: flex; align-items: center; gap: 4px; font-size: 0.95rem; max-width: 46%; overflow: hidden; }
+.pg-gamehud .op .nm { min-width: 0; flex: 1 1 auto; overflow: hidden; }
+.pg-gamehud .op .pg-tag { min-width: 0; max-width: 100%; }
+.pg-gamehud .op .pg-tag b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pg-gamehud .op .opn { flex: none; }   /* the score always shows; a long name gets cut instead */
+.pg-gamehud .op b { font-size: 1.1rem; }
+.pg-duelbubbles { position: absolute; top: calc(64px + env(safe-area-inset-top, 0px)); left: 12px; right: 12px; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; pointer-events: none; }
+.pg-duelbubbles .pg-bubble { position: static; }
+.pg-duelbubbles .pg-bubble.mine { align-self: flex-start; background: var(--brand); color: #fff; }
+.pg-gameend .vs { font-size: 1.4rem; color: #55666e; font-weight: 700; }
+
 .pg-gametile.soon small { font-weight: 700; }
 .pg-people { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
 .pg-people li { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 16px; background: rgba(255,255,255,0.88); box-shadow: 0 2px 10px rgba(60,30,90,0.06); }
@@ -927,6 +943,12 @@ html, body { background: #e6edf0; }
             <small>Live · tap fastest to the treat</small>
             <button type="button" class="pg-feed" id="g-racefind">Find a racer</button>
           </div>
+          <div class="pg-gametile duel">
+            <span class="art" aria-hidden="true">🎋⚔️</span>
+            <b>Bamboo duel</b>
+            <small>Live · same 30 s, highest score wins</small>
+            <button type="button" class="pg-feed" id="g-duelfind">Find a player</button>
+          </div>
           <div class="pg-gametile soon"><span class="art" aria-hidden="true">🃏</span><b>Memory match</b><small>Coming soon</small></div>
           <div class="pg-gametile soon"><span class="art" aria-hidden="true">⚽</span><b>Ball pass</b><small>Coming soon</small></div>
         </div>
@@ -969,6 +991,17 @@ html, body { background: #e6edf0; }
         <input id="g-chatin" maxlength="200" autocomplete="off" placeholder="Say something nice…" aria-label="Message">
         <button type="submit" class="pg-btn pg-primary" id="g-chatsend" aria-label="Send">➤</button>
       </form>
+    </div>
+    <!-- "Play" with someone: which game? -->
+    <div class="pg pg-adopt" id="g-gamepick" hidden>
+      <div class="pg-card">
+        <h2>Which game?</h2>
+        <div class="pg-pickgames">
+          <button type="button" class="pg-gametile race" id="g-pickrace"><span class="art" aria-hidden="true">🏁</span><b>Treat race</b><small>Tap fastest to the treat</small></button>
+          <button type="button" class="pg-gametile duel" id="g-pickduel"><span class="art" aria-hidden="true">🎋⚔️</span><b>Bamboo duel</b><small>Highest score in 30 s</small></button>
+        </div>
+        <button type="button" class="pg-linkbtn" id="g-pickno">Cancel</button>
+      </div>
     </div>
     <!-- a live invite (anywhere in the app) or a friend's invite from when you were away -->
     <div class="pg pg-card pg-invite" id="g-invite" hidden role="alertdialog" aria-labelledby="g-invitetext">
@@ -3725,14 +3758,24 @@ html, body { background: #e6edf0; }
   // 30 seconds, full screen. Drag (or use the arrow keys) to move your pet along the bottom and catch the falling
   // food: +1 each, golden bamboo +3, and dodge the rocks (-2). Things fall faster as time runs out.
   // startBambooGame({ pic, name, onEnd(score) }) builds its own screen; real.js saves the score and shows the board.
+  // As a live duel: { seed, live: true, them: {html}, onScore(n), onQuick(i) } -> both phones get the same falling
+  // things (from the shared seed), the game waits for start() so both begin together, and opp(n) / quick(i) show the
+  // other player's score and quick chat. The clock doesn't pause in a duel (the other player keeps going).
+  function seeded(seed) {   // a small repeatable random number maker (mulberry32)
+    var a = seed >>> 0;
+    return function () { a = (a + 0x6D2B79F5) >>> 0; var t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+  }
   var BAMBOO_TIME = 30;
   var BAMBOO_FOODS = ["🍎", "🍌", "🥕", "🍓", "🍉", "🍇", "🍑"];
   function startBambooGame(opts) {
     var wrap = document.createElement("div"); wrap.className = "pg-game";
     wrap.innerHTML =
       '<canvas aria-label="Bamboo catch: move your pet to catch the falling food"></canvas>' +
-      '<div class="pg-gamehud"><span class="sc">0</span><span class="tm">' + BAMBOO_TIME + 's</span>' +
+      '<div class="pg-gamehud"><span class="sc">0</span>' + (opts.live ? '<span class="op"><span class="nm"></span> <b class="opn">0</b></span>' : "") +
+      '<span class="tm">' + BAMBOO_TIME + 's</span>' +
+      (opts.onQuick ? '<button type="button" class="pg-qcbtn" aria-label="Quick chat">💬</button>' : "") +
       '<button type="button" class="pg-gamex" aria-label="Stop the game">✕</button></div>' +
+      '<div class="pg-qcpal" hidden></div><div class="pg-duelbubbles"></div>' +
       '<div class="pg-gamemsg"></div>';
     document.body.appendChild(wrap);
     var cv = wrap.querySelector("canvas"), g = cv.getContext("2d"), msg = wrap.querySelector(".pg-gamemsg");
@@ -3744,7 +3787,24 @@ html, body { background: #e6edf0; }
     var pet = new Image(); pet.src = opts.pic;
     var P = 86;                                    // the pet's size on screen
     var px = W / 2, tx = W / 2, score = 0, items = [], pops = [], shake = 0;
-    var state = "count", t0 = performance.now(), last = t0, spawnIn = 0, ended = false, running = true, keys = {};
+    var state = opts.live ? "wait" : "count", t0 = performance.now(), last = t0, spawnIn = 0, ended = false, running = true, keys = {};
+    var rnd = opts.seed ? seeded(opts.seed) : Math.random;
+    var opEl = wrap.querySelector(".op .opn");   // (not just "b": the name with its badge has a <b> too)
+    if (opts.live) { wrap.querySelector(".op .nm").innerHTML = opts.them.html || ""; msg.className = "pg-gamemsg big"; msg.textContent = "Get ready…"; }
+    // quick chat (duels): set phrases only, shown as bubbles at the top
+    var bubbles = wrap.querySelector(".pg-duelbubbles"), pal = wrap.querySelector(".pg-qcpal"), lastQc = 0;
+    function duelBubble(text, mine) {
+      var b = document.createElement("span"); b.className = "pg-bubble" + (mine ? " mine" : ""); b.textContent = (mine ? "You: " : "") + text;
+      bubbles.appendChild(b); setTimeout(function () { b.remove(); }, 2600);
+    }
+    if (opts.onQuick) {
+      QUICK_CHAT.forEach(function (t, i) {
+        var c = document.createElement("button"); c.type = "button"; c.textContent = t;
+        c.addEventListener("click", function () { pal.hidden = true; if (Date.now() - lastQc < 1500) return; lastQc = Date.now(); duelBubble(t, true); opts.onQuick(i); });
+        pal.appendChild(c);
+      });
+      wrap.querySelector(".pg-qcbtn").addEventListener("click", function () { pal.hidden = !pal.hidden; });
+    }
 
     // moving: drag anywhere, or the arrow keys
     function aim(e) { var r = cv.getBoundingClientRect(); tx = Math.max(P / 2, Math.min(W - P / 2, e.clientX - r.left)); }
@@ -3754,14 +3814,14 @@ html, body { background: #e6edf0; }
     window.addEventListener("keydown", onKey); window.addEventListener("keyup", onKey);
     // leaving the app pauses the clock
     var pausedAt = 0;
-    function onVis() { if (document.hidden) pausedAt = performance.now(); else if (pausedAt) { var d = performance.now() - pausedAt; t0 += d; last += d; pausedAt = 0; } }
+    function onVis() { if (opts.live) return; if (document.hidden) pausedAt = performance.now(); else if (pausedAt) { var d = performance.now() - pausedAt; t0 += d; last += d; pausedAt = 0; } }
     document.addEventListener("visibilitychange", onVis);
 
     function spawn(elapsed) {
-      var r = Math.random(), kind = r < 0.1 ? "gold" : r < 0.1 + Math.min(0.28, 0.12 + elapsed / 120) ? "rock" : "food";
-      items.push({ x: 24 + Math.random() * (W - 48), y: -30, kind: kind,
-        icon: kind === "gold" ? "🎋" : kind === "rock" ? "🪨" : BAMBOO_FOODS[Math.floor(Math.random() * BAMBOO_FOODS.length)],
-        v: (H / 3.2) * (1 + elapsed / 22) * (0.85 + Math.random() * 0.3), spin: (Math.random() - 0.5) * 2 });
+      var r = rnd(), kind = r < 0.1 ? "gold" : r < 0.1 + Math.min(0.28, 0.12 + elapsed / 120) ? "rock" : "food";
+      items.push({ x: 24 + rnd() * (W - 48), y: -30, kind: kind,
+        icon: kind === "gold" ? "🎋" : kind === "rock" ? "🪨" : BAMBOO_FOODS[Math.floor(rnd() * BAMBOO_FOODS.length)],
+        v: (H / 3.2) * (1 + elapsed / 22) * (0.85 + rnd() * 0.3), spin: (rnd() - 0.5) * 2 });
     }
     function pop(x, y, text, color) { pops.push({ x: x, y: y, text: text, color: color, t: 0 }); }
 
@@ -3800,7 +3860,7 @@ html, body { background: #e6edf0; }
         hudTime.textContent = Math.ceil(left) + "s";
         hudTime.classList.toggle("low", left <= 5);
         spawnIn -= dt;
-        if (spawnIn <= 0 && left > 0.4) { spawn(since); spawnIn = Math.max(0.28, 0.85 - since / 45) * (0.7 + Math.random() * 0.6); }
+        if (spawnIn <= 0 && left > 0.4) { spawn(since); spawnIn = Math.max(0.28, 0.85 - since / 45) * (0.7 + rnd() * 0.6); }
         if (left <= 0) finish();
       }
 
@@ -3812,6 +3872,7 @@ html, body { background: #e6edf0; }
           if (it.kind === "rock") { score = Math.max(0, score - 2); pop(it.x, catchY, "-2", "#b3261e"); shake = 0.3; if (typeof sfx === "function") sfx("splat"); }
           else { var add = it.kind === "gold" ? 3 : 1; score += add; pop(it.x, catchY, "+" + add, it.kind === "gold" ? "#c98a00" : "#2b8a3e"); if (typeof sfx === "function") sfx(it.kind === "gold" ? "coin" : "click"); }
           hudScore.textContent = score;
+          if (opts.onScore) opts.onScore(score);
           return false;
         }
         if (it.y > H + 40) return false;
@@ -3848,10 +3909,17 @@ html, body { background: #e6edf0; }
       wrap.remove();
     }
     wrap.querySelector(".pg-gamex").addEventListener("click", function () {
-      if (state === "play" && !confirm("Stop the game? This score won't count.")) return;
+      if (state === "play" && !confirm(opts.live ? "Leave the duel?" : "Stop the game? This score won't count.")) return;
       close(); if (opts.onQuit) opts.onQuit();
     });
-    return { close: close };
+    return {
+      wrap: wrap, close: close,
+      // a duel: both phones start the 3-2-1 together
+      start: function () { if (state === "wait") { state = "count"; t0 = performance.now(); last = t0; } },
+      opp: function (n) { if (opEl) opEl.textContent = n; },
+      quick: function (i) { if (QUICK_CHAT[i]) duelBubble(QUICK_CHAT[i], false); },
+      score: function () { return score; }
+    };
   }
 
   // ---------- Treat race (live, two players) ----------
@@ -3947,13 +4015,14 @@ html, body { background: #e6edf0; }
       close: close
     };
   }
-  // Bamboo the bot: taps 5 to 7 times a second, with little pauses, so it's beatable but not a walkover
+  // Bamboo the bot: taps about 7 times a second with the odd short pause (the whole race in about 6 seconds),
+  // so you need quick fingers to beat it
   function botRacer(race) {
     var n = 0, alive = true;
     function step() {
       if (!alive) return;
       n++; race.opp(n);
-      if (n < RACE_STEPS) setTimeout(step, 140 + Math.random() * 70 + (Math.random() < 0.08 ? 300 : 0));
+      if (n < RACE_STEPS) setTimeout(step, 120 + Math.random() * 50 + (Math.random() < 0.05 ? 220 : 0));
     }
     setTimeout(step, 2400 + 250);
     return { stop: function () { alive = false; } };
@@ -3972,7 +4041,7 @@ html, body { background: #e6edf0; }
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261102064520";   // replaced by build_real.ps1
+    var APP_BUILD = "20261102065609";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -4513,23 +4582,32 @@ html, body { background: #e6edf0; }
     }
     function sendLive(event, payload) { if (lobby && lobbyReady) lobby.send({ type: "broadcast", event: event, payload: payload }); }
 
-    // --- live race invites ---
-    function inviteToRace(uid) {
+    // --- live invites: a Treat race ("race") or a Bamboo duel ("bamboo") ---
+    var GAME_NAMES = { race: "🏁 Treat race", bamboo: "🎋 Bamboo duel" };
+    function inviteToPlay(uid, game) {
       var e = online[uid];
       if (!e) { say("They just left. Invite them from Friends to call them back."); return; }
-      if (e.busy) { say(label(e) + " is in a race right now. Try again in a moment."); return; }
+      if (e.busy) { say(label(e) + " is playing right now. Try again in a moment."); return; }
       if (raceNow) return;
       var room = Math.random().toString(36).slice(2, 10);
-      sentInvites[room] = uid;
-      sendLive("invite", { to: uid, from: me.id, room: room, game: "race", me: myPresence() });
-      say("🏁 Race invite sent to " + label(e) + ". Waiting for them…");
+      sentInvites[room] = { uid: uid, game: game };
+      sendLive("invite", { to: uid, from: me.id, room: room, game: game, me: myPresence() });
+      say(GAME_NAMES[game] + " invite sent to " + label(e) + ". Waiting for them…");
       setTimeout(function () { if (sentInvites[room]) { delete sentInvites[room]; say(label(e) + " didn't answer this time."); } }, 25000);
+    }
+    // "Play" with someone: pick the game first
+    function pickGame(then) {
+      $("g-gamepick").hidden = false;
+      $("g-pickrace").onclick = function () { $("g-gamepick").hidden = true; then("race"); };
+      $("g-pickduel").onclick = function () { $("g-gamepick").hidden = true; then("bamboo"); };
+      $("g-pickno").onclick = function () { $("g-gamepick").hidden = true; };
     }
     function gotInvite(m) {
       if (!m || m.to !== me.id || !m.me || blocked.indexOf(m.me.pet_id) >= 0) return;
       if (raceNow || inviteOpen) { sendLive("reply", { to: m.from, from: me.id, room: m.room, ok: false, busy: true }); return; }
-      showInvite({ live: m, pic: petPic(m.me.variant),
-        html: "🏁 " + petTagHTML(m.me) + " wants to race!", canBlock: !friendOf(m.from) });
+      var game = m.game === "bamboo" ? "bamboo" : "race";
+      showInvite({ live: m, game: game, pic: petPic(m.me.variant),
+        html: (game === "bamboo" ? "🎋 " : "🏁 ") + petTagHTML(m.me) + (game === "bamboo" ? " wants a Bamboo duel!" : " wants to race!"), canBlock: !friendOf(m.from) });
       clearTimeout(gotInvite.t);
       gotInvite.t = setTimeout(function () { if (inviteOpen && inviteOpen.live === m) answerInvite(false); }, 20000);
     }
@@ -4538,7 +4616,7 @@ html, body { background: #e6edf0; }
       $("g-invitepic").src = inv.pic;
       if (inv.html) $("g-invitetext").innerHTML = inv.html; else $("g-invitetext").textContent = inv.text;
       $("g-inviteblock").hidden = !inv.canBlock;
-      $("g-inviteyes").textContent = inv.live ? "🏁 Race!" : "🎮 Join";
+      $("g-inviteyes").textContent = inv.live ? (inv.game === "bamboo" ? "🎋 Play!" : "🏁 Race!") : "🎮 Join";
       $("g-invite").hidden = false; wake(); sfx("happy");
     }
     function answerInvite(ok) {
@@ -4547,21 +4625,23 @@ html, body { background: #e6edf0; }
       if (inv.live) {
         var m = inv.live;
         sendLive("reply", { to: m.from, from: me.id, room: m.room, ok: ok, me: ok ? myPresence() : null });
-        if (ok) runRace(m.room, m.me, false);
+        if (ok) playLive(inv.game, m.room, m.me, false);
       } else if (ok) {
         // a friend's invite from while I was away: go to the Playground and call them if they're still there
         openPlay();
-        if (online[inv.from]) inviteToRace(inv.from);
+        if (online[inv.from]) inviteToPlay(inv.from, inv.game || "race");
         else say(inv.name + " isn't in the Playground right now. Tap 🎮 Invite next to them in Friends to call them back.");
       }
     }
     function gotReply(m) {
-      if (!m || m.to !== me.id || sentInvites[m.room] !== m.from) return;
+      var sent = m && sentInvites[m.room];
+      if (!m || m.to !== me.id || !sent || sent.uid !== m.from) return;
       delete sentInvites[m.room];
       var e = online[m.from] || m.me || {};
       if (!m.ok) { say(m.busy ? label(e) + " is busy right now." : label(e) + " said no thanks this time."); return; }
-      runRace(m.room, m.me, true);
+      playLive(sent.game, m.room, m.me, true);
     }
+    function playLive(game, room, them, host) { if (game === "bamboo") runDuel(room, them, host); else runRace(room, them, host); }
     $("g-inviteyes").addEventListener("click", function () { answerInvite(true); });
     $("g-inviteno").addEventListener("click", function () { answerInvite(false); });
     $("g-inviteblock").addEventListener("click", function () {
@@ -4631,9 +4711,9 @@ html, body { background: #e6edf0; }
       var done = function () { if (raceNow && raceNow.cleanup) raceNow.cleanup(); };
       end.querySelector('[data-a="done"]').addEventListener("click", function () { done(); openPlay(); });
       var again = end.querySelector('[data-a="again"]');
-      if (again) again.addEventListener("click", function () { done(); openPlay(); inviteToRace(them.uid); });
+      if (again) again.addEventListener("click", function () { done(); openPlay(); inviteToPlay(them.uid, "race"); });
       var fr = end.querySelector('[data-a="friend"]');
-      if (fr) fr.addEventListener("click", function () { addFriendPet(them); fr.disabled = true; fr.textContent = "Request sent ✓"; });
+      if (fr) fr.addEventListener("click", async function () { if (await addFriendPet(them)) { fr.disabled = true; fr.textContent = "Request sent ✓"; } });
       var bl = end.querySelector('[data-a="block"]');
       if (bl) bl.addEventListener("click", function () { done(); openPlay(); blockPet(them); });
     }
@@ -4660,6 +4740,96 @@ html, body { background: #e6edf0; }
       race.start(); bot = botRacer(race);
     }
 
+    // --- a live Bamboo duel: same handshake as the race; scores go both ways, then each sends its final score ---
+    function seedOf(room) { var h = 2166136261; for (var i = 0; i < room.length; i++) { h ^= room.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+    function runDuel(room, them, host) {
+      var p = pet(); if (!p || raceNow) return;
+      $("g-play").hidden = true;
+      var ch = sb.channel("pg-room-" + room, { config: { broadcast: { self: false } } });
+      var started = false, latest = 0, sent = -1, hereTimer = null, giveUp = null, theirFinal = null, myFinal = null, finishWait = null, gone = false;
+      var game = startBambooGame({
+        pic: petPic(p.variant), seed: seedOf(room), live: true, them: { html: petTagHTML(them) },
+        onScore: function (n) { latest = n; },
+        onQuick: function (i) { ch.send({ type: "broadcast", event: "qc", payload: { i: i } }); },
+        onQuit: function () { ch.send({ type: "broadcast", event: "bye", payload: {} }); cleanup(); openPlay(); },
+        onEnd: function (score) {
+          myFinal = score;
+          ch.send({ type: "broadcast", event: "final", payload: { n: score } });
+          if (theirFinal !== null || gone) result();
+          else finishWait = setTimeout(result, 6000);   // their final is usually here within a second
+        }
+      });
+      raceNow = { ch: ch, race: game }; trackMe();
+      var pump = setInterval(function () { if (latest !== sent) { sent = latest; ch.send({ type: "broadcast", event: "s", payload: { n: sent } }); } }, 300);
+      function go() { if (started) return; started = true; clearInterval(hereTimer); clearTimeout(giveUp); game.start(); }
+      ch.on("broadcast", { event: "s" }, function (m) { game.opp(m.payload.n | 0); })
+        .on("broadcast", { event: "qc" }, function (m) { game.quick(m.payload.i | 0); })
+        .on("broadcast", { event: "final" }, function (m) { theirFinal = m.payload.n | 0; game.opp(theirFinal); if (myFinal !== null) result(); })
+        .on("broadcast", { event: "bye" }, function () { gone = true; if (myFinal !== null) result(); else say(label(them) + " left the duel. Finish your round!"); })
+        .on("broadcast", { event: "go" }, function () { if (!host) go(); })
+        .on("broadcast", { event: "here" }, function () { if (host && !started) { ch.send({ type: "broadcast", event: "go", payload: {} }); go(); } })
+        .subscribe(function (status) {
+          if (status !== "SUBSCRIBED" || host) return;
+          ch.send({ type: "broadcast", event: "here", payload: {} });
+          hereTimer = setInterval(function () { ch.send({ type: "broadcast", event: "here", payload: {} }); }, 600);
+        });
+      giveUp = setTimeout(function () { if (started) return; say("Couldn't connect to " + label(them) + ". Try again in a moment."); cleanup(); openPlay(); }, 12000);
+      var shown = false;
+      async function result() {
+        if (shown) return; shown = true; clearTimeout(finishWait);
+        var mine = myFinal || 0, theirs = theirFinal;
+        var won = theirs === null ? (gone ? true : null) : mine > theirs ? true : mine < theirs ? false : "draw";
+        var wins = p.race_wins || 0;
+        if (won === true) { try { wins = await rpc("record_race_win", { p_id: p.id }); p.race_wins = wins; } catch (e) {} }
+        var end = document.createElement("div"); end.className = "pg-gameend";
+        end.innerHTML = '<div class="big">' + mine + (theirs !== null ? ' <small class="vs">vs ' + theirs + "</small>" : "") + "</div>" +
+          "<p>" + esc(won === true ? "🏆 You win! " + p.name + " has " + wins + (wins === 1 ? " win" : " wins") + " 🏁"
+                      : won === false ? label(them) + " wins this time!" : won === "draw" ? "🤝 It's a draw!" : "We lost touch with " + label(them) + ".") + "</p>" +
+          '<div class="pg-row"><button type="button" class="pg-btn pg-grow" data-a="done">Done</button>' +
+          (them.uid && online[them.uid] ? '<button type="button" class="pg-feed pg-grow" data-a="again">🎋 Again</button>' : "") + "</div>";
+        game.wrap.appendChild(end);
+        sfx(won === true ? "levelUp" : "pat");
+        end.querySelector('[data-a="done"]').addEventListener("click", function () { cleanup(); openPlay(); });
+        var again = end.querySelector('[data-a="again"]');
+        if (again) again.addEventListener("click", function () { cleanup(); openPlay(); inviteToPlay(them.uid, "bamboo"); });
+      }
+      function cleanup() {
+        clearInterval(pump); clearInterval(hereTimer); clearTimeout(giveUp); clearTimeout(finishWait);
+        game.close();
+        try { sb.removeChannel(ch); } catch (e) {}
+        raceNow = null; trackMe();
+      }
+    }
+    // practice duel: Bamboo the bot catches something every second or so (about 20-25 points)
+    function duelBot() {
+      var p = pet(); if (!p || raceNow) return;
+      $("g-play").hidden = true;
+      var botScore = 0, timer = null;
+      var game = startBambooGame({
+        pic: petPic(p.variant), seed: (Math.random() * 1e9) >>> 0, live: true, them: { html: "Bamboo the bot 🤖" },
+        onQuit: function () { clearTimeout(timer); raceNow = null; trackMe(); openPlay(); },
+        onEnd: function (score) {
+          clearTimeout(timer);
+          var won = score > botScore ? true : score < botScore ? false : "draw";
+          var end = document.createElement("div"); end.className = "pg-gameend";
+          end.innerHTML = '<div class="big">' + score + ' <small class="vs">vs ' + botScore + "</small></div><p>" +
+            (won === true ? "You beat Bamboo the bot! Practice wins don't count, but you're ready for a real duel." : won === false ? "Bamboo the bot wins! Have another go." : "🤝 A draw with the bot!") + "</p>" +
+            '<div class="pg-row"><button type="button" class="pg-btn pg-grow" data-a="done">Done</button><button type="button" class="pg-feed pg-grow" data-a="again">Again</button></div>';
+          game.wrap.appendChild(end);
+          end.querySelector('[data-a="done"]').addEventListener("click", function () { game.close(); raceNow = null; trackMe(); openPlay(); });
+          end.querySelector('[data-a="again"]').addEventListener("click", function () { game.close(); raceNow = null; duelBot(); });
+        }
+      });
+      raceNow = { race: game }; trackMe();
+      game.start();
+      timer = setTimeout(function step() {
+        var r = Math.random();
+        botScore = Math.max(0, botScore + (r < 0.1 ? 3 : r < 0.22 ? -2 : 1));
+        game.opp(botScore);
+        timer = setTimeout(step, 900 + Math.random() * 700);
+      }, 3800);
+    }
+
     // --- block, report, friends ---
     function blockPet(e) {
       if (!e || !e.pet_id) return;
@@ -4671,21 +4841,24 @@ html, body { background: #e6edf0; }
       } else say("Blocked.");
       renderOnline();
     }
+    // asks first: a friend request shares your name with them once they accept
     async function addFriendPet(e) {
+      if (!confirm("Send a friend request to " + shownPetName(e.pet) + "'s owner?\n\nIf they accept, you'll both see each other's names and can chat.")) return false;
       try {
         var r = await rpc("friend_request_pet", { p_pet: e.pet_id });
         say(r.status === "friends" ? "🎉 You're friends with " + r.name + " now!" : "➕ Friend request sent. You'll see their name once they accept.");
         loadFriends();
-      } catch (err) { say(err.message); }
+        return true;
+      } catch (err) { say(err.message); return false; }
     }
     async function loadFriends() {
       try { friends = (await rpc("my_friends")) || []; } catch (e) { friends = []; }
       if (!$("g-play").hidden) { renderFriends(); renderOnline(); }
     }
-    async function inviteFriendAway(f, btn) {
+    async function inviteFriendAway(f, btn, game) {
       if (btn) { btn.disabled = true; btn.textContent = "Sending…"; }
       var res = null, msg = null;
-      try { res = await sb.functions.invoke("send-play-invite", { body: { to: f.id, game: "race" } }); }
+      try { res = await sb.functions.invoke("send-play-invite", { body: { to: f.id, game: game || "race" } }); }
       catch (e) { msg = friendly(e && e.message); }
       if (res && res.error) {
         var status = res.error.context && res.error.context.status;
@@ -4730,14 +4903,14 @@ html, body { background: #e6edf0; }
         var list = Object.keys(online).map(function (k) { return online[k]; });
         list.forEach(function (e) {
           var f = friendOf(e.uid), sent = friends.some(function (x) { return x.id === e.uid; });
-          var btns = [{ text: e.busy ? "Racing…" : "🏁 Race", primary: true, disabled: e.busy || !!raceNow, label: "Race " + label(e), go: function () { inviteToRace(e.uid); } }];
-          if (!f && !sent) btns.push({ text: "➕", label: "Add " + shownPetName(e.pet) + " as a friend", go: function (el) { el.disabled = true; addFriendPet(e); } });
+          var btns = [{ text: e.busy ? "Playing…" : "🎮 Play", primary: true, disabled: e.busy || !!raceNow, label: "Play with " + label(e), go: function () { pickGame(function (g) { inviteToPlay(e.uid, g); }); } }];
+          if (!f && !sent) btns.push({ text: "➕", label: "Add " + shownPetName(e.pet) + " as a friend", go: async function (el) { el.disabled = true; if (!(await addFriendPet(e))) el.disabled = false; } });
           if (!f) btns.push({ text: "🚫", label: "Block or report " + shownPetName(e.pet), go: function () { blockPet(e); } });
           box.appendChild(personRow(petPic(e.variant), petTagHTML(e), "Lv " + e.level + " · 🏁 " + (e.wins || 0) + (e.wins === 1 ? " win" : " wins"), btns));
         });
         var li = document.createElement("li"); li.className = "pg-botrow";
-        li.innerHTML = "<span>" + (list.length ? "Or practise first:" : "Nobody else is here right now.") + '</span><button type="button" class="pg-btn">🤖 Race Bamboo the bot</button>';
-        li.querySelector("button").addEventListener("click", raceBot);
+        li.innerHTML = "<span>" + (list.length ? "Or practise first:" : "Nobody else is here right now.") + '</span><button type="button" class="pg-btn">🤖 Play Bamboo the bot</button>';
+        li.querySelector("button").addEventListener("click", function () { pickGame(function (g) { if (g === "bamboo") duelBot(); else raceBot(); }); });
         box.appendChild(li);
       }
       $("g-onlinehead").textContent = "🟢 Online now" + (Object.keys(online).length ? " (" + Object.keys(online).length + ")" : "");
@@ -4753,8 +4926,8 @@ html, body { background: #e6edf0; }
       friends.filter(function (f) { return f.kind === "friend"; }).forEach(function (f) {
         var on = online[f.id];
         var sub = (on ? "🟢 Online · " : "") + (f.pet ? f.pet.name + " · Lv " + f.pet.level + " · 🏁 " + (f.pet.wins || 0) : "No pet yet");
-        var btn = on ? { text: on.busy ? "Racing…" : "🏁 Race", primary: true, disabled: on.busy || !!raceNow, go: function () { inviteToRace(f.id); } }
-                     : { text: "🎮 Invite", go: function (el) { inviteFriendAway(f, el); } };
+        var btn = on ? { text: on.busy ? "Playing…" : "🎮 Play", primary: true, disabled: on.busy || !!raceNow, go: function () { pickGame(function (g) { inviteToPlay(f.id, g); }); } }
+                     : { text: "🎮 Invite", go: function (el) { pickGame(function (g) { inviteFriendAway(f, el, g); }); } };
         var chatBtn = { text: "💬" + (unread[f.id] ? " " + unread[f.id] : ""), label: "Chat with " + f.name, primary: !!unread[f.id], go: function () { openChat(f); } };
         box.appendChild(personRow(petPic(f.pet && f.pet.variant), tagHTML(f.pet ? f.pet.level : 1, f.name), sub, [chatBtn, btn]));
       });
@@ -4832,18 +5005,21 @@ html, body { background: #e6edf0; }
       if (!inv) return;
       seen.push(inv.id); try { localStorage.setItem(AWAY_SEEN_KEY, JSON.stringify(seen.slice(-50))); } catch (e) {}
       var f = friendOf(inv.from);
-      showInvite({ from: inv.from, name: inv.name, pic: petPic(f && f.pet && f.pet.variant), canBlock: false,
-        text: "🎮 " + inv.name + " invited you to " + (inv.game === "race" ? "a Treat race" : "play") + "!" });
+      showInvite({ from: inv.from, name: inv.name, game: inv.game, pic: petPic(f && f.pet && f.pet.variant), canBlock: false,
+        text: "🎮 " + inv.name + " invited you to " + (inv.game === "bamboo" ? "a Bamboo duel" : "a Treat race") + "!" });
     }
     $("g-playbtn").addEventListener("click", openPlay);
     $("g-playclose").addEventListener("click", function () { $("g-play").hidden = true; render(); });
     $("g-gameplay").addEventListener("click", startGame);
-    $("g-racefind").addEventListener("click", function () {
-      var n = Object.keys(online).length;
-      if (!showOnline()) { say("Turn on \"Show my pet as online\" below to race other players."); return; }
-      if (!n) { raceBot(); return; }
+    // the game tiles: play someone who's online, or the bot if nobody is
+    function findPlayer(game) {
+      if (!showOnline()) { say("Turn on \"Show my pet as online\" below to play other players."); return; }
+      if (!Object.keys(online).length) { if (game === "bamboo") duelBot(); else raceBot(); return; }
       $("g-onlinehead").scrollIntoView({ behavior: "smooth", block: "start" });
-    });
+      say("Tap 🎮 Play next to someone to invite them.");
+    }
+    $("g-racefind").addEventListener("click", function () { findPlayer("race"); });
+    $("g-duelfind").addEventListener("click", function () { findPlayer("bamboo"); });
     $("g-showonline").addEventListener("change", function () {
       try { localStorage.setItem(SHOW_ONLINE_KEY, $("g-showonline").checked ? "on" : "off"); } catch (e) {}
       syncLobby(); renderOnline(); renderFriends();
