@@ -1050,6 +1050,65 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
 #g-picksend[hidden], #g-pickbot[hidden] { display: none; }
 .pg-pickrow.look .tick::before { content: "›"; color: #8a8399; font-size: 1.3rem; }
 .pg-pickrow.look .tick { border: 0; }
+/* ---------- Update 21: the streak calendar ---------- */
+.pg-calcard { max-height: calc(100dvh - 32px); overflow-y: auto; text-align: left; }
+.pg-calhead { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.pg-calbig { flex: 1; display: flex; align-items: baseline; gap: 6px; padding: 10px 14px; border-radius: 18px; background: linear-gradient(150deg, #ffcf5c, #ff8a5c); color: #4a1f00; }
+.pg-calbig span { font-size: 1.6rem; align-self: center; }
+.pg-calbig b { font-family: var(--display); font-size: 2.2rem; line-height: 1; }
+.pg-calbig small { font-weight: 700; font-size: 0.95rem; }
+.pg-calstats { flex: none; font-size: 0.9rem; line-height: 1.6; color: #2c3d45; text-align: right; }
+.pg-calnav { display: flex; align-items: center; justify-content: space-between; margin: 4px 0 8px; }
+.pg-calnav b { font-size: 1.05rem; color: #14232b; }
+.pg-calarrow { width: 38px; height: 38px; border-radius: 50%; border: 1px solid #d6e0e4; background: #fff; font-size: 1.3rem; font-weight: 800; color: #14232b; }
+.pg-calarrow[disabled] { opacity: 0.3; }
+.pg-calgrid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.pg-calgrid .wd { text-align: center; font-size: 0.75rem; font-weight: 800; color: #8a99a0; padding-bottom: 2px; }
+.pg-calgrid .day { position: relative; aspect-ratio: 1; border-radius: 12px; background: #f3f7f8; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.pg-calgrid .day i { font-style: normal; font-size: 0.7rem; font-weight: 700; color: #55666e; line-height: 1; }
+.pg-calgrid .day em { font-style: normal; font-size: 1.05rem; line-height: 1.2; }
+.pg-calgrid .day.full { background: #ffe6c7; }
+.pg-calgrid .day.full i { color: #a5521f; }
+.pg-calgrid .day.frozen { background: #e1f1fc; }
+.pg-calgrid .day.half { background: #fff4d6; }
+.pg-calgrid .day.miss { background: #f6eef0; }
+.pg-calgrid .day.miss em { font-size: 0.75rem; opacity: 0.6; }
+.pg-calgrid .day.off { background: none; }
+.pg-calgrid .day.off i { color: #c3ccd0; }
+.pg-calgrid .day.today { box-shadow: inset 0 0 0 2px var(--brand); }
+.pg-calsum { margin: 8px 0 0; font-weight: 700; color: #a5521f; font-size: 0.92rem; min-height: 1.2em; }
+.pg-callegend { display: flex; flex-wrap: wrap; gap: 4px 12px; margin: 8px 0; font-size: 0.78rem; color: #55666e; }
+.pg-calhow { margin: 4px 0 12px; font-size: 0.92rem; }
+.pg-calhow summary { cursor: pointer; font-weight: 700; color: var(--brand); }
+#g-streakinfo .pg-calhow p { font-size: 0.9rem; margin: 8px 0 0; }
+.pg-calcard .pg-feed { width: 100%; }
+/* ---------- Update 21: Ball pass ---------- */
+.pg-gamegrid .pg-gamecard.ball { background: linear-gradient(150deg, #4fb3ff, #2f6fe0); }
+.pg-gametile.ball { background: linear-gradient(150deg, #4fb3ff, #2f6fe0); }
+.pg-pickgames { display: grid; grid-template-columns: 1fr 1fr; }
+.pg-game.pg-ball { background: linear-gradient(180deg, #bfe8ff 0%, #e9f8e6 62%, #9fcf7f 62.2%, #8cc46c 100%); overflow: hidden; }
+.pg-ball .pg-gamehud .lbl { margin-right: auto; }
+.pb-pet { position: absolute; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 4px; pointer-events: none; }
+.pb-pet.them { top: calc(78px + env(safe-area-inset-top, 0px)); }
+.pb-pet.me { bottom: calc(60px + env(safe-area-inset-bottom, 0px)); }
+.pb-pet img { width: 110px; height: 110px; object-fit: contain; filter: drop-shadow(0 6px 6px rgba(0,0,0,0.15)); }
+.pb-pet.them img { width: 96px; height: 96px; }
+.pb-pet img.kick { animation: pb-kick 0.25s ease-out; }
+@keyframes pb-kick { 40% { transform: translateY(-14px) scale(1.06); } }
+.pb-pet .who { display: flex; align-items: center; gap: 4px; font-weight: 800; color: #2b1d3a; white-space: nowrap; }
+.pb-pet .pg-bubble { top: -10px; right: -30px; }
+.pb-ring { position: absolute; left: 50%; top: 40%; width: 120px; height: 120px; border-radius: 50%; border: 5px solid rgba(255,255,255,0.95); box-shadow: 0 0 0 3px rgba(47,127,224,0.35); transform: translate(-50%,-50%); opacity: 0; pointer-events: none; }
+.pb-ring.now { border-color: #36c38a; box-shadow: 0 0 0 4px rgba(54,195,138,0.45), 0 0 24px rgba(54,195,138,0.6); }
+.pb-ball { position: absolute; left: 0; top: 0; width: 44px; height: 44px; font-size: 40px; line-height: 44px; text-align: center; pointer-events: none; will-change: transform; filter: drop-shadow(0 6px 4px rgba(0,0,0,0.2)); }
+.pb-ball.fall { transition: transform 0.9s ease-in, opacity 0.9s; opacity: 0; }
+.pb-score { position: absolute; left: 0; right: 0; top: 40%; text-align: center; font-family: var(--display); font-size: 4.2rem; font-weight: 800; color: rgba(43,29,58,0.18); pointer-events: none; }
+.pb-say { position: absolute; left: 0; right: 0; bottom: calc(220px + env(safe-area-inset-bottom, 0px)); text-align: center; font-family: var(--display); font-size: 1.6rem; font-weight: 800; color: #2b1d3a; opacity: 0; transform: translateY(10px); transition: opacity 0.15s, transform 0.15s; pointer-events: none; }
+.pb-say.show { opacity: 1; transform: none; }
+.pb-say.good { color: #1f8a5b; }
+.pb-say.bad { color: #b3261e; }
+.pg-ball .pg-gamemsg { top: 30%; color: #2b1d3a; text-shadow: 0 2px 0 #fff; }
+.pb-hint { position: absolute; left: 24px; right: 24px; bottom: calc(14px + env(safe-area-inset-bottom, 0px)); margin: 0; text-align: center; font-weight: 700; font-size: 0.9rem; color: #1f4d17; pointer-events: none; transition: opacity 0.4s; }
+.pb-hint.gone { opacity: 0; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -1179,7 +1238,7 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
           <button type="button" class="pg-gamecard bamboo" data-game="bamboo"><span class="art" aria-hidden="true">🎋</span><b>Bamboo catch</b><small>Catch the falling food</small></button>
           <button type="button" class="pg-gamecard race" data-game="race"><span class="art" aria-hidden="true">🏁</span><b>Treat race</b><small>Tap fastest · up to 4</small></button>
           <button type="button" class="pg-gamecard memory" data-game="memory"><span class="art" aria-hidden="true">🃏</span><b>Memory match</b><small>Find the pairs</small></button>
-          <div class="pg-gamecard soon"><span class="art" aria-hidden="true">⚽</span><b>Ball pass</b><small>Coming soon</small></div>
+          <button type="button" class="pg-gamecard ball" data-game="ball"><span class="art" aria-hidden="true">⚽</span><b>Ball pass</b><small>Team up · keep it going</small></button>
         </div>
         <h3 class="pg-playh">🏆 Today's best</h3>
         <div class="pg-tabs pg-boardtabs" role="tablist">
@@ -1302,6 +1361,7 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
           <button type="button" class="pg-gametile race" id="g-pickrace"><span class="art" aria-hidden="true">🏁</span><b>Treat race</b><small>Tap fastest to the treat</small></button>
           <button type="button" class="pg-gametile duel" id="g-pickduel"><span class="art" aria-hidden="true">🎋</span><b>Bamboo duel</b><small>Highest score in 30 s</small></button>
           <button type="button" class="pg-gametile memory" id="g-pickmem"><span class="art" aria-hidden="true">🃏</span><b>Memory match</b><small>Take turns finding pairs</small></button>
+          <button type="button" class="pg-gametile ball" id="g-pickball"><span class="art" aria-hidden="true">⚽</span><b>Ball pass</b><small>Keep it going together</small></button>
         </div>
         <button type="button" class="pg-linkbtn" id="g-pickno">Cancel</button>
       </div>
@@ -1410,13 +1470,23 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
       <button type="button" class="pg-appbarx" id="g-appbarx" aria-label="Hide">✕</button>
     </div>
     <!-- what the streak and freezes mean (tap the streak card) -->
+    <!-- the streak calendar (tap 🔥): a month of feeding days -->
     <div class="pg pg-adopt" id="g-streakinfo" hidden>
-      <div class="pg-card" role="dialog">
-        <div class="pg-howicon">🔥</div>
-        <h2 id="g-sititle">Day streak</h2>
-        <p id="g-sistreak"></p>
-        <p class="pg-sifreeze" id="g-sifreeze"></p>
-        <button type="button" class="pg-feed" id="g-siok">Got it</button>
+      <div class="pg-card pg-calcard" role="dialog" aria-labelledby="g-calmonth">
+        <div class="pg-calhead">
+          <div class="pg-calbig"><span aria-hidden="true">🔥</span><b id="g-sistreak">0</b><small id="g-sititle">day streak</small></div>
+          <div class="pg-calstats" id="g-calstats"></div>
+        </div>
+        <div class="pg-calnav">
+          <button type="button" class="pg-calarrow" id="g-calprev" aria-label="Last month">‹</button>
+          <b id="g-calmonth"></b>
+          <button type="button" class="pg-calarrow" id="g-calnext" aria-label="Next month">›</button>
+        </div>
+        <div class="pg-calgrid" id="g-calgrid"></div>
+        <p class="pg-calsum" id="g-calsum"></p>
+        <div class="pg-callegend"><span>🔥 Counted</span><span>🍎 Only 1 fed</span><span>❄️ Freeze saved it</span><span>✖️ Missed</span></div>
+        <details class="pg-calhow"><summary>How streaks work</summary><p id="g-calhow"></p><p class="pg-sifreeze" id="g-sifreeze"></p></details>
+        <button type="button" class="pg-feed" id="g-siok">Done</button>
       </div>
     </div>
     <div class="pg pg-adopt" id="g-bonusintro" hidden>
@@ -4537,6 +4607,131 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
     };
   }
 
+  // ---------- Ball pass (co-op: keep it going together) ----------
+  // The ball flies between your pet (bottom) and your partner's (top). Tap anywhere as it reaches your pet: the ring
+  // around your pet shrinks to show when. Each pass is a little faster. Miss (or tap too soon) and the ball drops;
+  // the team score is how many passes you made. Only the player the ball is flying to judges their own tap, so both
+  // phones always agree: onHit(n) sends "I hit pass n", onDrop(n) "I dropped it".
+  // startBallPass({ me: { pic, html }, them: { pic, html, bot }, iServe, live, onHit(n), onDrop(n), onQuick(i), onEnd(score), onQuit() })
+  //   -> { wrap, start(), hit(n), drop(n), quick(i), left(), close() }
+  function ballTravel(n) { return Math.max(520, 1500 * Math.pow(0.955, n)); }   // ms for pass n
+  function startBallPass(opts) {
+    var wrap = document.createElement("div"); wrap.className = "pg-game pg-ball";
+    wrap.innerHTML =
+      '<div class="pg-gamehud"><span class="lbl">⚽ Ball pass</span>' +
+        (opts.onQuick ? '<button type="button" class="pg-qcbtn" aria-label="Send an emoji">💬</button>' : "") +
+        '<button type="button" class="pg-gamex" aria-label="Stop the game">✕</button></div>' +
+      '<div class="pg-qcpal" hidden></div>' +
+      '<div class="pb-pet them"><span class="who"></span><img alt=""></div>' +
+      '<div class="pb-score" aria-live="polite">0</div>' +
+      '<div class="pb-pet me"><i class="pb-ring" aria-hidden="true"></i><img alt=""><span class="who"></span></div>' +
+      '<span class="pb-ball" aria-hidden="true">⚽</span>' +
+      '<div class="pb-say"></div><p class="pb-hint">Tap anywhere when the ring around your pet turns green 🟢</p>' +
+      '<div class="pg-gamemsg big">Get ready…</div>';
+    document.body.appendChild(wrap);
+    var themEl = wrap.querySelector(".pb-pet.them"), meEl = wrap.querySelector(".pb-pet.me"), ring = wrap.querySelector(".pb-ring");
+    var ball = wrap.querySelector(".pb-ball"), scoreEl = wrap.querySelector(".pb-score"), sayEl = wrap.querySelector(".pb-say"), msg = wrap.querySelector(".pg-gamemsg");
+    themEl.querySelector("img").src = opts.them.pic; meEl.querySelector("img").src = opts.me.pic;
+    themEl.querySelector(".who").innerHTML = opts.them.html || ""; meEl.querySelector(".who").innerHTML = (opts.me.html || "") + " <small>(you)</small>";
+    var live = false, over = false, timers = [], flight = null, score = 0, raf = 0, lateT = null;
+    function bubble(el, text) {
+      var b = document.createElement("span"); b.className = "pg-bubble"; b.textContent = text;
+      el.appendChild(b); setTimeout(function () { b.remove(); }, 2600);
+    }
+    quickPalette(wrap, function (i, t) { bubble(meEl, t); opts.onQuick(i); });
+    function centre(el) { var r = el.querySelector("img").getBoundingClientRect(), w = wrap.getBoundingClientRect(); return { x: r.left - w.left + r.width / 2, y: r.top - w.top + r.height * 0.35 }; }
+    function ballSay(text, cls) { sayEl.textContent = text; sayEl.className = "pb-say show " + (cls || ""); clearTimeout(ballSay.t); ballSay.t = setTimeout(function () { sayEl.className = "pb-say"; }, 700); }
+    // send the ball on its way: to "me" or to "them", as pass n
+    function launch(to, n) {
+      flight = { to: to, n: n, t0: performance.now(), dur: ballTravel(n), sway: (Math.random() < 0.5 ? -1 : 1) * (0.12 + Math.random() * 0.16) };
+      clearTimeout(lateT);
+      if (to === "them" && opts.them.bot) {   // Bamboo the bot always gets it back
+        var f = flight;
+        timers.push(setTimeout(function () { if (flight === f && !over) { score++; scoreEl.textContent = score; pop(themEl); launch("me", f.n + 1); } }, f.dur + (Math.random() * 80 - 40)));
+      } else if (to === "them") {
+        // no word from the other phone long after the ball got there: we've lost touch
+        lateT = setTimeout(function () { if (!over && flight && flight.to === "them") end("lost"); }, flight.dur + 8000);
+      }
+    }
+    function pop(el) { var img = el.querySelector("img"); img.classList.remove("kick"); void img.offsetWidth; img.classList.add("kick"); if (typeof sfx === "function") sfx("click"); }
+    function windowMs(n) { return Math.max(110, 220 - n * 5); }   // how close to the ball's arrival a tap must be
+    function ballFrame(now) {
+      raf = requestAnimationFrame(ballFrame);
+      if (!flight) { ring.style.opacity = 0; return; }
+      var a = centre(flight.to === "me" ? themEl : meEl), b = centre(flight.to === "me" ? meEl : themEl);
+      var s = Math.min(1.08, (now - flight.t0) / flight.dur), W = wrap.clientWidth;
+      var x = a.x + (b.x - a.x) * s + Math.sin(Math.PI * Math.min(1, s)) * flight.sway * W;
+      var y = a.y + (b.y - a.y) * s;
+      var big = 1 + Math.sin(Math.PI * Math.min(1, s)) * 0.6;
+      ball.style.transform = "translate(" + (x - 22) + "px," + (y - 22) + "px) scale(" + big + ") rotate(" + (s * 540) + "deg)";
+      if (flight.to === "me") {
+        var left = flight.t0 + flight.dur - now, w = windowMs(flight.n);
+        ring.style.opacity = 1;
+        ring.style.transform = "translate(-50%,-50%) scale(" + Math.max(1, 1 + left / flight.dur * 1.6) + ")";
+        ring.classList.toggle("now", Math.abs(left) <= w);
+        if (live && !over && left < -Math.min(170, w)) { drop(); }
+      } else ring.style.opacity = 0;
+    }
+    raf = requestAnimationFrame(ballFrame);
+    // my tap: only counts while the ball is coming to me
+    function tap(e) {
+      if (e && e.target && e.target.closest && e.target.closest("button, .pg-qcpal")) return;
+      if (e) e.preventDefault();
+      if (!live || over || !flight || flight.to !== "me") return;
+      var left = flight.t0 + flight.dur - performance.now(), w = windowMs(flight.n);
+      if (left > w + 450) return;                   // way too soon: ignore (the ball is still far away)
+      if (left > w) { ballSay("Too soon!", "bad"); drop(); return; }
+      score++; scoreEl.textContent = score; pop(meEl);
+      if (score >= 4) wrap.querySelector(".pb-hint").classList.add("gone");
+      if (Math.abs(left) < 60) ballSay("Perfect! ✨", "good"); else ballSay(["Nice!", "Good!", "Got it!"][score % 3]);
+      if (navigator.vibrate) try { navigator.vibrate(15); } catch (er) {}
+      var n = flight.n + 1;
+      launch("them", n);
+      if (opts.onHit) opts.onHit(n);
+    }
+    wrap.addEventListener("pointerdown", tap);
+    function onKey(e) { if (e.key === " " || e.key === "Enter") tap(e); }
+    window.addEventListener("keydown", onKey);
+    function drop() {
+      if (over) return;
+      if (opts.onDrop) opts.onDrop(flight ? flight.n : 0);
+      end("dropped-me");
+    }
+    function end(why) {
+      if (over) return; over = true; live = false; clearTimeout(lateT);
+      ball.classList.add("fall");
+      msg.textContent = why === "lost" ? "" : why === "left" ? "" : "Dropped! 😮";
+      if (typeof sfx === "function") sfx("pat");
+      timers.push(setTimeout(function () { opts.onEnd(score, why); }, 1100));
+    }
+    function close() { over = true; live = false; cancelAnimationFrame(raf); clearTimeout(lateT); timers.forEach(clearTimeout); window.removeEventListener("keydown", onKey); wrap.remove(); }
+    wrap.querySelector(".pg-gamex").addEventListener("click", function () {
+      if (live && !over && !confirm("Stop the game?")) return;
+      close(); if (opts.onQuit) opts.onQuit();
+    });
+    function go() {
+      live = true;
+      msg.textContent = "";
+      if (opts.iServe) { pop(meEl); launch("them", 0); if (opts.onHit) opts.onHit(0); }
+      else { ballSay(opts.them.bot ? "" : "Here it comes!"); if (opts.them.bot) { pop(themEl); launch("me", 0); } }
+    }
+    return {
+      wrap: wrap, close: close,
+      start: function () {
+        if (opts.live) countdownFrom(msg, 5, "Go!", timers, function () { return over; }, go);
+        else [["3", 0], ["2", 700], ["1", 1400], ["Go!", 2100]].forEach(function (s) {
+          timers.push(setTimeout(function () { if (over) return; msg.textContent = s[0]; if (s[0] === "Go!") { go(); timers.push(setTimeout(function () { if (!over) msg.textContent = ""; }, 500)); } }, s[1]));
+        });
+      },
+      // the other player hit pass n: it's coming to me
+      hit: function (n) { if (over) return; if (n > 0) { score = Math.max(score, n); scoreEl.textContent = score; } pop(themEl); launch("me", n); },
+      drop: function () { if (over) return; msg.textContent = ""; end("dropped-them"); },
+      left: function () { end("left"); },
+      quick: function (i) { if (QUICK_CHAT[i]) bubble(themEl, QUICK_CHAT[i]); },
+      score: function () { return score; }
+    };
+  }
+
   // ---------- Pet Streak (real version) ----------
   // Sign in with an email link, share pets with co-parents, buy and adopt pets and wardrobe items with paws.
   // All rules run on the server (Supabase functions in pet-real/supabase/schema.sql); this file only shows
@@ -4550,7 +4745,7 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261102215709";   // replaced by build_real.ps1
+    var APP_BUILD = "20261102221417";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -4940,16 +5135,62 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
     });
     showAppButtons();
 
-    // ---------- What the streak and freezes mean ----------
+    // ---------- The streak calendar (tap 🔥) ----------
+    // A month at a time, in the pet's own days: 🔥 the day counted (2 co-parents fed), 🍎 only 1 fed, ❄️ a freeze
+    // saved it (noted since update 21), ✖️ missed. The server sends the month (pet_calendar).
+    var calMonth = null;
     function openStreakInfo() {
       var p = pet(); if (!p) return;
-      $("g-sititle").textContent = p.streak === 1 ? "1 day streak" : p.streak + " day streak";
-      $("g-sistreak").textContent = "The number of days in a row that " + FEEDS_PER_DAY + " of you fed " + p.name +
+      $("g-sistreak").textContent = p.streak;
+      $("g-sititle").textContent = "day streak";
+      $("g-calstats").innerHTML = "🏆 Best <b>" + (p.best || 0) + "</b><br>❄️ <b>" + p.freezes + "</b> " + (p.freezes === 1 ? "freeze" : "freezes");
+      $("g-calhow").textContent = "The streak counts the days in a row that " + FEEDS_PER_DAY + " of you fed " + p.name +
         ". Reach 7, 30, 100, 365 and 730 days for bonus paws (from 50 up to 2,000).";
       $("g-sifreeze").textContent = "❄️ You have " + p.freezes + (p.freezes === 1 ? " freeze" : " freezes") + " (up to 2). " +
         "A freeze saves the streak if a day is missed. You earn one for every 7 days of streak.";
+      calMonth = null;
       $("g-streakinfo").hidden = false;
+      drawCal();
     }
+    function ymd(y, m, d) { return y + "-" + (m < 10 ? "0" : "") + m + "-" + (d < 10 ? "0" : "") + d; }
+    async function drawCal() {
+      var p = pet(), grid = $("g-calgrid"); if (!p) return;
+      var now = new Date(), ask = calMonth || ymd(now.getFullYear(), now.getMonth() + 1, 1), d;
+      try { d = await rpc("pet_calendar", { p_pet: p.id, p_month: ask }); }
+      catch (e) { grid.innerHTML = '<p class="pg-hint">' + esc(/pet_calendar/.test(e.message) ? "The calendar isn't switched on yet." : e.message) + "</p>"; return; }
+      if (!calMonth) calMonth = d.today.slice(0, 8) + "01";
+      if (calMonth !== ask) { drawCal(); return; }   // (the pet's month, if this phone's date is different)
+      var y = +calMonth.slice(0, 4), m = +calMonth.slice(5, 7);
+      var first = new Date(Date.UTC(y, m - 1, 1)).getUTCDay(), days = new Date(Date.UTC(y, m, 0)).getUTCDate();
+      $("g-calmonth").textContent = new Date(Date.UTC(y, m - 1, 1)).toLocaleDateString([], { month: "long", year: "numeric", timeZone: "UTC" });
+      $("g-calprev").disabled = calMonth <= d.born.slice(0, 8) + "01";
+      $("g-calnext").disabled = calMonth >= d.today.slice(0, 8) + "01";
+      var html = ["S", "M", "T", "W", "T", "F", "S"].map(function (w) { return '<span class="wd">' + w + "</span>"; }).join("");
+      for (var k = 0; k < first; k++) html += "<span></span>";
+      var counted = 0;
+      for (var day = 1; day <= days; day++) {
+        var ds = ymd(y, m, day), n = (d.fed && d.fed[ds]) || 0, frozen = (d.frozen || []).indexOf(ds) >= 0;
+        var cls = "", icon = "", what = "";
+        if (ds > d.today || ds < d.born) cls = "off";
+        else if (n >= FEEDS_PER_DAY) { cls = "full"; icon = "🔥"; what = "counted"; counted++; }
+        else if (frozen) { cls = "frozen"; icon = "❄️"; what = "a freeze saved it"; }
+        else if (n === 1) { cls = "half"; icon = "🍎"; what = "only 1 fed"; }
+        else if (ds < d.today) { cls = "miss"; icon = "✖️"; what = "missed"; }
+        else what = "today, not fed yet";
+        if (ds === d.today) cls += " today";
+        html += '<span class="day ' + cls + '"' + (what ? ' aria-label="' + day + ": " + what + '"' : "") + "><i>" + day + "</i>" + (icon ? "<em>" + icon + "</em>" : "") + "</span>";
+      }
+      grid.innerHTML = html;
+      $("g-calsum").textContent = counted ? "🔥 " + counted + (counted === 1 ? " day" : " days") + " counted this month" : "";
+    }
+    $("g-calprev").addEventListener("click", function () {
+      var y = +calMonth.slice(0, 4), m = +calMonth.slice(5, 7) - 1; if (m < 1) { m = 12; y--; }
+      calMonth = ymd(y, m, 1); drawCal();
+    });
+    $("g-calnext").addEventListener("click", function () {
+      var y = +calMonth.slice(0, 4), m = +calMonth.slice(5, 7) + 1; if (m > 12) { m = 1; y++; }
+      calMonth = ymd(y, m, 1); drawCal();
+    });
     $("g-stats").addEventListener("click", openStreakInfo);
     $("g-stats").addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openStreakInfo(); } });
     $("g-siok").addEventListener("click", function () { $("g-streakinfo").hidden = true; });
@@ -5061,7 +5302,10 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
         others: ["👫 Race other players", "Up to 4 racers. Tap fastest to the treat!"] },
       memory: { name: "Memory match", art: "🃏", max: 1, invite: "wants to play Memory match!",
         solo: ["🙋 Play solo", "Find the 12 pairs in as few tries as you can."],
-        others: ["👫 Take turns", "Find a pair and go again. Most pairs wins."] }
+        others: ["👫 Take turns", "Find a pair and go again. Most pairs wins."] },
+      ball: { name: "Ball pass", art: "⚽", max: 1, invite: "wants to play Ball pass!",
+        solo: ["🤖 Pass with the bot", "Tap as the ball reaches you. How long can you keep it going?"],
+        others: ["👫 Pass together", "Team up and keep the ball going as long as you can."] }
     };
     function gameOf(g) { return GAMES[g] ? g : "race"; }
 
@@ -5132,8 +5376,8 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
     Array.prototype.forEach.call(document.querySelectorAll(".pg-gamecard[data-game]"), function (b) {
       b.addEventListener("click", function () { openMode(b.dataset.game); });
     });
-    function playSolo(game) { if (game === "bamboo") startGame(); else if (game === "memory") startMemory(); else raceBot(); }
-    function playBot(game) { if (game === "bamboo") duelBot(); else if (game === "memory") memoryBot(); else raceBot(); }
+    function playSolo(game) { if (game === "bamboo") startGame(); else if (game === "memory") startMemory(); else if (game === "ball") ballBot(); else raceBot(); }
+    function playBot(game) { if (game === "bamboo") duelBot(); else if (game === "memory") memoryBot(); else if (game === "ball") ballBot(); else raceBot(); }
 
     // --- with others: pick who (online players, and friends who are away: they get a notification) ---
     var pick = null;
@@ -5220,6 +5464,7 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
       $("g-pickrace").onclick = function () { $("g-gamepick").hidden = true; then("race"); };
       $("g-pickduel").onclick = function () { $("g-gamepick").hidden = true; then("bamboo"); };
       $("g-pickmem").onclick = function () { $("g-gamepick").hidden = true; then("memory"); };
+      $("g-pickball").onclick = function () { $("g-gamepick").hidden = true; then("ball"); };
       $("g-pickno").onclick = function () { $("g-gamepick").hidden = true; };
     }
 
@@ -5326,7 +5571,7 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
       var R = { on: function (ev, fn) { hs[ev] = fn; return R; },
         send: function (ev, p) { ch.send({ type: "broadcast", event: ev, payload: p || {} }); },
         close: function () { try { sb.removeChannel(ch); } catch (e) {} } };
-      ["here", "seat", "full", "go", "bye", "qc", "p", "fin", "result", "s", "final", "flip", "pass"].forEach(function (ev) {
+      ["here", "seat", "full", "go", "bye", "qc", "p", "fin", "result", "s", "final", "flip", "pass", "hit", "drop"].forEach(function (ev) {
         ch.on("broadcast", { event: ev }, function (m) { if (hs[ev]) hs[ev](m.payload || {}); });
       });
       ch.subscribe(function (st) { if (st === "SUBSCRIBED" && hs.ready) hs.ready(); });
@@ -5459,7 +5704,7 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
         timers.forEach(clearTimeout); timers = [];
         wait.remove();
         players = m.players;
-        if (game === "bamboo") goBamboo(m); else if (game === "memory") goMemory(m); else goRace(m);
+        if (game === "bamboo") goBamboo(m); else if (game === "memory") goMemory(m); else if (game === "ball") goBall(m); else goRace(m);
       }
       function others() { return players.filter(function (x) { return x.uid !== me.id; }); }
       function againUids() { return others().map(function (x) { return x.uid; }).filter(function (u) { return online[u] || friendOf(u); }); }
@@ -5581,6 +5826,41 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
         S.stop = function () { mem.close(); };
         mem.start();
       }
+      // Ball pass together: whoever the ball flies to judges their own tap ("hit" n, or "drop")
+      function goBall(m) {
+        var other = others()[0];
+        var bp = startBallPass({
+          me: { pic: petPic(p.variant), html: tagHTML(p.level, p.name) }, them: { pic: petPic(other.variant), html: petTagHTML(other) },
+          iServe: m.first === me.id, live: true,
+          onHit: function (n) { R.send("hit", { n: n }); },
+          onDrop: function (n) { R.send("drop", { n: n }); },
+          onQuick: function (i) { R.send("qc", { uid: me.id, i: i }); },
+          onQuit: function () { leave(); openPlay(); },
+          onEnd: function (score, why) {
+            if (done) return; done = true;
+            if (why === "left" || why === "lost") { endLeft(bp.wrap, (why === "left" ? label(other) + " left the game." : "We lost touch with " + label(other) + ".") + " You made " + score + (score === 1 ? " pass" : " passes") + " together."); return; }
+            var b = bestBall("team", score);
+            logGame("ball", "live", label(other), null, null, score);
+            var again = againUids(), end = document.createElement("div"); end.className = "pg-gameend";
+            end.innerHTML = '<div class="big">' + score + '</div><p class="lbl">passes together</p><p>' +
+              esc(b.isNew ? "🏆 Your best team score!" : score >= 10 ? "Great teamwork! 🤝" : "Nice try! Have another go together.") + "</p>" +
+              '<div class="pg-row"><button type="button" class="pg-btn pg-grow" data-a="done">Done</button>' +
+              (again.length ? '<button type="button" class="pg-feed pg-grow" data-a="again">⚽ Again</button>' : "") + "</div>";
+            bp.wrap.appendChild(end);
+            sfx(b.isNew ? "levelUp" : "pat");
+            end.querySelector('[data-a="done"]').addEventListener("click", function () { cleanup(); openPlay(); });
+            var ag = end.querySelector('[data-a="again"]');
+            if (ag) ag.addEventListener("click", function () { cleanup(); openPlay(); hostGame("ball", again); });
+          }
+        });
+        view = bp;
+        R.on("hit", function (x) { bp.hit(x.n | 0); });
+        R.on("drop", function () { bp.drop(); });
+        S.quick = function (uid, i) { bp.quick(i); };
+        S.bye = function (uid) { if (uid === other.uid && !done) bp.left(); };
+        S.stop = function () { bp.close(); };
+        bp.start();
+      }
       // the end of a live game: wins, history, and what next
       async function endCard(wrap, won, o) {
         var wins = p.race_wins || 0;
@@ -5675,6 +5955,29 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
         game.opp(botScore);
         timer = setTimeout(step, 900 + Math.random() * 700);
       }, 5800);
+    }
+    // Ball pass with Bamboo the bot: it never drops it, so the score is all yours
+    function bestBall(kind, score) {
+      var k = "petstreak.ballbest." + kind, b = 0;
+      try { b = +localStorage.getItem(k) || 0; } catch (e) {}
+      if (score > b) { try { localStorage.setItem(k, String(score)); } catch (e) {} return { best: score, isNew: score > 0 }; }
+      return { best: b, isNew: false };
+    }
+    function ballBot() {
+      var p = pet(); if (!p || raceNow) return;
+      hidePlayPages();
+      var bp = startBallPass({
+        me: { pic: petPic(p.variant), html: tagHTML(p.level, p.name) }, them: { pic: petPic("panda_golden"), html: "Bamboo the bot 🤖", bot: true },
+        iServe: false,
+        onQuit: function () { raceNow = null; trackMe(); openPlay(); },
+        onEnd: function (score) {
+          var b = bestBall("solo", score);
+          logGame("ball", "bot", "Bamboo the bot", null, null, score);
+          botEnd(bp, score + ' <small class="vs">passes</small>', b.isNew ? "🏆 Your best ever! Now try it with a friend." : "Your best: " + b.best + " passes. Have another go!", ballBot);
+        }
+      });
+      raceNow = { race: bp }; trackMe();
+      bp.start();
     }
     // Memory match taking turns with Bamboo the bot (it remembers some of the cards it has seen)
     function memoryBot() {
@@ -6028,7 +6331,8 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
         var d = new Date(g.at), day = dayName(d);
         if (day !== lastDay) { lastDay = day; var h = document.createElement("li"); h.className = "pg-histday"; h.textContent = day; box.appendChild(h); }
         var G = GAMES[g.game] || GAMES.race, res, cls = "";
-        if (g.mode === "solo") res = (g.score || 0) + " pts";
+        if (g.game === "ball") { res = (g.score || 0) + " passes"; cls = g.result === "left" ? "left" : ""; }
+        else if (g.mode === "solo") res = (g.score || 0) + " pts";
         else if (g.result === "left") { res = "Left"; cls = "left"; }
         else if (g.place && g.game === "race") { res = PLACES[g.place - 1] || g.place + "th"; cls = g.place === 1 ? "won" : "lost"; }
         else { res = { won: "🏆 Won", lost: "Lost", draw: "🤝 Draw" }[g.result] || ""; cls = g.result || ""; }
