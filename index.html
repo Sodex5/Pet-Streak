@@ -1335,6 +1335,39 @@ button.pg-onlinenow.has .see { flex: none; padding: 6px 12px; border-radius: 999
 .pg-switchbox:checked::after { transform: translateX(18px); }
 .pg-pickopt .pg-switchbox { width: 46px !important; min-width: 46px; max-width: 46px; height: 28px !important; padding: 0 !important; border: 0 !important; font-size: 0; box-shadow: none; }
 .pg-pickopt .pg-grow { flex: 1; min-width: 0; }
+/* ---------- Day and night: a see-through layer over the 3D view, under the buttons ---------- */
+.pg-sky { position: absolute; inset: 0; z-index: 2; pointer-events: none; transition: background 2s ease; mix-blend-mode: multiply; background: transparent; }
+.pg-sky.morning { background: linear-gradient(180deg, rgba(255,214,190,0.55) 0%, rgba(255,240,225,0.25) 60%, rgba(255,255,255,0) 100%); }
+.pg-sky.evening { background: linear-gradient(180deg, rgba(255,150,90,0.55) 0%, rgba(255,190,140,0.4) 55%, rgba(255,215,180,0.3) 100%); }
+.pg-sky.night { background: linear-gradient(180deg, rgba(40,50,120,0.78) 0%, rgba(70,85,160,0.62) 55%, rgba(95,105,170,0.55) 100%); }
+/* stars and the moon sit on top, glowing (not multiplied) */
+.pg-sky .stars, .pg-sky .moon { position: fixed; mix-blend-mode: normal; opacity: 0; transition: opacity 2s ease; }
+.pg-sky.night .stars, .pg-sky.night .moon { opacity: 1; }
+.pg-sky .stars { left: 0; right: 0; top: calc(150px + env(safe-area-inset-top, 0px)); height: 34vh;
+  background-image:
+    radial-gradient(1.6px 1.6px at 8% 20%, #fff 50%, transparent 52%), radial-gradient(1.2px 1.2px at 22% 62%, #fff 50%, transparent 52%),
+    radial-gradient(2px 2px at 35% 12%, #fffbe0 50%, transparent 52%), radial-gradient(1.4px 1.4px at 48% 45%, #fff 50%, transparent 52%),
+    radial-gradient(1.8px 1.8px at 63% 18%, #fff 50%, transparent 52%), radial-gradient(1.2px 1.2px at 74% 70%, #fff 50%, transparent 52%),
+    radial-gradient(2px 2px at 86% 34%, #fffbe0 50%, transparent 52%), radial-gradient(1.4px 1.4px at 93% 8%, #fff 50%, transparent 52%),
+    radial-gradient(1.2px 1.2px at 15% 88%, #fff 50%, transparent 52%), radial-gradient(1.6px 1.6px at 56% 85%, #fff 50%, transparent 52%);
+  animation: pg-twinkle 3.2s ease-in-out infinite; }
+.pg-sky .stars.s2 { transform: translate(4%, 6%); animation-delay: 1.6s; filter: blur(0.2px); }
+.pg-sky.night .stars.s2 { opacity: 0.7; }
+@keyframes pg-twinkle { 50% { filter: brightness(0.55); } }
+.pg-sky .moon { right: 22px; top: calc(176px + env(safe-area-inset-top, 0px)); font-size: 2.2rem; filter: drop-shadow(0 0 14px rgba(255,240,180,0.9)); }
+/* the menu's own surfaces stay as they are; only the room is tinted */
+/* ---------- Update 24: colours for glasses and hats ---------- */
+.pg-itemwrap { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.pg-itemwrap > .pg-item { flex: 1; }
+.pg-vdots { display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; padding: 2px 0 4px; }
+.pg-vdot { width: 20px; height: 20px; padding: 0; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 1px #c3d0d5; cursor: pointer; position: relative; }
+.pg-vdot.on { box-shadow: 0 0 0 2px var(--brand); transform: scale(1.12); }
+.pg-vdot.metal { background-image: linear-gradient(135deg, rgba(255,255,255,0.75), rgba(255,255,255,0) 55%) !important; }
+.pg-vdot.have::after { content: ""; position: absolute; right: -3px; bottom: -3px; width: 8px; height: 8px; border-radius: 50%; background: #2fbf71; box-shadow: 0 0 0 1.5px #fff; }
+.picv { position: relative; display: block; }
+.picv img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.picv .vdot { position: absolute; right: 2px; bottom: 2px; width: 16px; height: 16px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
+.picv img { padding: 6px; box-sizing: border-box; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -1823,6 +1856,8 @@ button.pg-onlinenow.has .see { flex: none; padding: 6px 12px; border-radius: 999
           <h3 class="pg-menuhead">Settings</h3>
           <div class="pg-list">
             <label class="pg-li"><span class="ic" aria-hidden="true">🎨</span><span class="lbl">App colour</span><select id="g-theme" aria-label="App colour"></select></label>
+            <label class="pg-li"><span class="ic" aria-hidden="true">🌗</span><span class="lbl">Day and night</span>
+              <select id="g-daynight" aria-label="Day and night"><option value="auto">Follow the time</option><option value="day">Always day</option><option value="night">Always night</option></select></label>
             <button type="button" class="pg-li pg-toggle" id="g-sound" aria-pressed="true"><span class="ic" aria-hidden="true">🔊</span><span class="lbl">Sounds</span><i class="sw" aria-hidden="true"></i></button>
             <button type="button" class="pg-li pg-toggle" id="g-music" aria-pressed="true"><span class="ic" aria-hidden="true">🎵</span><span class="lbl">Music</span><i class="sw" aria-hidden="true"></i></button>
             <div id="g-remsec">
@@ -5306,7 +5341,7 @@ button.pg-onlinenow.has .see { flex: none; padding: 6px 12px; border-radius: 999
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261103033117";   // replaced by build_real.ps1
+    var APP_BUILD = "20261103035431";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -5368,9 +5403,15 @@ button.pg-onlinenow.has .see { flex: none; padding: 6px 12px; border-radius: 999
       "RoundGold", "BlueRound", "PinkRound", "Aviator", "OrangeRound", "RedCatEye", "Butterfly", "Shutter", "Pixel", "Sunglasses", "Heart",
       "Beanie", "Cap", "Santa", "Frog", "Fox", "CatBeanie", "Pizza", "Aussie", "Cowboy", "TopHat", "Witch"];
     // scene backgrounds are drawn live (scenes.js); their pictures in the store are small drawings too
+    // Colours of glasses and hats (update 24): "<base>__<colour>" is the base's model with its main part(s) in
+    // that colour (ACC_COLORS: which parts, and each colour; metal: a shiny finish).
+    var ACC_COLORS = {"Aviator": {"mats": ["Frame_Aviator_1"], "cols": {"gold": ["#d4a73c", 1], "silver": ["#c9ced6", 1], "rose": ["#e59aa8", 0], "black": ["#1c1c1c", 0], "blue": ["#3f6fd8", 0]}}, "Sunglasses": {"mats": ["Frame_Sunglasses_0.001"], "cols": {"red": ["#d63a3a", 0], "pink": ["#f08ab4", 0], "white": ["#f2f2f2", 0], "blue": ["#3a7bd5", 0], "tortoise": ["#7a4a26", 0]}}, "RoundGold": {"mats": ["Frame_RoundGold_2"], "cols": {"silver": ["#c9ced6", 1], "rosegold": ["#d9927c", 1], "black": ["#1c1c1c", 0], "lavender": ["#b79be8", 0], "mint": ["#7fd6b5", 0]}}, "Heart": {"mats": ["Frame_Heart_0"], "cols": {"red": ["#e23b3b", 0], "lavender": ["#b79be8", 0], "gold": ["#d4a73c", 1]}}, "RedCatEye": {"mats": ["Frame_RedCatEye_0"], "cols": {"black": ["#151515", 0], "purple": ["#8a4fd6", 0], "white": ["#f2f2f2", 0]}}, "Butterfly": {"mats": ["Frame_Butterfly_1"], "cols": {"pink": ["#f07ab0", 0], "purple": ["#8a4fd6", 0], "gold": ["#d4a73c", 1]}}, "Shutter": {"mats": ["Frame_Shutter_0"], "cols": {"pink": ["#ff4fa3", 0], "gold": ["#e0b23c", 1]}}, "Pixel": {"mats": ["Frame_Pixel_1"], "cols": {"gold": ["#e0b23c", 1], "pink": ["#ff6fb5", 0]}}, "Beanie": {"mats": ["Hat_Beanie_0.001"], "cols": {"red": ["#d63a3a", 0], "pink": ["#f08ab4", 0], "lavender": ["#b79be8", 0], "blue": ["#3a7bd5", 0], "mustard": ["#e0b030", 0]}}, "Cap": {"mats": ["Hat_Cap_0", "Hat_Cap_1"], "cols": {"red": ["#d63a3a", 0], "blue": ["#3a7bd5", 0], "pink": ["#f08ab4", 0], "white": ["#f2f2f2", 0], "green": ["#3fae5a", 0]}}, "Santa": {"mats": ["Hat_Santa_0.001"], "cols": {"green": ["#2f9a4a", 0], "blue": ["#3a7bd5", 0], "purple": ["#8a4fd6", 0]}}, "CatBeanie": {"mats": ["Hat_CatBeanie_0.001"], "cols": {"pink": ["#f0a0c0", 0], "black": ["#2a2a2a", 0], "orange": ["#e88a3a", 0]}}, "Aussie": {"mats": ["Hat_Aussie_0.001"], "cols": {"brown": ["#7a4f2a", 0], "black": ["#222222", 0], "navy": ["#24345e", 0]}}, "Cowboy": {"mats": ["Hat_Cowboy_0"], "cols": {"black": ["#151515", 0], "white": ["#efe9df", 0], "pink": ["#e98bb0", 0]}}, "TopHat": {"mats": ["Hat_TopHat_0"], "cols": {"white": ["#f2f2f2", 0], "burgundy": ["#7a1f35", 0]}}, "Witch": {"mats": ["Hat_Witch_0"], "cols": {"pink": ["#e978b4", 0], "green": ["#3f8f4a", 0]}}};
+    function baseId(id) { return id ? String(id).split("__")[0] : id; }
+    function colourOf(id) { var b = ACC_COLORS[baseId(id)], k = id && String(id).split("__")[1]; return b && k ? b.cols[k] : null; }
     function pic(it) {
       if (!it || !it.id) return "";
       if (SCENE_DRAW[it.id]) return '<canvas class="pic scene" data-scene="' + it.id + '" aria-hidden="true"></canvas>';
+      if (colourOf(it.id)) return '<span class="pic picv"><img alt="" loading="lazy" src="icons/' + baseId(it.id) + '.png"><i class="vdot" style="background:' + it.color + '"></i></span>';
       if (ICONS.indexOf(it.id) >= 0) return '<img class="pic" alt="" loading="lazy" src="icons/' + it.id + '.png">';
       if (it.type === "backdrop" && it.color) return '<i class="swbig" style="background:' + it.color + '"></i>';
       return "";
@@ -7592,19 +7633,27 @@ button.pg-onlinenow.has .see { flex: none; padding: 6px 12px; border-radius: 999
       } else {
         $("g-storehint").textContent = "Backgrounds and things your pets can wear. Bought items are yours to use on any of your pets.";
         [["backdrop", "Backgrounds"], ["hat", "Hats"], ["glasses", "Glasses"]].forEach(function (sec) {
-          var list = store.filter(function (s) { return s.kind === "wardrobe" && s.price > 0 && s.type === sec[0]; });
+          var all = store.filter(function (s) { return s.kind === "wardrobe" && s.price > 0 && s.type === sec[0]; });
+          var list = all.filter(function (s) { return !colourOf(s.id); });   // (colours show as dots on their original)
           if (!list.length) return;
-          var inGroup = groupHead(box, "store:" + sec[0], sec[1], list.length);
-          list.forEach(function (s) {
+          var inGroup = groupHead(box, "store:" + sec[0], sec[1], all.length);
+          list.forEach(function (s0) {
+            var cols = colourList(s0), s = cols.filter(function (c) { return c.id === storePick[s0.id]; })[0] || s0;
             var have = owned[s.id], open = maxLv >= s.level_req;
-            inGroup(card(box, s.name, s.color, have ? "Owned ✓" : open ? "🐾 " + s.price : "🔒 A pet needs Lv " + s.level_req, have ? null : "Buy",
+            var el = card(box, s.name, s.color, have ? "Owned ✓" : open ? "🐾 " + s.price : "🔒 A pet needs Lv " + s.level_req, have ? null : "Buy",
               have || !open ? null : async function () {
                 if (!confirm("Buy " + s.name + " for " + s.price + " paws?")) return;
                 try { await rpc("buy_item", { p_item: s.id }); } catch (e) { say(e.message); return; }
                 sfx("buy");
                 await loadAll(); renderStore();
                 say(s.name + " is yours! Put it on in Dress up 🎀");
-              }, s));
+              }, s);
+            if (cols.length > 1) {
+              var w = document.createElement("div"); w.className = "pg-itemwrap";
+              box.replaceChild(w, el); w.appendChild(el);
+              w.appendChild(colourDots(cols, s, function (c) { storePick[s0.id] = c.id; renderStore(); }));
+              inGroup(w);
+            } else inGroup(el);
           });
         });
         setTimeout(function () { paintSceneThumbs(box); }, 0);
@@ -7706,7 +7755,9 @@ button.pg-onlinenow.has .see { flex: none; padding: 6px 12px; border-radius: 999
         t.setAttribute("aria-selected", t.getAttribute("data-slot") === dressSlot ? "true" : "false");
       });
       $("g-dresshint").textContent = DRESS[dressSlot].hint + (dressSlot === "backdrop" ? "it behind " : "") + p.name + ".";
-      dressItems(dressSlot).forEach(function (u) {
+      dressItems(dressSlot).forEach(function (u0) {
+        if (u0.id && colourOf(u0.id)) return;   // (colours show as dots on their original)
+        var cols = colourList(u0), u = shownColour(u0, cols, p);
         var on = (p[u.type] || null) === u.id, trying = !!tryOn && tryOn.slot === u.type && tryOn.id === u.id && !on;
         var levelOk = p.max_level >= u.level_req, have = !u.price || owned[u.id];
         var sub = on ? "✓ Wearing" : trying ? "👀 Trying on" : !levelOk ? "🔒 Level " + u.level_req : !have ? "🐾 " + u.price : "Tap to wear";
@@ -7720,12 +7771,40 @@ button.pg-onlinenow.has .see { flex: none; padding: 6px 12px; border-radius: 999
         var label = u.type === "backdrop" && u.id && !SCENE_DRAW[u.id] ? u.name.replace(/ backdrop$/i, "") + " (plain)" : u.name;
         b.innerHTML = up + "<b>" + (!up && u.color ? '<i class="sw" style="background:' + u.color + '"></i>' : "") + esc(label) + "</b><span>" + esc(sub) + "</span>";
         b.addEventListener("click", function () { pickDress(u); });
-        box.appendChild(b);
+        if (cols.length > 1) {
+          var w = document.createElement("div"); w.className = "pg-itemwrap";
+          w.appendChild(b); w.appendChild(colourDots(cols, u, function (c) { dressPick[u0.id] = c.id; pickDress(c); }));
+          box.appendChild(w);
+        } else box.appendChild(b);
       });
       showTryOn();
       applyLook();
       // after the sheet is shown, so the little scene pictures know their size
       setTimeout(function () { paintSceneThumbs(box); }, 0);
+    }
+    // an item and its colours (the original first); which one a card shows: the one worn, being tried on or last tapped
+    var dressPick = {}, storePick = {};
+    function colourList(u) {
+      if (!u || !u.id || !ACC_COLORS[u.id]) return [u];
+      return [u].concat(store.filter(function (s) { return s.id && baseId(s.id) === u.id && colourOf(s.id); }));
+    }
+    function shownColour(u, cols, p) {
+      if (cols.length < 2) return u;
+      var mine = p && cols.filter(function (c) { return (p[c.type] || null) === c.id; })[0];
+      var trying = tryOn && cols.filter(function (c) { return tryOn.id === c.id; })[0];
+      var picked = cols.filter(function (c) { return c.id === dressPick[u.id]; })[0];
+      return trying || picked || mine || u;
+    }
+    function colourDots(cols, shown, onPick) {
+      var row = document.createElement("div"); row.className = "pg-vdots"; row.setAttribute("role", "group"); row.setAttribute("aria-label", "Colours");
+      cols.forEach(function (c) {
+        var d = document.createElement("button"); d.type = "button"; d.className = "pg-vdot" + (c.id === shown.id ? " on" : "") + (colourOf(c.id) && colourOf(c.id)[1] ? " metal" : "");
+        d.style.background = c.color || "#ccc"; d.setAttribute("aria-label", c.name); d.title = c.name;
+        if (owned[c.id] || !c.price) d.classList.add("have");
+        d.addEventListener("click", function (e) { e.stopPropagation(); onPick(c); });
+        row.appendChild(d);
+      });
+      return row;
     }
     // tapping a card: what you own is worn straight away; anything else is tried on
     async function pickDress(u) {
@@ -7804,6 +7883,36 @@ button.pg-onlinenow.has .see { flex: none; padding: 6px 12px; border-radius: 999
       // then quietly fetch the fur of my other pets, so switching between them is instant
       preloadLooks(pets.map(function (q) { return q.variant; }));
     }
+
+    // ---------- Day and night ----------
+    // The room follows the time on this phone: morning light (5-9), bright day (9-17), golden evening (17-20) and
+    // a dim blue night with stars and a moon (20-5). A see-through layer over the 3D view does the tint (the buttons
+    // sit above it) and the pet's own lights shift a little too. At night the pet dozes off sooner (a tap wakes it;
+    // feeding works as usual). The menu can fix it to always day or always night.
+    var DAYNIGHT_KEY = "petstreak.daynight", dayPhase = null;
+    var sky = document.createElement("div"); sky.className = "pg-sky"; sky.setAttribute("aria-hidden", "true");
+    sky.innerHTML = '<i class="stars"></i><i class="stars s2"></i><span class="moon">🌙</span>';
+    stage.appendChild(sky);
+    function dayMode() { try { return localStorage.getItem(DAYNIGHT_KEY) || "auto"; } catch (e) { return "auto"; } }
+    function phaseNow() {
+      var m = dayMode(); if (m === "day" || m === "night") return m;
+      var h = new Date().getHours();
+      return h >= 5 && h < 9 ? "morning" : h >= 9 && h < 17 ? "day" : h >= 17 && h < 20 ? "evening" : "night";
+    }
+    var LIGHT = { morning: [0xfff1e0, 0.95, 0.35], day: [0xffffff, 0.9, 0.35], evening: [0xffd2a0, 0.85, 0.45], night: [0xa9b8ff, 0.55, 0.5] };
+    function isNight() { return dayPhase === "night"; }
+    function applyDayPhase() {
+      var ph = phaseNow();
+      if (ph === dayPhase) return;
+      dayPhase = ph;
+      sky.className = "pg-sky " + ph;
+      document.documentElement.setAttribute("data-phase", ph);
+      var l = LIGHT[ph];
+      try { key.color.setHex(l[0]); key.intensity = l[1]; rim.intensity = l[2]; } catch (e) {}
+    }
+    applyDayPhase();
+    setInterval(applyDayPhase, 60000);
+    document.addEventListener("visibilitychange", function () { if (!document.hidden) applyDayPhase(); });
 
     function render() {
       $("g-loading").hidden = !(me && !loaded);
@@ -8247,7 +8356,7 @@ button.pg-onlinenow.has .see { flex: none; padding: 6px 12px; border-radius: 999
       updateBath(now, dt, home, !!bathing);
       var calm = home && (m === "fed" || m === "happy");
       if (!calm || bathing) lastPoke = now;
-      if (!busy()) asleep = calm && now - lastPoke > SLEEP_AFTER;
+      if (!busy()) asleep = calm && now - lastPoke > (isNight() ? 15000 : SLEEP_AFTER);
       // hungry is a softer sad: the Sad loop at 60%, blended with the rest pose
       setBaseMood(asleep ? { Sleep: 1 } : m === "hungry" ? { Sad: 0.6 } : m === "sick" ? { Sick: 1 } : {});
       sleepLids += ((asleep ? 1 : 0) - sleepLids) * Math.min(1, dt * 1.5);
@@ -8284,8 +8393,28 @@ button.pg-onlinenow.has .see { flex: none; padding: 6px 12px; border-radius: 999
       }
       var want = p && p.status === "home" ? (p.glasses || null) : null;
       if (want === glassesOn) return;
-      Object.keys(glassesNodes).forEach(function (id) { glassesNodes[id].visible = id === want; });
+      Object.keys(glassesNodes).forEach(function (id) { glassesNodes[id].visible = id === baseId(want); });
+      if (glassesNodes[baseId(want)]) recolor(glassesNodes[baseId(want)], want);
       glassesOn = want;
+    }
+    // put an accessory in a colour (or back to its own colours): its listed parts change, the rest stay
+    function recolor(node, id) {
+      var spec = ACC_COLORS[baseId(id)], col = colourOf(id);
+      node.traverse(function (k) {
+        if (!k.isMesh) return;
+        var name = (k.userData.litMat && k.userData.litMat.name) || (k.material && k.material.name) || "";
+        var hit = !!col && spec.mats.indexOf(name) >= 0;
+        [k.material, k.userData.litMat, k.userData.bakedMat].forEach(function (m) {
+          if (!m || !m.color) return;
+          if (!m.userData.orig) m.userData.orig = { c: m.color.clone(), metal: m.metalness, rough: m.roughness };
+          var o = m.userData.orig;
+          m.color.copy(o.c);
+          if (m.metalness !== undefined) { m.metalness = o.metal; m.roughness = o.rough; }
+          if (!hit) return;
+          m.color.set(col[0]);
+          if (col[1] && m.metalness !== undefined) { m.metalness = 0.75; m.roughness = 0.28; }
+        });
+      });
     }
     // hats from the model (Hat_<id>, on the head bone); the party hats are made here in code
     var hatNodes = null, hatOn;
@@ -8321,9 +8450,13 @@ button.pg-onlinenow.has .see { flex: none; padding: 6px 12px; border-radius: 999
           o.traverse(function (k) { if (k.isMesh && k.userData.bakedMat) k.userData.bakedMat.color.copy(k.userData.litMat.color); });
         });
       }
-      var wantId = p && p.status === "home" ? (p.hat || null) : null;
-      if (wantId !== hatOn) { Object.keys(hatNodes).forEach(function (id) { hatNodes[id].visible = id === wantId; }); hatOn = wantId; if (wantId) fitHat(wantId); }
-      var want = wantId && !hatNodes[wantId] ? item(wantId) : null;
+      var wantId = p && p.status === "home" ? (p.hat || null) : null, wantBase = baseId(wantId);
+      if (wantId !== hatOn) {
+        Object.keys(hatNodes).forEach(function (id) { hatNodes[id].visible = id === wantBase; });
+        hatOn = wantId;
+        if (wantBase && hatNodes[wantBase]) { fitHat(wantBase); recolor(hatNodes[wantBase], wantId); }
+      }
+      var want = wantId && !hatNodes[wantBase] ? item(wantId) : null;
       if (!want) { if (hat) { hat.visible = false; } return; }
       if (!hat) {
         hat = new THREE.Group();
@@ -8716,6 +8849,12 @@ button.pg-onlinenow.has .see { flex: none; padding: 6px 12px; border-radius: 999
     function musicLabel() { $("g-music").setAttribute("aria-pressed", musicOn ? "true" : "false"); }
     musicLabel();
     $("g-music").addEventListener("click", function () { setMusic(!musicOn); musicLabel(); });
+    $("g-daynight").value = dayMode();
+    $("g-daynight").addEventListener("change", function () {
+      try { localStorage.setItem(DAYNIGHT_KEY, $("g-daynight").value); } catch (e) {}
+      applyDayPhase();
+      say({ auto: "🌗 The room now follows the time of day.", day: "☀️ Always day.", night: "🌙 Always night." }[$("g-daynight").value]);
+    });
     $("g-theme").addEventListener("change", function () {
       themeNow = applyTheme($("g-theme").value);
       try { localStorage.setItem(THEME_KEY, themeNow); } catch (e) {}
