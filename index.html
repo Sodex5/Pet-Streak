@@ -1293,6 +1293,37 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
 .pk-meter .mark { position: absolute; top: 6px; bottom: 6px; width: 8px; margin-left: -4px; border-radius: 4px; background: #14232b; box-shadow: 0 0 0 2px #fff; z-index: 2; }
 .pk-meter b { position: absolute; left: 0; right: 0; bottom: 6px; z-index: 3; font-family: var(--display); font-size: 1.1rem; color: #14232b; text-shadow: 0 1px 0 #fff; pointer-events: none; }
 .pg-pen .pg-gamemsg { top: 42%; }
+/* game tiles: a little more compact; Penalty kicks is a slim strip across the bottom */
+.pg-gamegrid { gap: 10px; }
+.pg-gamegrid .pg-gamecard { min-height: 122px; padding: 12px 14px; }
+.pg-gamegrid .pg-gamecard .art { font-size: 2.3rem; }
+.pg-gamegrid .pg-gamecard.penalty { min-height: 0; display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto auto; column-gap: 12px; row-gap: 0; align-items: center; padding: 12px 14px; }
+.pg-gamegrid .pg-gamecard.penalty .art { grid-row: 1 / span 2; margin: 0; font-size: 2.1rem; }
+.pg-gamegrid .pg-gamecard.penalty b { margin-top: 0; align-self: end; }
+.pg-gamegrid .pg-gamecard.penalty small { align-self: start; }
+.pg-gamegrid .pg-gamecard.penalty .pg-newtag { top: 50%; transform: translateY(-50%); }
+/* who is online: hard to miss */
+button.pg-onlinenow.has { padding: 10px 12px; gap: 10px; border-radius: 18px; color: #fff; background: linear-gradient(135deg, #2fbf71, #12a05c); box-shadow: 0 6px 16px rgba(18,160,92,0.35); animation: pg-onglow 2.4s ease-in-out infinite; }
+@keyframes pg-onglow { 50% { box-shadow: 0 6px 22px rgba(18,160,92,0.6); } }
+.pg-onfaces { position: relative; display: flex; flex: none; }
+.pg-onfaces img { width: 34px; height: 34px; border-radius: 50%; background: #fff; object-fit: contain; box-shadow: 0 0 0 2px #fff; }
+.pg-onfaces img + img { margin-left: -10px; }
+.pg-onpulse { position: absolute; right: -3px; bottom: -2px; width: 12px; height: 12px; border-radius: 50%; background: #b8ffcf; box-shadow: 0 0 0 2px #12a05c; animation: pg-onping 1.6s ease-out infinite; }
+@keyframes pg-onping { 0% { box-shadow: 0 0 0 2px #12a05c, 0 0 0 2px rgba(184,255,207,0.8); } 100% { box-shadow: 0 0 0 2px #12a05c, 0 0 0 10px rgba(184,255,207,0); } }
+.pg-ontext { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.pg-ontext b { font-size: 0.98rem; }
+.pg-ontext small { font-weight: 600; font-size: 0.78rem; opacity: 0.9; }
+button.pg-onlinenow.has .see { flex: none; padding: 6px 12px; border-radius: 999px; background: #fff; color: #12a05c; font-weight: 800; font-size: 0.85rem; }
+/* the keeper: six spots to dive to (blue gloves), and high dives */
+.pg-pen.keeping .pk-spot { border-color: #bfe3ff; background: rgba(120,190,255,0.18); }
+.pg-pen.keeping .pk-spot.on { border-style: solid; border-color: #4aa8ff; background: rgba(74,168,255,0.45); }
+.pg-pen.keeping .pk-spot::after { content: "🧤"; font-size: 1.2rem; opacity: 0.55; }
+.pg-pen.keeping .pk-spot.on::after { opacity: 1; }
+.pk-spot { display: grid; place-items: center; }
+.pk-keephint { flex: 1; margin: 0; align-self: center; padding: 14px; border-radius: 18px; background: rgba(255,255,255,0.92); text-align: center; font-weight: 800; color: #14232b; }
+.pk-keeper.high.dive0 { transform: translate(-100%, -78%) rotate(-62deg); }
+.pk-keeper.high.dive1 { transform: translateY(-80%); }
+.pk-keeper.high.dive2 { transform: translate(100%, -78%) rotate(62deg); }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -4843,6 +4874,9 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
   function ballTravel(n, vs) { return vs ? Math.max(470, 1400 * Math.pow(0.94, n)) : Math.max(520, 1500 * Math.pow(0.955, n)); }
   function startBallPass(opts) {
     var VS = !!opts.versus;
+    // 🔥 Challenge (the bot at levels 6-8, in versus): the ball speeds up faster, the timing window is tighter and power
+    // shots are quicker. (Tuned with a simulation: only very precise tappers beat level 8, about 1 time in 5.)
+    var CHL = VS && opts.them.bot && (opts.them.level || 0) >= 6 ? Math.min(8, opts.them.level) - 6 : -1;
     var wrap = document.createElement("div"); wrap.className = "pg-game pg-ball" + (VS ? " vs" : "");
     wrap.innerHTML =
       '<div class="pg-gamehud"><span class="lbl">⚽ Ball pass' + (VS ? " · first to " + BALL_POINTS : "") + "</span>" +
@@ -4876,7 +4910,7 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
     // send the ball on its way: to "me" or to "them", as pass n (fast: a perfect hit's quicker, curvier shot)
     function launch(to, n, fast) {
       ball.classList.remove("fall", "out");
-      flight = { to: to, n: n, t0: performance.now(), dur: ballTravel(n, VS) * (fast ? 0.78 : 1), fast: !!fast,
+      flight = { to: to, n: n, t0: performance.now(), dur: (CHL >= 0 ? Math.max(430, 1400 * Math.pow([0.93, 0.922, 0.918][CHL], n)) : ballTravel(n, VS)) * (fast ? (CHL >= 0 ? [0.76, 0.72, 0.71][CHL] : 0.78) : 1), fast: !!fast,
                  sway: (Math.random() < 0.5 ? -1 : 1) * (fast ? 0.28 + Math.random() * 0.08 : 0.12 + Math.random() * 0.16) };
       clearTimeout(lateT);
       if (to === "them" && opts.them.bot) {
@@ -4884,12 +4918,12 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
         // (its level, 1-5: how often it misses, more as the rally speeds up and on power shots, and how often it sends one)
         // (levels 6-8 are the Challenge)
         var L = Math.max(1, Math.min(8, opts.them.level || 2)) - 1;
-        var f = flight, miss = VS && Math.random() < Math.min(0.45, [0.045, 0.018, 0.01, 0.005, 0.003, 0.002, 0.0016, 0.0013][L] + n * [0.018, 0.008, 0.005, 0.003, 0.0025, 0.0016, 0.0014, 0.0012][L] + (fast ? [0.1, 0.06, 0.04, 0.03, 0.025, 0.02, 0.018, 0.016][L] : 0));
+        var f = flight, miss = VS && Math.random() < Math.min(0.45, [0.045, 0.018, 0.01, 0.005, 0.003, 0.0016, 0.001, 0.0007][L] + n * [0.018, 0.008, 0.005, 0.003, 0.0025, 0.0012, 0.0007, 0.0005][L] + (fast ? [0.1, 0.06, 0.04, 0.03, 0.025, 0.015, 0.01, 0.008][L] : 0));
         timers.push(setTimeout(function () {
           if (flight !== f || over) return;
           if (miss) { pointTo("me"); return; }
           if (!VS) { score++; showScore(); }
-          pop(themEl); launch("me", f.n + 1, VS && Math.random() < [0.15, 0.3, 0.4, 0.5, 0.55, 0.6, 0.62, 0.65][L]);
+          pop(themEl); launch("me", f.n + 1, VS && Math.random() < [0.15, 0.3, 0.4, 0.5, 0.55, 0.65, 0.74, 0.78][L]);
         }, f.dur + (miss ? 180 : Math.random() * 80 - 40)));
       } else if (to === "them") {
         // no word from the other phone long after the ball got there: we've lost touch
@@ -4898,7 +4932,10 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
     }
     function pop(el) { var img = el.querySelector("img"); img.classList.remove("kick"); void img.offsetWidth; img.classList.add("kick"); if (typeof sfx === "function") sfx("click"); }
     // how close to the ball's arrival a tap must be (tighter in versus as the rally goes on)
-    function windowMs(n) { return VS ? Math.max(100, 200 - n * 7) : Math.max(110, 220 - n * 5); }
+    function windowMs(n) {
+      if (CHL >= 0) return Math.max([95, 86, 82][CHL], [190, 178, 170][CHL] - n * 8);
+      return VS ? Math.max(100, 200 - n * 7) : Math.max(110, 220 - n * 5);
+    }
     function ballFrame(now) {
       raf = requestAnimationFrame(ballFrame);
       if (!flight) { ring.style.opacity = 0; return; }
@@ -5005,9 +5042,9 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
   // other's choice:
   //  * the shooter taps one of six spots in the goal (left / middle / right, high or low), then taps again while
   //    the power bar is in the green. Green: it goes where aimed. Too hard: over the bar or wide. Too soft: easy save.
-  //  * the keeper picks dive left, stay, or dive right.
-  // Then the kick plays out. The keeper saves if they went the right way (a perfect top-corner kick still beats them
-  // half the time). Every result comes from the two choices and a random number made from the shared seed and the
+  //  * the keeper taps one of the same six spots to dive there (high or low, left / middle / right).
+  // Then the kick plays out. The right spot saves most kicks (even a perfect top corner, 4 times in 5); the right
+  // side at the wrong height sometimes gets a fingertip to it; the wrong side is a goal. Every result comes from the two choices and a random number made from the shared seed and the
   // kick number, so two phones always agree. Bamboo the bot (levels 1-8) reads where you like to shoot and, higher
   // up, reaches shots one side away; its power bar for you also gets faster with its level.
   // startPenalty({ me: { pic, html }, them: { pic, html, bot }, iFirst, live, level, seed, onShot(r, shot), onDive(r, col),
@@ -5084,12 +5121,14 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
           spotsEl.appendChild(s);
         })(col, row);
       } else {
-        [["⬅️", "Dive left", 0], ["🧍", "Stay", 1], ["➡️", "Dive right", 2]].forEach(function (d) {
-          var b = document.createElement("button"); b.type = "button"; b.className = "pk-dive";
-          b.innerHTML = "<span>" + d[0] + "</span><small>" + d[1] + "</small>";
-          b.addEventListener("click", function () { dive(d[2], b); });
-          controls.appendChild(b);
-        });
+        // the keeper: the same six spots, to dive to
+        for (var krow = 1; krow >= 0; krow--) for (var kcol = 0; kcol < 3; kcol++) (function (col, row) {
+          var s = document.createElement("button"); s.type = "button"; s.className = "pk-spot pk-divespot";
+          s.setAttribute("aria-label", "Dive " + (row ? "high " : "low ") + ["left", "in the middle", "right"][col]);
+          s.addEventListener("click", function () { dive({ col: col, row: row }, s); });
+          spotsEl.appendChild(s);
+        })(kcol, krow);
+        controls.innerHTML = '<p class="pk-keephint">🧤 Tap a spot in the goal to dive there. High or low!</p>';
       }
       // the time to choose
       timerBar.style.transition = "none"; timerBar.style.transform = "scaleX(1)"; void timerBar.offsetWidth;
@@ -5099,7 +5138,7 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
       waitT = setTimeout(function () {
         if (r !== k || myKick) return;
         if (iShoot(k)) lock({ col: 1, row: 0, q: "bad", miss: false });   // too slow: a weak kick down the middle
-        else lock(1);                                                       // too slow: stays in the middle
+        else lock({ col: 1, row: 0 });                                      // too slow: stays in the middle
       }, PEN_CHOOSE * 1000);
       // Bamboo the bot chooses straight away (it's hidden until the kick)
       if (bot) theirs[r] = iShoot(r) ? botKeep() : botShot();
@@ -5130,17 +5169,18 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
       var d = meterX - 0.5, q = Math.abs(d) < W / 2 ? "perfect" : Math.abs(d) < W ? "good" : "bad";
       lock({ col: aim.col, row: aim.row, q: q, miss: q === "bad" && d > 0 });
     }
-    function dive(col, el) {
+    function dive(spot, el) {
       if (myKick || over) return;
-      Array.prototype.forEach.call(controls.children, function (b) { b.classList.toggle("on", b === el); b.disabled = true; });
-      lock(col);
+      Array.prototype.forEach.call(spotsEl.children, function (b) { b.classList.toggle("on", b === el); });
+      spotsEl.classList.add("locked");
+      lock(spot);
     }
     // my choice is in: tell the other side, then play it out once theirs is in too
     function lock(choice) {
       if (myKick !== null || over) return;
       myKick = choice; mine[r] = choice; clearTimeout(waitT);
-      if (iShoot(r)) { hist[choice.col]++; if (opts.onShot) opts.onShot(r, choice); say.textContent = "Kicked! Waiting for the keeper…"; spotsEl.classList.add("locked"); }
-      else { if (opts.onDive) opts.onDive(r, choice); say.textContent = ["Diving left…", "Staying in the middle…", "Diving right…"][choice] + (bot ? "" : " Waiting for the kick…"); }
+      if (iShoot(r)) { hist[choice.col]++; rowHist[choice.row]++; if (opts.onShot) opts.onShot(r, choice); say.textContent = "Kicked! Waiting for the keeper…"; spotsEl.classList.add("locked"); }
+      else { if (opts.onDive) opts.onDive(r, choice); say.textContent = "Diving " + (choice.row ? "high " : "low ") + ["left", "in the middle", "right"][choice.col] + "…" + (bot ? "" : " Waiting for the kick…"); }
       maybePlay();
     }
     function maybePlay() {
@@ -5152,9 +5192,11 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
       play(iShoot(r) ? mine[r] : theirs[r], iShoot(r) ? theirs[r] : mine[r]);
     }
     // Bamboo the bot's choices
+    var rowHist = [0, 0];
     function botKeep() {
-      var most = hist.indexOf(Math.max.apply(null, hist));
-      return Math.max.apply(null, hist) > 0 && Math.random() < PEN_READ[L] ? most : Math.floor(Math.random() * 3);
+      var read = Math.max.apply(null, hist) > 0 && Math.random() < PEN_READ[L];
+      return { col: read ? hist.indexOf(Math.max.apply(null, hist)) : Math.floor(Math.random() * 3),
+               row: read ? (rowHist[1] >= rowHist[0] ? 1 : 0) : (Math.random() < 0.5 ? 1 : 0) };
     }
     function botShot() {
       var x = Math.random(), q = x < PEN_PF[L] ? "perfect" : x < PEN_PF[L] + PEN_BAD[L] ? "bad" : "good";
@@ -5163,9 +5205,12 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
     // what happens: "goal", "saved" or "miss" (the same on both phones)
     function outcome(shot, keep, k) {
       var rnd = rand(k);
-      if (shot.q === "bad") return shot.miss ? "miss" : Math.abs(keep - shot.col) <= 1 ? "saved" : "goal";
-      if (keep === shot.col) return rnd() < (shot.q === "perfect" ? (shot.row === 1 ? 0.5 : 0.12) : 0.05) ? "goal" : "saved";
-      if (bot && iShoot(k) && Math.abs(keep - shot.col) === 1) {   // (only Bamboo the bot keeper reaches further)
+      if (shot.q === "bad") return shot.miss ? "miss" : Math.abs(keep.col - shot.col) <= 1 ? "saved" : "goal";
+      if (keep.col === shot.col) {
+        if (keep.row === shot.row) return rnd() < (shot.q === "perfect" ? (shot.row === 1 ? 0.2 : 0.1) : 0.05) ? "goal" : "saved";
+        return rnd() < (shot.q === "perfect" ? 0.7 : 0.45) ? "goal" : "saved";   // the right side, the wrong height
+      }
+      if (bot && iShoot(k) && Math.abs(keep.col - shot.col) === 1) {   // (only Bamboo the bot keeper reaches further)
         if (shot.q !== "perfect" && rnd() < PEN_REACT[L]) return "saved";
         if (shot.q === "perfect" && shot.row === 0 && rnd() < PEN_REACHP[L]) return "saved";
       }
@@ -5182,7 +5227,7 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
       if (res === "saved") { tx *= 0.92; ty *= 0.86; }
       if (shot.q === "bad" && !shot.miss) ball.classList.add("slow");
       ball.style.transform = "translate(" + tx + "px," + ty + "px) scale(0.6)";
-      keeperImg.className = "pk-keeper dive" + keep + (res === "saved" ? " got" : "");
+      keeperImg.className = "pk-keeper dive" + keep.col + (keep.row ? " high" : "") + (res === "saved" ? " got" : "");
       if (typeof sfx === "function") sfx("click");
       timers.push(setTimeout(function () {
         if (over) return;
@@ -5221,7 +5266,12 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
       },
       // the other player's hidden choice for kick k
       theirShot: function (k, shot) { if (over || theirs[k] !== undefined) return; theirs[k] = { col: shot.col | 0, row: shot.row ? 1 : 0, q: ["perfect", "good", "bad"].indexOf(shot.q) >= 0 ? shot.q : "bad", miss: !!shot.miss }; if (k === r) maybePlay(); },
-      theirDive: function (k, col) { if (over || theirs[k] !== undefined) return; theirs[k] = Math.max(0, Math.min(2, col | 0)); if (k === r) maybePlay(); },
+      theirDive: function (k, d) {
+        if (over || theirs[k] !== undefined) return;
+        if (typeof d !== "object" || !d) d = { col: d, row: 0 };
+        theirs[k] = { col: Math.max(0, Math.min(2, d.col | 0)), row: d.row ? 1 : 0 };
+        if (k === r) maybePlay();
+      },
       quick: function (i) { if (QUICK_CHAT[i]) bubble(wrap.querySelector(".pk-side.them"), QUICK_CHAT[i]); },
       left: function () { end("left"); }
     };
@@ -5240,7 +5290,7 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261103030120";   // replaced by build_real.ps1
+    var APP_BUILD = "20261103031747";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -6412,7 +6462,7 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
         });
         view = pk;
         R.on("shot", function (x) { pk.theirShot(x.k | 0, x.shot || {}); });
-        R.on("dive", function (x) { pk.theirDive(x.k | 0, x.col | 0); });
+        R.on("dive", function (x) { pk.theirDive(x.k | 0, x.col); });
         S.quick = function (uid, i) { pk.quick(i); };
         S.bye = function (uid) { if (uid === other.uid && !done) pk.left(); };
         S.stop = function () { pk.close(); };
@@ -6760,7 +6810,13 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
     }
     function renderOnlineCount() {
       var n = Object.keys(online).length;
-      $("g-onlinecount").innerHTML = !showOnline() ? "🙈 You're hidden, so you can only play solo." : n ? "🟢 " + n + (n === 1 ? " player" : " players") + ' online now <span class="see">See who ›</span>' : "🌙 Nobody else is online right now";
+      // a bold green button when people are here (with their pets' faces), a quiet line when nobody is
+      var faces = Object.keys(online).slice(0, 3).map(function (k) { return '<img alt="" src="' + esc(petPic(online[k].variant)) + '">'; }).join("");
+      $("g-onlinecount").innerHTML = !showOnline() ? "🙈 You're hidden, so you can only play solo."
+        : n ? '<span class="pg-onfaces">' + faces + '<i class="pg-onpulse" aria-hidden="true"></i></span>' +
+              '<span class="pg-ontext"><b>' + n + (n === 1 ? " player" : " players") + " online now</b><small>Tap to see who's here and play</small></span>" +
+              '<span class="see">See who ›</span>'
+            : "🌙 Nobody else is online right now";
       $("g-onlinecount").classList.toggle("has", !!n && showOnline());
     }
     // the high scores show one game at a time (tabs)
