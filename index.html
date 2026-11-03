@@ -1237,6 +1237,62 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
 .pg-modebtn.chal { border-color: #ff9a4d; background: linear-gradient(135deg, #fff4e8, #ffe6e6); }
 .pg-modebtn.chal b { color: #c2410c; }
 .pg-modebtn[hidden] { display: none; }
+/* ---------- Penalty kicks ---------- */
+.pg-gamegrid .pg-gamecard.penalty { grid-column: 1 / -1; min-height: 112px; position: relative; background: linear-gradient(150deg, #34c38f, #128a63); }
+.pg-newtag { position: absolute; top: 12px; right: 12px; padding: 2px 9px; border-radius: 999px; background: #fff; color: #128a63; font-style: normal; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.04em; }
+.pg-gametile.penalty { background: linear-gradient(150deg, #34c38f, #128a63); }
+.pg-pickgames .pg-gametile:last-child:nth-child(odd) { grid-column: 1 / -1; }
+.pg-game.pg-pen { display: flex; flex-direction: column; background: linear-gradient(180deg, #a8dcff 0%, #d9f1ff 30%, #7fcf6a 30.2%, #5fb54c 100%); touch-action: manipulation; overflow: hidden; }
+.pg-pen .pg-gamehud .lbl { margin-right: auto; }
+/* the scoreboard: a dot per kick (green goal, red miss) */
+.pk-board { position: absolute; top: calc(62px + env(safe-area-inset-top, 0px)); left: 12px; right: 12px; display: flex; gap: 8px; }
+.pk-side { position: relative; flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; padding: 6px 10px; border-radius: 14px; background: rgba(255,255,255,0.9); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+.pk-side .who { display: flex; align-items: center; gap: 4px; font-weight: 800; font-size: 0.85rem; color: #2b1d3a; white-space: nowrap; overflow: hidden; }
+.pk-side .who small { font-weight: 600; color: #6b7a82; }
+.pk-side .dots { display: flex; gap: 4px; flex-wrap: wrap; }
+.pk-side .dots i { width: 13px; height: 13px; border-radius: 50%; background: #e3eaed; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.08); }
+.pk-side .dots i.in { background: #2fbf71; }
+.pk-side .dots i.out { background: #e5484d; }
+.pk-side .pg-bubble { top: -8px; right: 8px; }
+/* how long is left to choose */
+.pk-timer { position: absolute; top: calc(128px + env(safe-area-inset-top, 0px)); left: 24px; right: 24px; height: 6px; border-radius: 999px; background: rgba(255,255,255,0.5); overflow: hidden; }
+.pk-timer i { display: block; height: 100%; background: #ffcf5c; transform-origin: left; transform: scaleX(0); }
+/* the goal */
+.pk-goal { position: absolute; top: calc(148px + env(safe-area-inset-top, 0px)); left: 50%; transform: translateX(-50%); width: min(86vw, 380px); height: min(30vh, 190px);
+  border: 7px solid #fff; border-bottom: 0; border-radius: 6px 6px 0 0; box-shadow: 0 6px 14px rgba(0,0,0,0.12); }
+.pk-net { position: absolute; inset: 0; background: rgba(255,255,255,0.25);
+  background-image: linear-gradient(rgba(255,255,255,0.55) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.55) 1px, transparent 1px); background-size: 14px 14px; }
+.pk-spots { position: absolute; inset: 6px; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: 1fr 1fr; gap: 6px; z-index: 2; }
+.pk-spot { border: 3px dashed rgba(255,255,255,0.95); border-radius: 50%; background: rgba(255,255,255,0.15); cursor: pointer; width: 64%; aspect-ratio: 1; justify-self: center; align-self: center; animation: pk-pulse 1.6s ease-in-out infinite; }
+.pk-spot.on { border-style: solid; border-color: #ffcf5c; background: rgba(255,207,92,0.45); animation: none; }
+.pk-spots.locked .pk-spot { pointer-events: none; }
+@keyframes pk-pulse { 50% { transform: scale(1.08); } }
+.pk-keeper { position: absolute; left: 50%; bottom: -6px; width: 92px; height: 92px; margin-left: -46px; object-fit: contain; z-index: 1; transition: transform 0.45s cubic-bezier(.2,.9,.3,1.1); filter: drop-shadow(0 4px 4px rgba(0,0,0,0.2)); }
+.pk-keeper.dive0 { transform: translate(-105%, -18%) rotate(-50deg); }
+.pk-keeper.dive1 { transform: translateY(-22%); }
+.pk-keeper.dive2 { transform: translate(105%, -18%) rotate(50deg); }
+/* the spot, the ball and the shooter */
+.pk-pitch { position: absolute; left: 0; right: 0; top: calc(148px + env(safe-area-inset-top, 0px) + min(30vh, 190px) + 40px); display: flex; justify-content: center; align-items: flex-end; gap: 4px; pointer-events: none; }
+.pk-shooter { width: 96px; height: 96px; object-fit: contain; filter: drop-shadow(0 6px 5px rgba(0,0,0,0.2)); }
+.pk-ball { font-size: 44px; line-height: 1; transition: transform 0.5s cubic-bezier(.25,.8,.4,1); filter: drop-shadow(0 6px 4px rgba(0,0,0,0.25)); }
+.pk-ball.slow { transition-duration: 0.85s; }
+.pk-say { position: absolute; left: 16px; right: 16px; bottom: calc(150px + env(safe-area-inset-bottom, 0px)); margin: 0; text-align: center; font-weight: 800; font-size: 1.05rem; color: #fff; text-shadow: 0 2px 6px rgba(0,0,0,0.35); }
+.pk-say.big { font-family: var(--display); font-size: 2.2rem; }
+.pk-say.good { color: #fff7c2; }
+.pk-say.bad { color: #ffe1e1; }
+/* the controls: the power bar, or the keeper's three dives */
+.pk-controls { position: absolute; left: 16px; right: 16px; bottom: calc(26px + env(safe-area-inset-bottom, 0px)); display: flex; gap: 10px; min-height: 96px; align-items: stretch; }
+.pk-dive { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; border: 0; border-radius: 20px; background: rgba(255,255,255,0.95); font: inherit; color: #14232b; box-shadow: 0 6px 0 rgba(0,0,0,0.12); }
+.pk-dive span { font-size: 2rem; line-height: 1; }
+.pk-dive small { font-weight: 800; font-size: 0.85rem; }
+.pk-dive.on { background: #ffcf5c; }
+.pk-dive[disabled]:not(.on) { opacity: 0.5; }
+.pk-meter { position: relative; flex: 1; border: 0; border-radius: 22px; overflow: hidden; background: linear-gradient(90deg, #ffd6d6, #fff2c4 30%, #fff2c4 70%, #ffd6d6); box-shadow: 0 6px 0 rgba(0,0,0,0.15); font: inherit; cursor: pointer; }
+.pk-meter .ok { position: absolute; top: 0; bottom: 0; left: 50%; transform: translateX(-50%); background: rgba(255,220,120,0.55); }
+.pk-meter .zone { position: absolute; top: 0; bottom: 0; left: 50%; transform: translateX(-50%); background: #3ccf7a; z-index: 1; }
+.pk-meter .mark { position: absolute; top: 6px; bottom: 6px; width: 8px; margin-left: -4px; border-radius: 4px; background: #14232b; box-shadow: 0 0 0 2px #fff; z-index: 2; }
+.pk-meter b { position: absolute; left: 0; right: 0; bottom: 6px; z-index: 3; font-family: var(--display); font-size: 1.1rem; color: #14232b; text-shadow: 0 1px 0 #fff; pointer-events: none; }
+.pg-pen .pg-gamemsg { top: 42%; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -1370,7 +1426,8 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
           <button type="button" class="pg-gamecard bamboo" data-game="bamboo"><span class="art" aria-hidden="true">🎋</span><b>Bamboo catch</b><small>Catch the falling food</small></button>
           <button type="button" class="pg-gamecard race" data-game="race"><span class="art" aria-hidden="true">🏁</span><b>Treat race</b><small>Tap fastest · up to 4</small></button>
           <button type="button" class="pg-gamecard memory" data-game="memory"><span class="art" aria-hidden="true">🃏</span><b>Memory match</b><small>Find the pairs</small></button>
-          <button type="button" class="pg-gamecard ball" data-game="ball"><span class="art" aria-hidden="true">⚽</span><b>Ball pass</b><small>Team up · keep it going</small></button>
+          <button type="button" class="pg-gamecard ball" data-game="ball"><span class="art" aria-hidden="true">⚽</span><b>Ball pass</b><small>Keep it going · or versus</small></button>
+          <button type="button" class="pg-gamecard penalty" data-game="penalty"><span class="art" aria-hidden="true">🥅</span><b>Penalty kicks</b><small>Shoot, save, win the shootout</small><em class="pg-newtag">NEW</em></button>
         </div>
         <h3 class="pg-playh">🏆 Today's best</h3>
         <div class="pg-tabs pg-boardtabs" role="tablist">
@@ -1499,6 +1556,7 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
           <button type="button" class="pg-gametile duel" id="g-pickduel"><span class="art" aria-hidden="true">🎋</span><b>Bamboo duel</b><small>Highest score in 30 s</small></button>
           <button type="button" class="pg-gametile memory" id="g-pickmem"><span class="art" aria-hidden="true">🃏</span><b>Memory match</b><small>Take turns finding pairs</small></button>
           <button type="button" class="pg-gametile ball" id="g-pickball"><span class="art" aria-hidden="true">⚽</span><b>Ball pass</b><small>Keep it going together</small></button>
+          <button type="button" class="pg-gametile penalty" id="g-pickpen"><span class="art" aria-hidden="true">🥅</span><b>Penalty kicks</b><small>Shoot and save</small></button>
         </div>
         <button type="button" class="pg-linkbtn" id="g-pickno">Cancel</button>
       </div>
@@ -4942,6 +5000,233 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
     };
   }
 
+  // ---------- Penalty kicks ----------
+  // Five kicks each, taking turns, then sudden death. Both players choose at the same time and can't see each
+  // other's choice:
+  //  * the shooter taps one of six spots in the goal (left / middle / right, high or low), then taps again while
+  //    the power bar is in the green. Green: it goes where aimed. Too hard: over the bar or wide. Too soft: easy save.
+  //  * the keeper picks dive left, stay, or dive right.
+  // Then the kick plays out. The keeper saves if they went the right way (a perfect top-corner kick still beats them
+  // half the time). Every result comes from the two choices and a random number made from the shared seed and the
+  // kick number, so two phones always agree. Bamboo the bot (levels 1-8) reads where you like to shoot and, higher
+  // up, reaches shots one side away; its power bar for you also gets faster with its level.
+  // startPenalty({ me: { pic, html }, them: { pic, html, bot }, iFirst, live, level, seed, onShot(r, shot), onDive(r, col),
+  //   onQuick(i), onEnd({ me, them, won }), onQuit() })  -> { wrap, start(), theirShot(r, shot), theirDive(r, col), quick(i), left(), close() }
+  var PEN_KICKS = 5, PEN_MAX = 8, PEN_CHOOSE = 8;
+  var PEN_T = [1400, 1250, 1100, 1000, 900, 800, 720, 650], PEN_W = [0.34, 0.30, 0.28, 0.26, 0.24, 0.22, 0.20, 0.18];
+  var PEN_READ = [0, 0.15, 0.25, 0.35, 0.45, 0.5, 0.55, 0.6], PEN_REACT = [0, 0.12, 0.25, 0.38, 0.5, 0.62, 0.72, 0.8];
+  var PEN_REACHP = [0, 0, 0, 0.05, 0.1, 0.25, 0.33, 0.4], PEN_HI = [0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.65, 0.7];
+  var PEN_PF = [0.35, 0.45, 0.55, 0.65, 0.75, 0.85, 0.9, 0.94], PEN_BAD = [0.25, 0.18, 0.12, 0.08, 0.05, 0.03, 0.02, 0.01];
+  function startPenalty(opts) {
+    var bot = !!opts.them.bot, L = Math.max(1, Math.min(8, opts.level || 3)) - 1;
+    var T = bot ? PEN_T[L] : 1000, W = bot ? PEN_W[L] : 0.26;   // (with a real player: the same bar for both)
+    var wrap = document.createElement("div"); wrap.className = "pg-game pg-pen";
+    wrap.innerHTML =
+      '<div class="pg-gamehud"><span class="lbl">🥅 Penalty kicks</span>' +
+        (opts.onQuick ? '<button type="button" class="pg-qcbtn" aria-label="Send an emoji">💬</button>' : "") +
+        '<button type="button" class="pg-gamex" aria-label="Stop the game">✕</button></div>' +
+      '<div class="pg-qcpal" hidden></div>' +
+      '<div class="pk-board"><div class="pk-side them"><span class="who"></span><span class="dots"></span></div>' +
+        '<div class="pk-side me"><span class="who"></span><span class="dots"></span></div></div>' +
+      '<div class="pk-timer" aria-hidden="true"><i></i></div>' +
+      '<div class="pk-goal"><div class="pk-net"></div><div class="pk-spots"></div><img class="pk-keeper" alt=""></div>' +
+      '<div class="pk-pitch"><img class="pk-shooter" alt=""><span class="pk-ball" aria-hidden="true">⚽</span></div>' +
+      '<p class="pk-say" aria-live="polite"></p>' +
+      '<div class="pk-controls"></div>' +
+      '<div class="pg-gamemsg big">Get ready…</div>';
+    document.body.appendChild(wrap);
+    var goal = wrap.querySelector(".pk-goal"), spotsEl = wrap.querySelector(".pk-spots"), keeperImg = wrap.querySelector(".pk-keeper");
+    var shooterImg = wrap.querySelector(".pk-shooter"), ball = wrap.querySelector(".pk-ball"), say = wrap.querySelector(".pk-say");
+    var controls = wrap.querySelector(".pk-controls"), msg = wrap.querySelector(".pg-gamemsg"), timerBar = wrap.querySelector(".pk-timer i");
+    wrap.querySelector(".pk-side.them .who").innerHTML = opts.them.html || "";
+    wrap.querySelector(".pk-side.me .who").innerHTML = (opts.me.html || "") + " <small>(you)</small>";
+    var over = false, live = false, timers = [], r = -1, myKick = null, theirs = {}, mine = {}, hist = [0, 0, 0];
+    var goals = { me: [], them: [] }, waitT = null, lostT = null, meterRaf = 0;
+    function bubble(el, text) { var b = document.createElement("span"); b.className = "pg-bubble"; b.textContent = text; el.appendChild(b); setTimeout(function () { b.remove(); }, 2600); }
+    quickPalette(wrap, function (i, t) { bubble(wrap.querySelector(".pk-side.me"), t); opts.onQuick(i); });
+    function iShoot(k) { return (k % 2 === 0) === !!opts.iFirst; }
+    function rand(k) { return seeded(((opts.seed || 1) ^ Math.imul(k + 1, 2654435761)) >>> 0); }
+    function dots() {
+      ["me", "them"].forEach(function (who) {
+        var g = goals[who], n = Math.max(PEN_KICKS, g.length), html = "";
+        for (var i = 0; i < n; i++) html += '<i class="' + (i >= g.length ? "" : g[i] ? "in" : "out") + '"></i>';
+        wrap.querySelector(".pk-side." + who + " .dots").innerHTML = html;
+      });
+    }
+    dots();
+    // the winner, once it's certain (or a draw after the sudden-death limit)
+    function decided() {
+      var a = goals.me, b = goals.them, ga = a.filter(Boolean).length, gb = b.filter(Boolean).length;
+      if (a.length <= PEN_KICKS && b.length <= PEN_KICKS) {
+        if (ga > gb + (PEN_KICKS - b.length)) return "me";
+        if (gb > ga + (PEN_KICKS - a.length)) return "them";
+        if (a.length < PEN_KICKS || b.length < PEN_KICKS) return null;
+      }
+      if (a.length !== b.length) return null;
+      if (ga !== gb) return ga > gb ? "me" : "them";
+      return a.length >= PEN_MAX ? "draw" : null;
+    }
+    // --- a new kick ---
+    function nextKick() {
+      if (over) return;
+      r++; myKick = null;
+      var shoot = iShoot(r);
+      wrap.classList.toggle("shooting", shoot); wrap.classList.toggle("keeping", !shoot);
+      keeperImg.src = shoot ? opts.them.pic : opts.me.pic; shooterImg.src = shoot ? opts.me.pic : opts.them.pic;
+      keeperImg.className = "pk-keeper"; ball.className = "pk-ball"; ball.style.transform = "";
+      say.className = "pk-say"; say.textContent = shoot ? "Your kick! Tap where to shoot." : "You're in goal! Which way will you dive?";
+      controls.innerHTML = ""; spotsEl.innerHTML = "";
+      if (shoot) {
+        for (var row = 1; row >= 0; row--) for (var col = 0; col < 3; col++) (function (col, row) {
+          var s = document.createElement("button"); s.type = "button"; s.className = "pk-spot";
+          s.setAttribute("aria-label", "Shoot " + (row ? "high " : "low ") + ["left", "in the middle", "right"][col]);
+          s.addEventListener("click", function () { aimAt(col, row, s); });
+          spotsEl.appendChild(s);
+        })(col, row);
+      } else {
+        [["⬅️", "Dive left", 0], ["🧍", "Stay", 1], ["➡️", "Dive right", 2]].forEach(function (d) {
+          var b = document.createElement("button"); b.type = "button"; b.className = "pk-dive";
+          b.innerHTML = "<span>" + d[0] + "</span><small>" + d[1] + "</small>";
+          b.addEventListener("click", function () { dive(d[2], b); });
+          controls.appendChild(b);
+        });
+      }
+      // the time to choose
+      timerBar.style.transition = "none"; timerBar.style.transform = "scaleX(1)"; void timerBar.offsetWidth;
+      timerBar.style.transition = "transform " + PEN_CHOOSE + "s linear"; timerBar.style.transform = "scaleX(0)";
+      clearTimeout(waitT);
+      var k = r;
+      waitT = setTimeout(function () {
+        if (r !== k || myKick) return;
+        if (iShoot(k)) lock({ col: 1, row: 0, q: "bad", miss: false });   // too slow: a weak kick down the middle
+        else lock(1);                                                       // too slow: stays in the middle
+      }, PEN_CHOOSE * 1000);
+      // Bamboo the bot chooses straight away (it's hidden until the kick)
+      if (bot) theirs[r] = iShoot(r) ? botKeep() : botShot();
+    }
+    // shooting: pick a spot, then the power bar
+    var aim = null, meterX = 0.5, meterStart = 0;
+    function aimAt(col, row, el) {
+      if (myKick || over) return;
+      aim = { col: col, row: row };
+      Array.prototype.forEach.call(spotsEl.children, function (s) { s.classList.toggle("on", s === el); });
+      say.textContent = "Now tap when the bar is in the green!";
+      if (!controls.querySelector(".pk-meter")) {
+        controls.innerHTML = '<button type="button" class="pk-meter" aria-label="Kick!"><span class="zone" style="width:' + (W * 100) + '%"></span>' +
+          '<span class="ok" style="width:' + (W * 200) + '%"></span><i class="mark"></i><b>KICK!</b></button>';
+        controls.querySelector(".pk-meter").addEventListener("click", kick);
+        meterStart = performance.now(); cancelAnimationFrame(meterRaf);
+        (function step(now) {
+          if (myKick || over) return;
+          var ph = ((now - meterStart) / T) % 2; meterX = ph < 1 ? ph : 2 - ph;
+          var mk = controls.querySelector(".mark"); if (mk) mk.style.left = (meterX * 100) + "%";
+          meterRaf = requestAnimationFrame(step);
+        })(meterStart);
+      }
+    }
+    function kick() {
+      if (myKick || over || !aim) return;
+      cancelAnimationFrame(meterRaf);
+      var d = meterX - 0.5, q = Math.abs(d) < W / 2 ? "perfect" : Math.abs(d) < W ? "good" : "bad";
+      lock({ col: aim.col, row: aim.row, q: q, miss: q === "bad" && d > 0 });
+    }
+    function dive(col, el) {
+      if (myKick || over) return;
+      Array.prototype.forEach.call(controls.children, function (b) { b.classList.toggle("on", b === el); b.disabled = true; });
+      lock(col);
+    }
+    // my choice is in: tell the other side, then play it out once theirs is in too
+    function lock(choice) {
+      if (myKick !== null || over) return;
+      myKick = choice; mine[r] = choice; clearTimeout(waitT);
+      if (iShoot(r)) { hist[choice.col]++; if (opts.onShot) opts.onShot(r, choice); say.textContent = "Kicked! Waiting for the keeper…"; spotsEl.classList.add("locked"); }
+      else { if (opts.onDive) opts.onDive(r, choice); say.textContent = ["Diving left…", "Staying in the middle…", "Diving right…"][choice] + (bot ? "" : " Waiting for the kick…"); }
+      maybePlay();
+    }
+    function maybePlay() {
+      if (over || mine[r] === undefined || theirs[r] === undefined) {
+        if (!over && mine[r] !== undefined && !bot) { clearTimeout(lostT); var k = r; lostT = setTimeout(function () { if (r === k && theirs[k] === undefined) end("lost"); }, 15000); }
+        return;
+      }
+      clearTimeout(lostT);
+      play(iShoot(r) ? mine[r] : theirs[r], iShoot(r) ? theirs[r] : mine[r]);
+    }
+    // Bamboo the bot's choices
+    function botKeep() {
+      var most = hist.indexOf(Math.max.apply(null, hist));
+      return Math.max.apply(null, hist) > 0 && Math.random() < PEN_READ[L] ? most : Math.floor(Math.random() * 3);
+    }
+    function botShot() {
+      var x = Math.random(), q = x < PEN_PF[L] ? "perfect" : x < PEN_PF[L] + PEN_BAD[L] ? "bad" : "good";
+      return { col: Math.floor(Math.random() * 3), row: Math.random() < PEN_HI[L] ? 1 : 0, q: q, miss: q === "bad" && Math.random() < 0.5 };
+    }
+    // what happens: "goal", "saved" or "miss" (the same on both phones)
+    function outcome(shot, keep, k) {
+      var rnd = rand(k);
+      if (shot.q === "bad") return shot.miss ? "miss" : Math.abs(keep - shot.col) <= 1 ? "saved" : "goal";
+      if (keep === shot.col) return rnd() < (shot.q === "perfect" ? (shot.row === 1 ? 0.5 : 0.12) : 0.05) ? "goal" : "saved";
+      if (bot && iShoot(k) && Math.abs(keep - shot.col) === 1) {   // (only Bamboo the bot keeper reaches further)
+        if (shot.q !== "perfect" && rnd() < PEN_REACT[L]) return "saved";
+        if (shot.q === "perfect" && shot.row === 0 && rnd() < PEN_REACHP[L]) return "saved";
+      }
+      return "goal";
+    }
+    function play(shot, keep) {
+      var k = r, res = outcome(shot, keep, k), meShoot = iShoot(k);
+      controls.innerHTML = ""; spotsEl.innerHTML = ""; spotsEl.classList.remove("locked");
+      timerBar.style.transition = "none"; timerBar.style.transform = "scaleX(0)";
+      // the ball flies to its spot (or over / wide), the keeper dives
+      var gw = goal.clientWidth, gh = goal.clientHeight, gr = goal.getBoundingClientRect(), br = ball.getBoundingClientRect();
+      var tx = gr.left + gw * (0.2 + shot.col * 0.3) - (br.left + br.width / 2), ty = gr.top + gh * (shot.row ? 0.28 : 0.72) - (br.top + br.height / 2);
+      if (res === "miss") { if (shot.row) ty -= gh * 0.55; else tx += (shot.col === 0 ? -1 : 1) * gw * 0.35; }
+      if (res === "saved") { tx *= 0.92; ty *= 0.86; }
+      if (shot.q === "bad" && !shot.miss) ball.classList.add("slow");
+      ball.style.transform = "translate(" + tx + "px," + ty + "px) scale(0.6)";
+      keeperImg.className = "pk-keeper dive" + keep + (res === "saved" ? " got" : "");
+      if (typeof sfx === "function") sfx("click");
+      timers.push(setTimeout(function () {
+        if (over) return;
+        var good = res === "goal" ? meShoot : !meShoot;
+        say.className = "pk-say big " + (good ? "good" : "bad");
+        say.textContent = res === "goal" ? "GOAL! ⚽" : res === "saved" ? "SAVED! 🧤" : shot.row ? "Over the bar!" : "Wide!";
+        if (typeof sfx === "function") sfx(good ? "coin" : "pat");
+        (meShoot ? goals.me : goals.them).push(res === "goal");
+        dots();
+        var w = decided();
+        if (w) { timers.push(setTimeout(function () { end(w); }, 1300)); return; }
+        timers.push(setTimeout(nextKick, 1800));
+      }, shot.q === "bad" && !shot.miss ? 900 : 600));
+    }
+    function end(why) {
+      if (over) return; over = true; live = false;
+      clearTimeout(waitT); clearTimeout(lostT); cancelAnimationFrame(meterRaf);
+      controls.innerHTML = ""; spotsEl.innerHTML = "";
+      var res = { me: goals.me.filter(Boolean).length, them: goals.them.filter(Boolean).length, won: why === "me" ? true : why === "them" ? false : why === "draw" ? "draw" : null, why: why };
+      msg.textContent = why === "me" ? "🏆 You win!" : "";
+      timers.push(setTimeout(function () { opts.onEnd(res); }, 900));
+    }
+    function close() { over = true; clearTimeout(waitT); clearTimeout(lostT); cancelAnimationFrame(meterRaf); timers.forEach(clearTimeout); wrap.remove(); }
+    wrap.querySelector(".pg-gamex").addEventListener("click", function () {
+      if (live && !over && !confirm("Stop the game?")) return;
+      close(); if (opts.onQuit) opts.onQuit();
+    });
+    function go() { live = true; msg.textContent = ""; nextKick(); }
+    return {
+      wrap: wrap, close: close,
+      start: function () {
+        if (opts.live) countdownFrom(msg, LIVE_COUNTDOWN, "Kick off!", timers, function () { return over; }, go);
+        else [["3", 0], ["2", 700], ["1", 1400], ["Kick off!", 2100]].forEach(function (s) {
+          timers.push(setTimeout(function () { if (over) return; msg.textContent = s[0]; if (s[0] === "Kick off!") { go(); timers.push(setTimeout(function () { if (!over) msg.textContent = ""; }, 600)); } }, s[1]));
+        });
+      },
+      // the other player's hidden choice for kick k
+      theirShot: function (k, shot) { if (over || theirs[k] !== undefined) return; theirs[k] = { col: shot.col | 0, row: shot.row ? 1 : 0, q: ["perfect", "good", "bad"].indexOf(shot.q) >= 0 ? shot.q : "bad", miss: !!shot.miss }; if (k === r) maybePlay(); },
+      theirDive: function (k, col) { if (over || theirs[k] !== undefined) return; theirs[k] = Math.max(0, Math.min(2, col | 0)); if (k === r) maybePlay(); },
+      quick: function (i) { if (QUICK_CHAT[i]) bubble(wrap.querySelector(".pk-side.them"), QUICK_CHAT[i]); },
+      left: function () { end("left"); }
+    };
+  }
+
   // ---------- Pet Streak (real version) ----------
   // Sign in with an email link, share pets with co-parents, buy and adopt pets and wardrobe items with paws.
   // All rules run on the server (Supabase functions in pet-real/supabase/schema.sql); this file only shows
@@ -4955,7 +5240,7 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261103024036";   // replaced by build_real.ps1
+    var APP_BUILD = "20261103030120";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -5523,6 +5808,9 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
       memory: { name: "Memory match", art: "🃏", max: 1, invite: "wants to play Memory match!",
         solo: ["🙋 Play solo", "Find the 12 pairs in as few tries as you can."],
         others: ["👫 Take turns", "Find a pair and go again. Most pairs wins."] },
+      penalty: { name: "Penalty kicks", art: "🥅", max: 1, invite: "wants a penalty shootout!",
+        solo: ["🤖 Play the bot", "5 kicks each. Shoot past the keeper, then try to save."],
+        others: ["👫 Play someone", "Take turns shooting and diving. Most goals wins."] },
       ball: { name: "Ball pass", art: "⚽", max: 1, invite: "wants to play Ball pass!",
         solo: ["🤖 Pass with the bot", "Tap as the ball reaches you. How long can you keep it going?"],
         others: ["👫 Pass together", "Team up and keep the ball going as long as you can."] }
@@ -5594,7 +5882,8 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
       $("g-modesolo").onclick = function () { $("g-mode").hidden = true; playSolo(game); };
       // 🔥 Challenge: the champion bot (Ball pass: in Versus only)
       var chal = { race: "A lightning-fast racer. You'll need two thumbs!", bamboo: "A bot that hardly ever misses a catch.",
-                   memory: "A bot with a near-perfect memory.", ball: "Power shots and almost no misses." }[game];
+                   memory: "A bot with a near-perfect memory.", ball: "Power shots and almost no misses.",
+                   penalty: "A keeper that reads your kicks and a striker that rarely misses." }[game];
       $("g-modechal").hidden = game === "ball" && !vs;
       $("g-modechal").innerHTML = "<b>🔥 Challenge</b><small>" + esc(chal) + "</small>";
       $("g-modechal").onclick = function () { $("g-mode").hidden = true; playBot(game, true); };
@@ -5611,8 +5900,8 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
     Array.prototype.forEach.call(document.querySelectorAll(".pg-gamecard[data-game]"), function (b) {
       b.addEventListener("click", function () { openMode(b.dataset.game); });
     });
-    function playSolo(game) { botChallenge = false; if (game === "bamboo") startGame(); else if (game === "memory") startMemory(); else if (game === "ball") ballBot(ballVs); else raceBot(); }
-    function playBot(game, challenge) { botChallenge = !!challenge; if (game === "bamboo") duelBot(); else if (game === "memory") memoryBot(); else if (game === "ball") ballBot(ballVs); else raceBot(); }
+    function playSolo(game) { botChallenge = false; if (game === "bamboo") startGame(); else if (game === "memory") startMemory(); else if (game === "ball") ballBot(ballVs); else if (game === "penalty") penBot(); else raceBot(); }
+    function playBot(game, challenge) { botChallenge = !!challenge; if (game === "bamboo") duelBot(); else if (game === "memory") memoryBot(); else if (game === "ball") ballBot(ballVs); else if (game === "penalty") penBot(); else raceBot(); }
 
     // --- with others: pick who (online players, and friends who are away: they get a notification) ---
     var pick = null;
@@ -5700,6 +5989,7 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
       $("g-pickduel").onclick = function () { $("g-gamepick").hidden = true; then("bamboo"); };
       $("g-pickmem").onclick = function () { $("g-gamepick").hidden = true; then("memory"); };
       $("g-pickball").onclick = function () { $("g-gamepick").hidden = true; then("ball"); };
+      $("g-pickpen").onclick = function () { $("g-gamepick").hidden = true; then("penalty"); };
       $("g-pickno").onclick = function () { $("g-gamepick").hidden = true; };
     }
 
@@ -5808,7 +6098,7 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
       var R = { on: function (ev, fn) { hs[ev] = fn; return R; },
         send: function (ev, p) { ch.send({ type: "broadcast", event: ev, payload: p || {} }); },
         close: function () { try { sb.removeChannel(ch); } catch (e) {} } };
-      ["here", "seat", "full", "go", "bye", "qc", "p", "fin", "result", "s", "final", "flip", "pass", "hit", "drop"].forEach(function (ev) {
+      ["here", "seat", "full", "go", "bye", "qc", "p", "fin", "result", "s", "final", "flip", "pass", "hit", "drop", "shot", "dive"].forEach(function (ev) {
         ch.on("broadcast", { event: ev }, function (m) { if (hs[ev]) hs[ev](m.payload || {}); });
       });
       ch.subscribe(function (st) { if (st === "SUBSCRIBED" && hs.ready) hs.ready(); });
@@ -5941,7 +6231,7 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
         timers.forEach(clearTimeout); timers = [];
         wait.remove();
         players = m.players;
-        if (game === "bamboo") goBamboo(m); else if (game === "memory") goMemory(m); else if (game === "ball") goBall(m); else goRace(m);
+        if (game === "bamboo") goBamboo(m); else if (game === "memory") goMemory(m); else if (game === "ball") goBall(m); else if (game === "penalty") goPenalty(m); else goRace(m);
       }
       function others() { return players.filter(function (x) { return x.uid !== me.id; }); }
       function againUids() { return others().map(function (x) { return x.uid; }).filter(function (u) { return online[u] || friendOf(u); }); }
@@ -6103,6 +6393,31 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
         S.stop = function () { bp.close(); };
         bp.start();
       }
+      // Penalty kicks: each kick both choose in secret ("shot" / "dive"); both phones work out the same result
+      function goPenalty(m) {
+        var other = others()[0];
+        var pk = startPenalty({
+          me: { pic: petPic(p.variant), html: tagHTML(p.level, p.name) }, them: { pic: petPic(other.variant), html: petTagHTML(other) },
+          iFirst: m.first === me.id, live: true, seed: seedOf(room),
+          onShot: function (k, shot) { R.send("shot", { k: k, shot: shot }); },
+          onDive: function (k, col) { R.send("dive", { k: k, col: col }); },
+          onQuick: function (i) { R.send("qc", { uid: me.id, i: i }); },
+          onQuit: function () { leave(); openPlay(); },
+          onEnd: function (res) {
+            if (done) return; done = true;
+            if (res.why === "left" || res.why === "lost") { endLeft(pk.wrap, res.why === "left" ? label(other) + " left the game." : "We lost touch with " + label(other) + "."); return; }
+            endCard(pk.wrap, res.won, { big: res.me + ' <small class="vs">vs ' + res.them + "</small>", lbl: "goals",
+              lost: label(other) + " wins this time!", score: res.me, against: label(other), again: "🥅 Rematch" });
+          }
+        });
+        view = pk;
+        R.on("shot", function (x) { pk.theirShot(x.k | 0, x.shot || {}); });
+        R.on("dive", function (x) { pk.theirDive(x.k | 0, x.col | 0); });
+        S.quick = function (uid, i) { pk.quick(i); };
+        S.bye = function (uid) { if (uid === other.uid && !done) pk.left(); };
+        S.stop = function () { pk.close(); };
+        pk.start();
+      }
       // the end of a live game: wins, history, and what next
       async function endCard(wrap, won, o) {
         var wins = p.race_wins || 0;
@@ -6258,6 +6573,25 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
       });
       raceNow = { race: bp }; trackMe();
       bp.start();
+    }
+    // Penalty kicks with Bamboo the bot: it reads where you like to shoot, and higher levels save more and miss less
+    function penBot() {
+      var p = pet(); if (!p || raceNow) return;
+      hidePlayPages();
+      var pk = startPenalty({
+        me: { pic: petPic(p.variant), html: tagHTML(p.level, p.name) },
+        them: { pic: petPic(botChallenge ? "panda_sakura" : "panda_golden"), html: esc(botName("pen")), bot: true },
+        iFirst: true, level: botLv("pen"), seed: (Math.random() * 1e9) >>> 0,
+        onQuit: function () { raceNow = null; trackMe(); openPlay(); },
+        onEnd: function (res) {
+          var won = res.won;
+          logGame("penalty", "bot", botChallenge ? "Bamboo the champion" : "Bamboo the bot", won === true ? "won" : won === false ? "lost" : "draw", null, res.me);
+          botEnd(pk, res.me + ' <small class="vs">vs ' + res.them + "</small>",
+            botResult("pen", won, "You beat Bamboo the bot!", "Bamboo the bot wins! Have another go.", "🤝 A draw with the bot!"), penBot);
+        }
+      });
+      raceNow = { race: pk }; trackMe();
+      pk.start();
     }
     // Memory match taking turns with Bamboo the bot: higher levels remember more of the cards they've seen
     function memoryBot() {
