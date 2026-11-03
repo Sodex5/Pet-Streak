@@ -1427,6 +1427,21 @@ body:has(#g-sheet:not([hidden])) #g-top, body:has(#g-sheet:not([hidden])) #g-doc
 .pg-dpanel .pg-dpacts { display: flex; gap: 6px; }
 .pg-dpanel .pg-dpacts .pg-btn { flex: none; padding: 10px 14px; font-size: 0.9rem; }
 .pg-dpanel #g-swatches { grid-column: 1 / -1; }
+/* the top bar always fits: the pet name shortens with …, and on narrow phones the Store shows just its icon */
+html, body { overflow-x: hidden; }
+.pg-bar { gap: 5px; }
+.pg-bar .pg-chip { flex-shrink: 0; }
+.pg-bar .pg-petbtn { flex-shrink: 1; min-width: 0; max-width: 42%; display: flex; align-items: center; gap: 3px; }
+.pg-bar .pg-petbtn #g-petbtnname { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pg-bar .pg-grow2 { flex: 1 1 0; min-width: 0; }
+@media (max-width: 400px) { .pg-storelbl { display: none; } .pg-storechip { padding: 6px 11px; } }
+/* the night sky stays inside the screen (a star layer used to poke 20px past the right edge) */
+.pg-sky { overflow: hidden; }
+.pg-sky .stars, .pg-sky .moon { position: absolute; }
+.pg-sky .stars.s2 { transform: none; background-position: 14px 22px; }
+/* narrow phones: the bottom buttons stay on one line (Dress up shows just its icon), so nothing overlaps them */
+.pg-bottom #g-feed { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+@media (max-width: 380px) { .pg-bottom .pg-lbl { display: none; } .pg-bar .pg-petbtn { max-width: 46%; } }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -1475,7 +1490,7 @@ body:has(#g-sheet:not([hidden])) #g-top, body:has(#g-sheet:not([hidden])) #g-doc
       <span class="pg-grow2"></span>
       <button type="button" class="pg-chip" id="g-coins" aria-label="Paws">🐾 <span id="g-coinnum">0</span></button>
       <button type="button" class="pg-chip pg-socialchip" id="g-socialbtn" aria-label="Friends and chats">💬<span class="pg-dotcount" id="g-socialdot" hidden></span></button>
-      <button type="button" class="pg-chip pg-storechip" id="g-storebtn">🛍️ Store</button>
+      <button type="button" class="pg-chip pg-storechip" id="g-storebtn" aria-label="Store">🛍️<span class="pg-storelbl"> Store</span></button>
       <button type="button" class="pg-chip" id="g-menubtn" aria-label="Menu">☰</button>
     </div>
     <div class="pg pg-dock" id="g-dock">
@@ -5404,7 +5419,7 @@ body:has(#g-sheet:not([hidden])) #g-top, body:has(#g-sheet:not([hidden])) #g-doc
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261103042142";   // replaced by build_real.ps1
+    var APP_BUILD = "20261103050254";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -8011,7 +8026,10 @@ body:has(#g-sheet:not([hidden])) #g-top, body:has(#g-sheet:not([hidden])) #g-doc
       if (bathing) ["g-top", "g-mood", "g-crew", "g-bottom"].forEach(function (id) { $(id).hidden = true; });
       $("g-empty").hidden = !signedIn || !loaded || !!p || !$("g-store").hidden || !$("g-join").hidden;
       if (!signedIn) { $("g-away").hidden = true; return; }
-      $("g-coinnum").textContent = profile ? profile.coins : 0;
+      // big numbers shortened so the top bar fits small phones (12,500 -> 12.5k)
+      var paws = profile ? profile.coins : 0;
+      $("g-coinnum").textContent = paws >= 10000 ? (Math.floor(paws / 100) / 10).toString().replace(/\.0$/, "") + "k" : paws.toLocaleString();
+      $("g-coins").setAttribute("aria-label", paws + " paws");
       $("g-storecoins").textContent = profile ? profile.coins : 0;
       // the pet switcher: current pet's name, and how many pets there are
       $("g-petbtn").hidden = !pets.length;
