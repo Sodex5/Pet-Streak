@@ -1368,6 +1368,53 @@ button.pg-onlinenow.has .see { flex: none; padding: 6px 12px; border-radius: 999
 .picv img { display: block; width: 100%; height: 100%; object-fit: contain; }
 .picv .vdot { position: absolute; right: 2px; bottom: 2px; width: 16px; height: 16px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
 .picv img { padding: 6px; box-sizing: border-box; }
+/* ---------- Dress up, redesigned: a clean grid of cards and a panel for the chosen one ---------- */
+.pg-sheet.pg-dress { max-height: 58%; }
+.pg-dress h2 { margin-bottom: 10px; }
+.pg-dress .pg-hint { margin: 2px 2px 10px; font-size: 0.82rem; }
+.pg-dgrid { flex: 1; min-height: 0; overflow-y: auto; touch-action: pan-y; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-auto-rows: max-content; gap: 10px; padding: 3px; align-content: start; }
+.pg-dcard { position: relative; display: flex; flex-direction: column; gap: 2px; min-width: 0; padding: 7px 7px 9px; border: 1.5px solid #e4eaed; border-radius: 16px; background: #fff; text-align: left; font: inherit; color: #14232b; cursor: pointer; transition: transform 0.12s, box-shadow 0.15s; }
+.pg-dcard:active { transform: scale(0.97); }
+.pg-dcard .dpic { position: relative; display: grid; place-items: center; aspect-ratio: 1 / 1; margin-bottom: 4px; border-radius: 12px; background: #f3f6f8; overflow: hidden; }
+.pg-dcard .dpic .pic, .pg-dcard .dpic .swbig { width: 100% !important; height: 100% !important; margin: 0 !important; border-radius: 0; background: none; padding: 7px; box-sizing: border-box; object-fit: contain; aspect-ratio: auto; }
+.pg-dcard .dpic canvas.pic.scene { padding: 0; object-fit: cover; }
+.pg-dcard .dpic .swbig { padding: 0; }
+.pg-dcard .dpic .picv img { padding: 0; }
+.pg-dcard .dpic .nonepic { font-size: 1.9rem; opacity: 0.5; }
+.pg-dcard b { display: block; font-size: 0.8rem; font-weight: 800; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pg-dcard small { display: block; font-size: 0.72rem; font-weight: 600; color: #6b7a82; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pg-dcard .dcols { position: absolute; left: 5px; bottom: 5px; padding: 1px 6px; border-radius: 999px; background: rgba(255,255,255,0.95); font-style: normal; font-size: 0.66rem; font-weight: 800; color: #4a4060; box-shadow: 0 1px 3px rgba(0,0,0,0.12); }
+.pg-dcard .dtick, .pg-dcard .dlock { position: absolute; top: 5px; right: 5px; width: 22px; height: 22px; display: grid; place-items: center; border-radius: 50%; font-style: normal; font-size: 0.72rem; font-weight: 900; }
+.pg-dcard .dtick { background: var(--brand); color: #fff; box-shadow: 0 0 0 2px #fff; }
+.pg-dcard .dlock { background: rgba(255,255,255,0.95); box-shadow: 0 1px 3px rgba(0,0,0,0.15); }
+.pg-dcard.on { border-color: var(--brand); background: var(--brand-tint); }
+.pg-dcard.on small { color: var(--brand); font-weight: 800; }
+.pg-dcard.trying { border-color: #f5b301; background: #fffaeb; }
+.pg-dcard.trying small { color: #8a5a00; font-weight: 800; }
+.pg-dcard.sel { box-shadow: 0 0 0 3px var(--brand-glow); }
+.pg-dcard.locked .dpic > .pic, .pg-dcard.locked .dpic > .swbig { opacity: 0.45; filter: grayscale(0.6); }
+.pg-dcard.locked small { color: #8a5a00; }
+/* the panel */
+.pg-dpanel { flex: none; display: flex; flex-direction: column; gap: 10px; margin-top: 10px; padding: 12px 14px; border-radius: 18px; background: #fff; border: 1px solid #e4eaed; box-shadow: 0 -4px 16px rgba(20,35,43,0.06); }
+.pg-dpanel[hidden] { display: none; }
+.pg-dpinfo b { display: block; font-size: 1.02rem; color: #14232b; }
+.pg-dpinfo small { display: block; margin-top: 1px; font-size: 0.82rem; color: #6b7a82; font-weight: 600; }
+#g-swatches[hidden] { display: none; }
+.pg-swatches { display: flex; flex-wrap: wrap; gap: 10px; }
+.pg-swatch { flex: 0 0 auto; position: relative; display: grid; place-items: center; width: 36px !important; height: 36px !important; min-width: 36px; min-height: 36px; max-width: 36px; max-height: 36px; padding: 0 !important; margin: 0; border: 0 !important; border-radius: 50%; background: #fff; box-shadow: 0 0 0 1.5px #d6e0e4; cursor: pointer; aspect-ratio: 1 / 1; }
+.pg-swatch i { display: block; width: 28px; height: 28px; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.14); }
+.pg-swatch.on { box-shadow: 0 0 0 3px var(--brand); }
+.pg-swatch.metal i { background-image: linear-gradient(135deg, rgba(255,255,255,0.8), rgba(255,255,255,0) 55%, rgba(0,0,0,0.12)) !important; }
+.pg-swatch.have::after { content: ""; position: absolute; right: -1px; bottom: -1px; width: 11px; height: 11px; border-radius: 50%; background: #2fbf71; box-shadow: 0 0 0 2px #fff; }
+.pg-dpacts { display: flex; gap: 8px; }
+.pg-dpacts .pg-btn { flex: 1; padding: 11px 12px; font-size: 0.95rem; white-space: nowrap; }
+.pg-dpacts .pg-btn.pg-primary { flex: 1.6; }
+.pg-dpacts .pg-btn[hidden] { display: none; }
+.pg-dcard[aria-pressed="true"], .pg-dcard[aria-pressed="true"] b { color: #14232b; }
+.pg-dcard[aria-pressed="true"] { background: var(--brand-tint); }
+.pg-swatch[aria-pressed="true"] { background: #fff; }
+/* with a card chosen, the sheet grows a little so the cards still have room */
+.pg-sheet.pg-dress:has(.pg-dpanel:not([hidden])) { max-height: 70%; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -1477,11 +1524,15 @@ button.pg-onlinenow.has .see { flex: none; padding: 6px 12px; border-radius: 999
         <button type="button" role="tab" data-slot="backdrop" aria-selected="false">🖼️ Rooms</button>
       </div>
       <p class="pg-hint" id="g-dresshint">Tap anything to try it on.</p>
-      <div class="pg-items" id="g-items"></div>
-      <div class="pg-tryon" id="g-tryon" hidden>
-        <span id="g-tryontext">Trying on</span>
-        <button type="button" class="pg-btn pg-primary" id="g-tryonbtn">Wear it</button>
-        <button type="button" class="pg-btn" id="g-tryonoff">Take off</button>
+      <div class="pg-dgrid" id="g-items"></div>
+      <!-- the chosen card: its name, its colours, and one clear button -->
+      <div class="pg-dpanel" id="g-tryon" hidden>
+        <div class="pg-dpinfo"><b id="g-tryontext"></b><small id="g-tryonsub"></small></div>
+        <div id="g-swatches"></div>
+        <div class="pg-dpacts">
+          <button type="button" class="pg-btn" id="g-tryonoff">Close</button>
+          <button type="button" class="pg-btn pg-primary" id="g-tryonbtn">Wear it</button>
+        </div>
       </div>
     </div>
     <!-- the Playground: its own page with the games, your wins and today's high scores -->
@@ -5341,7 +5392,7 @@ button.pg-onlinenow.has .see { flex: none; padding: 6px 12px; border-radius: 999
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261103035431";   // replaced by build_real.ps1
+    var APP_BUILD = "20261103041012";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -7747,6 +7798,10 @@ button.pg-onlinenow.has .see { flex: none; padding: 6px 12px; border-radius: 999
       if (DRESS[slot].none) list.unshift({ id: null, type: slot, name: DRESS[slot].none, level_req: 1, price: 0 });
       return list;
     }
+    // Dress up: a grid of cards (one per hat, pair of glasses or room; "🎨 5" when it comes in colours). Tapping a
+    // card wears it if it's yours, or tries it on; either way the panel at the bottom shows it, with its colours as
+    // swatches and one clear button (Wear / Buy & wear / Take off).
+    var dressSel = null;   // the card in the panel (the original's id)
     function renderItems() {
       var p = pet(), box = $("g-items"); box.innerHTML = "";
       if (!p) return;
@@ -7756,33 +7811,32 @@ button.pg-onlinenow.has .see { flex: none; padding: 6px 12px; border-radius: 999
       });
       $("g-dresshint").textContent = DRESS[dressSlot].hint + (dressSlot === "backdrop" ? "it behind " : "") + p.name + ".";
       dressItems(dressSlot).forEach(function (u0) {
-        if (u0.id && colourOf(u0.id)) return;   // (colours show as dots on their original)
+        if (u0.id && colourOf(u0.id)) return;   // (colours are chosen in the panel)
         var cols = colourList(u0), u = shownColour(u0, cols, p);
-        var on = (p[u.type] || null) === u.id, trying = !!tryOn && tryOn.slot === u.type && tryOn.id === u.id && !on;
-        var levelOk = p.max_level >= u.level_req, have = !u.price || owned[u.id];
-        var sub = on ? "✓ Wearing" : trying ? "👀 Trying on" : !levelOk ? "🔒 Level " + u.level_req : !have ? "🐾 " + u.price : "Tap to wear";
+        var on = cols.some(function (c) { return (p[c.type] || null) === c.id; }) || (!u0.id && !p[u0.type]);
+        var trying = !!tryOn && cols.some(function (c) { return tryOn.slot === c.type && tryOn.id === c.id; }) && !on;
+        var levelOk = p.max_level >= u.level_req, have = cols.some(function (c) { return !c.price || owned[c.id]; });
+        var sub = on ? "Wearing" : trying ? "Trying on" : !levelOk ? "Level " + u.level_req : !have ? "🐾 " + u.price : "Yours";
         if (u.type === "backdrop" && u.id && !SCENE_DRAW[u.id] && !on && !trying && levelOk && have) sub = "Plain colour";
+        if (!u0.id && !on) sub = "Tap to remove";
         var b = document.createElement("button");
         b.type = "button";
-        b.className = "pg-item" + (!levelOk ? " locked" : "") + (trying ? " trying" : "") + (!u.id ? " none" : "");
+        b.className = "pg-dcard" + (!levelOk ? " locked" : "") + (trying ? " trying" : "") + (on ? " on" : "") + (!u.id ? " none" : "") + (dressSel === (u0.id || "none:" + u0.type) ? " sel" : "");
         b.setAttribute("aria-pressed", on ? "true" : "false");
         var up = u.id ? pic(u) : '<span class="pic nonepic" aria-hidden="true">🚫</span>';
-        // plain-colour rooms say so (one shares its name with a drawn room)
-        var label = u.type === "backdrop" && u.id && !SCENE_DRAW[u.id] ? u.name.replace(/ backdrop$/i, "") + " (plain)" : u.name;
-        b.innerHTML = up + "<b>" + (!up && u.color ? '<i class="sw" style="background:' + u.color + '"></i>' : "") + esc(label) + "</b><span>" + esc(sub) + "</span>";
-        b.addEventListener("click", function () { pickDress(u); });
-        if (cols.length > 1) {
-          var w = document.createElement("div"); w.className = "pg-itemwrap";
-          w.appendChild(b); w.appendChild(colourDots(cols, u, function (c) { dressPick[u0.id] = c.id; pickDress(c); }));
-          box.appendChild(w);
-        } else box.appendChild(b);
+        var label = u.type === "backdrop" && u.id && !SCENE_DRAW[u.id] ? u0.name.replace(/ backdrop$/i, "") + " (plain)" : u0.name;
+        b.innerHTML = '<span class="dpic">' + (up || (u.color ? '<i class="swbig" style="background:' + u.color + '"></i>' : "")) +
+            (cols.length > 1 ? '<em class="dcols">🎨 ' + cols.length + "</em>" : "") + (on ? '<em class="dtick" aria-hidden="true">✓</em>' : !levelOk ? '<em class="dlock" aria-hidden="true">🔒</em>' : "") + "</span>" +
+          "<b>" + esc(label) + "</b><small>" + esc(sub) + "</small>";
+        b.addEventListener("click", function () { dressSel = u0.id || "none:" + u0.type; pickDress(u); });
+        box.appendChild(b);
       });
       showTryOn();
       applyLook();
       // after the sheet is shown, so the little scene pictures know their size
       setTimeout(function () { paintSceneThumbs(box); }, 0);
     }
-    // an item and its colours (the original first); which one a card shows: the one worn, being tried on or last tapped
+    // an item and its colours (the original first); which one a card shows: the one being tried on, last tapped or worn
     var dressPick = {}, storePick = {};
     function colourList(u) {
       if (!u || !u.id || !ACC_COLORS[u.id]) return [u];
@@ -7795,21 +7849,25 @@ button.pg-onlinenow.has .see { flex: none; padding: 6px 12px; border-radius: 999
       var picked = cols.filter(function (c) { return c.id === dressPick[u.id]; })[0];
       return trying || picked || mine || u;
     }
+    // colour swatches: always round and the same size (they never stretch), a small green dot on the ones you own
     function colourDots(cols, shown, onPick) {
-      var row = document.createElement("div"); row.className = "pg-vdots"; row.setAttribute("role", "group"); row.setAttribute("aria-label", "Colours");
+      var row = document.createElement("div"); row.className = "pg-swatches"; row.setAttribute("role", "group"); row.setAttribute("aria-label", "Colours");
       cols.forEach(function (c) {
-        var d = document.createElement("button"); d.type = "button"; d.className = "pg-vdot" + (c.id === shown.id ? " on" : "") + (colourOf(c.id) && colourOf(c.id)[1] ? " metal" : "");
-        d.style.background = c.color || "#ccc"; d.setAttribute("aria-label", c.name); d.title = c.name;
-        if (owned[c.id] || !c.price) d.classList.add("have");
+        var d = document.createElement("button"); d.type = "button";
+        d.className = "pg-swatch" + (c.id === shown.id ? " on" : "") + (colourOf(c.id) && colourOf(c.id)[1] ? " metal" : "") + (owned[c.id] || !c.price ? " have" : "");
+        d.innerHTML = '<i style="background:' + (c.color || "#ccc") + '"></i>';
+        d.setAttribute("aria-label", c.name + (owned[c.id] || !c.price ? " (yours)" : "")); d.title = c.name;
+        d.setAttribute("aria-pressed", c.id === shown.id ? "true" : "false");
         d.addEventListener("click", function (e) { e.stopPropagation(); onPick(c); });
         row.appendChild(d);
       });
       return row;
     }
-    // tapping a card: what you own is worn straight away; anything else is tried on
+    // tapping a card or a colour: what you own is worn straight away; anything else is tried on
     async function pickDress(u) {
       var p = pet(); if (!p) return;
       var levelOk = p.max_level >= u.level_req, have = !u.price || owned[u.id];
+      if (u.id && colourOf(u.id) !== null || (u.id && ACC_COLORS[u.id])) dressPick[baseId(u.id)] = u.id;
       if (levelOk && have) {
         tryOn = null;
         if ((p[u.type] || null) !== u.id) await wear(p, u);
@@ -7826,36 +7884,50 @@ button.pg-onlinenow.has .see { flex: none; padding: 6px 12px; border-radius: 999
       await loadAll();
       return true;
     }
-    // the bar under the items while trying something on: buy it, or how to unlock it
+    // the panel at the bottom: the chosen card's name, its colours, and what you can do
     function showTryOn() {
-      var p = pet(), u = tryOn && item(tryOn.id);
-      $("g-tryon").hidden = !u || !p;
-      if (!u || !p) return;
-      var levelOk = p.max_level >= u.level_req, coins = profile ? profile.coins : 0;
+      var p = pet(), panel = $("g-tryon");
+      var base = dressSel && dressSel.indexOf("none:") !== 0 ? item(dressSel) : null;
+      if (!p || !base) { panel.hidden = true; return; }
+      var cols = colourList(base), u = shownColour(base, cols, p);
+      var on = (p[u.type] || null) === u.id, levelOk = p.max_level >= u.level_req, have = !u.price || owned[u.id], coins = profile ? profile.coins : 0;
+      panel.hidden = false;
+      $("g-tryontext").textContent = u.name;
+      $("g-tryonsub").textContent = on ? "✓ " + p.name + " is wearing this" : !levelOk ? "🔒 Unlocks when " + p.name + " reaches level " + u.level_req
+        : have ? "Yours · tap Wear it" : "👀 Trying on · 🐾 " + u.price + (cols.length > 1 ? " · or pick a colour" : "");
+      var sw = $("g-swatches"); sw.innerHTML = "";
+      if (cols.length > 1) sw.appendChild(colourDots(cols, u, function (c) { pickDress(c); }));
+      sw.hidden = cols.length < 2;
       var btn = $("g-tryonbtn");
-      btn.hidden = !levelOk; btn.disabled = coins < u.price;
-      if (!levelOk) $("g-tryontext").textContent = "🔒 " + u.name + " unlocks when " + p.name + " reaches level " + u.level_req;
-      else {
-        $("g-tryontext").textContent = u.name;
-        btn.textContent = coins < u.price ? "Needs 🐾 " + u.price + " (you have " + coins + ")" : "Buy & wear · 🐾 " + u.price;
-      }
-      $("g-tryonoff").textContent = u.type === "backdrop" ? "Back" : "Take off";
+      btn.hidden = on || !levelOk;
+      btn.disabled = !have && coins < u.price;
+      btn.textContent = have ? "Wear it" : coins < u.price ? "Needs 🐾 " + u.price : "Buy & wear · 🐾 " + u.price;
+      $("g-tryonoff").textContent = on ? (u.type === "backdrop" ? "Close" : "Take off") : "Close";
     }
     $("g-tryonbtn").addEventListener("click", async function () {
-      var p = pet(), u = tryOn && item(tryOn.id);
-      if (!p || !u) return;
+      var p = pet(), base = dressSel && item(dressSel); if (!p || !base) return;
+      var u = shownColour(base, colourList(base), p), have = !u.price || owned[u.id];
       $("g-tryonbtn").disabled = true;
-      try { await rpc("buy_item", { p_item: u.id }); } catch (e) { say(e.message); $("g-tryonbtn").disabled = false; return; }
-      sfx("buy");
-      owned[u.id] = true; tryOn = null;
-      if (await wear(p, u)) say(p.name + " looks great in the " + u.name + "! ✨ It's yours for all your pets.");
+      if (!have) {
+        try { await rpc("buy_item", { p_item: u.id }); } catch (e) { say(e.message); $("g-tryonbtn").disabled = false; return; }
+        sfx("buy"); owned[u.id] = true;
+      }
+      tryOn = null;
+      if (await wear(p, u) && !have) say(p.name + " looks great in the " + u.name + "! ✨ It's yours for all your pets.");
       renderItems();
     });
-    $("g-tryonoff").addEventListener("click", function () { tryOn = null; renderItems(); });
-    Array.prototype.forEach.call(document.querySelectorAll("#g-dresstabs [data-slot]"), function (t) {
-      t.addEventListener("click", function () { dressSlot = t.getAttribute("data-slot"); tryOn = null; renderItems(); $("g-items").scrollTop = 0; });
+    $("g-tryonoff").addEventListener("click", async function () {
+      var p = pet(), base = dressSel && item(dressSel);
+      var u = p && base ? shownColour(base, colourList(base), p) : null;
+      tryOn = null;
+      // wearing it: take it off (a room goes back to the plain one); otherwise just close the panel
+      if (p && u && (p[u.type] || null) === u.id && u.type !== "backdrop") { dressSel = null; await wear(p, { type: u.type, id: null }); return; }
+      dressSel = null; renderItems();
     });
-    function closeDress() { $("g-sheet").hidden = true; tryOn = null; applyLook(); }
+    Array.prototype.forEach.call(document.querySelectorAll("#g-dresstabs [data-slot]"), function (t) {
+      t.addEventListener("click", function () { dressSlot = t.getAttribute("data-slot"); tryOn = null; dressSel = null; renderItems(); $("g-items").scrollTop = 0; });
+    });
+    function closeDress() { $("g-sheet").hidden = true; tryOn = null; dressSel = null; applyLook(); }
 
     // ---------- Showing the state ----------
     var msgTimer = null;
