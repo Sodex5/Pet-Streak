@@ -1233,6 +1233,10 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
 .pg-menu .pg-li[aria-pressed="true"] { background: #fff; color: #14232b; }
 .pg-menu .pg-li[aria-pressed] { border: 0; border-top: 1px solid #edf1f3; box-shadow: none; outline: 0; }
 .pg-menu .pg-list > .pg-li[aria-pressed]:first-child { border-top: 0; }
+/* 🔥 Challenge on the game sheet */
+.pg-modebtn.chal { border-color: #ff9a4d; background: linear-gradient(135deg, #fff4e8, #ffe6e6); }
+.pg-modebtn.chal b { color: #c2410c; }
+.pg-modebtn[hidden] { display: none; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -1469,6 +1473,7 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
         </div>
         <button type="button" class="pg-modebtn" id="g-modesolo"></button>
         <button type="button" class="pg-modebtn others" id="g-modeothers"></button>
+        <button type="button" class="pg-modebtn chal" id="g-modechal"></button>
         <button type="button" class="pg-linkbtn" id="g-modeclose">Cancel</button>
       </div>
     </div>
@@ -4562,7 +4567,8 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
   }
   // Bamboo the bot: taps 6 to 10 times a second depending on its level (1-5), with the odd short pause
   function botRacer(race, uid, onFinish, level) {
-    var L = Math.max(1, Math.min(5, level || 2)), base = [140, 122, 108, 96, 86][L - 1], pause = [0.06, 0.05, 0.04, 0.03, 0.02][L - 1];
+    // (levels 6-8 are the Challenge: you need about 10 to 11 taps a second)
+    var L = Math.max(1, Math.min(8, level || 2)), base = [140, 122, 108, 96, 86, 80, 74, 69][L - 1], pause = [0.06, 0.05, 0.04, 0.03, 0.02, 0.015, 0.01, 0.008][L - 1];
     var n = 0, alive = true;
     function step() {
       if (!alive) return;
@@ -4818,13 +4824,14 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
       if (to === "them" && opts.them.bot) {
         // Bamboo the bot: never misses together; in versus it misses more as the rally speeds up
         // (its level, 1-5: how often it misses, more as the rally speeds up and on power shots, and how often it sends one)
-        var L = Math.max(1, Math.min(5, opts.them.level || 2)) - 1;
-        var f = flight, miss = VS && Math.random() < Math.min(0.45, [0.045, 0.018, 0.01, 0.005, 0.003][L] + n * [0.018, 0.008, 0.005, 0.003, 0.0025][L] + (fast ? [0.1, 0.06, 0.04, 0.03, 0.025][L] : 0));
+        // (levels 6-8 are the Challenge)
+        var L = Math.max(1, Math.min(8, opts.them.level || 2)) - 1;
+        var f = flight, miss = VS && Math.random() < Math.min(0.45, [0.045, 0.018, 0.01, 0.005, 0.003, 0.002, 0.0016, 0.0013][L] + n * [0.018, 0.008, 0.005, 0.003, 0.0025, 0.0016, 0.0014, 0.0012][L] + (fast ? [0.1, 0.06, 0.04, 0.03, 0.025, 0.02, 0.018, 0.016][L] : 0));
         timers.push(setTimeout(function () {
           if (flight !== f || over) return;
           if (miss) { pointTo("me"); return; }
           if (!VS) { score++; showScore(); }
-          pop(themEl); launch("me", f.n + 1, VS && Math.random() < [0.15, 0.3, 0.4, 0.5, 0.55][L]);
+          pop(themEl); launch("me", f.n + 1, VS && Math.random() < [0.15, 0.3, 0.4, 0.5, 0.55, 0.6, 0.62, 0.65][L]);
         }, f.dur + (miss ? 180 : Math.random() * 80 - 40)));
       } else if (to === "them") {
         // no word from the other phone long after the ball got there: we've lost touch
@@ -4948,7 +4955,7 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261103001124";   // replaced by build_real.ps1
+    var APP_BUILD = "20261103024036";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -5585,6 +5592,12 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
       $("g-modeothers").innerHTML = "<b>" + esc(oth[0]) + "</b><small>" + esc(oth[1]) + "</small>" +
         '<em class="' + (n ? "on" : "") + '">' + (showOnline() ? (n ? "🟢 " + n + " online now" : "🌙 Nobody online · invite a friend") : "🙈 You're hidden") + "</em>";
       $("g-modesolo").onclick = function () { $("g-mode").hidden = true; playSolo(game); };
+      // 🔥 Challenge: the champion bot (Ball pass: in Versus only)
+      var chal = { race: "A lightning-fast racer. You'll need two thumbs!", bamboo: "A bot that hardly ever misses a catch.",
+                   memory: "A bot with a near-perfect memory.", ball: "Power shots and almost no misses." }[game];
+      $("g-modechal").hidden = game === "ball" && !vs;
+      $("g-modechal").innerHTML = "<b>🔥 Challenge</b><small>" + esc(chal) + "</small>";
+      $("g-modechal").onclick = function () { $("g-mode").hidden = true; playBot(game, true); };
       $("g-modeothers").onclick = function () {
         if (!showOnline()) { say("Turn on \"Show me as online\" at the bottom of the Playground to play with others."); return; }
         $("g-mode").hidden = true; openPick(game);
@@ -5598,8 +5611,8 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
     Array.prototype.forEach.call(document.querySelectorAll(".pg-gamecard[data-game]"), function (b) {
       b.addEventListener("click", function () { openMode(b.dataset.game); });
     });
-    function playSolo(game) { if (game === "bamboo") startGame(); else if (game === "memory") startMemory(); else if (game === "ball") ballBot(ballVs); else raceBot(); }
-    function playBot(game) { if (game === "bamboo") duelBot(); else if (game === "memory") memoryBot(); else if (game === "ball") ballBot(ballVs); else raceBot(); }
+    function playSolo(game) { botChallenge = false; if (game === "bamboo") startGame(); else if (game === "memory") startMemory(); else if (game === "ball") ballBot(ballVs); else raceBot(); }
+    function playBot(game, challenge) { botChallenge = !!challenge; if (game === "bamboo") duelBot(); else if (game === "memory") memoryBot(); else if (game === "ball") ballBot(ballVs); else raceBot(); }
 
     // --- with others: pick who (online players, and friends who are away: they get a notification) ---
     var pick = null;
@@ -6135,17 +6148,30 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
     // --- practice against Bamboo the bot (no wins counted) ---
     // The bot has a hidden level per game (1-5, starting at 3, remembered on this phone): beat it and it goes up a
     // level; lose 3 games in a row and it comes down one, so it stays a challenge without getting frustrating.
-    var BOT_KEY = "petstreak.botlevel.", BOT_LOSS_KEY = "petstreak.botlosses.", BOT_EASIER_AFTER = 3;
-    function botLv(game) { var n = 3; try { n = +localStorage.getItem(BOT_KEY + game) || 3; } catch (e) {} return Math.max(1, Math.min(5, n)); }
-    function botName(game) { return "Bamboo the bot 🤖"; }   // (its level stays hidden)
+    // 🔥 Challenge: a separate, much tougher bot ("Bamboo the champion", levels 6-8, starting at 6) for players who
+    // want more; it moves up and down the same way, but never below 6. botChallenge says which one is playing.
+    var BOT_KEY = "petstreak.botlevel.", BOT_LOSS_KEY = "petstreak.botlosses.", BOT_EASIER_AFTER = 3, botChallenge = false;
+    function botKey(game) { return (botChallenge ? "ch_" : "") + game; }
+    function botRange() { return botChallenge ? [6, 8] : [1, 5]; }
+    function botLv(game) {
+      var r = botRange(), n = botChallenge ? 6 : 3;
+      try { n = +localStorage.getItem(BOT_KEY + botKey(game)) || n; } catch (e) {}
+      return Math.max(r[0], Math.min(r[1], n));
+    }
+    function botName(game) { return botChallenge ? "Bamboo the champion 🔥" : "Bamboo the bot 🤖"; }   // (its level stays hidden)
     // after a game: the new level, and what to say about it
     function botResult(game, won, winText, loseText, drawText) {
-      var lv = botLv(game), next = lv, losses = 0;
-      try { losses = +localStorage.getItem(BOT_LOSS_KEY + game) || 0; } catch (e) {}
-      if (won === true) { next = Math.min(5, lv + 1); losses = 0; }
-      else if (won === false) { losses++; if (losses >= BOT_EASIER_AFTER) { next = Math.max(1, lv - 1); losses = 0; } }
-      try { localStorage.setItem(BOT_KEY + game, String(next)); localStorage.setItem(BOT_LOSS_KEY + game, String(losses)); } catch (e) {}
-      if (won === true) return lv === 5 ? "🏆 You beat Bamboo the bot at its hardest! Ready for real players?" : winText + " It'll play harder next time 💪";
+      var r = botRange(), lv = botLv(game), next = lv, losses = 0;
+      try { losses = +localStorage.getItem(BOT_LOSS_KEY + botKey(game)) || 0; } catch (e) {}
+      if (won === true) { next = Math.min(r[1], lv + 1); losses = 0; }
+      else if (won === false) { losses++; if (losses >= BOT_EASIER_AFTER) { next = Math.max(r[0], lv - 1); losses = 0; } }
+      try { localStorage.setItem(BOT_KEY + botKey(game), String(next)); localStorage.setItem(BOT_LOSS_KEY + botKey(game), String(losses)); } catch (e) {}
+      if (botChallenge) {
+        if (won === true) return lv === r[1] ? "🏆 You beat the toughest Challenge! You're a true Pet Streak champion!" : "🔥 You beat Bamboo the champion! The Challenge gets even tougher next time.";
+        if (won === false) return "Bamboo the champion wins! It's tough, but it can be beaten 💪" + (next < lv ? " It'll go a little easier on you." : "");
+        return drawText;
+      }
+      if (won === true) return lv === r[1] ? "🏆 You beat Bamboo the bot at its hardest! Ready for the 🔥 Challenge?" : winText + " It'll play harder next time 💪";
       if (won === false) return loseText + (next < lv ? " Bamboo will go a little easier on you." : "");
       return drawText;
     }
@@ -6162,7 +6188,7 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
       hidePlayPages();
       var bot = null, over = false;
       var race = startTapRace({
-        players: [{ uid: "bot", pic: petPic("panda_golden"), html: esc(botName("race")) }, { uid: me.id, pic: petPic(p.variant), html: tagHTML(p.level, p.name), me: true }],
+        players: [{ uid: "bot", pic: petPic(botChallenge ? "panda_sakura" : "panda_golden"), html: esc(botName("race")) }, { uid: me.id, pic: petPic(p.variant), html: tagHTML(p.level, p.name), me: true }],
         onFinish: function () { finish([me.id, "bot"]); },
         onQuit: function () { if (bot) bot.stop(); raceNow = null; trackMe(); openPlay(); }
       });
@@ -6180,7 +6206,7 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
     function duelBot() {
       var p = pet(); if (!p || raceNow) return;
       hidePlayPages();
-      var lv = botLv("bamboo"), every = [1250, 1050, 900, 780, 680][lv - 1], rocks = [0.14, 0.11, 0.08, 0.06, 0.04][lv - 1];
+      var lv = botLv("bamboo"), every = [1250, 1050, 900, 780, 680, 650, 620, 590][lv - 1], rocks = [0.14, 0.11, 0.08, 0.06, 0.04, 0.035, 0.03, 0.025][lv - 1];
       var botScore = 0, timer = null;
       var game = startBambooGame({
         pic: petPic(p.variant), seed: (Math.random() * 1e9) >>> 0, live: true, them: { html: esc(botName("bamboo")) },
@@ -6215,7 +6241,7 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
       hidePlayPages();
       var bp = startBallPass({
         me: { pic: petPic(p.variant), html: tagHTML(p.level, p.name) },
-        them: { pic: petPic("panda_golden"), html: esc(vs ? botName("ball") : "Bamboo the bot 🤖"), bot: true, level: botLv("ball") },
+        them: { pic: petPic(botChallenge && vs ? "panda_sakura" : "panda_golden"), html: esc(vs ? botName("ball") : "Bamboo the bot 🤖"), bot: true, level: botLv("ball") },
         iServe: !!vs, versus: !!vs,
         onQuit: function () { raceNow = null; trackMe(); openPlay(); },
         onEnd: function (score, why, pts) {
@@ -6239,8 +6265,8 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
       hidePlayPages();
       var lv = botLv("memory");
       var mem = startMemoryGame({
-        turns: { players: [{ uid: me.id, html: "You", me: true }, { uid: "bot", html: "Bamboo 🤖", bot: true }], first: me.id,
-                 botMemory: [0.5, 0.65, 0.78, 0.88, 0.95][lv - 1] },
+        turns: { players: [{ uid: me.id, html: "You", me: true }, { uid: "bot", html: botChallenge ? "Champion 🔥" : "Bamboo 🤖", bot: true }], first: lv >= 8 ? "bot" : me.id,
+                 botMemory: [0.5, 0.65, 0.78, 0.88, 0.95, 0.97, 1, 1][lv - 1] },
         onQuit: function () { raceNow = null; trackMe(); openPlay(); },
         onEnd: function (r) {
           if (!r.done) return;
