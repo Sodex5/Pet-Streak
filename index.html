@@ -1148,6 +1148,91 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
 .pg-think.yes .cloud { animation: pg-thinkyes 0.6s ease-out; box-shadow: 0 0 0 4px #ffd34d, 0 6px 18px rgba(20,35,43,0.18); }
 @keyframes pg-thinkyes { 40% { transform: scale(1.25); } }
 .pg-think.no .cloud { animation: pg-shake 0.4s; }
+/* ---------- A cleaner main screen: the mood line and co-parents stacked above the buttons ---------- */
+.pg-dock { left: 12px; right: 12px; bottom: calc(86px + env(safe-area-inset-bottom, 0px)); max-width: 520px; margin: 0 auto;
+  display: flex; flex-direction: column; align-items: center; gap: 8px; pointer-events: none; }
+.pg-dock > * { pointer-events: auto; }
+.pg-dock .pg-mood { position: static; transform: none; top: auto; bottom: auto; left: auto; max-width: 100%; white-space: normal; text-align: center; line-height: 1.35;
+  font-size: 0.88rem; padding: 6px 14px; }
+.pg-dock .pg-crew { position: static; display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+.pg-dock .pg-crew[hidden], .pg-dock .pg-mood[hidden] { display: none; }
+.pg-crew span, .pg-crew button { display: inline-flex; align-items: center; gap: 4px; min-height: 32px; padding: 4px 11px; box-shadow: 0 1px 4px rgba(20,35,43,0.08); }
+.pg-crew .av { margin-right: 0; }
+/* the reminder: a small round 👋 on the co-parent's chip */
+.pg-crew span .pg-nudge { margin-left: 4px; padding: 2px 8px; font-size: 0.75rem; line-height: 1.4; }
+
+/* ---------- The menu: a settings-style list ---------- */
+.pg-menu { background: #f2f4f7; }
+.pg-menu .pg-panelhead h2 { font-size: 1.4rem; }
+.pg-menu .pg-panelbody { gap: 6px; padding-top: 16px; }
+/* you */
+.pg-profile { display: flex; align-items: center; gap: 14px; padding: 16px; border-radius: 20px; color: #fff;
+  background: linear-gradient(135deg, var(--brand), var(--brand-2)); box-shadow: 0 8px 22px var(--brand-glow); }
+.pg-profile .pg-avatar.big { width: 64px; height: 64px; font-size: 1.6rem; box-shadow: 0 0 0 3px rgba(255,255,255,0.7); background-color: rgba(255,255,255,0.25); }
+.pg-profile .pg-cam { color: #14232b; }
+.pg-profile .pg-grow { min-width: 0; }
+.pg-profile b { display: block; font-size: 1.2rem; font-family: var(--display); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pg-profile small { display: block; opacity: 0.85; font-size: 0.82rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pg-profile .pg-linkbtn { color: #fff; margin-top: 4px; padding: 0; }
+.pg-editbtn { flex: none; width: 40px; height: 40px; border-radius: 50%; border: 0; background: rgba(255,255,255,0.25); font-size: 1.05rem; }
+.pg-editbtn[aria-expanded="true"] { background: #fff; }
+.pg-namerow { padding: 10px 0 2px; }
+.pg-namerow[hidden] { display: none; }
+.pg-namerow input { flex: 1; min-width: 0; }
+/* groups and their list rows */
+.pg-group { margin-top: 12px; }
+.pg-group[hidden] { display: none; }
+.pg-menuhead { margin: 0 6px 6px; font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: #6b7a82; }
+.pg-groupnote { margin: 6px 8px 0; font-size: 0.82rem; color: #6b7a82; line-height: 1.4; }
+.pg-groupnote:empty { display: none; }
+.pg-list { background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 1px 3px rgba(20,35,43,0.06); }
+.pg-li { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 52px; padding: 8px 14px; border: 0; border-top: 1px solid #edf1f3;
+  background: #fff; font: inherit; font-size: 1rem; color: #14232b; text-align: left; cursor: pointer; box-sizing: border-box; }
+.pg-list > :first-child, .pg-list > div:first-child > .pg-li { border-top: 0; }
+.pg-li[hidden], #g-remsec[hidden] { display: none; }
+.pg-li:active { background: #f5f7f9; }
+.pg-li .ic { flex: none; width: 32px; height: 32px; border-radius: 9px; display: grid; place-items: center; background: var(--brand-tint); font-size: 1.05rem; }
+.pg-li .lbl { flex: 1; min-width: 0; font-weight: 600; }
+.pg-li .val { color: #6b7a82; font-weight: 700; font-size: 0.92rem; }
+.pg-li .chev { color: #a9b4ba; font-size: 1.4rem; line-height: 1; }
+.pg-li select { flex: none; max-width: 52%; border: 1px solid #d6e0e4; border-radius: 10px; padding: 7px 8px; font: inherit; font-size: 0.9rem; background: #f7f9fa; color: #14232b; }
+.pg-liaccent .lbl { color: var(--brand); }
+.pg-lidanger { justify-content: flex-start; }
+.pg-lidanger .lbl { color: #b3261e; }
+.pg-lidanger .ic { background: #fdecea; }
+/* on/off switches */
+.pg-toggle .sw { flex: none; position: relative; width: 46px; height: 28px; border-radius: 999px; background: #cfd8dc; transition: background 0.2s; }
+.pg-toggle .sw::after { content: ""; position: absolute; left: 3px; top: 3px; width: 22px; height: 22px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.25); transition: transform 0.2s; }
+.pg-toggle[aria-pressed="true"] .sw { background: #34c759; }
+.pg-toggle[aria-pressed="true"] .sw::after { transform: translateX(18px); }
+.pg-toggle[disabled] { opacity: 0.6; }
+/* rename the pet, co-parents, gifts */
+.pg-lirename { cursor: default; }
+.pg-lirename input { flex: 1; min-width: 0; border: 1px solid #d6e0e4; border-radius: 10px; padding: 8px 10px; font: inherit; font-size: 1rem; }
+.pg-lirename .pg-btn { flex: none; padding: 8px 12px; }
+.pg-coparents .pg-person, .pg-giftlist .pg-person { padding: 10px 14px; border-top: 1px solid #edf1f3; gap: 12px; }
+.pg-list > .pg-coparents:first-child .pg-person:first-child, .pg-giftlist .pg-person:first-child { border-top: 0; }
+.pg-coparents .pg-person small, .pg-giftlist .pg-person small { display: block; color: #6b7a82; font-size: 0.8rem; }
+/* feedback */
+.pg-fbbox { padding: 4px 14px 14px; display: flex; flex-direction: column; gap: 8px; }
+.pg-fbbox[hidden] { display: none; }
+.pg-fbbox textarea { font: inherit; font-size: 1rem; padding: 10px 12px; border-radius: 12px; border: 1px solid #c3d0d5; resize: vertical; min-height: 80px; }
+#g-fbopen[aria-expanded="true"] .chev { transform: rotate(90deg); }
+/* admin */
+.pg-admin { background: none; }
+.pg-admin summary { cursor: pointer; list-style: none; padding: 6px 0; }
+.pg-admin summary::-webkit-details-marker { display: none; }
+.pg-admin .pg-sec { margin-top: 8px; }
+/* the bottom */
+.pg-menu #g-signout { margin-top: 0; }
+.pg-menu .pg-list:has(#g-signout) { margin-top: 18px; }
+.pg-menu #g-leave.pg-leavelink { margin: 12px auto 0; font-size: 0.85rem; }
+.pg-version { margin: 10px 0 0; text-align: center; font-size: 0.75rem; color: #9aa6ac; }
+/* (the menu's rows aren't squeezed by the scrolling column, and its switches aren't coloured like pressed buttons) */
+.pg-menu .pg-panelbody > * { flex-shrink: 0; }
+.pg-menu .pg-li[aria-pressed="true"] { background: #fff; color: #14232b; }
+.pg-menu .pg-li[aria-pressed] { border: 0; border-top: 1px solid #edf1f3; box-shadow: none; outline: 0; }
+.pg-menu .pg-list > .pg-li[aria-pressed]:first-child { border-top: 0; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -1199,8 +1284,10 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
       <button type="button" class="pg-chip pg-storechip" id="g-storebtn">🛍️ Store</button>
       <button type="button" class="pg-chip" id="g-menubtn" aria-label="Menu">☰</button>
     </div>
-    <div class="pg pg-card pg-mood" id="g-mood" role="status" hidden>😊 Happy</div>
-    <div class="pg pg-crew" id="g-crew" hidden></div>
+    <div class="pg pg-dock" id="g-dock">
+      <div class="pg-card pg-mood" id="g-mood" role="status" hidden>😊 Happy</div>
+      <div class="pg-crew" id="g-crew" hidden></div>
+    </div>
     <div class="pg pg-float" id="g-float" aria-hidden="true">+10 XP</div>
     <!-- the craving: the pet thinks about a food (find it in the food tray) -->
     <div class="pg pg-think" id="g-think" hidden role="img"><i class="d1"></i><i class="d2"></i><span class="cloud"><b id="g-thinkfood">🍓</b><em id="g-thinkmark"></em></span></div>
@@ -1579,101 +1666,123 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
       <p class="pg-hint" id="g-storehint"></p>
       <div class="pg-items" id="g-storeitems"></div>
     </div>
-    <div class="pg pg-panel" id="g-menu" hidden>
+    <div class="pg pg-panel pg-menu" id="g-menu" hidden>
       <div class="pg-panelhead">
         <h2>Menu</h2>
         <button type="button" class="pg-x" id="g-menuclose" aria-label="Close menu">✕</button>
       </div>
       <div class="pg-panelbody">
-        <section class="pg-sec">
-          <h3>You</h3>
-          <div class="pg-row pg-me">
-            <label class="pg-avatarpick" title="Change your picture">
-              <span class="pg-avatar big" id="g-avatar">P</span>
-              <span class="pg-cam" aria-hidden="true">📷</span>
-              <input type="file" id="g-avatarfile" accept="image/*" aria-label="Choose a profile picture">
-            </label>
-            <div class="pg-grow"><b id="g-mename">Player</b><small id="g-who"></small>
-              <button type="button" class="pg-linkbtn pg-small" id="g-avatarremove" hidden>Remove picture</button></div>
+        <!-- you -->
+        <section class="pg-profile">
+          <label class="pg-avatarpick" title="Change your picture">
+            <span class="pg-avatar big" id="g-avatar">P</span>
+            <span class="pg-cam" aria-hidden="true">📷</span>
+            <input type="file" id="g-avatarfile" accept="image/*" aria-label="Choose a profile picture">
+          </label>
+          <div class="pg-grow">
+            <b id="g-mename">Player</b>
+            <small id="g-who"></small>
+            <button type="button" class="pg-linkbtn pg-small" id="g-avatarremove" hidden>Remove picture</button>
           </div>
-          <div class="pg-row">
-            <input id="g-myname" maxlength="24" autocomplete="nickname" aria-label="Your name" placeholder="Your name">
-            <button type="button" class="pg-btn" id="g-savename">Save</button>
+          <button type="button" class="pg-editbtn" id="g-editname" aria-label="Change your name" aria-expanded="false">✏️</button>
+        </section>
+        <div class="pg-row pg-namerow" id="g-namerow" hidden>
+          <input id="g-myname" maxlength="24" autocomplete="nickname" aria-label="Your name" placeholder="Your name">
+          <button type="button" class="pg-btn pg-primary" id="g-savename">Save</button>
+        </div>
+        <div class="pg-list">
+          <button type="button" class="pg-li" id="g-achbtn"><span class="ic" aria-hidden="true">🏆</span><span class="lbl">Achievements</span><span class="val" id="g-achmenu"></span><span class="chev" aria-hidden="true">›</span></button>
+        </div>
+
+        <!-- this pet -->
+        <section class="pg-group" id="g-petsec">
+          <h3 class="pg-menuhead" id="g-pethead">Mochi</h3>
+          <div class="pg-list">
+            <div class="pg-li pg-lirename" id="g-renamerow">
+              <span class="ic" aria-hidden="true">✏️</span>
+              <input id="g-petname" maxlength="16" aria-label="Pet name">
+              <button type="button" class="pg-btn pg-small" id="g-rename">Rename</button>
+            </div>
+            <div class="pg-coparents" id="g-coparents"></div>
+            <button type="button" class="pg-li pg-liaccent" id="g-invite2"><span class="ic" aria-hidden="true">➕</span><span class="lbl">Invite a co-parent</span><span class="chev" aria-hidden="true">›</span></button>
           </div>
-          <button type="button" class="pg-btn pg-wide pg-achbtn" id="g-achbtn">🏆 Achievements <span id="g-achmenu"></span></button>
+          <p class="pg-groupnote" id="g-rolenote"></p>
         </section>
-        <section class="pg-sec" id="g-petsec">
-          <h3 id="g-pethead">Mochi</h3>
-          <div class="pg-row" id="g-renamerow">
-            <input id="g-petname" maxlength="16" aria-label="Pet name">
-            <button type="button" class="pg-btn" id="g-rename">Rename</button>
+
+        <!-- settings -->
+        <section class="pg-group">
+          <h3 class="pg-menuhead">Settings</h3>
+          <div class="pg-list">
+            <label class="pg-li"><span class="ic" aria-hidden="true">🎨</span><span class="lbl">App colour</span><select id="g-theme" aria-label="App colour"></select></label>
+            <button type="button" class="pg-li pg-toggle" id="g-sound" aria-pressed="true"><span class="ic" aria-hidden="true">🔊</span><span class="lbl">Sounds</span><i class="sw" aria-hidden="true"></i></button>
+            <button type="button" class="pg-li pg-toggle" id="g-music" aria-pressed="true"><span class="ic" aria-hidden="true">🎵</span><span class="lbl">Music</span><i class="sw" aria-hidden="true"></i></button>
+            <div id="g-remsec">
+              <button type="button" class="pg-li pg-toggle" id="g-rembtn" aria-pressed="false"><span class="ic" aria-hidden="true">🔔</span><span class="lbl">Reminders</span><i class="sw" aria-hidden="true"></i></button>
+            </div>
           </div>
-          <div id="g-coparents"></div>
-          <button type="button" class="pg-btn pg-wide" id="g-invite2">➕ Invite a co-parent</button>
-          <p class="pg-note" id="g-rolenote"></p>
+          <p class="pg-groupnote" id="g-remtext">A nudge in the evening if you haven't fed your pets, and when a co-parent has fed them.</p>
         </section>
-        <section class="pg-sec">
-          <h3>Look &amp; sound</h3>
-          <div class="pg-row">
-            <select id="g-theme" aria-label="App colour"></select>
-          </div>
-          <div class="pg-row">
-            <button type="button" class="pg-btn pg-grow" id="g-sound">🔊 Sounds on</button>
-            <button type="button" class="pg-btn pg-grow" id="g-music">🎵 Music on</button>
-          </div>
+
+        <section class="pg-group" id="g-giftsec" hidden>
+          <h3 class="pg-menuhead">Gifts you've sent</h3>
+          <div class="pg-list pg-giftlist" id="g-gifts"></div>
         </section>
-        <section class="pg-sec" id="g-remsec">
-          <h3>Reminders</h3>
-          <p class="pg-note" id="g-remtext">A nudge in the evening if you haven't fed your pets, and when a co-parent has fed them.</p>
-          <button type="button" class="pg-btn pg-wide" id="g-rembtn">🔔 Turn on reminders</button>
-        </section>
-        <section class="pg-sec" id="g-giftsec" hidden>
-          <h3>Gifts you've sent</h3>
-          <div id="g-gifts"></div>
-        </section>
-        <section class="pg-sec">
-          <h3>Help</h3>
-          <button type="button" class="pg-btn pg-wide" id="g-howbtn">❓ How to play</button>
-          <button type="button" class="pg-btn pg-wide pg-getappbtn" id="g-getappmenu">📲 Get the app</button>
-        </section>
-        <section class="pg-sec">
-          <h3>Send feedback</h3>
-          <textarea id="g-fbtext" rows="3" maxlength="2000" placeholder="Found a bug or have an idea? Tell us…" aria-label="Feedback"></textarea>
-          <button type="button" class="pg-btn pg-wide" id="g-fbsend">💬 Send feedback</button>
-        </section>
-        <section class="pg-sec" id="g-adminchat" hidden>
-          <h3>Admin: reported chats</h3>
-          <div id="g-chatreps"></div>
-        </section>
-        <section class="pg-sec" id="g-adminrep" hidden>
-          <h3>Admin: reported pet names</h3>
-          <div id="g-replist"></div>
-        </section>
-        <section class="pg-sec" id="g-adminfb" hidden>
-          <h3>Admin: feedback <span id="g-fbcount"></span></h3>
-          <div id="g-fblist"></div>
-        </section>
-        <section class="pg-sec" id="g-testsec" hidden>
-          <h3>Admin: test pet</h3>
-          <p class="pg-note">A pet called Tester at level 100 with every background, hat and glasses unlocked. Press again any time to reset it or change its colour.</p>
-          <div class="pg-row">
-            <select id="g-testvariant" aria-label="Test pet colour"></select>
-            <button type="button" class="pg-btn" id="g-testpet">🧪 Make test pet</button>
+
+        <!-- help -->
+        <section class="pg-group">
+          <h3 class="pg-menuhead">Help</h3>
+          <div class="pg-list">
+            <button type="button" class="pg-li" id="g-howbtn"><span class="ic" aria-hidden="true">❓</span><span class="lbl">How to play</span><span class="chev" aria-hidden="true">›</span></button>
+            <button type="button" class="pg-li pg-getappbtn" id="g-getappmenu"><span class="ic" aria-hidden="true">📲</span><span class="lbl">Get the app</span><span class="chev" aria-hidden="true">›</span></button>
+            <button type="button" class="pg-li" id="g-fbopen" aria-expanded="false"><span class="ic" aria-hidden="true">💬</span><span class="lbl">Send feedback</span><span class="chev" aria-hidden="true">›</span></button>
+            <div class="pg-fbbox" id="g-fbbox" hidden>
+              <textarea id="g-fbtext" rows="3" maxlength="2000" placeholder="Found a bug or have an idea? Tell us…" aria-label="Feedback"></textarea>
+              <button type="button" class="pg-btn pg-primary pg-wide" id="g-fbsend">Send feedback</button>
+            </div>
           </div>
         </section>
-        <section class="pg-sec" id="g-adminsec" hidden>
-          <h3>Admin: give paws</h3>
-          <div class="pg-row">
-            <input id="g-adminemail" type="email" placeholder="friend@example.com" aria-label="Player email">
-          </div>
-          <div class="pg-row">
-            <input id="g-adminamount" type="number" min="1" max="100000" value="500" aria-label="Paws">
-            <button type="button" class="pg-btn" id="g-admingive">Give paws</button>
-          </div>
-        </section>
-        <button type="button" class="pg-btn pg-wide pg-quiet" id="g-signout">Sign out</button>
+
+        <!-- admin tools (only the admin sees these) -->
+        <details class="pg-group pg-admin" id="g-adminwrap" hidden>
+          <summary class="pg-menuhead">🛠 Admin tools</summary>
+          <section class="pg-sec" id="g-adminchat" hidden>
+            <h3>Reported chats</h3>
+            <div id="g-chatreps"></div>
+          </section>
+          <section class="pg-sec" id="g-adminrep" hidden>
+            <h3>Reported pet names</h3>
+            <div id="g-replist"></div>
+          </section>
+          <section class="pg-sec" id="g-adminfb" hidden>
+            <h3>Feedback <span id="g-fbcount"></span></h3>
+            <div id="g-fblist"></div>
+          </section>
+          <section class="pg-sec" id="g-testsec" hidden>
+            <h3>Test pet</h3>
+            <p class="pg-note">A pet called Tester at level 100 with every background, hat and glasses unlocked. Press again any time to reset it or change its colour.</p>
+            <div class="pg-row">
+              <select id="g-testvariant" aria-label="Test pet colour"></select>
+              <button type="button" class="pg-btn" id="g-testpet">🧪 Make test pet</button>
+            </div>
+          </section>
+          <section class="pg-sec" id="g-adminsec" hidden>
+            <h3>Give paws</h3>
+            <div class="pg-row">
+              <input id="g-adminemail" type="email" placeholder="friend@example.com" aria-label="Player email">
+            </div>
+            <div class="pg-row">
+              <input id="g-adminamount" type="number" min="1" max="100000" value="500" aria-label="Paws">
+              <button type="button" class="pg-btn" id="g-admingive">Give paws</button>
+            </div>
+          </section>
+        </details>
+
+        <div class="pg-list">
+          <button type="button" class="pg-li pg-lidanger" id="g-signout"><span class="ic" aria-hidden="true">🚪</span><span class="lbl">Sign out</span></button>
+        </div>
         <!-- kept out of the way at the very bottom, so it's never tapped by mistake (it still asks first) -->
         <button type="button" class="pg-linkbtn pg-leavelink" id="g-leave">Leave Mochi</button>
+        <p class="pg-version" id="g-version"></p>
       </div>
     </div>
 
@@ -4839,7 +4948,7 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261102235640";   // replaced by build_real.ps1
+    var APP_BUILD = "20261103001124";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -7877,8 +7986,8 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
       if (st === "none") { txt.textContent = "This browser can't show reminders. Try Chrome on Android, or Safari on iPhone from the Home Screen."; btn.hidden = true; return; }
       if (st === "denied") { txt.textContent = "Notifications are blocked for this site. Allow them in your browser's site settings, then come back here."; btn.hidden = true; return; }
       var s = await pushSub();
-      if (s.sub) { txt.textContent = "On for this phone. You'll get a nudge in the evening if you haven't fed your pets, and when a co-parent has."; btn.textContent = "🔕 Turn off reminders"; }
-      else { txt.textContent = "A nudge in the evening if you haven't fed your pets, and when a co-parent has fed them."; btn.textContent = "🔔 Turn on reminders"; }
+      if (s.sub) { txt.textContent = "On for this phone: a nudge in the evening if you haven't fed your pets, and when a co-parent has."; btn.setAttribute("aria-pressed", "true"); }
+      else { txt.textContent = "A nudge in the evening if you haven't fed your pets, and when a co-parent has fed them."; btn.setAttribute("aria-pressed", "false"); }
     }
     $("g-rembtn").addEventListener("click", async function () {
       var btn = $("g-rembtn"); btn.disabled = true;
@@ -8152,7 +8261,8 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
         }
         gb.appendChild(row);
       });
-      $("g-adminsec").hidden = $("g-adminfb").hidden = $("g-testsec").hidden = !(profile && profile.is_admin);
+      $("g-adminsec").hidden = $("g-adminfb").hidden = $("g-testsec").hidden = $("g-adminwrap").hidden = !(profile && profile.is_admin);
+      $("g-version").textContent = "Pet Streak" + (/^\d{8}/.test(APP_BUILD) ? " · version " + APP_BUILD.slice(0, 4) + "." + APP_BUILD.slice(4, 6) + "." + APP_BUILD.slice(6, 8) : "");
       if (profile && profile.is_admin && !$("g-testvariant").options.length)
         store.filter(function (s) { return s.kind === "pet"; }).forEach(function (s) { $("g-testvariant").add(new Option(s.name, s.id)); });
     }
@@ -8167,10 +8277,10 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
     $("g-theme").value = themeNow;
     // sounds: a soft tap for every button, and the on/off switch in the menu
     document.addEventListener("click", function (e) { if (e.target.closest && e.target.closest(".pg button, .pg select")) sfx("click"); }, true);
-    function soundLabel() { $("g-sound").textContent = soundOn ? "🔊 Sounds on" : "🔈 Sounds off"; $("g-sound").setAttribute("aria-pressed", soundOn ? "true" : "false"); }
+    function soundLabel() { $("g-sound").setAttribute("aria-pressed", soundOn ? "true" : "false"); }
     soundLabel();
     $("g-sound").addEventListener("click", function () { setSound(!soundOn); soundLabel(); if (soundOn) setTimeout(function () { sfx("happy"); }, 60); });
-    function musicLabel() { $("g-music").textContent = musicOn ? "🎵 Music on" : "🎵 Music off"; $("g-music").setAttribute("aria-pressed", musicOn ? "true" : "false"); }
+    function musicLabel() { $("g-music").setAttribute("aria-pressed", musicOn ? "true" : "false"); }
     musicLabel();
     $("g-music").addEventListener("click", function () { setMusic(!musicOn); musicLabel(); });
     $("g-theme").addEventListener("change", function () {
@@ -8237,6 +8347,17 @@ button.pg-onlinenow.has { background: rgba(255,255,255,0.9); box-shadow: 0 2px 1
     $("g-savename").addEventListener("click", async function () {
       try { await rpc("set_name", { p_name: $("g-myname").value }); } catch (e) { say(e.message); return; }
       await loadAll(); renderMenu(); say("Name saved.");
+      $("g-namerow").hidden = true; $("g-editname").setAttribute("aria-expanded", "false");
+    });
+    $("g-editname").addEventListener("click", function () {
+      var open = $("g-namerow").hidden;
+      $("g-namerow").hidden = !open; $("g-editname").setAttribute("aria-expanded", open ? "true" : "false");
+      if (open) { $("g-myname").focus(); $("g-myname").select(); }
+    });
+    $("g-fbopen").addEventListener("click", function () {
+      var open = $("g-fbbox").hidden;
+      $("g-fbbox").hidden = !open; $("g-fbopen").setAttribute("aria-expanded", open ? "true" : "false");
+      if (open) $("g-fbtext").focus();
     });
     $("g-rename").addEventListener("click", async function () {
       var p = pet(); if (!p) return;
