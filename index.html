@@ -1415,6 +1415,18 @@ button.pg-onlinenow.has .see { flex: none; padding: 6px 12px; border-radius: 999
 .pg-swatch[aria-pressed="true"] { background: #fff; }
 /* with a card chosen, the sheet grows a little so the cards still have room */
 .pg-sheet.pg-dress:has(.pg-dpanel:not([hidden])) { max-height: 70%; }
+/* Dress up: the sheet stays about half the screen; the top card fades away so the pet (moved up) has room */
+.pg-sheet.pg-dress { max-height: 50%; }
+.pg-sheet.pg-dress:has(.pg-dpanel:not([hidden])) { max-height: 56%; }
+#g-top { transition: opacity 0.25s ease; }
+body:has(#g-sheet:not([hidden])) #g-top, body:has(#g-sheet:not([hidden])) #g-dock { opacity: 0; pointer-events: none; }
+/* the panel: name and status on the left, the button on the right, colours underneath */
+.pg-dpanel { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; column-gap: 10px; row-gap: 10px; padding: 10px 12px; }
+.pg-dpanel .pg-dpinfo { min-width: 0; }
+.pg-dpanel .pg-dpinfo b, .pg-dpanel .pg-dpinfo small { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pg-dpanel .pg-dpacts { display: flex; gap: 6px; }
+.pg-dpanel .pg-dpacts .pg-btn { flex: none; padding: 10px 14px; font-size: 0.9rem; }
+.pg-dpanel #g-swatches { grid-column: 1 / -1; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -1528,11 +1540,11 @@ button.pg-onlinenow.has .see { flex: none; padding: 6px 12px; border-radius: 999
       <!-- the chosen card: its name, its colours, and one clear button -->
       <div class="pg-dpanel" id="g-tryon" hidden>
         <div class="pg-dpinfo"><b id="g-tryontext"></b><small id="g-tryonsub"></small></div>
-        <div id="g-swatches"></div>
         <div class="pg-dpacts">
-          <button type="button" class="pg-btn" id="g-tryonoff">Close</button>
+          <button type="button" class="pg-btn" id="g-tryonoff">Take off</button>
           <button type="button" class="pg-btn pg-primary" id="g-tryonbtn">Wear it</button>
         </div>
+        <div id="g-swatches"></div>
       </div>
     </div>
     <!-- the Playground: its own page with the games, your wins and today's high scores -->
@@ -5392,7 +5404,7 @@ button.pg-onlinenow.has .see { flex: none; padding: 6px 12px; border-radius: 999
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261103041012";   // replaced by build_real.ps1
+    var APP_BUILD = "20261103042142";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -7899,10 +7911,11 @@ button.pg-onlinenow.has .see { flex: none; padding: 6px 12px; border-radius: 999
       if (cols.length > 1) sw.appendChild(colourDots(cols, u, function (c) { pickDress(c); }));
       sw.hidden = cols.length < 2;
       var btn = $("g-tryonbtn");
+      $("g-tryonoff").hidden = !on || u.type === "backdrop";
       btn.hidden = on || !levelOk;
       btn.disabled = !have && coins < u.price;
       btn.textContent = have ? "Wear it" : coins < u.price ? "Needs 🐾 " + u.price : "Buy & wear · 🐾 " + u.price;
-      $("g-tryonoff").textContent = on ? (u.type === "backdrop" ? "Close" : "Take off") : "Close";
+      $("g-tryonoff").textContent = "Take off";
     }
     $("g-tryonbtn").addEventListener("click", async function () {
       var p = pet(), base = dressSel && item(dressSel); if (!p || !base) return;
@@ -8404,6 +8417,7 @@ button.pg-onlinenow.has .see { flex: none; padding: 6px 12px; border-radius: 999
       if (!modelRoot) return;
       // the model has just arrived: put on the pet's look now (fur, eyes, lids), not at the next refresh
       if (!moodRig) { setupMoodRig(modelRoot); groundShadow(); applyLook(); }
+      dressCam(dt);
       if (hopAt >= 0 && now >= hopAt) { hopStart = now; hopAt = -1; }
       var y = 0;
       if (hopStart >= 0) {
@@ -8554,6 +8568,39 @@ button.pg-onlinenow.has .see { flex: none; padding: 6px 12px; border-radius: 999
     requestAnimationFrame(frame);
 
     // Frame the pet so it fits any screen, leaving room for the top and bottom bars
+    // While Dress up is open the pet glides up (and a little smaller if needed) into the space between the top bar
+    // and the sheet, so a hat is always in view; it glides back when the sheet closes. A view offset and zoom on the
+    // camera, eased each frame (taps on the pet still line up, they use the same camera).
+    var camShift = { y: 0, z: 1 }, probeCam = null, probeV = new THREE.Vector3();
+    var PET_TOP = 1.2, PET_FOOT = -0.02;   // world heights: just above a tall hat, and the feet
+    function dressCam(dt) {
+      var sheet = $("g-sheet"), goalY = 0, goalZ = 1;
+      if (!sheet.hidden) {
+        var H = stage.clientHeight, sr = stage.getBoundingClientRect();
+        var top = $("g-bar").getBoundingClientRect().bottom - sr.top + 8, bottom = sheet.getBoundingClientRect().top - sr.top - 6;
+        if (!probeCam) probeCam = camera.clone();
+        probeCam.position.copy(camera.position); probeCam.quaternion.copy(camera.quaternion);
+        probeCam.aspect = camera.aspect; probeCam.fov = camera.fov; probeCam.zoom = 1; probeCam.clearViewOffset(); probeCam.updateProjectionMatrix();
+        var yOf = function (wy) { probeV.set(0, wy, 0).project(probeCam); return (1 - probeV.y) / 2 * H; };
+        var petTop = yOf(PET_TOP), petBot = yOf(PET_FOOT), avail = bottom - top;
+        if (avail > 60 && petBot > petTop) {
+          goalZ = Math.min(1, avail / (petBot - petTop));
+          var mid = H / 2 + ((petTop + petBot) / 2 - H / 2) * goalZ;
+          goalY = mid - (top + bottom) / 2;
+        }
+      }
+      var k = Math.min(1, dt * 7);
+      camShift.y += (goalY - camShift.y) * k; camShift.z += (goalZ - camShift.z) * k;
+      if (sheet.hidden && Math.abs(camShift.y) < 0.5 && Math.abs(camShift.z - 1) < 0.002) {
+        if (camera.view && camera.view.enabled) { camera.clearViewOffset(); camera.zoom = 1; camera.updateProjectionMatrix(); }
+        camShift.y = 0; camShift.z = 1;
+        return;
+      }
+      var W = stage.clientWidth, Hh = stage.clientHeight;
+      camera.setViewOffset(W, Hh, 0, camShift.y, W, Hh);
+      camera.zoom = camShift.z;
+      camera.updateProjectionMatrix();
+    }
     function frameCamera() {
       var tanV = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
       var d = Math.max(0.78 / tanV, 0.72 / (tanV * camera.aspect));
