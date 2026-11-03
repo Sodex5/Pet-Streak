@@ -3075,7 +3075,16 @@ html, body { overflow-x: hidden; }
     panda_moss:     { tex: "moss",     eye: "#58c26a", lid: "#8f9555" },
     panda_sakura:   { tex: "sakura",   eye: "#e0457a", lid: "#de97a8" },
     panda_midnight: { tex: "midnight", eye: "#ffc23d", lid: "#4e456e" },
-    panda_cosmic:   { tex: "cosmic",   eye: "#35d6d0", lid: "#6268b3" }
+    panda_cosmic:   { tex: "cosmic",   eye: "#35d6d0", lid: "#6268b3" },
+    // added 2026-11-03 (the user's new textures; lids measured from each texture where the classic lid sits)
+    panda_teal:     { tex: "teal",     eye: "#f2b33d", lid: "#4e8892" },   // ocean teal, golden eyes
+    panda_lavender: { tex: "lavender", eye: "#9b5de5", lid: "#bd93d0" },   // lavender dream, violet eyes
+    panda_ember:    { tex: "ember",    eye: "#ff7a1a", lid: "#684237" },   // ember, fiery orange eyes
+    panda_mint:     { tex: "mint",     eye: "#2fbf8a", lid: "#95c7ae" },   // mint, emerald eyes
+    panda_coral:    { tex: "coral",    eye: "#f5a623", lid: "#e8695a" },   // coral sunset, sunset-gold eyes
+    panda_ash:      { tex: "ash",      eye: "#7ec8ff", lid: "#a4a3af" },   // ash silver, icy blue eyes
+    panda_royal:    { tex: "royal",    eye: "#ffcc33", lid: "#4d6cc8" },   // royal blue, gold eyes
+    panda_peach:    { tex: "peach",    eye: "#c27a3a", lid: "#ec955d" }    // peach cream, caramel eyes
   };
   var LID_LUMA = 0.252;   // the classic lid colour #c4764e, as linear luminance
   var lookFx = {
@@ -5419,7 +5428,7 @@ html, body { overflow-x: hidden; }
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261103050254";   // replaced by build_real.ps1
+    var APP_BUILD = "20261103051102";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -5477,7 +5486,8 @@ html, body { overflow-x: hidden; }
       { id: "BirthdayCake", name: "Birthday cake", icon: "🎂", level: 10 }
     ];
     // pictures for store and wardrobe items (icons/<id>.png); scene backgrounds have a photo (bg/<name>.jpg)
-    var ICONS = ["panda_classic", "panda_snowy", "panda_golden", "panda_cocoa", "panda_moss", "panda_sakura", "panda_midnight", "panda_cosmic", "party", "gold",
+    var ICONS = ["panda_classic", "panda_snowy", "panda_golden", "panda_cocoa", "panda_moss", "panda_sakura", "panda_midnight", "panda_cosmic",
+      "panda_teal", "panda_lavender", "panda_ember", "panda_mint", "panda_coral", "panda_ash", "panda_royal", "panda_peach", "party", "gold",
       "RoundGold", "BlueRound", "PinkRound", "Aviator", "OrangeRound", "RedCatEye", "Butterfly", "Shutter", "Pixel", "Sunglasses", "Heart",
       "Beanie", "Cap", "Santa", "Frog", "Fox", "CatBeanie", "Pizza", "Aussie", "Cowboy", "TopHat", "Witch"];
     // scene backgrounds are drawn live (scenes.js); their pictures in the store are small drawings too
@@ -8124,7 +8134,7 @@ html, body { overflow-x: hidden; }
       fb.disabled = away || youFed;
       fb.textContent = away ? "🏡 At the sanctuary"
         : youFed ? (fullToday(p) ? "✓ Fed today" : "✓ You fed today")
-        : dirtOf(p) ? "🍎 Feed" : "🍎 Feed " + p.name;   // shorter while the Bath button needs the room
+        : dirtOf(p) || window.innerWidth < 420 ? "🍎 Feed" : "🍎 Feed " + p.name;   // shorter while the Bath button needs the room, and on narrow phones
       applyLook();
       if (!$("g-menu").hidden) renderMenu();
       if (!$("g-sheet").hidden) renderItems();
