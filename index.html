@@ -1442,6 +1442,35 @@ html, body { overflow-x: hidden; }
 /* narrow phones: the bottom buttons stay on one line (Dress up shows just its icon), so nothing overlaps them */
 .pg-bottom #g-feed { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 @media (max-width: 380px) { .pg-bottom .pg-lbl { display: none; } .pg-bar .pg-petbtn { max-width: 46%; } }
+
+/* ---------- Store: pet preview, the new-player tip; Pip the helper bot's welcome ---------- */
+.pg-storetip { grid-column: 1 / -1; background: #fff8e6; border: 1px solid #f3dca2; border-radius: 14px; padding: 10px 12px; font-size: 0.88rem; line-height: 1.45; color: #5a4610; }
+.pg-storetip b { display: block; margin-bottom: 3px; color: #3f3109; }
+.pg-card2 .pg-pvopen { border: 0; background: none; padding: 0; margin: 0; font: inherit; color: inherit; text-align: left; display: flex; flex-direction: column; gap: 6px; cursor: pointer; }
+.pg-card2 .pg-pvopen .pic { margin-bottom: 0; }
+.pg-petprev { left: 12px; right: 12px; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); max-width: 460px; margin: 0 auto; z-index: 5;
+  background: #fff; border-radius: 20px; padding: 12px; box-shadow: 0 6px 24px rgba(20,35,43,0.16); display: flex; flex-direction: column; gap: 10px; }
+.pg-pvrow { display: flex; align-items: center; gap: 8px; }
+.pg-pvinfo { flex: 1; min-width: 0; text-align: center; }
+.pg-pvinfo b { display: block; font-size: 1.05rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pg-pvinfo small { display: block; color: #55666e; font-size: 0.85rem; margin-top: 2px; }
+.pg-pvnav { flex: none; width: 44px; height: 44px; border-radius: 50%; border: 1px solid #d6e0e4; background: #fff; color: #14232b; font-size: 1.6rem; line-height: 1; padding: 0 0 3px; }
+.pg-pvacts { display: flex; gap: 8px; }
+.pg-pvacts .pg-btn { flex: 1 1 0; min-width: 0; padding: 12px 6px; font-size: 0.9rem; white-space: nowrap; }
+.pg-pvacts #g-pvbuy { flex-grow: 1.6; }
+.pg-pvacts .pg-gift { background: #fff1e6; border-color: #fde0c8; color: #a5521f; }
+.pg-pvacts .pg-btn[disabled] { background: #e3eaed; border-color: #e3eaed; color: #8a9aa1; }
+.pg-botwelcome { background: #fff; border: 1px solid #e4eaed; border-radius: 18px; padding: 12px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 8px; }
+.pg-botwelcome[hidden] { display: none; }
+.pg-bothead { display: flex; align-items: center; gap: 8px; }
+.pg-bothead small { color: #55666e; font-size: 0.8rem; }
+.pg-botav { width: 34px; height: 34px; border-radius: 50%; background: #fff1e6; display: grid; place-items: center; font-size: 1.25rem; }
+.pg-botmsg { margin: 0; max-width: 94%; background: #eef4f6; color: #14232b; border-radius: 4px 16px 16px 16px; padding: 9px 12px; font-size: 0.92rem; line-height: 1.4;
+  opacity: 0; animation: pg-botin 0.35s ease forwards; }
+.pg-botmsg:nth-of-type(2) { animation-delay: 0.5s; } .pg-botmsg:nth-of-type(3) { animation-delay: 1s; } .pg-botmsg:nth-of-type(4) { animation-delay: 1.5s; }
+.pg-botwelcome > .pg-btn { align-self: flex-end; opacity: 0; animation: pg-botin 0.35s ease 1.9s forwards; }
+@keyframes pg-botin { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .pg-botmsg, .pg-botwelcome > .pg-btn { animation: none; opacity: 1; } }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -1570,6 +1599,7 @@ html, body { overflow-x: hidden; }
         <button type="button" class="pg-headicon" id="g-playsocial" aria-label="Friends and chats">💬<span class="pg-dotcount" id="g-playsocialdot" hidden></span></button>
       </header>
       <div class="pg-playbody">
+        <div class="pg-botwelcome" id="g-playwelcome" hidden></div>
         <div class="pg-mecard">
           <span class="pg-mepet" id="g-mepet"></span>
           <button type="button" class="pg-winsbtn" id="g-mywins" aria-label="Your games this week">🏁 0 wins</button>
@@ -1606,6 +1636,7 @@ html, body { overflow-x: hidden; }
         <button type="button" role="tab" data-tab="add" aria-selected="false">➕ Add</button>
       </div>
       <div class="pg-playbody">
+        <div class="pg-botwelcome" id="g-socwelcome" hidden></div>
         <ul class="pg-people pg-chats" id="g-socchats"></ul>
         <ul class="pg-people" id="g-socfriends" hidden></ul>
         <div class="pg-socadd" id="g-socadd" hidden>
@@ -1874,6 +1905,19 @@ html, body { overflow-x: hidden; }
       <div id="g-petlist"></div>
       <button type="button" class="pg-btn pg-wide" id="g-morepets">＋ Get another pet</button>
       <p class="pg-note">You can own pets and co-parent other people's. Ask a friend for their invite link to co-parent theirs.</p>
+    </div>
+    <!-- a closer look at a pet in the store: the pet on screen turns that colour; ‹ › flip through the pets -->
+    <div class="pg pg-petprev" id="g-petprev" hidden>
+      <div class="pg-pvrow">
+        <button type="button" class="pg-pvnav" id="g-pvprev" aria-label="Previous pet">‹</button>
+        <div class="pg-pvinfo"><b id="g-pvname"></b><small id="g-pvprice"></small></div>
+        <button type="button" class="pg-pvnav" id="g-pvnext" aria-label="Next pet">›</button>
+      </div>
+      <div class="pg-pvacts">
+        <button type="button" class="pg-btn" id="g-pvback">← Store</button>
+        <button type="button" class="pg-btn pg-gift" id="g-pvgift">🎁 Gift</button>
+        <button type="button" class="pg-btn pg-primary" id="g-pvbuy">Buy</button>
+      </div>
     </div>
     <div class="pg pg-card pg-sheet" id="g-store" hidden>
       <h2>Store <span class="pg-coinline">🐾 <span id="g-storecoins">0</span></span> <button type="button" class="pg-x" id="g-storeclose" aria-label="Close store">✕</button></h2>
@@ -5441,7 +5485,7 @@ html, body { overflow-x: hidden; }
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261103153008";   // replaced by build_real.ps1
+    var APP_BUILD = "20261103160429";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -6966,6 +7010,7 @@ html, body { overflow-x: hidden; }
       $("g-showonline").checked = showOnline();
       syncLobby();
       renderPlay(); loadFriends();
+      botWelcome("play", $("g-playwelcome"));
     }
     function renderOnlineCount() {
       var n = Object.keys(online).length;
@@ -7029,12 +7074,35 @@ html, body { overflow-x: hidden; }
     document.addEventListener("visibilitychange", function () { syncLobby(); if (!document.hidden) checkPlayInvites(); });
     setInterval(function () { if (me && !document.hidden) checkPlayInvites(); }, 15000);
 
+    // ---------- Pip, the helper bot: a welcome the first time a player opens Chats or the Playground ----------
+    var WELCOME = {
+      soc: ["Hi, welcome to Pet Streak! I'm Pip, the helper bot 🐼",
+            "Here you raise a red panda and keep its streak going 🔥 by feeding it every day. Feeding, levelling up and new ranks earn paws 🐾 for pets and outfits.",
+            "The heart of it is co-parenting: invite a friend or family member to share your pet. When " + FEEDS_PER_DAY + " of you feed it in a day, it gains XP and grows, and you both earn more paws.",
+            "This is where you chat with friends. Tap ➕ Add to share your friend code. Be kind, and never share your address or phone number 💛"],
+      play: ["Welcome to the Playground! I'm Pip, the helper bot 🐼",
+             "Play solo against a bot, or tap the green players-online button to play with others. Your first 3 solo games of Bamboo catch and Memory match each day earn paws.",
+             "Don't forget the main game: feed your pet every day with your co-parent. When " + FEEDS_PER_DAY + " of you feed it, it grows and you both earn more paws to spend.",
+             "Other players only see your pet, never your name. Have fun! 🎮"]
+    };
+    function botWelcome(where, el) {
+      var k = "petstreak.welcome." + where + "." + (me ? me.id : ""), seen;
+      try { seen = localStorage.getItem(k); } catch (e) { seen = "1"; }
+      if (seen) { el.hidden = true; return; }
+      el.innerHTML = '<div class="pg-bothead"><span class="pg-botav" aria-hidden="true">🐼</span><b>Pip</b><small>helper bot</small></div>' +
+        WELCOME[where].map(function (t) { return '<p class="pg-botmsg">' + esc(t) + "</p>"; }).join("") +
+        '<button type="button" class="pg-btn pg-primary">Got it 👍</button>';
+      el.hidden = false;
+      el.querySelector("button").onclick = function () { try { localStorage.setItem(k, "1"); } catch (e) {} el.hidden = true; };
+    }
+
     // ---------- Social: chats, friends and adding friends (💬 on the main screen and in the Playground) ----------
     var socialTab = "chats", chatList = null;
     function openSocial(tab) {
       if (tab) socialTab = tab;
       $("g-social").hidden = false; $("g-menu").hidden = true;
       syncLobby(); renderSocial(); loadFriends(); loadChatList();
+      botWelcome("soc", $("g-socwelcome"));
       if (!myCode) rpc("my_friend_code").then(function (c) { myCode = c; $("g-mycode").textContent = c; }, function () { $("g-mycode").textContent = "—"; });
       else $("g-mycode").textContent = myCode;
     }
@@ -7676,6 +7744,40 @@ html, body { overflow-x: hidden; }
 
     // ---------- Store ----------
     var storeTab = "pets";
+    // the pets for sale, cheapest first
+    function petsForSale() {
+      return store.filter(function (s) { return s.kind === "pet"; }).sort(function (a, b) { return a.price - b.price || a.sort - b.sort; });
+    }
+    async function buyPet(s) {
+      var name = await askName("Name your " + s.name.toLowerCase(), "It costs " + s.price + " paws.", "Mochi", "Buy for 🐾 " + s.price);
+      if (!name) return;
+      try { var id = await rpc("buy_pet", { p_variant: s.id, p_name: name, p_tz: tz() }); } catch (e) { say(e.message); return; }
+      sfx("buy");
+      localStorage.setItem(PET_KEY, id); cur = -1;
+      pvItem = null; $("g-petprev").hidden = true;
+      $("g-store").hidden = true; await loadAll();
+      say("Meet " + name + "! Invite a co-parent: XP and the streak count when " + FEEDS_PER_DAY + " of you feed.");
+    }
+    // A closer look before buying: the store steps aside and the pet on screen turns that colour. ‹ › flip
+    // through the pets in price order; ← Store goes back.
+    var pvItem = null, pvAt = 0;
+    function previewPet(i) {
+      var list = petsForSale(); if (!list.length) return;
+      pvAt = (i + list.length) % list.length; pvItem = list[pvAt];
+      var s = pvItem, coins = profile ? profile.coins : 0, have = pets.some(function (p) { return p.variant === s.id; });
+      $("g-store").hidden = true; $("g-petprev").hidden = false;
+      $("g-pvname").textContent = s.name;
+      $("g-pvprice").textContent = "🐾 " + s.price + (coins < s.price ? " · you have " + coins : "") + (have ? " · you have one" : "");
+      $("g-pvbuy").textContent = coins < s.price ? "Need 🐾 " + (s.price - coins) + " more" : "Buy for 🐾 " + s.price;
+      $("g-pvbuy").disabled = $("g-pvgift").disabled = coins < s.price;
+      wake(); applyLook(); render();
+      try { playOnce("Happy"); } catch (e) {}
+    }
+    function closePreview() {
+      if (!pvItem) return;
+      pvItem = null; $("g-petprev").hidden = true;
+      applyLook(); openStore("pets");
+    }
     async function renderStore() {
       $("g-storecoins").textContent = profile ? profile.coins : 0;
       Array.prototype.forEach.call(document.querySelectorAll("#g-store [data-tab]"), function (b) { b.setAttribute("aria-selected", b.getAttribute("data-tab") === storeTab ? "true" : "false"); });
@@ -7683,22 +7785,22 @@ html, body { overflow-x: hidden; }
       var maxLv = pets.reduce(function (a, p) { return Math.max(a, p.max_level); }, 0);
       var coins = profile ? profile.coins : 0;
       if (storeTab === "pets") {
-        $("g-storehint").textContent = "Buy a red panda for yourself, or as a gift: your friend becomes its owner and names it.";
-        store.filter(function (s) { return s.kind === "pet"; }).forEach(function (s) {
+        $("g-storehint").textContent = "Tap a pet to see it up close. Buy one for yourself, or as a gift: your friend becomes its owner and names it.";
+        // new players (no pet yet, or just one) get a tip: co-parenting is how to save up for the pet they really want
+        if (pets.length < 2) {
+          var tip = document.createElement("div"); tip.className = "pg-storetip";
+          tip.innerHTML = "<b>💡 Tip for new players</b>Can't afford the pet you really want yet? Get one you can afford now and find a co-parent to raise it with you. " +
+            "When " + FEEDS_PER_DAY + " of you feed it each day, it levels up and you both earn more paws. Once you've saved enough, come back for the one you love!";
+          box.appendChild(tip);
+        }
+        petsForSale().forEach(function (s, i) {
           var c = document.createElement("div"); c.className = "pg-card2";
-          c.innerHTML = pic(s) + "<b>" + esc(s.name) + "</b><span>🐾 " + s.price + "</span>" +
+          c.innerHTML = '<button type="button" class="pg-pvopen" aria-label="See the ' + esc(s.name) + '">' + pic(s) + "<b>" + esc(s.name) + "</b><span>🐾 " + s.price + "</span></button>" +
             '<div class="acts"><button type="button">For me</button><button type="button" class="alt">🎁 Gift</button></div>';
-          var bs = c.querySelectorAll("button");
+          var bs = c.querySelectorAll(".acts button");
           if (coins < s.price) { bs[0].disabled = bs[1].disabled = true; c.querySelector("span").textContent = "🐾 " + s.price + " · you have " + coins; }
-          bs[0].addEventListener("click", async function () {
-            var name = await askName("Name your " + s.name.toLowerCase(), "It costs " + s.price + " paws.", "Mochi", "Buy for 🐾 " + s.price);
-            if (!name) return;
-            try { var id = await rpc("buy_pet", { p_variant: s.id, p_name: name, p_tz: tz() }); } catch (e) { say(e.message); return; }
-            sfx("buy");
-            localStorage.setItem(PET_KEY, id); cur = -1;
-            $("g-store").hidden = true; await loadAll();
-            say("Meet " + name + "! Invite a co-parent: XP and the streak count when " + FEEDS_PER_DAY + " of you feed.");
-          });
+          c.querySelector(".pg-pvopen").addEventListener("click", function () { previewPet(i); });
+          bs[0].addEventListener("click", function () { buyPet(s); });
           bs[1].addEventListener("click", function () { buyGift(s); });
           box.appendChild(c);
         });
@@ -8004,7 +8106,7 @@ html, body { overflow-x: hidden; }
       // light bouncing up off the floor takes on the room's colour
       if (key.parent) key.parent.children.forEach(function (o) { if (o.isHemisphereLight) o.groundColor.set(b.color).lerp(new THREE.Color(0xb9c7cc), 0.5); });
       setScene(scene ? b.id : null);
-      setVariantLook(p ? p.variant : null);
+      setVariantLook(pvItem ? pvItem.id : p ? p.variant : null);   // (or the pet being looked at in the store)
       // then quietly fetch the fur of my other pets, so switching between them is instant
       preloadLooks(pets.map(function (q) { return q.variant; }));
     }
@@ -8053,8 +8155,8 @@ html, body { overflow-x: hidden; }
       ["g-top", "g-mood", "g-crew", "g-bottom"].forEach(function (id) { $(id).hidden = !signedIn || !p; });
       if (bathing && (!p || p.id !== bathing.p.id)) endBath();   // switched pets mid-bath
       // the bath has the screen to itself: the cards come back when it's done
-      if (bathing) ["g-top", "g-mood", "g-crew", "g-bottom"].forEach(function (id) { $(id).hidden = true; });
-      $("g-empty").hidden = !signedIn || !loaded || !!p || !$("g-store").hidden || !$("g-join").hidden;
+      if (bathing || pvItem) ["g-top", "g-mood", "g-crew", "g-bottom"].forEach(function (id) { $(id).hidden = true; });
+      $("g-empty").hidden = !signedIn || !loaded || !!p || !$("g-store").hidden || !$("g-join").hidden || !!pvItem;
       if (!signedIn) { $("g-away").hidden = true; return; }
       // big numbers shortened so the top bar fits small phones (12,500 -> 12.5k)
       var paws = profile ? profile.coins : 0;
@@ -8474,7 +8576,8 @@ html, body { overflow-x: hidden; }
       }
       modelRoot.position.y = y;
       eyesHome(now, dt);
-      var p = pet(), m = mood(p), home = !!p && m !== "away";
+      // (a pet being looked at in the store shows happy, even for a player who has no pet yet)
+      var p = pet(), m = pvItem ? "happy" : mood(p), home = !!pvItem || (!!p && m !== "away");
       modelRoot.visible = home;
       // the soft ground shadow lives outside the model, so hide it with the pet; a scene background draws
       // its own shadow on its floor, so the 3D one steps aside then
@@ -8671,6 +8774,11 @@ html, body { overflow-x: hidden; }
     $("g-rescuebtn").addEventListener("click", rescue);
     $("g-wardrobe").addEventListener("click", function () { tryOn = null; $("g-sheet").hidden = false; renderItems(); });
     $("g-close").addEventListener("click", closeDress);
+    $("g-pvprev").addEventListener("click", function () { previewPet(pvAt - 1); });
+    $("g-pvnext").addEventListener("click", function () { previewPet(pvAt + 1); });
+    $("g-pvback").addEventListener("click", closePreview);
+    $("g-pvbuy").addEventListener("click", function () { if (pvItem) buyPet(pvItem); });
+    $("g-pvgift").addEventListener("click", function () { var s = pvItem; if (!s) return; closePreview(); buyGift(s); });
     function openStore(tab) { storeTab = tab || storeTab; $("g-store").hidden = false; render(); renderStore(); }
     $("g-storebtn").addEventListener("click", function () { openStore(); });
     $("g-coins").addEventListener("click", function () { openStore("coins"); });
@@ -9034,7 +9142,7 @@ html, body { overflow-x: hidden; }
     // tidying up runs). That tap only closes: it doesn't also pat the pet or press the button underneath.
     var CLOSABLE = [["g-menu", "g-menuclose"], ["g-store", "g-storeclose"], ["g-sheet", "g-close"], ["g-ranks", "g-ranksclose"],
                     ["g-share", "g-shareclose"], ["g-petsheet", "g-petsheetclose"], ["g-adoptinfo", "g-aiclose"], ["g-tray", "g-trayclose"],
-                    ["g-today", "g-todayclose"], ["g-achs", "g-achsclose"], ["g-history", "g-historyclose"]];
+                    ["g-today", "g-todayclose"], ["g-achs", "g-achsclose"], ["g-history", "g-historyclose"], ["g-petprev", "g-pvback"]];
     var swallowClick = 0;
     document.addEventListener("pointerdown", function (e) {
       // a full-screen card (gift, join, name...) is on top: leave everything as it is
