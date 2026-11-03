@@ -1324,6 +1324,17 @@ button.pg-onlinenow.has .see { flex: none; padding: 6px 12px; border-radius: 999
 .pk-keeper.high.dive0 { transform: translate(-100%, -78%) rotate(-62deg); }
 .pk-keeper.high.dive1 { transform: translateY(-80%); }
 .pk-keeper.high.dive2 { transform: translate(100%, -78%) rotate(62deg); }
+/* ⚡ Fast rallies (Ball pass invites) */
+.pg-pickopt { display: flex; align-items: center; gap: 10px; margin: 2px 0 6px; padding: 10px 12px; border-radius: 14px; background: linear-gradient(135deg, #fff7e0, #ffe9d6); border: 1px solid #ffd59a; cursor: pointer; }
+.pg-pickopt[hidden] { display: none; }
+.pg-pickopt b { display: block; color: #9a4a00; }
+.pg-pickopt small { display: block; color: #7a5a3a; font-size: 0.8rem; }
+.pg-switchbox { appearance: none; -webkit-appearance: none; flex: none; position: relative; width: 46px; height: 28px; margin: 0; border-radius: 999px; background: #cfd8dc; transition: background 0.2s; cursor: pointer; }
+.pg-switchbox::after { content: ""; position: absolute; left: 3px; top: 3px; width: 22px; height: 22px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.25); transition: transform 0.2s; }
+.pg-switchbox:checked { background: #ff9a3d; }
+.pg-switchbox:checked::after { transform: translateX(18px); }
+.pg-pickopt .pg-switchbox { width: 46px !important; min-width: 46px; max-width: 46px; height: 28px !important; padding: 0 !important; border: 0 !important; font-size: 0; box-shadow: none; }
+.pg-pickopt .pg-grow { flex: 1; min-width: 0; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -1570,6 +1581,10 @@ button.pg-onlinenow.has .see { flex: none; padding: 6px 12px; border-radius: 999
       <div class="pg-card pg-pickcard">
         <h2 id="g-picktitle">Who do you want to play?</h2>
         <p class="pg-hint" id="g-picksub"></p>
+        <label class="pg-pickopt" id="g-pickfastrow" hidden>
+          <span class="pg-grow"><b>⚡ Fast rallies</b><small>Same speed as Challenge</small></span>
+          <input type="checkbox" id="g-pickfast" class="pg-switchbox" aria-label="Fast rallies">
+        </label>
         <ul class="pg-people pg-picklist" id="g-picklist"></ul>
         <button type="button" class="pg-feed pg-wide" id="g-picksend" disabled>Pick someone above</button>
         <div class="pg-row pg-pickfoot">
@@ -4876,7 +4891,8 @@ button.pg-onlinenow.has .see { flex: none; padding: 6px 12px; border-radius: 999
     var VS = !!opts.versus;
     // 🔥 Challenge (the bot at levels 6-8, in versus): the ball speeds up faster, the timing window is tighter and power
     // shots are quicker. (Tuned with a simulation: only very precise tappers beat level 8, about 1 time in 5.)
-    var CHL = VS && opts.them.bot && (opts.them.level || 0) >= 6 ? Math.min(8, opts.them.level) - 6 : -1;
+    // (⚡ Fast rallies with a real player use the middle Challenge speed)
+    var CHL = VS && opts.them.bot && (opts.them.level || 0) >= 6 ? Math.min(8, opts.them.level) - 6 : VS && opts.fast ? 1 : -1;
     var wrap = document.createElement("div"); wrap.className = "pg-game pg-ball" + (VS ? " vs" : "");
     wrap.innerHTML =
       '<div class="pg-gamehud"><span class="lbl">⚽ Ball pass' + (VS ? " · first to " + BALL_POINTS : "") + "</span>" +
@@ -5290,7 +5306,7 @@ button.pg-onlinenow.has .see { flex: none; padding: 6px 12px; border-radius: 999
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261103031747";   // replaced by build_real.ps1
+    var APP_BUILD = "20261103033117";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -5957,6 +5973,7 @@ button.pg-onlinenow.has .see { flex: none; padding: 6px 12px; border-radius: 999
     var pick = null;
     function openPick(game, preUid) {
       pick = { game: game, chosen: {}, vs: game === "ball" && ballVs };
+      $("g-pickfastrow").hidden = !pick.vs; $("g-pickfast").checked = false;
       if (preUid) pick.chosen[preUid] = true;
       var g = GAMES[game];
       $("g-picktitle").textContent = g.art + " " + (game === "race" ? "Who's racing?" : "Who do you want to play?");
@@ -6029,7 +6046,7 @@ button.pg-onlinenow.has .see { flex: none; padding: 6px 12px; border-radius: 999
       });
       return li;
     }
-    $("g-picksend").addEventListener("click", function () { var p0 = pick; $("g-pick").hidden = true; pick = null; hostGame(p0.game, Object.keys(p0.chosen), { vs: p0.vs }); });
+    $("g-picksend").addEventListener("click", function () { var p0 = pick; $("g-pick").hidden = true; pick = null; hostGame(p0.game, Object.keys(p0.chosen), { vs: p0.vs, fast: p0.vs && $("g-pickfast").checked }); });
     $("g-pickbot").addEventListener("click", function () { var g = pick ? pick.game : "race"; $("g-pick").hidden = true; pick = null; playBot(g); });
     $("g-pickclose").addEventListener("click", function () { $("g-pick").hidden = true; pick = null; });
     // "Play" from someone's card: pick the game, then invite just them
@@ -6045,7 +6062,7 @@ button.pg-onlinenow.has .see { flex: none; padding: 6px 12px; border-radius: 999
 
     // --- sending invites: I host the game ---
     function hostGame(game, uids, extra) {
-      var vs = game === "ball" && !!(extra && extra.vs);
+      var vs = game === "ball" && !!(extra && extra.vs), fast = vs && !!(extra && extra.fast);
       if (raceNow || !uids.length) return;
       var room = Math.random().toString(36).slice(2, 10);
       var guests = uids.map(function (uid) {
@@ -6055,12 +6072,12 @@ button.pg-onlinenow.has .see { flex: none; padding: 6px 12px; border-radius: 999
       uids.forEach(function (uid) {
         var f = friendOf(uid);
         if (online[uid]) {
-          sendLive("invite", { to: uid, from: me.id, room: room, game: game, vs: vs, me: myPresence() });
+          sendLive("invite", { to: uid, from: me.id, room: room, game: game, vs: vs, fast: fast, me: myPresence() });
           // a friend's app might be in the background: the server keeps it for them too
           if (f) rpc("invite_friend", { p_to: uid, p_game: game, p_room: room }).catch(function () {});
         } else if (f) inviteFriendAway(f, game, room);
       });
-      liveGame(game, room, true, { guests: guests, vs: vs });
+      liveGame(game, room, true, { guests: guests, vs: vs, fast: fast });
     }
     async function inviteFriendAway(f, game, room) {
       var res = null, msg = null;
@@ -6084,7 +6101,7 @@ button.pg-onlinenow.has .see { flex: none; padding: 6px 12px; border-radius: 999
     function gotInvite(m) {
       if (!m || m.to !== me.id || !m.me || !m.room || blocked.indexOf(m.me.pet_id) >= 0 || invSeen(m.room)) return;
       if (raceNow || inviteOpen) { sendLive("reply", { to: m.from, from: me.id, room: m.room, ok: false, busy: true }); return; }
-      showInvite({ from: m.from, room: m.room, game: gameOf(m.game), pic: petPic(m.me.variant), html: petTagHTML(m.me), canBlock: !friendOf(m.from), pet: m.me, vs: !!m.vs });
+      showInvite({ from: m.from, room: m.room, game: gameOf(m.game), pic: petPic(m.me.variant), html: petTagHTML(m.me), canBlock: !friendOf(m.from), pet: m.me, vs: !!m.vs, fast: !!m.fast });
     }
     // invites friends saved for me: a fresh one (with its room) joins the game; an older one offers to invite back
     async function checkPlayInvites() {
@@ -6105,8 +6122,8 @@ button.pg-onlinenow.has .see { flex: none; padding: 6px 12px; border-radius: 999
       $("g-invitepic").src = inv.pic; $("g-invitegame").textContent = g.art;
       $("g-invitewho").innerHTML = inv.html;
       var vs = inv.vs && inv.game === "ball";
-      $("g-invitetext").textContent = inv.old ? "wanted to play " + g.name : vs ? "wants a Ball pass match!" : g.invite;
-      $("g-invitesub").textContent = inv.old ? "That was " + inv.old + (inv.old === 1 ? " minute" : " minutes") + " ago." : vs ? "First to 5 points wins." : g.others[1];
+      $("g-invitetext").textContent = inv.old ? "wanted to play " + g.name : vs ? (inv.fast ? "wants a ⚡ fast Ball pass match!" : "wants a Ball pass match!") : g.invite;
+      $("g-invitesub").textContent = inv.old ? "That was " + inv.old + (inv.old === 1 ? " minute" : " minutes") + " ago." : vs ? (inv.fast ? "Challenge speed. First to 5 points wins." : "First to 5 points wins.") : g.others[1];
       $("g-inviteyes").textContent = inv.old ? "🎮 Invite back" : "Let's play! " + g.art;
       $("g-inviteno").textContent = inv.old ? "Close" : "Not now";
       $("g-inviteblock").hidden = !inv.canBlock;
@@ -6270,14 +6287,14 @@ button.pg-onlinenow.has .see { flex: none; padding: 6px 12px; border-radius: 999
       R.on("qc", function (m) { if (!started) waitBubble(m.uid, QUICK_CHAT[m.i | 0]); else if (S.quick) S.quick(m.uid, m.i | 0); });
       function startNow() {
         if (!host || started || players.length < 2) return;
-        var m = { players: players.slice(), first: players[Math.floor(Math.random() * players.length)].uid, vs: !!info.vs };
+        var m = { players: players.slice(), first: players[Math.floor(Math.random() * players.length)].uid, vs: !!info.vs, fast: !!info.fast };
         R.send("go", m);
         go(m);
         // (said three times: a player who misses it would wait forever)
         timers.push(setTimeout(function () { R.send("go", m); }, 400), setTimeout(function () { R.send("go", m); }, 1200));
       }
       function go(m) {
-        started = true; clearInterval(hereTimer); clearTimeout(autoT); S.vs = !!m.vs;
+        started = true; clearInterval(hereTimer); clearTimeout(autoT); S.vs = !!m.vs; S.fast = !!m.fast;
         timers.forEach(clearTimeout); timers = [];
         wait.remove();
         players = m.players;
@@ -6408,7 +6425,7 @@ button.pg-onlinenow.has .see { flex: none; padding: 6px 12px; border-radius: 999
         var other = others()[0], vs = !!m.vs;
         var bp = startBallPass({
           me: { pic: petPic(p.variant), html: tagHTML(p.level, p.name) }, them: { pic: petPic(other.variant), html: petTagHTML(other) },
-          iServe: m.first === me.id, live: true, versus: vs,
+          iServe: m.first === me.id, live: true, versus: vs, fast: !!m.fast,
           onHit: function (n, fast) { R.send("hit", { n: n, fast: !!fast }); },
           onDrop: function (n) { R.send("drop", { n: n }); },
           onQuick: function (i) { R.send("qc", { uid: me.id, i: i }); },
@@ -6485,7 +6502,7 @@ button.pg-onlinenow.has .see { flex: none; padding: 6px 12px; border-radius: 999
         sfx(won === true ? "levelUp" : "pat");
         end.querySelector('[data-a="done"]').addEventListener("click", function () { cleanup(); openPlay(); });
         var ag = end.querySelector('[data-a="again"]');
-        if (ag) ag.addEventListener("click", function () { cleanup(); openPlay(); hostGame(game, again, { vs: S.vs }); });
+        if (ag) ag.addEventListener("click", function () { cleanup(); openPlay(); hostGame(game, again, { vs: S.vs, fast: S.fast }); });
         var fr = end.querySelector('[data-a="friend"]');
         if (fr) fr.addEventListener("click", async function () { if (await addFriendPet(stranger)) { fr.disabled = true; fr.textContent = "Request sent ✓"; } });
         var bl = end.querySelector('[data-a="block"]');
