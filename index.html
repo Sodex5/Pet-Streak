@@ -5524,7 +5524,7 @@ html, body { overflow-x: hidden; }
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261105061024";   // replaced by build_real.ps1
+    var APP_BUILD = "20261105071739";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -5606,7 +5606,7 @@ html, body { overflow-x: hidden; }
     // scene backgrounds are drawn live (scenes.js); their pictures in the store are small drawings too
     // Colours of glasses and hats (update 24): "<base>__<colour>" is the base's model with its main part(s) in
     // that colour (ACC_COLORS: which parts, and each colour; metal: a shiny finish).
-    var ACC_COLORS = {"Aviator": {"mats": ["Frame_Aviator_1"], "cols": {"gold": ["#d4a73c", 1], "silver": ["#c9ced6", 1], "rose": ["#e59aa8", 0], "black": ["#1c1c1c", 0], "blue": ["#3f6fd8", 0]}}, "Sunglasses": {"mats": ["Frame_Sunglasses_0.001"], "cols": {"red": ["#d63a3a", 0], "pink": ["#f08ab4", 0], "white": ["#f2f2f2", 0], "blue": ["#3a7bd5", 0], "tortoise": ["#7a4a26", 0]}}, "RoundGold": {"mats": ["Frame_RoundGold_2"], "cols": {"silver": ["#c9ced6", 1], "rosegold": ["#d9927c", 1], "black": ["#1c1c1c", 0], "lavender": ["#b79be8", 0], "mint": ["#7fd6b5", 0]}}, "Heart": {"mats": ["Frame_Heart_0"], "cols": {"red": ["#e23b3b", 0], "lavender": ["#b79be8", 0], "gold": ["#d4a73c", 1]}}, "RedCatEye": {"mats": ["Frame_RedCatEye_0"], "cols": {"black": ["#151515", 0], "purple": ["#8a4fd6", 0], "white": ["#f2f2f2", 0]}}, "Butterfly": {"mats": ["Frame_Butterfly_1"], "cols": {"pink": ["#f07ab0", 0], "purple": ["#8a4fd6", 0], "gold": ["#d4a73c", 1]}}, "Shutter": {"mats": ["Frame_Shutter_0"], "cols": {"pink": ["#ff4fa3", 0], "gold": ["#e0b23c", 1]}}, "Pixel": {"mats": ["Frame_Pixel_1"], "cols": {"gold": ["#e0b23c", 1], "pink": ["#ff6fb5", 0]}}, "Beanie": {"mats": ["Hat_Beanie_0.001"], "cols": {"red": ["#d63a3a", 0], "pink": ["#f08ab4", 0], "lavender": ["#b79be8", 0], "blue": ["#3a7bd5", 0], "mustard": ["#e0b030", 0]}}, "Cap": {"mats": ["Hat_Cap_0", "Hat_Cap_1"], "cols": {"red": ["#d63a3a", 0], "blue": ["#3a7bd5", 0], "pink": ["#f08ab4", 0], "white": ["#f2f2f2", 0], "green": ["#3fae5a", 0]}}, "Santa": {"mats": ["Hat_Santa_0.001"], "cols": {"green": ["#2f9a4a", 0], "blue": ["#3a7bd5", 0], "purple": ["#8a4fd6", 0]}}, "CatBeanie": {"mats": ["Hat_CatBeanie_0.001"], "cols": {"pink": ["#f0a0c0", 0], "black": ["#2a2a2a", 0], "orange": ["#e88a3a", 0]}}, "Aussie": {"mats": ["Hat_Aussie_0.001"], "cols": {"brown": ["#7a4f2a", 0], "black": ["#222222", 0], "navy": ["#24345e", 0]}}, "Cowboy": {"mats": ["Hat_Cowboy_0"], "cols": {"black": ["#151515", 0], "white": ["#efe9df", 0], "pink": ["#e98bb0", 0]}}, "TopHat": {"mats": ["Hat_TopHat_0"], "cols": {"white": ["#f2f2f2", 0], "burgundy": ["#7a1f35", 0]}}, "Witch": {"mats": ["Hat_Witch_0"], "cols": {"pink": ["#e978b4", 0], "green": ["#3f8f4a", 0]}}};
+    var ACC_COLORS = {"Aviator": {"mats": ["Frame_Aviator_1"], "cols": {"gold": ["#d4a73c", 1], "silver": ["#c9ced6", 1], "rose": ["#e59aa8", 0], "black": ["#1c1c1c", 0], "blue": ["#3f6fd8", 0]}}, "Sunglasses": {"mats": ["Frame_Sunglasses_0.001"], "cols": {"red": ["#d63a3a", 0], "pink": ["#f08ab4", 0], "white": ["#f2f2f2", 0], "blue": ["#3a7bd5", 0], "tortoise": ["#7a4a26", 0]}}, "RoundGold": {"mats": ["Frame_RoundGold_2"], "cols": {"silver": ["#c9ced6", 1], "rosegold": ["#d9927c", 1], "black": ["#1c1c1c", 0], "lavender": ["#b79be8", 0], "mint": ["#7fd6b5", 0]}}, "Heart": {"mats": ["Frame_Heart_0"], "cols": {"red": ["#e23b3b", 0], "lavender": ["#b79be8", 0], "gold": ["#d4a73c", 1]}}, "RedCatEye": {"mats": ["Frame_RedCatEye_0"], "cols": {"black": ["#151515", 0], "purple": ["#8a4fd6", 0], "white": ["#f2f2f2", 0]}}, "Butterfly": {"mats": ["Frame_Butterfly_1"], "cols": {"pink": ["#f07ab0", 0], "purple": ["#8a4fd6", 0], "gold": ["#d4a73c", 1]}}, "Shutter": {"mats": ["Frame_Shutter_0"], "cols": {"pink": ["#ff4fa3", 0], "gold": ["#e0b23c", 1]}}, "Pixel": {"mats": ["Frame_Pixel_1"], "cols": {"gold": ["#e0b23c", 1], "pink": ["#ff6fb5", 0]}}, "Beanie": {"mats": ["Hat_Beanie_0.001"], "cols": {"red": ["#d63a3a", 0], "pink": ["#f08ab4", 0], "lavender": ["#b79be8", 0], "blue": ["#3a7bd5", 0], "mustard": ["#e0b030", 0]}}, "Cap": {"mats": ["Hat_Cap_0", "Hat_Cap_1"], "cols": {"red": ["#d63a3a", 0], "blue": ["#3a7bd5", 0], "pink": ["#f08ab4", 0], "white": ["#f2f2f2", 0], "green": ["#3fae5a", 0]}}, "Santa": {"mats": ["Hat_Santa_0.001"], "cols": {"green": ["#2f9a4a", 0], "blue": ["#3a7bd5", 0], "purple": ["#8a4fd6", 0]}}, "CatBeanie": {"mats": ["Hat_CatBeanie_0.001"], "cols": {"pink": ["#f0a0c0", 0], "black": ["#2a2a2a", 0], "orange": ["#e88a3a", 0]}}, "Aussie": {"mats": ["Hat_Aussie_0.001"], "cols": {"brown": ["#7a4f2a", 0], "black": ["#222222", 0], "navy": ["#24345e", 0]}}, "Cowboy": {"mats": ["Hat_Cowboy_0"], "cols": {"black": ["#151515", 0], "white": ["#efe9df", 0], "pink": ["#e98bb0", 0]}}, "TopHat": {"mats": ["Hat_TopHat_0"], "cols": {"white": ["#f2f2f2", 0], "burgundy": ["#7a1f35", 0]}}, "Witch": {"mats": ["Hat_Witch_0"], "cols": {"pink": ["#e978b4", 0], "green": ["#3f8f4a", 0]}}, "BucketHat": {"mats": ["Hat_BucketHat"], "cols": {"yellow": ["#f2c230", 0], "pink": ["#f08ab4", 0], "blue": ["#3a7bd5", 0], "black": ["#2a2a2a", 0], "white": ["#f2f2f2", 0]}}, "Beret": {"mats": ["Hat_Beret"], "cols": {"black": ["#1f1f1f", 0], "navy": ["#24345e", 0], "pink": ["#e98bb0", 0]}}, "SunHat": {"mats": ["Hat_SunHat"], "cols": {"white": ["#f2efe6", 0], "pink": ["#f0a0c0", 0], "blue": ["#7fb3e6", 0]}}};
     function baseId(id) { return id ? String(id).split("__")[0] : id; }
     function colourOf(id) { var b = ACC_COLORS[baseId(id)], k = id && String(id).split("__")[1]; return b && k ? b.cols[k] : null; }
     function pic(it) {
@@ -8692,6 +8692,27 @@ html, body { overflow-x: hidden; }
       glassesOn = want;
     }
     // put an accessory in a colour (or back to its own colours): its listed parts change, the rest stay
+    // Hats with a picture on them (the weave, the stitching): a colour would only tint the picture's own colour, so a
+    // grey copy goes on instead, keeping the detail. The hat's part of the picture is evened out to a light grey first.
+    var greyMaps = {};
+    function greyMap(k, map) {
+      var key = k.userData.litMat.name;
+      if (greyMaps[key]) return greyMaps[key];
+      var im = map.image, c = document.createElement("canvas"); c.width = im.width; c.height = im.height;
+      var g = c.getContext("2d"); g.drawImage(im, 0, 0);
+      var d = g.getImageData(0, 0, c.width, c.height), px = d.data, uv = k.geometry.attributes.uv, sum = 0;
+      function lum(i) { return 0.3 * px[i] + 0.59 * px[i + 1] + 0.11 * px[i + 2]; }
+      for (var v = 0; v < uv.count; v++) {
+        var x = Math.min(c.width - 1, Math.max(0, Math.floor(uv.getX(v) * c.width))), y = Math.min(c.height - 1, Math.max(0, Math.floor(uv.getY(v) * c.height)));
+        sum += lum((y * c.width + x) * 4);
+      }
+      var gain = 225 / Math.max(20, sum / uv.count);
+      for (var i = 0; i < px.length; i += 4) px[i] = px[i + 1] = px[i + 2] = Math.min(255, lum(i) * gain);
+      g.putImageData(d, 0, 0);
+      var t = new THREE.CanvasTexture(c);
+      t.flipY = map.flipY; t.encoding = map.encoding; t.wrapS = map.wrapS; t.wrapT = map.wrapT;
+      return greyMaps[key] = t;
+    }
     function recolor(node, id) {
       var spec = ACC_COLORS[baseId(id)], col = colourOf(id);
       node.traverse(function (k) {
@@ -8700,12 +8721,13 @@ html, body { overflow-x: hidden; }
         var hit = !!col && spec.mats.indexOf(name) >= 0;
         [k.material, k.userData.litMat, k.userData.bakedMat].forEach(function (m) {
           if (!m || !m.color) return;
-          if (!m.userData.orig) m.userData.orig = { c: m.color.clone(), metal: m.metalness, rough: m.roughness };
+          if (!m.userData.orig) m.userData.orig = { c: m.color.clone(), metal: m.metalness, rough: m.roughness, map: m.map };
           var o = m.userData.orig;
-          m.color.copy(o.c);
+          m.color.copy(o.c); m.map = o.map;
           if (m.metalness !== undefined) { m.metalness = o.metal; m.roughness = o.rough; }
           if (!hit) return;
           m.color.set(col[0]);
+          if (o.map) { m.map = greyMap(k, o.map); m.color.convertSRGBToLinear(); }   // (true to the swatch)
           if (col[1] && m.metalness !== undefined) { m.metalness = 0.75; m.roughness = 0.28; }
         });
       });
@@ -8742,6 +8764,7 @@ html, body { overflow-x: hidden; }
       packHats.splice(0).forEach(function (o) {
         o.position.copy(ref.position); o.quaternion.copy(ref.quaternion); o.scale.copy(ref.scale);
         o.visible = false; ref.parent.add(o);
+        o.traverse(function (k) { if (k.isMesh) k.material.envMapIntensity = 0.5; });   // cloth: less studio shine
         if (hatNodes) hatNodes[o.name.slice(4)] = o;
       });
       hatOn = undefined;   // what the pet wears may be one of these
