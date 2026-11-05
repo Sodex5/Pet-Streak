@@ -1471,6 +1471,9 @@ html, body { overflow-x: hidden; }
 .pg-botwelcome > .pg-btn { align-self: flex-end; opacity: 0; animation: pg-botin 0.35s ease 1.9s forwards; }
 @keyframes pg-botin { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) { .pg-botmsg, .pg-botwelcome > .pg-btn { animation: none; opacity: 1; } }
+
+/* with every food unlocked the tray would grow off the screen: the list scrolls inside it */
+.pg-foods { max-height: min(42vh, 340px); overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y; padding: 2px; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -1479,7 +1482,7 @@ html, body { overflow-x: hidden; }
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Pet Streak">
-<link rel="preload" href="pet-model.js?v=f804498e15" as="script">
+<link rel="preload" href="pet-model.js?v=46951534ea" as="script">
 </head>
 <body>
 <main class="wrap">
@@ -2184,7 +2187,7 @@ html, body { overflow-x: hidden; }
 (function () {
   "use strict";
   var GLB_B64 = "";
-  var GLB_BYTES = 3226672;
+  var GLB_BYTES = 2712696;
 
   var stage = document.getElementById("stage");
   var veil = document.getElementById("veil");
@@ -2518,7 +2521,7 @@ html, body { overflow-x: hidden; }
     var tries = 0;
     (function go() {
       var s = document.createElement("script");
-      s.src = "pet-model.js?v=f804498e15";
+      s.src = "pet-model.js?v=46951534ea";
       s.onload = function () { var b = window.PET_GLB_B64; window.PET_GLB_B64 = null; if (b) cb(b); else fail("The pet couldn't be read. Please reload."); };
       s.onerror = function () { s.remove(); if (++tries < 3) setTimeout(go, 1500 * tries); else fail("The pet couldn't be downloaded. Check your connection and reload."); };
       document.head.appendChild(s);
@@ -2948,6 +2951,42 @@ html, body { overflow-x: hidden; }
 
   // Eat what was picked from the food tray (setFoodChoice), or the plain apple
   var foods = {}, plainApple = null, foodChoice = null;
+  // The foods and the extra hats live in a file of their own, so the first download is only the pet: it is fetched
+  // quietly once the pet is on screen, or straight away if the food tray opens first.
+  var FOOD_PACK_URL = "food-pack.js?v=ce9f1aa1a5", foodPackLoad = null, packHats = [];
+  function loadFoodPack() {
+    if (foodPackLoad || !FOOD_PACK_URL) return foodPackLoad || Promise.resolve(false);
+    foodPackLoad = new Promise(function (resolve) {
+      var s = document.createElement("script");
+      function gaveUp() { s.remove(); foodPackLoad = null; resolve(false); }   // the next try starts again
+      s.src = FOOD_PACK_URL;
+      s.onerror = gaveUp;
+      s.onload = function () {
+        var b = window.PET_FOOD_B64; window.PET_FOOD_B64 = null;
+        if (!b) { gaveUp(); return; }
+        new THREE.GLTFLoader().parse(b64ToBuffer(b), "", function (gltf) { addFoodPack(gltf.scene); resolve(true); }, gaveUp);
+      };
+      document.head.appendChild(s);
+    });
+    return foodPackLoad;
+  }
+  // wait for the food, but never for long: a slow phone still gets its feed (with the plain apple)
+  function foodPackReady(ms) {
+    return Promise.race([loadFoodPack(), new Promise(function (r) { setTimeout(r, ms); })]);
+  }
+  function addFoodPack(pack) {
+    pack.children.slice().forEach(function (o) {
+      o.traverse(function (m) {
+        if (!m.isMesh) return;
+        m.material.side = THREE.FrontSide;
+        m.userData.litMat = m.material;
+        m.userData.bakedMat = new THREE.MeshBasicMaterial({ map: m.material.map, color: m.material.color, side: THREE.FrontSide });
+      });
+      pack.remove(o);
+      if (/^Food_/.test(o.name)) foods[o.name.slice(5)] = o;
+      else if (/^Hat_/.test(o.name)) packHats.push(o);
+    });
+  }
   function setFoodChoice(id) { foodChoice = id; }
   function playEat() {
     if (!acts.Eat) return false;
@@ -5485,7 +5524,7 @@ html, body { overflow-x: hidden; }
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261103160429";   // replaced by build_real.ps1
+    var APP_BUILD = "20261105061024";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -5540,13 +5579,30 @@ html, body { overflow-x: hidden; }
       { id: "StrawberryCake", name: "Strawberry cake", icon: "🍰", level: 6 },
       { id: "ChocoCake", name: "Chocolate cake", icon: "🍫", level: 7 },
       { id: "CherryPie", name: "Cherry pie", icon: "🥧", level: 8 },
-      { id: "BirthdayCake", name: "Birthday cake", icon: "🎂", level: 10 }
+      { id: "BirthdayCake", name: "Birthday cake", icon: "🎂", level: 10 },
+      { id: "Orange", name: "Orange", icon: "🍊", level: 1 },
+      { id: "Pear", name: "Pear", icon: "🍐", level: 2 },
+      { id: "Milk", name: "Milk", icon: "🥛", level: 2 },
+      { id: "Mango", name: "Mango", icon: "🥭", level: 3 },
+      { id: "Honey", name: "Honey", icon: "🍯", level: 3 },
+      { id: "Pineapple", name: "Pineapple", icon: "🍍", level: 4 },
+      { id: "Watermelon", name: "Watermelon", icon: "🍉", level: 4 },
+      { id: "Pancakes", name: "Pancakes", icon: "🥞", level: 5 },
+      { id: "Jelly", name: "Jelly", icon: "🍮", level: 5 },
+      { id: "Macaron", name: "Macaron", icon: "🍬", level: 6 },
+      { id: "CakeSlice", name: "Cake slice", icon: "🍰", level: 6 },
+      { id: "Fries", name: "Fries", icon: "🍟", level: 7 },
+      { id: "Bacon", name: "Bacon", icon: "🥓", level: 7 },
+      { id: "Eclair", name: "Éclair", icon: "🍫", level: 8 },
+      { id: "HotChocolate", name: "Hot chocolate", icon: "☕", level: 8 },
+      { id: "Salmon", name: "Salmon", icon: "🐟", level: 9 },
+      { id: "Ramen", name: "Ramen", icon: "🍜", level: 10 }
     ];
     // pictures for store and wardrobe items (icons/<id>.png); scene backgrounds have a photo (bg/<name>.jpg)
     var ICONS = ["panda_classic", "panda_snowy", "panda_golden", "panda_cocoa", "panda_moss", "panda_sakura", "panda_midnight", "panda_cosmic",
       "panda_teal", "panda_lavender", "panda_ember", "panda_mint", "panda_coral", "panda_ash", "panda_royal", "panda_peach", "party", "gold",
       "RoundGold", "BlueRound", "PinkRound", "Aviator", "OrangeRound", "RedCatEye", "Butterfly", "Shutter", "Pixel", "Sunglasses", "Heart",
-      "Beanie", "Cap", "Santa", "Frog", "Fox", "CatBeanie", "Pizza", "Aussie", "Cowboy", "TopHat", "Witch"];
+      "Beanie", "Cap", "Santa", "Frog", "Fox", "CatBeanie", "Pizza", "Aussie", "Cowboy", "TopHat", "Witch", "Beret", "BucketHat", "SunHat"];
     // scene backgrounds are drawn live (scenes.js); their pictures in the store are small drawings too
     // Colours of glasses and hats (update 24): "<base>__<colour>" is the base's model with its main part(s) in
     // that colour (ACC_COLORS: which parts, and each colour; metal: a shiny finish).
@@ -5955,6 +6011,7 @@ html, body { overflow-x: hidden; }
       var r;
       try { r = await rpc("feed_pet", { p_id: p.id, p_food: foodId }); } catch (e) { say(e.message); return; }
       if (r.already) { say("You already fed " + p.name + " today. Come back tomorrow!"); return; }
+      await foodPackReady(2500);
       react(!!r.levelled);
       var yum = "Yum! " + p.name + (dish ? " loved the " + dish.name.toLowerCase() + "." : " is happy.");
       if (craveOpen && dish === crave) { cravDone[p.id] = true; thinkPop("⭐"); yum = "⭐ Yes! " + p.name + " was craving the " + dish.name.toLowerCase() + "!"; }
@@ -8566,7 +8623,7 @@ html, body { overflow-x: hidden; }
       var now = performance.now(), dt = Math.min(0.1, (now - lastT) / 1000); lastT = now;
       if (!modelRoot) return;
       // the model has just arrived: put on the pet's look now (fur, eyes, lids), not at the next refresh
-      if (!moodRig) { setupMoodRig(modelRoot); groundShadow(); applyLook(); }
+      if (!moodRig) { setupMoodRig(modelRoot); groundShadow(); applyLook(); setTimeout(loadFoodPack, 1500); }
       dressCam(dt);
       if (hopAt >= 0 && now >= hopAt) { hopStart = now; hopAt = -1; }
       var y = 0;
@@ -8678,7 +8735,19 @@ html, body { overflow-x: hidden; }
       o.scale.copy(r.s).multiplyScalar(f.size || 1);
     }
     if (window.__mock) window.__hatTools = { fit: HAT_FIT, fitHat: fitHat, nodes: function () { return hatNodes; } };   // test copy only
+    // the hats from the food file hang from the same bone, in the same spot, as the hats in the model
+    var PACK_HATS = { Beret: 1, BucketHat: 1, SunHat: 1 };
+    function adoptPackHats() {
+      var ref = modelRoot.getObjectByName("Hat_TopHat");
+      packHats.splice(0).forEach(function (o) {
+        o.position.copy(ref.position); o.quaternion.copy(ref.quaternion); o.scale.copy(ref.scale);
+        o.visible = false; ref.parent.add(o);
+        if (hatNodes) hatNodes[o.name.slice(4)] = o;
+      });
+      hatOn = undefined;   // what the pet wears may be one of these
+    }
     function updateHat(p) {
+      if (packHats.length) adoptPackHats();
       if (!hatNodes) {
         hatNodes = {};
         modelRoot.traverse(function (o) {
@@ -8693,7 +8762,7 @@ html, body { overflow-x: hidden; }
         hatOn = wantId;
         if (wantBase && hatNodes[wantBase]) { fitHat(wantBase); recolor(hatNodes[wantBase], wantId); }
       }
-      var want = wantId && !hatNodes[wantBase] ? item(wantId) : null;
+      var want = wantId && !hatNodes[wantBase] && !PACK_HATS[wantBase] ? item(wantId) : null;   // (a pack hat is on its way)
       if (!want) { if (hat) { hat.visible = false; } return; }
       if (!hat) {
         hat = new THREE.Group();
@@ -8768,6 +8837,7 @@ html, body { overflow-x: hidden; }
     $("g-feed").addEventListener("click", function () {
       var p = pet(); if (!p) return;
       if (iFed(p)) { say("You already fed " + p.name + " today. Come back tomorrow!"); return; }
+      loadFoodPack();
       renderFoods(); $("g-tray").hidden = !$("g-tray").hidden;
     });
     $("g-trayclose").addEventListener("click", function () { $("g-tray").hidden = true; });

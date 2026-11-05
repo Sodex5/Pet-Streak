@@ -2,7 +2,7 @@
 // of the app on the phone so it opens quickly on a slow connection.
 //  - The page: from the internet first, so updates arrive. If that takes longer than a few seconds and a saved
 //    copy exists, the saved copy opens instead (and the newer page is saved for next time).
-//  - The 3D model (pet-model.js?v=...) and the three.js / Supabase scripts: saved once and reused. Their addresses
+//  - The 3D model and the food (pet-model.js?v=..., food-pack.js?v=...) and the three.js / Supabase scripts: saved once and reused. Their addresses
 //    change when they change, so an old copy is never used by mistake.
 //  - Fur textures and pictures: the saved copy at once, refreshed in the background.
 //  - The game's data (Supabase) is never saved here.
@@ -66,10 +66,11 @@ function savedFirst(e) {
   return answer;
 }
 function dropOldModels(url) {
-  if (url.indexOf("pet-model.js") < 0) return;
+  var file = /pet-model\.js|food-pack\.js/.exec(url);
+  if (!file) return;
   return caches.open(CACHE).then(function (c) {
     return c.keys().then(function (keys) {
-      return Promise.all(keys.filter(function (k) { return k.url.indexOf("pet-model.js") >= 0 && k.url !== url; }).map(function (k) { return c.delete(k); }));
+      return Promise.all(keys.filter(function (k) { return k.url.indexOf(file[0]) >= 0 && k.url !== url; }).map(function (k) { return c.delete(k); }));
     });
   });
 }
@@ -90,7 +91,7 @@ self.addEventListener("fetch", function (e) {
     var path = url.pathname;
     // only the app page itself (not prototype.html or other pages)
     if (/\/(index\.html)?$/.test(path)) { e.respondWith(url.searchParams.has("fresh") ? pageFresh(e) : pageFirst(e)); return; }
-    if (/\/pet-model\.js$/.test(path)) { e.respondWith(savedFirst(e)); return; }
+    if (/\/(pet-model|food-pack)\.js$/.test(path)) { e.respondWith(savedFirst(e)); return; }
     if (/\/(pets|icons)\/|\/icon-\d+\.png$|\/manifest\.json$/.test(path)) { e.respondWith(savedThenRefresh(e)); return; }
     return;
   }
