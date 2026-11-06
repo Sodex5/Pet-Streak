@@ -1474,6 +1474,26 @@ html, body { overflow-x: hidden; }
 
 /* with every food unlocked the tray would grow off the screen: the list scrolls inside it */
 .pg-foods { max-height: min(42vh, 340px); overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y; padding: 2px; }
+
+/* Ball pass: the how-to card, and the word over your pet that says whose turn it is and when to tap */
+.pb-cue { position: absolute; left: 50%; bottom: calc(262px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); padding: 6px 18px; border-radius: 999px; font-family: var(--display); font-weight: 800; font-size: 1.15rem; white-space: nowrap; pointer-events: none; opacity: 0; }
+.pb-cue.show { opacity: 1; }
+.pb-cue.wait { background: rgba(255,255,255,0.7); color: #55666e; }
+.pb-cue.ready { background: #fff; color: #2f7fe0; }
+.pb-cue.tap { background: #36c38a; color: #fff; font-size: 1.7rem; box-shadow: 0 0 22px rgba(54,195,138,0.7); }
+.pb-helpbtn[hidden] { display: none; }
+.pb-how { position: absolute; inset: 0; z-index: 6; display: flex; align-items: center; justify-content: center; padding: 16px; background: rgba(20,35,43,0.45); }
+.pb-howcard { width: 100%; max-width: 380px; max-height: 100%; overflow-y: auto; background: #fff; border-radius: 22px; padding: 16px 18px; color: #14232b; }
+.pb-howcard h3 { margin: 0 0 6px; text-align: center; font-family: var(--display); font-size: 1.3rem; }
+.pb-howcard ol { margin: 8px 0 14px; padding-left: 22px; display: flex; flex-direction: column; gap: 6px; font-size: 0.95rem; line-height: 1.35; }
+.pb-howcard .pg-feed { width: 100%; }
+.pb-demo { position: relative; width: 140px; height: 120px; margin: 0 auto; display: flex; align-items: center; justify-content: center; }
+.pb-demo img { width: 64px; height: 64px; object-fit: contain; }
+.pb-demo i { position: absolute; left: 50%; top: 50%; width: 76px; height: 76px; margin: -38px 0 0 -38px; border-radius: 50%; border: 5px solid #2f7fe0; box-sizing: border-box; animation: pb-demoring 2.4s linear infinite; }
+.pb-demo b { position: absolute; right: -6px; top: 6px; padding: 2px 10px; border-radius: 999px; background: #36c38a; color: #fff; font-family: var(--display); opacity: 0; animation: pb-demotap 2.4s linear infinite; }
+@keyframes pb-demoring { 0% { transform: scale(1.55); border-color: #2f7fe0; } 62% { border-color: #2f7fe0; } 66%, 86% { transform: scale(1); border-color: #36c38a; box-shadow: 0 0 16px rgba(54,195,138,0.7); } 100% { transform: scale(1); border-color: #36c38a; opacity: 0; } }
+@keyframes pb-demotap { 0%, 64% { opacity: 0; } 66%, 86% { opacity: 1; } 100% { opacity: 0; } }
+.pb-ball:not(.on) { opacity: 0; }   /* no ball parked in the corner before kick-off */
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -5114,6 +5134,7 @@ html, body { overflow-x: hidden; }
     var wrap = document.createElement("div"); wrap.className = "pg-game pg-ball" + (VS ? " vs" : "");
     wrap.innerHTML =
       '<div class="pg-gamehud"><span class="lbl">⚽ Ball pass' + (VS ? " · first to " + BALL_POINTS : "") + "</span>" +
+        '<button type="button" class="pg-qcbtn pb-helpbtn" aria-label="How to play">?</button>' +
         (opts.onQuick ? '<button type="button" class="pg-qcbtn" aria-label="Send an emoji">💬</button>' : "") +
         '<button type="button" class="pg-gamex" aria-label="Stop the game">✕</button></div>' +
       '<div class="pg-qcpal" hidden></div>' +
@@ -5121,7 +5142,7 @@ html, body { overflow-x: hidden; }
       '<div class="pb-score" aria-live="polite">' + (VS ? '<b class="t">0</b><i>–</i><b class="m">0</b>' : "0") + "</div>" +
       '<div class="pb-pet me"><i class="pb-ring" aria-hidden="true"></i><img alt=""><span class="who"></span></div>' +
       '<span class="pb-ball" aria-hidden="true">⚽</span>' +
-      '<div class="pb-say"></div><p class="pb-hint">' + (VS ? "Tap when the ring turns green 🟢 Make them miss! A perfect tap sends a faster shot." : "Tap anywhere when the ring around your pet turns green 🟢") + "</p>" +
+      '<div class="pb-cue" aria-live="polite"></div><div class="pb-say"></div><p class="pb-hint">' + (VS ? "Tap when the ring turns green 🟢 Make them miss! A perfect tap sends a faster shot." : "Tap anywhere when the ring around your pet turns green 🟢") + "</p>" +
       '<div class="pg-gamemsg big">Get ready…</div>';
     document.body.appendChild(wrap);
     var themEl = wrap.querySelector(".pb-pet.them"), meEl = wrap.querySelector(".pb-pet.me"), ring = wrap.querySelector(".pb-ring");
@@ -5129,21 +5150,46 @@ html, body { overflow-x: hidden; }
     themEl.querySelector("img").src = opts.them.pic; meEl.querySelector("img").src = opts.me.pic;
     themEl.querySelector(".who").innerHTML = opts.them.html || ""; meEl.querySelector(".who").innerHTML = (opts.me.html || "") + " <small>(you)</small>";
     var live = false, over = false, timers = [], flight = null, score = 0, raf = 0, lateT = null, hits = 0;
-    var pts = { me: 0, them: 0 }, rally = 0;
+    var pts = { me: 0, them: 0 }, rally = 0, whyLost = "", cueEl = wrap.querySelector(".pb-cue"), cueNow = "";
+    // the big word over your pet for your first few passes: whose turn it is, and exactly when to tap
+    function cue(text, cls) {
+      if (hits >= 8) text = "";
+      if (text === cueNow) return;
+      cueNow = text; cueEl.textContent = text; cueEl.className = "pb-cue" + (text ? " show " + cls : "");
+    }
+    // how to play: on the first game of each kind, and any time before kick-off from the ? button
+    var HOW_KEY = "petstreak.ballhow." + (VS ? "vs" : "co"), howEl = null;
+    function closeHow() { if (howEl) { howEl.remove(); howEl = null; } }
+    function showHow(then) {
+      closeHow();
+      howEl = document.createElement("div"); howEl.className = "pb-how";
+      howEl.innerHTML = '<div class="pb-howcard"><h3>⚽ How to play</h3>' +
+        '<div class="pb-demo" aria-hidden="true"><i></i><img alt=""><b>TAP!</b></div><ol>' +
+        "<li>The ball flies between the two pets.</li>" +
+        "<li>When it comes to you, a ring shrinks around your pet.</li>" +
+        "<li><b>Tap anywhere on the screen when the ring turns green</b> to hit it back.</li>" +
+        (VS ? "<li>Too soon or too late and they get a point. <b>First to " + BALL_POINTS + " wins!</b></li><li>Tap at the very last moment for a faster Power shot 🔥</li>"
+            : "<li>Work together: every pass counts, and it gets faster. <b>One miss ends the game.</b></li>") +
+        '</ol><button type="button" class="pg-feed">' + (then ? "Got it, let's play!" : "Got it") + "</button></div>";
+      howEl.querySelector(".pb-demo img").src = opts.me.pic;
+      howEl.querySelector("button").addEventListener("click", function () { closeHow(); if (then) then(); });
+      wrap.appendChild(howEl);
+      try { localStorage.setItem(HOW_KEY, "1"); } catch (e) {}
+    }
     function bubble(el, text) {
       var b = document.createElement("span"); b.className = "pg-bubble"; b.textContent = text;
       el.appendChild(b); setTimeout(function () { b.remove(); }, 2600);
     }
     quickPalette(wrap, function (i, t) { bubble(meEl, t); opts.onQuick(i); });
     function centre(el) { var r = el.querySelector("img").getBoundingClientRect(), w = wrap.getBoundingClientRect(); return { x: r.left - w.left + r.width / 2, y: r.top - w.top + r.height * 0.35 }; }
-    function ballSay(text, cls) { sayEl.textContent = text; sayEl.className = "pb-say show " + (cls || ""); clearTimeout(ballSay.t); ballSay.t = setTimeout(function () { sayEl.className = "pb-say"; }, 900); }
+    function ballSay(text, cls, ms) { sayEl.textContent = text; sayEl.className = "pb-say show " + (cls || ""); clearTimeout(ballSay.t); ballSay.t = setTimeout(function () { sayEl.className = "pb-say"; }, ms || 900); }
     function showScore() {
       if (!VS) { scoreEl.textContent = score; return; }
       scoreEl.querySelector(".t").textContent = pts.them; scoreEl.querySelector(".m").textContent = pts.me;
     }
     // send the ball on its way: to "me" or to "them", as pass n (fast: a perfect hit's quicker, curvier shot)
     function launch(to, n, fast) {
-      ball.classList.remove("fall", "out");
+      ball.classList.remove("fall", "out"); ball.classList.add("on");
       flight = { to: to, n: n, t0: performance.now(), dur: (CHL >= 0 ? Math.max(430, 1400 * Math.pow([0.93, 0.922, 0.918][CHL], n)) : ballTravel(n, VS)) * (fast ? (CHL >= 0 ? [0.76, 0.72, 0.71][CHL] : 0.78) : 1), fast: !!fast,
                  sway: (Math.random() < 0.5 ? -1 : 1) * (fast ? 0.28 + Math.random() * 0.08 : 0.12 + Math.random() * 0.16) };
       clearTimeout(lateT);
@@ -5172,7 +5218,7 @@ html, body { overflow-x: hidden; }
     }
     function ballFrame(now) {
       raf = requestAnimationFrame(ballFrame);
-      if (!flight) { ring.style.opacity = 0; return; }
+      if (!flight) { ring.style.opacity = 0; cue("", ""); return; }
       var a = centre(flight.to === "me" ? themEl : meEl), b = centre(flight.to === "me" ? meEl : themEl);
       var s = Math.min(1.08, (now - flight.t0) / flight.dur), W = wrap.clientWidth;
       var x = a.x + (b.x - a.x) * s + Math.sin(Math.PI * Math.min(1, s)) * flight.sway * W;
@@ -5185,18 +5231,19 @@ html, body { overflow-x: hidden; }
         ring.style.opacity = 1;
         ring.style.transform = "translate(-50%,-50%) scale(" + Math.max(1, 1 + left / flight.dur * 1.6) + ")";
         ring.classList.toggle("now", Math.abs(left) <= w);
-        if (live && !over && left < -Math.min(170, w)) { drop(); }
-      } else ring.style.opacity = 0;
+        if (Math.abs(left) <= w) cue("TAP!", "tap"); else cue("Get ready…", "ready");
+        if (live && !over && left < -Math.min(170, w)) { whyLost = "Too late!"; drop(); }
+      } else { ring.style.opacity = 0; cue("Their turn", "wait"); }
     }
     raf = requestAnimationFrame(ballFrame);
     // my tap: only counts while the ball is coming to me
     function tap(e) {
-      if (e && e.target && e.target.closest && e.target.closest("button, .pg-qcpal")) return;
+      if (e && e.target && e.target.closest && e.target.closest("button, .pg-qcpal, .pb-how")) return;
       if (e) e.preventDefault();
       if (!live || over || !flight || flight.to !== "me") return;
       var left = flight.t0 + flight.dur - performance.now(), w = windowMs(flight.n);
       if (left > w + 450) return;                   // way too soon: ignore (the ball is still far away)
-      if (left > w) { ballSay("Too soon!", "bad"); drop(); return; }
+      if (left > w) { whyLost = "Too soon!"; ballSay(whyLost, "bad"); drop(); return; }
       hits++; if (!VS) { score++; showScore(); }
       pop(meEl);
       if (hits >= 4) wrap.querySelector(".pb-hint").classList.add("gone");
@@ -5224,7 +5271,8 @@ html, body { overflow-x: hidden; }
       scoreEl.classList.remove("bump"); void scoreEl.offsetWidth; scoreEl.classList.add("bump");
       if (typeof sfx === "function") sfx(who === "me" ? "coin" : "pat");
       if (pts[who] >= BALL_POINTS) { end(who === "me" ? "won" : "lost-match"); return; }
-      ballSay(who === "me" ? "Your point! 🎉" : "Their point", who === "me" ? "good" : "bad");
+      ballSay(who === "me" ? "They missed! Your point 🎉" : (whyLost ? whyLost + " " : "") + "Their point", who === "me" ? "good" : "bad", 1500);
+      whyLost = "";
       rally++;
       timers.push(setTimeout(serve, 1700));
     }
@@ -5238,7 +5286,8 @@ html, body { overflow-x: hidden; }
     function end(why) {
       if (over) return; over = true; live = false; clearTimeout(lateT); flight = null;
       ball.classList.add("fall");
-      msg.textContent = why === "won" ? "🏆 You win!" : why === "lost-match" ? "" : why === "lost" || why === "left" ? "" : "Dropped! 😮";
+      cue("", "");
+      msg.textContent = why === "won" ? "🏆 You win!" : why === "lost-match" ? "" : why === "lost" || why === "left" ? "" : (whyLost || "Dropped!") + " 😮";
       if (typeof sfx === "function") sfx(why === "won" ? "levelUp" : "pat");
       timers.push(setTimeout(function () { opts.onEnd(score, why, { me: pts.me, them: pts.them }); }, 1100));
     }
@@ -5250,16 +5299,29 @@ html, body { overflow-x: hidden; }
     function go() {
       live = true;
       msg.textContent = "";
+      closeHow(); wrap.querySelector(".pb-helpbtn").hidden = true;
       if (!opts.iServe && !opts.them.bot) ballSay("Here it comes!");
       serve();
     }
     return {
       wrap: wrap, close: close,
       start: function () {
-        if (opts.live) countdownFrom(msg, LIVE_COUNTDOWN, "Go!", timers, function () { return over; }, go);
-        else [["3", 0], ["2", 700], ["1", 1400], ["Go!", 2100]].forEach(function (s) {
-          timers.push(setTimeout(function () { if (over) return; msg.textContent = s[0]; if (s[0] === "Go!") { go(); timers.push(setTimeout(function () { if (!over) msg.textContent = ""; }, 500)); } }, s[1]));
+        var seen = false;
+        try { seen = !!localStorage.getItem(HOW_KEY); } catch (e) {}
+        function count() {
+          [["3", 0], ["2", 700], ["1", 1400], ["Go!", 2100]].forEach(function (s) {
+            timers.push(setTimeout(function () { if (over) return; msg.textContent = s[0]; if (s[0] === "Go!") { go(); timers.push(setTimeout(function () { if (!over) msg.textContent = ""; }, 500)); } }, s[1]));
+          });
+        }
+        // against a real player the clock is shared, so the card just sits over the countdown and closes at Go
+        wrap.querySelector(".pb-helpbtn").addEventListener("click", function () {
+          if (opts.live) { showHow(null); return; }
+          timers.forEach(clearTimeout); timers.length = 0; msg.textContent = "";
+          showHow(count);
         });
+        if (opts.live) { countdownFrom(msg, LIVE_COUNTDOWN, "Go!", timers, function () { return over; }, go); if (!seen) showHow(null); }
+        else if (!seen) showHow(count);
+        else count();
       },
       // the other player hit pass n: it's coming to me
       hit: function (n, fast) { if (over) return; if (!VS && n > 0) { score = Math.max(score, n); showScore(); } pop(themEl); launch("me", n, fast); },
@@ -5524,7 +5586,7 @@ html, body { overflow-x: hidden; }
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261105071739";   // replaced by build_real.ps1
+    var APP_BUILD = "20261106231636";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -6121,8 +6183,8 @@ html, body { overflow-x: hidden; }
         solo: ["🤖 Play the bot", "5 kicks each. Shoot past the keeper, then try to save."],
         others: ["👫 Play someone", "Take turns shooting and diving. Most goals wins."] },
       ball: { name: "Ball pass", art: "⚽", max: 1, invite: "wants to play Ball pass!",
-        solo: ["🤖 Pass with the bot", "Tap as the ball reaches you. How long can you keep it going?"],
-        others: ["👫 Pass together", "Team up and keep the ball going as long as you can."] }
+        solo: ["🤖 Pass with the bot", "Tap when the ring turns green to hit the ball back. How long can you keep it going?"],
+        others: ["👫 Pass together", "Tap when the ring turns green. Keep the ball going as long as you can."] }
     };
     function gameOf(g) { return GAMES[g] ? g : "race"; }
 
@@ -6177,8 +6239,8 @@ html, body { overflow-x: hidden; }
 
     // --- tap a game: solo, or with others ---
     // Ball pass has two ways to play: versus (first to 5 points, the default) or together (one team score)
-    var ballVs = true, BALL_VS_TEXT = { solo: ["🤖 Play the bot", "First to 5 points. Make Bamboo the bot miss!"],
-      others: ["👫 Play someone", "First to 5 points. Every drop is a point to the other player."] };
+    var ballVs = true, BALL_VS_TEXT = { solo: ["🤖 Play the bot", "Tap when the ring turns green to hit the ball back. First to 5 points wins."],
+      others: ["👫 Play someone", "Tap when the ring turns green. Miss it and they score. First to 5 wins."] };
     function openMode(game) {
       var g = GAMES[game], n = Object.keys(online).length, vs = game === "ball" && ballVs;
       var solo = vs ? BALL_VS_TEXT.solo : g.solo, oth = vs ? BALL_VS_TEXT.others : g.others;
