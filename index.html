@@ -1494,6 +1494,70 @@ html, body { overflow-x: hidden; }
 @keyframes pb-demoring { 0% { transform: scale(1.55); border-color: #2f7fe0; } 62% { border-color: #2f7fe0; } 66%, 86% { transform: scale(1); border-color: #36c38a; box-shadow: 0 0 16px rgba(54,195,138,0.7); } 100% { transform: scale(1); border-color: #36c38a; opacity: 0; } }
 @keyframes pb-demotap { 0%, 64% { opacity: 0; } 66%, 86% { opacity: 1; } 100% { opacity: 0; } }
 .pb-ball:not(.on) { opacity: 0; }   /* no ball parked in the corner before kick-off */
+
+/* How to play: the ? on a game's sheet, and the step-by-step tutorial with its little moving pictures */
+.pg-modecard { position: relative; }
+.pg-modehelp { position: absolute; top: 10px; right: 10px; width: 38px; height: 38px; border-radius: 50%; border: 0; background: var(--brand); color: #fff; font-family: var(--display); font-weight: 800; font-size: 1.2rem; line-height: 1; padding: 0; }
+#g-howto { z-index: 21; }
+.pg-howto { width: min(100%, 400px); display: flex; flex-direction: column; gap: 8px; text-align: center; }
+.pg-howtohead { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-weight: 800; font-size: 0.92rem; color: #55666e; text-align: left; }
+.pg-howto h2 { margin: 4px 0 0; font-size: 1.3rem; }
+.pg-howto p { margin: 0; min-height: 5.6em; color: #33444c; line-height: 1.4; font-size: 0.95rem; }
+.pg-howtoacts { display: flex; gap: 8px; }
+.pg-howtoacts .pg-btn { flex: 1 1 0; padding: 12px 8px; }
+.ht-dots { display: flex; justify-content: center; gap: 6px; }
+.ht-dots i { width: 8px; height: 8px; border-radius: 50%; background: #d6e0e4; }
+.ht-dots i.on { background: var(--brand); }
+.ht-scene { position: relative; height: 170px; border-radius: 16px; overflow: hidden; background: linear-gradient(180deg, #d9f0ff, #eef9ea); display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 6px; }
+.ht-pet { width: 62px; height: 62px; object-fit: contain; display: block; }
+.ht-big { font-family: var(--display); font-weight: 800; font-size: 2.3rem; color: #2b1d3a; }
+.ht-pulse { animation: ht-pulse 0.9s ease-in-out infinite; }
+.ht-ground { position: absolute; left: 0; right: 0; bottom: 6px; height: 62px; }
+.ht-slide { position: absolute; left: 50%; bottom: 0; margin-left: -31px; animation: ht-slide 2.6s ease-in-out infinite; }
+.ht-slide.fast { animation-duration: 1.6s; }
+.ht-arrows { position: absolute; top: 28px; font-size: 1.6rem; }
+.ht-drop { position: absolute; top: -34px; font-size: 1.8rem; animation: ht-drop 2.1s linear infinite; }
+.ht-drop.d1 { left: 24%; } .ht-drop.d2 { left: 50%; animation-delay: 0.7s; } .ht-drop.d3 { left: 72%; animation-delay: 1.4s; }
+.ht-minus { position: absolute; top: 12px; right: 18px; font-weight: 800; font-size: 1.3rem; color: #b3261e; }
+.ht-tapbtn { width: 104px; height: 104px; border-radius: 50%; background: var(--brand); color: #fff; display: flex; align-items: center; justify-content: center; font-family: var(--display); font-weight: 800; font-size: 1.5rem; }
+.ht-finger { position: absolute; right: 22%; bottom: 8px; font-size: 2rem; animation: ht-press 0.9s ease-in-out infinite; }
+.ht-lane { position: relative; width: 86%; height: 66px; border-bottom: 3px dashed rgba(43,29,58,0.2); }
+.ht-lane em { position: absolute; right: 0; bottom: 8px; font-style: normal; font-size: 1.7rem; }
+.ht-run { position: absolute; left: 0; bottom: 0; animation: ht-run 2.4s linear infinite; }
+.ht-run.slow { animation-name: ht-runslow; }
+.ht-lane .ht-pet { width: 54px; height: 54px; }
+.ht-cards { display: flex; gap: 8px; }
+.ht-card { width: 58px; height: 78px; border-radius: 10px; background: #2f7fe0; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.7rem; font-style: normal; }
+.ht-card i { font-style: normal; }
+.ht-card.up { background: #fff; box-shadow: 0 0 0 3px #36c38a; }
+.ht-card.flip { background: #fff; color: #14232b; animation: ht-flip 2s ease-in-out infinite; box-shadow: 0 0 0 2px #d6e0e4; }
+.ht-card.flip.two { animation-delay: 0.5s; }
+.ht-pass { position: relative; display: flex; flex-direction: column; justify-content: space-between; align-items: center; height: 100%; padding: 2px 0; }
+.ht-pass .ht-pet { width: 62px; height: 62px; }
+.ht-flyball { position: absolute; left: 50%; font-size: 1.5rem; margin-left: -12px; animation: ht-fly 2.2s ease-in-out infinite; }
+.ht-ringbox { position: relative; width: 130px; height: 130px; display: flex; align-items: center; justify-content: center; }
+.ht-ring { position: absolute; inset: 26px; border-radius: 50%; border: 5px solid #2f7fe0; animation: ht-ring 2.4s linear infinite; }
+.ht-ring.slowonly { animation-name: ht-ringblue; }
+.ht-tapword { position: absolute; right: -24px; top: 2px; padding: 2px 10px; border-radius: 999px; background: #36c38a; color: #fff; font-family: var(--display); opacity: 0; animation: ht-word 2.4s linear infinite; }
+.ht-goal { width: 220px; height: 110px; border: 6px solid #fff; border-bottom: 0; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr); background: repeating-linear-gradient(45deg, rgba(255,255,255,0.35) 0 4px, transparent 4px 12px); }
+.ht-goal i { border: 1px dashed rgba(43,29,58,0.25); display: flex; align-items: center; justify-content: center; font-style: normal; font-size: 1.6rem; }
+.ht-goal i:nth-child(3) { background: rgba(54,195,138,0.45); animation: ht-pulse 1.2s ease-in-out infinite; }
+.ht-goal.dive i:nth-child(3) { background: rgba(47,127,224,0.4); }
+.ht-bar { position: relative; width: 78%; height: 26px; border-radius: 999px; background: linear-gradient(90deg, #f2c230 0 40%, #36c38a 40% 62%, #e2574c 62% 100%); }
+.ht-bar b { position: absolute; top: -6px; bottom: -6px; left: 0; width: 6px; border-radius: 3px; background: #2b1d3a; animation: ht-bar 1.5s ease-in-out infinite alternate; }
+@keyframes ht-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.07); } }
+@keyframes ht-slide { 0%, 100% { transform: translateX(-90px); } 50% { transform: translateX(90px); } }
+@keyframes ht-drop { from { transform: translateY(0); } to { transform: translateY(170px); } }
+@keyframes ht-press { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-14px); } }
+@keyframes ht-run { from { left: 0; } 85%, to { left: calc(100% - 92px); } }
+@keyframes ht-runslow { from { left: 0; } 85%, to { left: calc(72% - 92px); } }
+@keyframes ht-flip { 0%, 100% { transform: scaleX(1); } 45%, 55% { transform: scaleX(0.1); } }
+@keyframes ht-fly { 0%, 100% { top: 56px; transform: translateX(-18px) scale(1); } 50% { top: 90px; transform: translateX(18px) scale(1.5); } }
+@keyframes ht-ring { 0% { transform: scale(1.75); border-color: #2f7fe0; } 62% { border-color: #2f7fe0; } 66%, 86% { transform: scale(1); border-color: #36c38a; box-shadow: 0 0 16px rgba(54,195,138,0.7); } 100% { transform: scale(1); border-color: #36c38a; opacity: 0; } }
+@keyframes ht-ringblue { 0% { transform: scale(1.75); } 100% { transform: scale(1); } }
+@keyframes ht-word { 0%, 64% { opacity: 0; } 66%, 86% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes ht-bar { from { left: 0; } to { left: calc(100% - 6px); } }
+@media (prefers-reduced-motion: reduce) { .ht-scene *, .ht-scene *::before { animation: none !important; } .ht-tapword { opacity: 1; } .ht-drop { top: 30px; } }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -1729,6 +1793,7 @@ html, body { overflow-x: hidden; }
     <!-- tap a game: solo or with others -->
     <div class="pg pg-adopt" id="g-mode" hidden>
       <div class="pg-card pg-modecard">
+        <button type="button" class="pg-modehelp" id="g-modehelp" aria-label="How to play">?</button>
         <div class="pg-modeart" id="g-modeart" aria-hidden="true">🏁</div>
         <h2 id="g-modename">Treat race</h2>
         <div class="pg-tabs pg-modevs" id="g-modevs" role="tablist" hidden>
@@ -1739,6 +1804,20 @@ html, body { overflow-x: hidden; }
         <button type="button" class="pg-modebtn others" id="g-modeothers"></button>
         <button type="button" class="pg-modebtn chal" id="g-modechal"></button>
         <button type="button" class="pg-linkbtn" id="g-modeclose">Cancel</button>
+      </div>
+    </div>
+    <!-- how to play: a game's tutorial, one step at a time -->
+    <div class="pg pg-adopt" id="g-howto" hidden>
+      <div class="pg-card pg-howto" role="dialog" aria-labelledby="g-howtotitle">
+        <div class="pg-howtohead"><span id="g-howtogame"></span><button type="button" class="pg-x" id="g-howtoclose" aria-label="Close">✕</button></div>
+        <div class="ht-scene" id="g-howtoscene" aria-hidden="true"></div>
+        <h2 id="g-howtotitle"></h2>
+        <p id="g-howtotext"></p>
+        <div class="ht-dots" id="g-howtodots" aria-hidden="true"></div>
+        <div class="pg-howtoacts">
+          <button type="button" class="pg-btn" id="g-howtoback">Back</button>
+          <button type="button" class="pg-btn pg-primary" id="g-howtonext">Next</button>
+        </div>
       </div>
     </div>
     <!-- with others: who to invite -->
@@ -5586,7 +5665,7 @@ html, body { overflow-x: hidden; }
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261106231636";   // replaced by build_real.ps1
+    var APP_BUILD = "20261106233528";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -6241,10 +6320,68 @@ html, body { overflow-x: hidden; }
     // Ball pass has two ways to play: versus (first to 5 points, the default) or together (one team score)
     var ballVs = true, BALL_VS_TEXT = { solo: ["🤖 Play the bot", "Tap when the ring turns green to hit the ball back. First to 5 points wins."],
       others: ["👫 Play someone", "Tap when the ring turns green. Miss it and they score. First to 5 wins."] };
+    // ---------- How to play: the ? on a game's sheet walks through the game, one step at a time ----------
+    // each step: a title, what to do, and a little moving picture (ht- styles in real.css)
+    function howToSteps(game) {
+      var p = pet(), me = '<img class="ht-pet" alt="" src="' + esc(petPic(p && p.variant)) + '">', bot = '<img class="ht-pet" alt="" src="' + esc(petPic("panda_golden")) + '">';
+      var finger = '<span class="ht-finger">👆</span>';
+      var ring = '<div class="ht-ringbox"><i class="ht-ring"></i>' + me + '<b class="ht-tapword">TAP!</b></div>';
+      var cards = function (a, b, c, d) { return '<div class="ht-cards">' + [a, b, c, d].map(function (x) { return '<span class="ht-card ' + (x[1] || "") + '"><i>' + x[0] + "</i></span>"; }).join("") + "</div>"; };
+      var goal = function (cls, mark) { return '<div class="ht-goal ' + cls + '">' + [0, 1, 2, 3, 4, 5].map(function (i) { return "<i>" + (i === 2 ? mark : "") + "</i>"; }).join("") + "</div>"; };
+      return {
+        bamboo: [
+          ["Move your pet", "Drag your finger left and right. Your pet follows along the bottom of the screen.", '<div class="ht-ground"><span class="ht-slide">' + me + "</span></div>" + '<span class="ht-arrows">⬅️ ➡️</span>'],
+          ["Catch the food", "Every food you catch is +1. Golden bamboo is worth +3, so go for it!", '<span class="ht-drop d1">🍎</span><span class="ht-drop d2">🎋</span><span class="ht-drop d3">🍌</span><div class="ht-ground"><span class="ht-slide">' + me + "</span></div>"],
+          ["Dodge the rocks", "A rock takes 2 points off your score. Move out of the way!", '<span class="ht-drop d2">🪨</span><span class="ht-minus">-2</span><div class="ht-ground"><span class="ht-slide fast">' + me + "</span></div>"],
+          ["Beat the clock", "You have 30 seconds, and things fall faster near the end. In a Bamboo duel the same food falls for both of you, and the highest score wins.", '<div class="ht-big ht-pulse">⏱️ 30</div>']
+        ],
+        race: [
+          ["Tap, tap, tap!", "Every tap on the big button moves your pet one step along its lane.", '<div class="ht-tapbtn ht-pulse">TAP!</div>' + finger],
+          ["First to the treat wins", "Keep tapping as fast as you can. The first pet to reach the treat wins the race.", '<div class="ht-lane"><span class="ht-run">' + me + '</span><em>🍎</em></div><div class="ht-lane"><span class="ht-run slow">' + bot + "</span><em>🍎</em></div>"],
+          ["Race your friends", "Up to 4 racers can play at once. Against the 🔥 Challenge bot you'll need two thumbs!", '<div class="ht-big">🏁 👫 👫</div>']
+        ],
+        memory: [
+          ["Flip two cards", "Tap two cards to turn them over and see what's on them.", cards(["🍩", "flip"], ["🎩", "flip two"], ["❓"], ["❓"])],
+          ["Find the pairs", "If they match they stay face up. If not, they turn back, so remember where they were!", cards(["🍩", "up"], ["🍩", "up"], ["❓"], ["❓"])],
+          ["Solo or taking turns", "Solo: find all 12 pairs in as few tries as you can, and quickly. Taking turns: find a pair and you go again; miss and it's the other player's go. Most pairs wins.", '<div class="ht-big">🃏 ✨ 🏆</div>']
+        ],
+        ball: [
+          ["Pass the ball", "The ball flies between the two pets. Your pet is at the bottom of the screen.", '<div class="ht-pass">' + bot + '<span class="ht-flyball">⚽</span>' + me + "</div>"],
+          ["Watch the ring", "When the ball comes to you, a ring shrinks around your pet. Get ready!", '<div class="ht-ringbox"><i class="ht-ring slowonly"></i>' + me + "</div>"],
+          ["Tap on green", "Tap anywhere on the screen the moment the ring turns green. That hits the ball back. Too soon or too late is a miss.", ring],
+          ["Versus", "A miss gives the other player a point. First to 5 wins. Tap at the very last moment for a faster Power shot 🔥", '<div class="ht-big">⚔️ 5 – 3</div>'],
+          ["Together", "Work as a team and count your passes. It gets faster every pass, and one miss ends the game.", '<div class="ht-big">🤝 12</div>']
+        ],
+        penalty: [
+          ["Pick your spot", "When you shoot, tap one of the 6 spots in the goal: left, middle or right, high or low.", goal("aim", "⚽") + finger],
+          ["Hit the green", "A power bar slides along. Tap while it's in the green and the ball goes where you aimed. Too hard goes over or wide; too soft is an easy save.", '<div class="ht-bar"><i></i><b></b></div>'],
+          ["Now you're the keeper", "When they shoot, tap one of the same 6 spots to dive there. You can't see their choice, so guess well! The right spot saves most shots.", goal("dive", "🧤")],
+          ["Most goals wins", "You each take 5 kicks. If it's a draw, you each take extra kicks to decide it.", '<div class="ht-big">🥅 ⚽⚽⚽</div>']
+        ]
+      }[game];
+    }
+    var howSteps = [], howAt = 0;
+    function drawHowTo() {
+      var s = howSteps[howAt], last = howAt === howSteps.length - 1;
+      $("g-howtoscene").innerHTML = s[2];
+      $("g-howtotitle").textContent = s[0]; $("g-howtotext").textContent = s[1];
+      $("g-howtodots").innerHTML = howSteps.map(function (x, i) { return "<i" + (i === howAt ? ' class="on"' : "") + "></i>"; }).join("");
+      $("g-howtoback").style.visibility = howAt ? "visible" : "hidden";
+      $("g-howtonext").textContent = last ? "Got it 👍" : "Next";
+    }
+    function openHowTo(game) {
+      howSteps = howToSteps(game); howAt = 0;
+      $("g-howtogame").textContent = GAMES[game].art + " How to play " + GAMES[game].name;
+      drawHowTo(); $("g-howto").hidden = false;
+    }
+    $("g-howtoclose").addEventListener("click", function () { $("g-howto").hidden = true; });
+    $("g-howtoback").addEventListener("click", function () { if (howAt) { howAt--; drawHowTo(); } });
+    $("g-howtonext").addEventListener("click", function () { if (howAt === howSteps.length - 1) $("g-howto").hidden = true; else { howAt++; drawHowTo(); } });
     function openMode(game) {
       var g = GAMES[game], n = Object.keys(online).length, vs = game === "ball" && ballVs;
       var solo = vs ? BALL_VS_TEXT.solo : g.solo, oth = vs ? BALL_VS_TEXT.others : g.others;
       $("g-modeart").textContent = g.art; $("g-modename").textContent = g.name;
+      $("g-modehelp").onclick = function () { openHowTo(game); };
       $("g-modevs").hidden = game !== "ball";
       Array.prototype.forEach.call(document.querySelectorAll("#g-modevs [data-vs]"), function (b) { b.setAttribute("aria-selected", (b.dataset.vs === "1") === ballVs ? "true" : "false"); });
       $("g-modesolo").innerHTML = "<b>" + esc(solo[0]) + "</b><small>" + esc(solo[1]) + "</small>";
@@ -9297,7 +9434,7 @@ html, body { overflow-x: hidden; }
     // tidying up runs). That tap only closes: it doesn't also pat the pet or press the button underneath.
     var CLOSABLE = [["g-menu", "g-menuclose"], ["g-store", "g-storeclose"], ["g-sheet", "g-close"], ["g-ranks", "g-ranksclose"],
                     ["g-share", "g-shareclose"], ["g-petsheet", "g-petsheetclose"], ["g-adoptinfo", "g-aiclose"], ["g-tray", "g-trayclose"],
-                    ["g-today", "g-todayclose"], ["g-achs", "g-achsclose"], ["g-history", "g-historyclose"], ["g-petprev", "g-pvback"]];
+                    ["g-today", "g-todayclose"], ["g-achs", "g-achsclose"], ["g-history", "g-historyclose"], ["g-petprev", "g-pvback"], ["g-howto", "g-howtoclose"]];
     var swallowClick = 0;
     document.addEventListener("pointerdown", function (e) {
       // a full-screen card (gift, join, name...) is on top: leave everything as it is
