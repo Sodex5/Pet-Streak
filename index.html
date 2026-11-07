@@ -1779,6 +1779,22 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
 .pg-delword { letter-spacing: 0.1em; }
 .pg-deldanger { background: #b3261e; box-shadow: none; }
 .pg-deldanger:disabled { opacity: 0.45; }
+
+/* the way back to a room */
+.pg-roombar { position: fixed; left: 50%; transform: translateX(-50%); top: calc(164px + env(safe-area-inset-top, 0px)); z-index: 6; min-height: 44px; padding: 0 18px; border: 0; border-radius: 999px; background: #2f7de1; color: #fff; font: inherit; font-weight: 700; white-space: nowrap; box-shadow: 0 6px 16px rgba(20,35,43,0.25); }
+.pg-roombar.ask { background: #e8556d; }
+.pg-roombar[hidden] { display: none; }
+
+/* admin tools */
+#g-news { z-index: 30; }
+.pg-adminstats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.pg-adminstats .n { padding: 8px 4px; border-radius: 12px; background: #f1f5f6; text-align: center; }
+.pg-adminstats b { display: block; font-size: 1.15rem; color: #14232b; }
+.pg-adminstats small { font-size: 0.68rem; color: #55666e; }
+.pg-adminacts { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.pg-adminnews { width: 100%; box-sizing: border-box; padding: 10px; border: 1px solid #d6e0e4; border-radius: 12px; font: inherit; resize: vertical; margin-bottom: 6px; }
+.pg-adminlog { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; font-size: 0.85rem; }
+.pg-adminlog small { display: block; color: #55666e; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -2078,6 +2094,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       <header class="pg-playhead">
         <button type="button" class="pg-playback" id="g-roomback" aria-label="Leave the room">←</button>
         <h2 id="g-roomtitle">Room</h2>
+        <button type="button" class="pg-playback" id="g-roommin" aria-label="Go to my pet while I wait">🐾</button>
         <button type="button" class="pg-btn pg-primary pg-roominvite" id="g-roominvite">Invite</button>
       </header>
       <div class="pg-roommeta" id="g-roommeta"></div>
@@ -2100,6 +2117,15 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
         <input id="g-delword" class="pg-safepin pg-delword" autocomplete="off" autocapitalize="characters" placeholder="Type DELETE" aria-label="Type DELETE to confirm">
         <button type="button" class="pg-feed pg-deldanger" id="g-delok" disabled>Delete my account</button>
         <button type="button" class="pg-linkbtn" id="g-delcancel">Keep my account</button>
+      </div>
+    </div>
+    <!-- a message from the admin -->
+    <div class="pg pg-adopt" id="g-news" hidden>
+      <div class="pg-card pg-modecard">
+        <div class="pg-modeart" aria-hidden="true">📢</div>
+        <h2>News from Pet Streak</h2>
+        <p class="pg-hint" id="g-newstext"></p>
+        <button type="button" class="pg-feed" id="g-newsok">Got it</button>
       </div>
     </div>
     <!-- Safe mode: turning it on or off, with an optional parent PIN -->
@@ -2199,6 +2225,8 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       <p class="pg-hint" id="g-histsum"></p>
       <ol class="pg-histlist" id="g-histlist"></ol>
     </div>
+    <!-- in a room, but looking after the pet: the way back -->
+    <button type="button" class="pg pg-roombar" id="g-roombar" hidden></button>
     <!-- watching a game in a room: one live scoreboard for every game -->
     <div class="pg pg-card pg-sheet" id="g-watch" hidden>
       <h2><span id="g-watchtitle"></span> <button type="button" class="pg-x" id="g-watchclose" aria-label="Stop watching">✕</button></h2>
@@ -2454,6 +2482,35 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
         <!-- admin tools (only the admin sees these) -->
         <details class="pg-group pg-admin" id="g-adminwrap" hidden>
           <summary class="pg-menuhead">🛠 Admin tools</summary>
+          <section class="pg-sec">
+            <h3>Overview</h3>
+            <div class="pg-adminstats" id="g-adminstats"></div>
+          </section>
+          <section class="pg-sec">
+            <h3>Find a player</h3>
+            <form class="pg-row" id="g-adminfindform">
+              <input id="g-adminfind" autocomplete="off" placeholder="Name, pet, friend code or email" aria-label="Find a player">
+              <button type="submit" class="pg-btn">Find</button>
+            </form>
+            <div id="g-adminfound"></div>
+          </section>
+          <section class="pg-sec">
+            <h3>Rooms open now</h3>
+            <div id="g-adminrooms"></div>
+          </section>
+          <section class="pg-sec">
+            <h3>Announcement</h3>
+            <p class="pg-note">Shown once to every player when they open the app, for 14 days.</p>
+            <textarea id="g-adminnews" class="pg-adminnews" maxlength="200" rows="2" placeholder="Your message to all players" aria-label="Announcement"></textarea>
+            <div class="pg-row">
+              <button type="button" class="pg-btn" id="g-adminnewsoff">Remove</button>
+              <button type="button" class="pg-btn pg-primary" id="g-adminnewsgo">Send to everyone</button>
+            </div>
+          </section>
+          <section class="pg-sec">
+            <h3>What admins did</h3>
+            <ol class="pg-adminlog" id="g-adminlog"></ol>
+          </section>
           <section class="pg-sec" id="g-adminchat" hidden>
             <h3>Reported chats</h3>
             <div id="g-chatreps"></div>
@@ -6024,7 +6081,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261107064112";   // replaced by build_real.ps1
+    var APP_BUILD = "20261107070959";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -6595,7 +6652,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
     // rude pet names are shown to strangers as "A red panda" (the admin can also reset reported names)
     // whole words only (so "Grape" and "Peacock" are fine), with look-alike letters undone (sh1t, @ss)
     var RUDE = /\b(fu+c?k\w*|fuk\w*|sh[i]+t\w*|bitch\w*|cunts?|dick(head)?s?|cocks?|puss(y|ies)|ass(hole)?s?|bastards?|nigg\w*|fag\w*|sluts?|whores?|porn\w*|sexy|penis|vagina|rap(e|ist)|nazis?|hitler|retard\w*)\b/i;
-    var CONTACT_NAME = /(\d\D?){3}|\b(snap|kik|ig|wa|fb|tele|dm)\b|snapchat|insta|whats|telegram|discord|tiktok|facebook|wechat|gmail|yahoo|hotmail|outlook|@|http|www|\.com|dot ?com/i;
+    var CONTACT_NAME = /\b(snap|kik|ig|wa|fb|tele|dm)\b|snapchat|insta|whats|telegram|discord|tiktok|facebook|wechat|gmail|yahoo|hotmail|outlook|@|http|www|\.com|dot ?com/i;
     function shownPetName(name) {
       var n = String(name || "").toLowerCase().replace(/1|!/g, "i").replace(/0/g, "o").replace(/3/g, "e").replace(/@|4/g, "a").replace(/\$|5/g, "s");
       return RUDE.test(n) || CONTACT_NAME.test(String(name || "")) ? "A red panda" : String(name || "").slice(0, 16);
@@ -7092,7 +7149,16 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
     var glBack = false, glWatched = false;
     setInterval(function () {
       var game = document.querySelector(".pg-game");
-      window.__petHidden = !!(game || document.querySelector(".pg-playpage:not([hidden]), .pg-chatpage:not([hidden])"));
+      var page = document.querySelector(".pg-playpage:not([hidden]), .pg-chatpage:not([hidden])");
+      window.__petHidden = !!(game || page);
+      var bar = $("g-roombar"), out = !!roomNow && !game && !page && !raceNow;
+      bar.hidden = !out;
+      if (out) {
+        var ask = roomNow.stake && roomNow.stake.status === "offered" && roomNow.stake.to === me.id;
+        bar.classList.toggle("ask", !!ask);
+        var said = ask ? "🐾 Paw offer! Back to the room" : "🏠 Back to the room · " + roomNow.members.length + " here";
+        if (bar.textContent !== said) bar.textContent = said;
+      }
       if (!glWatched) { var c = document.querySelector("canvas"); if (c) { glWatched = true; c.addEventListener("webglcontextrestored", function () { glBack = true; }); } }
       if (glBack && !game && !raceNow && !roomNow && !document.hidden) location.reload();
     }, 250);
@@ -7428,6 +7494,9 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       $("g-roomcodein").value = ""; roomGo("room_join", { p_pet: pet() && pet().id, p_code: c });
     });
     $("g-roomback").addEventListener("click", roomLeave);
+    // popping out to look after the pet: you stay in the room, and a game that starts still brings you in
+    $("g-roommin").addEventListener("click", function () { $("g-roompage").hidden = true; });
+    $("g-roombar").addEventListener("click", roomShow);
     document.addEventListener("visibilitychange", function () { if (!document.hidden && roomNow) roomPoll(); });   // back in the app: check in at once
     $("g-roominvite").addEventListener("click", roomInvite);
     // ready-made messages: the server has the same list and only takes the number (room_phrase in update_039.sql)
@@ -7502,8 +7571,10 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       }, 3000);
       // typed chat: the words go through the server; the others get a ping and fetch the clean text from there
       var typedId = 0;
+      // everyone can type in a game (what strangers would see goes through a stricter filter on the server).
+      // In Safe mode your words only reach friends, so with none here the box isn't shown.
       var withFriend = host ? (info.guests || []).some(function (g) { return friendOf(g.uid); }) : !!friendOf(hostUid);
-      typedChat = !withFriend ? null : function (text) {
+      typedChat = safeOn() && !withFriend ? null : function (text) {
         return rpc("room_say", { p_room: room, p_body: text }).then(function (r) { typedId = r.id; return r.body; }, function (e) { say(friendly(e.message)); throw e; });
       };
       function qcSend(i) { if (typeof i === "string") R.send("tx", { uid: me.id, id: typedId }); else R.send("qc", { uid: me.id, i: i }); }
@@ -7700,7 +7771,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
           drawWait(nameOf(hostUid) + " left the game.", [{ text: "Back to the Playground", primary: true, go: function () { leave(); openPlay(); } }]);
         } else { players = players.filter(function (x) { return x.uid !== m.uid; }); drawWait(); }
       });
-      R.on("qc", function (m) { if (safeOn() && !friendOf(m.uid)) return; if (!started) waitBubble(m.uid, QUICK_CHAT[m.i | 0]); else if (S.quick) S.quick(m.uid, m.i | 0); });
+      R.on("qc", function (m) { if (!started) waitBubble(m.uid, QUICK_CHAT[m.i | 0]); else if (S.quick) S.quick(m.uid, m.i | 0); });
       R.on("tx", function (m) {
         rpc("room_read", { p_room: room, p_after: (m.id | 0) - 1 }).then(function (l) {
           var x = (l || []).filter(function (y) { return y.id === m.id && y.uid === m.uid; })[0];
@@ -8865,6 +8936,104 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
     });
 
     // admin: reported chats (read the messages, dismiss, or stop the player chatting)
+    // ---------- Admin: overview, players, rooms, announcements, log ----------
+    function adminRow(cls) { var d = document.createElement("div"); d.className = cls; return d; }
+    function adminBtn(text, cls, go) {
+      var b = document.createElement("button"); b.type = "button"; b.className = "pg-btn" + (cls ? " " + cls : ""); b.textContent = text;
+      b.addEventListener("click", async function () { try { await go(); } catch (e) { say(friendly(e.message)); } });
+      return b;
+    }
+    async function adminDraw() {
+      if (!(profile && profile.is_admin)) return;
+      try {
+        var st = await rpc("admin_stats"), box = $("g-adminstats"); box.innerHTML = "";
+        [["Players", st.players], ["New this week", st.new_week], ["Active today", st.active_today], ["Pets", st.pets], ["Rooms", st.rooms], ["Live stakes", st.stakes], ["Reports", st.reports], ["Suspended", st.suspended]].forEach(function (x) {
+          var d = adminRow("n"); d.innerHTML = "<b>" + esc(String(x[1])) + "</b><small>" + esc(x[0]) + "</small>"; box.appendChild(d);
+        });
+      } catch (e) {}
+      adminRooms(); adminLog();
+    }
+    async function adminRooms() {
+      var box = $("g-adminrooms"), list = [];
+      try { list = (await rpc("admin_rooms")) || []; } catch (e) { return; }
+      box.innerHTML = list.length ? "" : '<p class="pg-note">No rooms open right now.</p>';
+      list.forEach(function (r) {
+        var d = adminRow("pg-chatrep");
+        d.innerHTML = "<b>" + esc(r.host || "A player") + "'s room</b> · " + (r.public ? "Public" : "Private") + " · " + esc(r.code || "") + '<p class="pg-note">' + esc((r.players || []).join(", ")) + "</p>";
+        d.appendChild(adminBtn("Close this room", "pg-danger", async function () {
+          if (!confirm("Close this room? Everyone is sent out, and paws on a game go back.")) return;
+          await rpc("admin_close_room", { p_room: r.id }); say("Room closed."); adminDraw();
+        }));
+        box.appendChild(d);
+      });
+    }
+    async function adminLog() {
+      var box = $("g-adminlog"), list = [];
+      try { list = (await rpc("admin_log_list")) || []; } catch (e) { return; }
+      box.innerHTML = list.length ? "" : '<li class="pg-note">Nothing yet.</li>';
+      list.forEach(function (l) {
+        var li = document.createElement("li");
+        li.innerHTML = "<b>" + esc(l.action) + "</b>" + (l.target ? " · " + esc(l.target) : "") + "<small>" + esc(new Date(l.at).toLocaleString()) + "</small>";
+        box.appendChild(li);
+      });
+    }
+    function adminPlayer(u) {
+      var d = adminRow("pg-chatrep");
+      function draw() {
+        d.innerHTML = "<b>" + esc(u.name) + "</b>" + (u.admin ? " · admin" : "") + (u.suspended ? " · 🚫 suspended" : "") + (u.banned ? " · chat stopped" : "") +
+          '<p class="pg-note">🐾 ' + esc(String(u.coins)) + " · Pets: " + esc((u.pets || []).join(", ") || "none") + " · Reports: " + esc(String(u.reports)) +
+          (u.safe ? " · 🛡️ Safe mode" : "") + "<br>Joined " + esc(new Date(u.joined).toLocaleDateString()) + (u.seen ? " · Last seen " + esc(new Date(u.seen).toLocaleDateString()) : "") + "</p>";
+        var row = adminRow("pg-adminacts");
+        row.appendChild(adminBtn("Give / take paws", "", async function () {
+          var n = parseInt(prompt("How many paws? Use a minus to take, like -50.") || "", 10); if (!n) return;
+          u.coins = await rpc("admin_paws", { p_user: u.uid, p_amount: n }); say("Now has 🐾 " + u.coins + "."); draw(); adminLog();
+        }));
+        row.appendChild(adminBtn(u.banned ? "Allow chat" : "Stop chat", "", async function () {
+          await rpc("admin_chat_ban", { p_user: u.uid, p_ban: !u.banned }); u.banned = !u.banned; draw();
+        }));
+        row.appendChild(adminBtn("Reset names", "", async function () {
+          if (!confirm("Reset this player's name and their pets' names?")) return;
+          await rpc("admin_reset_names", { p_user: u.uid }); u.name = "Player"; u.pets = (u.pets || []).map(function () { return "Red panda"; }); draw(); adminLog();
+        }));
+        if (u.pin) row.appendChild(adminBtn("Clear Safe mode PIN", "", async function () {
+          if (!confirm("Clear the PIN? Only do this if you're sure it's the parent asking.")) return;
+          await rpc("admin_clear_pin", { p_user: u.uid }); u.pin = false; say("PIN cleared."); draw(); adminLog();
+        }));
+        if (!u.admin) row.appendChild(adminBtn(u.suspended ? "Lift suspension" : "Suspend", "pg-danger", async function () {
+          if (!u.suspended && !confirm("Suspend " + u.name + "? They won't be able to play until you lift it.")) return;
+          await rpc("admin_suspend", { p_user: u.uid, p_on: !u.suspended }); u.suspended = !u.suspended; draw(); adminLog();
+        }));
+        d.appendChild(row);
+      }
+      draw();
+      return d;
+    }
+    $("g-adminfindform").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      var box = $("g-adminfound"), list;
+      try { list = (await rpc("admin_find", { p_q: $("g-adminfind").value })) || []; } catch (err) { say(friendly(err.message)); return; }
+      box.innerHTML = list.length ? "" : '<p class="pg-note">Nobody found.</p>';
+      list.forEach(function (u) { box.appendChild(adminPlayer(u)); });
+    });
+    $("g-adminnewsgo").addEventListener("click", async function () {
+      var t = $("g-adminnews").value.trim(); if (!t) { say("Type your message first."); return; }
+      if (!confirm("Send this to every player?\n\n" + t)) return;
+      try { await rpc("admin_announce", { p_body: t }); say("📢 Sent."); $("g-adminnews").value = ""; adminLog(); } catch (e) { say(friendly(e.message)); }
+    });
+    $("g-adminnewsoff").addEventListener("click", async function () {
+      try { await rpc("admin_announce", { p_body: "" }); say("Announcement removed."); adminLog(); } catch (e) { say(friendly(e.message)); }
+    });
+    $("g-adminwrap").addEventListener("toggle", function () { if (this.open) adminDraw(); });
+    // a message from the admin, shown once
+    async function checkNews() {
+      var n = null; try { n = await rpc("my_announcement"); } catch (e) { return; }
+      if (!n || !n.id || !$("g-howto").hidden) return;
+      var seen = null; try { seen = localStorage.getItem("petstreak.news"); } catch (e) {}
+      if (seen === String(n.id)) return;
+      $("g-newstext").textContent = n.body; $("g-news").hidden = false;
+      try { localStorage.setItem("petstreak.news", String(n.id)); } catch (e) {}
+    }
+    $("g-newsok").addEventListener("click", function () { $("g-news").hidden = true; });
     async function loadChatReports() {
       var box = $("g-chatreps"), list;
       try { list = await rpc("admin_chat_reports"); } catch (e) { $("g-adminchat").hidden = true; return; }
@@ -10689,8 +10858,8 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
     $("g-safebtn").addEventListener("click", function () {
       var on = !safeOn();
       $("g-safetitle").textContent = on ? "Turn on Safe mode" : "Turn off Safe mode";
-      $("g-safetext").textContent = on ? "Strangers can only send ready-made messages. Safe mode hides those too, stops strangers inviting you, and switches off playing for paws. Add a 4-digit PIN so a child can't turn this off, or leave it empty."
-        : "Strangers' ready-made messages and invites will come back, and so will playing for paws. Enter the PIN if one was set.";
+      $("g-safetext").textContent = on ? "Safe mode hides what strangers type and their ready-made messages (emoji in games still show), stops strangers inviting you, and switches off playing for paws. Add a 4-digit PIN so a child can't turn this off, or leave it empty."
+        : "Strangers' messages and invites will come back, and so will playing for paws. Enter the PIN if one was set.";
       $("g-safepin").value = ""; $("g-safepin").placeholder = on ? "PIN (optional)" : "PIN";
       $("g-safeok").textContent = on ? "Turn on" : "Turn off";
       $("g-safecard").hidden = false;
@@ -10745,7 +10914,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
     // asks first. On the main screen, a second back within 2 seconds closes the app.
     var BACK = [["g-tour", "g-tourskip"], ["g-achpop", "g-achok"], ["g-invite", "g-inviteno"], ["g-ask", "g-askcancel"], ["g-join", "g-joincancel"],
                 ["g-giftsend", "g-gsdone"], ["g-petopts", "g-poclose"], ["g-gamepick", "g-pickno"], ["g-gamehelp", "g-ghclose"], ["g-mode", "g-modeclose"],
-                ["g-pick", "g-pickclose"], ["g-history", "g-historyclose"], ".pg-game", ["g-msgsheet", "g-msgclose"], ["g-chatbar", "g-chatbarx"], ["g-chat", "g-chatback"], ["g-watch", "g-watchclose"], ["g-delcard", "g-delcancel"], ["g-safecard", "g-safecancel"], ["g-roomnew", "g-roomnewcancel"], ["g-roompage", "g-roomback"], ["g-rooms", "g-roomsclose"],
+                ["g-pick", "g-pickclose"], ["g-history", "g-historyclose"], ".pg-game", ["g-msgsheet", "g-msgclose"], ["g-chatbar", "g-chatbarx"], ["g-chat", "g-chatback"], ["g-watch", "g-watchclose"], ["g-news", "g-newsok"], ["g-delcard", "g-delcancel"], ["g-safecard", "g-safecancel"], ["g-roomnew", "g-roomnewcancel"], ["g-roompage", "g-roomback"], ["g-rooms", "g-roomsclose"],
                 ["g-social", "g-socialclose"], ["g-play", "g-playclose"], ["g-bath", "g-bathcancel"], ["g-howto", "g-howskip"],
                 ["g-getapp", "g-gaclose"], ["g-streakinfo", "g-siok"], ["g-bonusintro", "g-bonusok"]].concat(CLOSABLE);
     function closeTop() {
@@ -11005,7 +11174,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       setTimeout(maybeHowTo, 1200);
       setTimeout(checkPlayInvites, 3000);
       checkFriendLink(); checkRoomLink();
-      markSeen(); setInterval(markSeen, 120000); moveOldAvatar(); roomRejoin();
+      markSeen(); setInterval(markSeen, 120000); moveOldAvatar(); roomRejoin(); setTimeout(checkNews, 2500);
       refreshSub();
       // co-parents feed on their own phones: check for news every 20 s while the app is open
       if (!polling) { polling = true; setInterval(function () { if (me && !document.hidden && !raceNow && !document.querySelector(".pg-game")) loadAll({ quiet: true }); }, 20000); }
