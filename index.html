@@ -1767,6 +1767,11 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
 .pg-roomsays button { flex: none; min-height: 40px; padding: 0 14px; border: 1px solid #d6e0e4; border-radius: 999px; background: #fff; font: inherit; font-weight: 700; color: #14232b; white-space: nowrap; }
 #g-roomform[hidden] { display: none; }
 #g-msg { position: fixed; z-index: 80; }
+
+/* bigger taps for paws and safety; the update offer shows over the Playground and rooms, not over a game */
+.pg-roomopp button { min-height: 44px; }
+.pg-linkbtn.pg-small { padding: 12px 0; margin-top: 0; }
+#g-update { z-index: 16; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -5998,7 +6003,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261107061517";   // replaced by build_real.ps1
+    var APP_BUILD = "20261107062511";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -6622,7 +6627,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
         .on("broadcast", { event: "chatup" }, function (m) { gotChatUpdate(m.payload); })
         .on("broadcast", { event: "roominv" }, function (m) { gotRoomInvite(m.payload); })
         .on("broadcast", { event: "typing" }, function (m) { gotTyping(m.payload); })
-        .subscribe(function (status) { if (status === "SUBSCRIBED") { lobbyReady = true; trackMe(); } });
+        .subscribe(function (status) { if (status === "SUBSCRIBED") { lobbyReady = true; lastTracked = ""; trackMe(); } });
     }
     var lastTracked = "";
     function trackMe() {
@@ -6890,13 +6895,13 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       try { list = await rpc("my_play_invites"); } catch (e) { return; }
       var inv = (list || []).filter(function (i) { return i.room === m.room && i.from === m.from; })[0];
       if (!inv || !inv.pet || blocked.indexOf(inv.pet.pet_id) >= 0 || invSeen(m.room)) return;
-      if (raceNow || inviteOpen) { sendLive("reply", { to: m.from, from: me.id, room: m.room, ok: false, busy: true }); return; }
+      if (raceNow || inviteOpen || document.querySelector(".pg-game")) { sendLive("reply", { to: m.from, from: me.id, room: m.room, ok: false, busy: true }); return; }
       markInv(inv.id);
       showInvite({ from: m.from, room: m.room, game: gameOf(inv.game), pic: petPic(inv.pet.variant), html: petTagHTML(inv.pet), canBlock: !friendOf(m.from), pet: inv.pet, vs: !!m.vs, fast: !!m.fast });
     }
     // invites friends saved for me: a fresh one (with its room) joins the game; an older one offers to invite back
     async function checkPlayInvites() {
-      if (!me || inviteOpen || raceNow) return;
+      if (!me || inviteOpen || raceNow || document.querySelector(".pg-game")) return;
       var list;
       try { list = await rpc("my_play_invites"); } catch (e) { return; }
       var inv = (list || []).filter(function (i) { return !invSeen(i.id) && !(i.room && invSeen(i.room)); })[0];
@@ -7051,8 +7056,29 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       if (!r) { say("No open rooms right now. Create one! 🏠"); return; }
       roomBegin(r);
     }
+    // the screen stays on in a room or a game: a phone that locks would drop out, and could lose paws
+    var wakeHold = null;
+    async function keepAwake() {
+      var want = !!(roomNow || raceNow) && !document.hidden;
+      if (!want) { if (wakeHold) { try { wakeHold.release(); } catch (e) {} wakeHold = null; } return; }
+      if (wakeHold || !navigator.wakeLock) return;
+      try { wakeHold = await navigator.wakeLock.request("screen"); wakeHold.addEventListener("release", function () { wakeHold = null; }); } catch (e) {}
+    }
+    document.addEventListener("visibilitychange", keepAwake);
+    // back in the room after the app was closed or reloaded (the server keeps your place for 2 minutes)
+    var ROOM_KEY = "petstreak.room";
+    async function roomRejoin() {
+      var id = null; try { id = localStorage.getItem(ROOM_KEY); } catch (e) {}
+      if (!id || roomNow || raceNow) return;
+      var s = null; try { s = await rpc("room_state", { p_room: id, p_after: 0, p_busy: false }); } catch (e) {}
+      if (!s || s.gone) { try { localStorage.removeItem(ROOM_KEY); } catch (e) {} return; }
+      if (roomNow || raceNow) return;
+      hidePlayPages(); roomBegin(s);
+    }
     function roomBegin(r) {
       roomNow = { id: r.id, code: r.code, pub: r.public, max: r.max, after: 0, seq: null, host: null, members: [], names: {} };
+      try { localStorage.setItem(ROOM_KEY, r.id); } catch (e) {}
+      keepAwake();
       roomOpp = null; $("g-roomchat").innerHTML = ""; $("g-roomin").value = "";
       $("g-rooms").hidden = true; $("g-play").hidden = true; roomShow();
       try {
@@ -7100,10 +7126,12 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       else if (s.seq > R.seq) {
         R.seq = s.seq;
         var picked = (s.game_players || []).indexOf(me.id) >= 0;
-        if (picked && s.host !== me.id && !raceNow) { $("g-roompage").hidden = true; liveGame(s.game, s.game_room, false, { from: s.host }); }
+        if (!GAMES[s.game]) say("A new game has started. Please update the app to play it.");
+        else if (picked && s.host !== me.id && !raceNow) { $("g-roompage").hidden = true; liveGame(s.game, s.game_room, false, { from: s.host }); }
         else if (!picked) { roomNote(GAMES[s.game].art + " A game has started. Tap 👀 Watch to see it!"); if (watchNow) watchOpen(); }
       }
-      if (!$("g-roompage").hidden) roomDraw();
+      var look = JSON.stringify([R.members, R.host, R.max, R.stake, R.gameRoom, R.gamePlayers, friends.length]);
+      if (!$("g-roompage").hidden && look !== R.look) { R.look = look; roomDraw(); }
       // both have agreed the paws: the host's phone starts the game
       var st = R.stake;
       if (st && st.status === "live" && st.from === me.id && R.stakeGo !== st.id && !raceNow) {
@@ -7119,11 +7147,12 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       function answer(ok) { rpc("stake_answer", { p_id: st.id, p_ok: ok }).then(function () { if (ok) loadAll({ quiet: true }); roomPoke(); roomPoll(); }, function (e) { say(e.message); roomPoll(); }); }
       if (st.status === "offered" && st.to === me.id) {
         c.innerHTML = "<b>🐾 " + esc(roomName(st.from)) + " wants to play " + esc(G.name) + " for " + st.amount + " paws each</b><small>The winner takes " + st.amount * 2 + ". Ending early needs you both to agree: quit without agreeing, and you lose your stake.</small>";
+        c.querySelector("small").textContent += " Keep the app open: if you're away for 2 minutes, you lose.";
         var row = document.createElement("div"); row.className = "pg-row";
         row.appendChild(btn("No thanks", false, function () { answer(false); })); row.appendChild(btn("Accept 🐾 " + st.amount, true, function () { answer(true); }));
         c.appendChild(row);
       } else if (st.status === "offered") {
-        c.innerHTML = "<b>Waiting for " + esc(roomName(st.to)) + " to accept 🐾 " + st.amount + "…</b>";
+        c.innerHTML = "<b>Waiting for " + esc(roomName(st.to)) + " to accept 🐾 " + st.amount + "…</b><small>Keep the app open during the game: if you're away for 2 minutes, you lose.</small>";
         c.appendChild(btn("Cancel", false, function () { rpc("stake_cancel", { p_id: st.id }).then(function () { roomPoke(); roomPoll(); }, function (e) { say(e.message); }); }));
       } else c.innerHTML = "<b>🐾 Paws are in. Starting " + esc(G.name) + "…</b>";
       g.appendChild(c);
@@ -7278,6 +7307,8 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       clearInterval(roomTimer); roomTimer = null;
       try { if (roomCh) sb.removeChannel(roomCh); } catch (e) {}
       roomCh = null; roomNow = null; $("g-roompage").hidden = true;
+      try { localStorage.removeItem(ROOM_KEY); } catch (e) {}
+      keepAwake();
       if (why) say(why);
       if (!raceNow) { $("g-rooms").hidden = false; roomsLoad(); }
     }
@@ -7405,22 +7436,39 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       var ch = sb.channel("pg-room-" + room, { config: { broadcast: { self: false } } }), hs = {};
       var R = { on: function (ev, fn) { hs[ev] = fn; return R; },
         send: function (ev, p) { ch.send({ type: "broadcast", event: ev, payload: p || {} }); },
+        fire: function (ev, p) { if (hs[ev]) hs[ev](p || {}); },
         close: function () { try { sb.removeChannel(ch); } catch (e) {} } };
-      ["here", "seat", "full", "go", "bye", "w", "qc", "tx", "endask", "endok", "endno", "endcancel", "p", "fin", "result", "s", "final", "flip", "pass", "hit", "drop", "shot", "dive"].forEach(function (ev) {
+      ["here", "seat", "full", "old", "hb", "go", "bye", "w", "qc", "tx", "endask", "endok", "endno", "endcancel", "p", "fin", "result", "s", "final", "flip", "pass", "hit", "drop", "shot", "dive"].forEach(function (ev) {
         ch.on("broadcast", { event: ev }, function (m) { if (hs[ev]) hs[ev](m.payload || {}); });
       });
       ch.subscribe(function (st) { if (st === "SUBSCRIBED" && hs.ready) hs.ready(); });
       return R;
     }
     function hidePlayPages() { ["g-play", "g-social", "g-pick", "g-mode", "g-gamepick", "g-petopts", "g-chat", "g-rooms", "g-roompage"].forEach(function (id) { $(id).hidden = true; }); chatWith = null; }
+    // Change this when games stop working between old and new versions: players on different numbers aren't put together.
+    var GAME_PROTO = 1;
     function liveGame(game, room, host, info) {
       var p = pet(); if (!p || raceNow) return;
+      if (!GAMES[game]) { say("Please update the app to play this game."); return; }
       watchClose(); hidePlayPages();
       var R = openRoom(room), mine = myPresence(), G = GAMES[game];
       var players = host ? [mine] : [], guests = host ? info.guests : [], hostUid = host ? me.id : info.from;
       var started = false, done = false, timers = [], hereTimer = null, autoT = null, view = null;
       var S = raceNow = { room: room, game: game };
-      trackMe();
+      trackMe(); keepAwake();
+      // Is everyone still there? Each phone says so every 3 seconds. 20 seconds of silence counts as leaving, so nobody
+      // waits forever. (If this phone was asleep, that's no one else's fault: start counting again.)
+      var heard = {}, hbLast = Date.now();
+      R.on("hb", function (m) { heard[m.uid] = Date.now(); });
+      S.hbT = setInterval(function () {
+        var now = Date.now(), slept = now - hbLast > 8000; hbLast = now;
+        R.send("hb", { uid: me.id });
+        if (done) return;
+        Object.keys(heard).forEach(function (u) {
+          if (slept) heard[u] = now;
+          else if (now - heard[u] > 20000) { delete heard[u]; R.fire("bye", { uid: u }); }
+        });
+      }, 3000);
       // typed chat: the words go through the server; the others get a ping and fetch the clean text from there
       var typedId = 0;
       var withFriend = host ? (info.guests || []).some(function (g) { return friendOf(g.uid); }) : !!friendOf(hostUid);
@@ -7433,14 +7481,25 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       rpc("stake_result", { p_room: room }).then(function (x) {
         if (!x || x.status !== "live" || S.closed) return;
         S.stakeAmt = x.amount;
-        var tries = 0;
-        stakeT = setInterval(function () {
-          if (++tries > 70) { clearInterval(stakeT); return; }
+        var tries = 0, n = x.amount;
+        function claimNow() {
           rpc("stake_claim", { p_room: room }).then(function (st) {
             if (st === "live") return;
-            clearInterval(stakeT); S.stakeAmt = 0;
-            if (st === "won" && !S.closed && !S.stakeOver && S.bye) { var o = players.filter(function (q) { return q.uid !== me.id; })[0]; if (o) S.bye(o.uid); }
+            clearInterval(stakeT); S.stakeAmt = 0; document.removeEventListener("visibilitychange", onBack);
+            if (S.closed || S.stakeOver) return;
+            if (st === "won") { var o = players.filter(function (q) { return q.uid !== me.id; })[0]; if (o && S.bye) S.bye(o.uid); return; }
+            // it was settled while I was away
+            rpc("stake_result", { p_room: room }).then(function (y) {
+              if (S.closed || S.stakeOver) return;
+              stakeExit(y && y.status === "paid" && !y.won ? "You were away too long, so you lost your " + n + " paws." : "The game ended while you were away. Your paws are back. 🐾");
+            }, function () {});
           }, function () {});
+        }
+        function onBack() { if (!document.hidden) claimNow(); }
+        document.addEventListener("visibilitychange", onBack);
+        stakeT = setInterval(function () {
+          if (++tries > 70) { clearInterval(stakeT); document.removeEventListener("visibilitychange", onBack); return; }
+          claimNow();
         }, 15000);
       }, function () {});
       function stakeName() { var o = players.filter(function (q) { return q.uid !== me.id; })[0]; var f = o && friendOf(o.uid); return f ? f.name : o ? nameOf(o.uid) : "The other player"; }
@@ -7556,6 +7615,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       drawWait();
       // the host: players arrive
       R.on("here", function (m) {
+        if ((m.v || 1) !== GAME_PROTO) { if (host && m.who) R.send("old", { to: m.who.uid }); return; }
         if (!host || !m.who) return;
         var g = guests.filter(function (x) { return x.uid === m.who.uid; })[0];
         if (!g || started) { R.send("full", { to: m.who.uid }); return; }
@@ -7575,21 +7635,31 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       }, 60000));
       // a guest: say "here" until seated
       R.on("ready", function () {
-        if (host) return;
-        R.send("here", { who: mine });
-        hereTimer = setInterval(function () { R.send("here", { who: mine }); }, 800);
+        if (host || started || players.length) return;   // (a reconnect mid-game lands here too)
+        clearInterval(hereTimer);
+        R.send("here", { who: mine, v: GAME_PROTO });
+        hereTimer = setInterval(function () { R.send("here", { who: mine, v: GAME_PROTO }); }, 800);
         timers.push(setTimeout(function () { if (!players.length) { clearInterval(hereTimer); drawWait("This game has ended or couldn't be reached.", [{ text: "Back to the Playground", primary: true, go: function () { leave(); openPlay(); } }]); } }, 12000));
       });
       R.on("seat", function (m) {
         if (host || !(m.players || []).some(function (x) { return x.uid === me.id; })) return;
         clearInterval(hereTimer); players = m.players; drawWait();
       });
+      R.on("old", function (m) {
+        if (host || m.to !== me.id || started) return;
+        clearInterval(hereTimer);
+        drawWait("You and your friend are on different versions of the app. Please both update, then try again.", [{ text: "Back to the Playground", primary: true, go: function () { leave(); openPlay(); } }]);
+      });
       R.on("full", function (m) {
         if (host || m.to !== me.id || players.length) return;
         clearInterval(hereTimer);
         drawWait("Too late! That game has already started.", [{ text: "Back to the Playground", primary: true, go: function () { leave(); openPlay(); } }]);
       });
-      R.on("go", function (m) { if (!host && !started && (m.players || []).some(function (x) { return x.uid === me.id; })) go(m); });
+      R.on("go", function (m) {
+        if (host || started || !(m.players || []).some(function (x) { return x.uid === me.id; })) return;
+        if ((m.v || 1) !== GAME_PROTO) { R.fire("old", { to: me.id }); return; }
+        go(m);
+      });
       R.on("bye", function (m) {
         if (started) { if (S.bye) S.bye(m.uid); return; }
         if (host) {
@@ -7615,7 +7685,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       }
       function startNow() {
         if (!host || started || players.length < 2) return;
-        var m = { players: players.slice(), first: players[Math.floor(Math.random() * players.length)].uid, vs: !!info.vs, fast: !!info.fast };
+        var m = { players: players.slice(), first: players[Math.floor(Math.random() * players.length)].uid, vs: !!info.vs, fast: !!info.fast, v: GAME_PROTO };
         R.send("go", m);
         go(m);
         // (said three times: a player who misses it would wait forever)
@@ -7644,7 +7714,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
         });
         view = race;
         var pump = setInterval(function () { if (latest !== sentN) { sentN = latest; R.send("p", { uid: me.id, n: sentN }); } }, 100);
-        R.on("p", function (x) { prog[x.uid] = x.n | 0; race.progress(x.uid, x.n | 0); });
+        R.on("p", function (x) { prog[x.uid] = x.n | 0; race.progress(x.uid, x.n | 0); if (host && (x.n | 0) >= RACE_STEPS) referee(x.uid); });
         R.on("fin", function (x) { if (host) referee(x.uid); });
         R.on("result", function (x) { if (!host) show(x.order || []); });
         S.quick = function (uid, i) { race.quick(uid, i); };
@@ -7876,6 +7946,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       }
       function endLeft(wrap, text) {
         S.stakeOver = true; stakeClose();
+        R.send("bye", { uid: me.id }); clearInterval(S.hbT);   // (a phone coming back mustn't play on against nobody)
         logGame(game, "live", others().map(label).join(", "), "left", null, null);
         var end = document.createElement("div"); end.className = "pg-gameend";
         end.innerHTML = '<div class="big">👋</div><p>' + esc(text) + '</p><div class="pg-row"><button type="button" class="pg-feed pg-grow" data-a="done">Done</button></div>';
@@ -7885,12 +7956,12 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       function leave() { R.send("bye", { uid: me.id }); cleanup(); }
       function cleanup() {
         if (S.closed) return; S.closed = true;
-        clearInterval(hereTimer); clearInterval(S.wT); clearTimeout(autoT); timers.forEach(clearTimeout);
+        clearInterval(hereTimer); clearInterval(S.wT); clearInterval(S.hbT); clearTimeout(autoT); timers.forEach(clearTimeout);
         document.removeEventListener("click", stakeGuard, true); stakeClose();
         if (S.stop) S.stop(); else if (view) view.close();
         wait.remove(); R.close();
         if (raceNow === S) raceNow = null;
-        trackMe();
+        trackMe(); keepAwake();
       }
       S.cleanup = cleanup; S.leave = leave;
     }
@@ -10879,7 +10950,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       setTimeout(maybeHowTo, 1200);
       setTimeout(checkPlayInvites, 3000);
       checkFriendLink(); checkRoomLink();
-      markSeen(); setInterval(markSeen, 120000); moveOldAvatar();
+      markSeen(); setInterval(markSeen, 120000); moveOldAvatar(); roomRejoin();
       refreshSub();
       // co-parents feed on their own phones: check for news every 20 s while the app is open
       if (!polling) { polling = true; setInterval(function () { if (me && !document.hidden) loadAll({ quiet: true }); }, 20000); }
