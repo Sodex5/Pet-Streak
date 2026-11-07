@@ -5949,7 +5949,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261107043518";   // replaced by build_real.ps1
+    var APP_BUILD = "20261107044647";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -6570,6 +6570,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
         .on("broadcast", { event: "reply" }, function (m) { gotReply(m.payload); })
         .on("broadcast", { event: "chat" }, function (m) { if (m.payload && m.payload.to === me.id) { sfx("pat"); refreshUnread(); } })
         .on("broadcast", { event: "chatup" }, function (m) { gotChatUpdate(m.payload); })
+        .on("broadcast", { event: "roominv" }, function (m) { gotRoomInvite(m.payload); })
         .on("broadcast", { event: "typing" }, function (m) { gotTyping(m.payload); })
         .subscribe(function (status) { if (status === "SUBSCRIBED") { lobbyReady = true; trackMe(); } });
     }
@@ -6845,19 +6846,24 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       if (!inv || inviteOpen || raceNow) return;
       markInv(inv.id);
       var f = friendOf(inv.from), fresh = inv.room && (inv.secs || 0) < 90;
+      if (inv.game === "room") {
+        if (!inv.room || (roomNow && roomNow.code === inv.room.toUpperCase())) return;
+        showInvite({ hub: inv.room.toUpperCase(), from: inv.from, game: "race", pic: petPic(f && f.pet && f.pet.variant), html: f ? friendTagHTML(f) : esc(inv.name), canBlock: false, old: 0 });
+        return;
+      }
       showInvite({ from: inv.from, room: fresh ? inv.room : null, game: gameOf(inv.game), pic: petPic(f && f.pet && f.pet.variant),
         html: f ? friendTagHTML(f) : esc(inv.name), canBlock: false, old: fresh ? 0 : Math.max(1, Math.round((inv.secs || 60) / 60)) });
     }
     var INVITE_SECS = 30;
     function showInvite(inv) {
-      var g = GAMES[inv.game];
+      var g = inv.hub ? { art: "🏠", name: "a room", invite: "invited you to their room!", others: ["", "Join them to chat and play."] } : GAMES[inv.game];
       inviteOpen = inv;
       $("g-invitepic").src = inv.pic; $("g-invitegame").textContent = g.art;
       $("g-invitewho").innerHTML = inv.html;
       var vs = inv.vs && inv.game === "ball";
       $("g-invitetext").textContent = inv.old ? "wanted to play " + g.name : vs ? (inv.fast ? "wants a ⚡ fast Ball pass match!" : "wants a Ball pass match!") : g.invite;
       $("g-invitesub").textContent = inv.old ? "That was " + inv.old + (inv.old === 1 ? " minute" : " minutes") + " ago." : vs ? (inv.fast ? "Challenge speed. First to 5 points wins." : "First to 5 points wins.") : g.others[1];
-      $("g-inviteyes").textContent = inv.old ? "🎮 Invite back" : "Let's play! " + g.art;
+      $("g-inviteyes").textContent = inv.hub ? "Join the room 🏠" : inv.old ? "🎮 Invite back" : "Let's play! " + g.art;
       $("g-inviteno").textContent = inv.old ? "Close" : "Not now";
       $("g-inviteblock").hidden = !inv.canBlock;
       var bar = $("g-invitebar"); bar.parentNode.hidden = !!inv.old;
@@ -6871,6 +6877,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
     function answerInvite(ok) {
       var inv = inviteOpen; if (!inv) return;
       inviteOpen = null; $("g-invite").hidden = true; clearTimeout(showInvite.t);
+      if (inv.hub) { if (ok) roomGo("room_join", { p_pet: pet() && pet().id, p_code: inv.hub }); return; }
       if (inv.old) { if (ok) { if (friendOf(inv.from)) hostGame(inv.game, [inv.from]); else { openPlay(); openPick(inv.game, inv.from); } } return; }
       markInv(inv.room);
       if (!ok) { sendLive("reply", { to: inv.from, from: me.id, room: inv.room, ok: false }); return; }
@@ -7029,7 +7036,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       // both have agreed the paws: the host's phone starts the game
       var st = R.stake;
       if (st && st.status === "live" && st.from === me.id && R.stakeGo !== st.id && !raceNow) {
-        R.stakeGo = st.id; roomPickGame = st.game; roomOpp = st.to; roomStake = 0;
+        R.stakeGo = st.id; roomPickGame = st.game; roomOpp = st.to; roomStake = 0; R.stakeAgain = st.amount;
         loadAll({ quiet: true }); roomStartGame();
       }
     }
@@ -7076,6 +7083,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       for (var i = n; i < R.max; i++) { var e = document.createElement("li"); e.className = "free"; e.innerHTML = '<button type="button" aria-label="Invite someone"><b>＋</b><span>Free</span></button>'; e.querySelector("button").addEventListener("click", roomInvite); box.appendChild(e); }
       var g = $("g-roomgame"); g.innerHTML = "";
       if (R.stake) { roomStakeCard(g); return; }
+      if (R.stakeAgain && !raceNow) { roomStake = R.stakeAgain; R.stakeAgain = 0; }   // Play again keeps the amount (they still have to agree)
       if (!iHost) { g.innerHTML = '<p class="pg-roomwait">' + esc(n < 2 ? "Waiting for more players…" : "Waiting for " + roomName(R.host) + " to pick a game and start…") + "</p>"; return; }
       var row = document.createElement("div"); row.className = "pg-roompicks";
       roomGames.forEach(function (k) {
@@ -7121,7 +7129,9 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       // everyone in the game has to be back from the last one
       var late = (two || others.length === 1 ? (rival ? [rival] : []) : others).filter(function (m) { return m.busy; })[0];
       if (late) ready = false;
-      go.textContent = n < 2 ? "Waiting for players…" : !roomPickGame ? "Pick a game" : two && others.length > 1 && !roomOpp ? "Pick who to play" : late ? "Waiting for " + roomName(late.uid) + " to finish…" : roomStake ? "Offer 🐾 " + roomStake + " to " + roomName(rival.uid) : "▶ Start " + GAMES[roomPickGame].name;
+      go.textContent = n < 2 ? "Waiting for players…" : !roomPickGame ? "Pick a game" : two && others.length > 1 && !roomOpp ? "Pick who to play" : late ? "Waiting for " + roomName(late.uid) + " to finish…"
+        : R.played === roomPickGame ? "🔁 Play again" + (roomStake ? " for 🐾 " + roomStake : "")
+        : roomStake ? "Offer 🐾 " + roomStake + " to " + roomName(rival.uid) : "▶ Start " + GAMES[roomPickGame].name;
       go.disabled = !ready;
       go.addEventListener("click", function () {
         if (!roomStake) { roomStartGame(); return; }
@@ -7136,7 +7146,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       var vs = game === "ball" && roomVs, res;
       try { res = await rpc("room_start", { p_room: R.id, p_game: game, p_players: [me.id].concat(chosen.map(function (m) { return m.uid; })), p_extra: { vs: vs } }); }
       catch (e) { say(e.message); return; }
-      R.seq = (R.seq || 0) + 1; roomPoke();
+      R.seq = (R.seq || 0) + 1; R.played = game; roomPoke();
       $("g-roompage").hidden = true;
       liveGame(game, res.game_room, true, { vs: vs, fast: false, guests: chosen.map(function (m) { return { uid: m.uid, html: petTagHTML(m), state: "wait" }; }) });
     }
@@ -7190,11 +7200,28 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
           else { try { await navigator.clipboard.writeText(text + " " + url); say("Copied! Paste it to a friend."); } catch (e) { prompt("Send this to a friend:", text + " " + url); } }
         }]];
       friends.filter(function (f) { return f.kind === "friend" && !R.members.some(function (m) { return m.uid === f.id; }); }).slice(0, 5).forEach(function (f) {
-        items.push(["💬 Send to " + f.name, function () {
-          rpc("send_chat", { p_to: f.id, p_body: text }).then(function () { sendLive("chat", { to: f.id, from: me.id }); say("Sent to " + f.name + " 💌"); }, function (e) { say(e.message); });
-        }]);
+        items.push(["🔔 Invite " + f.name, function () { roomInviteFriend(f, text); }]);
       });
       roomSheet(items);
+    }
+    // a friend in the app gets the card at once; the notification reaches them if it's closed. If notifications
+    // can't be sent, the invite goes as a chat message instead
+    async function roomInviteFriend(f, text) {
+      var R = roomNow; if (!R) return;
+      sendLive("roominv", { to: f.id, from: me.id, code: R.code });
+      var failed = false;
+      try { var res = await sb.functions.invoke("send-play-invite", { body: { to: f.id, game: "room", room: R.code.toLowerCase() } }); failed = !!res.error; }
+      catch (e) { failed = true; }
+      if (failed) {
+        try { await rpc("send_chat", { p_to: f.id, p_body: text }); sendLive("chat", { to: f.id, from: me.id }); } catch (e) { say(e.message); return; }
+      }
+      say("Invite sent to " + f.name + " 💌");
+    }
+    function gotRoomInvite(m) {
+      var f = m && m.to === me.id && friendOf(m.from);
+      if (!f || !m.code || inviteOpen || raceNow || (roomNow && roomNow.code === m.code)) return;
+      markInv(m.code.toLowerCase());
+      showInvite({ hub: m.code, from: m.from, game: "race", pic: petPic(f.pet && f.pet.variant), html: friendTagHTML(f), canBlock: false, old: 0 });
     }
     function setRoomNew() {
       Array.prototype.forEach.call(document.querySelectorAll("#g-roompubtabs [data-pub]"), function (b) { b.setAttribute("aria-selected", (b.dataset.pub === "1") === roomNewPub ? "true" : "false"); });
@@ -7653,7 +7680,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
         var end = document.createElement("div"); end.className = "pg-gameend";
         end.innerHTML = '<div class="big">' + o.big + "</div>" + (o.lbl ? '<p class="lbl">' + o.lbl + "</p>" : "") +
           "<p>" + esc(won === true ? "🏆 You win! " + p.name + " has " + wins + (wins === 1 ? " win" : " wins") + " 🏁" : won === "draw" ? "🤝 It's a draw!" : o.lost) + "</p>" +
-          '<div class="pg-row"><button type="button" class="pg-btn pg-grow" data-a="done">Done</button>' +
+          '<div class="pg-row"><button type="button" class="pg-btn pg-grow" data-a="done">' + (roomNow ? "Back to the room" : "Done") + "</button>" +
           (again.length ? '<button type="button" class="pg-feed pg-grow" data-a="again">' + o.again + "</button>" : "") + "</div>" +
           (stranger ? '<div class="pg-row pg-endextra"><button type="button" class="pg-linkbtn pg-small" data-a="friend">➕ Add friend</button>' +
                       '<button type="button" class="pg-linkbtn pg-small" data-a="block">🚫 Block or report</button></div>' : "");
