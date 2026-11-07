@@ -1820,6 +1820,9 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
 .pg-adminname { display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 44px; padding: 0; border: 0; background: none; font: inherit; color: #14232b; text-align: left; }
 .pg-adminname i, .pg-adminarrow { font-style: normal; color: #55666e; }
 .pg-adminarrow { float: right; }
+
+/* a name in the game's top bar stays on one line */
+.pg-gamehud .op .nm { white-space: nowrap; text-overflow: ellipsis; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -5195,6 +5198,9 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
 
     var pet = new Image(); pet.src = opts.pic;
     var P = 86;                                    // the pet's size on screen
+    // the other player's pet runs around behind yours. It's only for show: the score comes from their game.
+    var rival = null, OP = 68, ox = 0, oHop = 0, oLast = 0;
+    if (opts.live && opts.them && opts.them.pic) { rival = new Image(); rival.src = opts.them.pic; }
     var px = W / 2, tx = W / 2, score = 0, items = [], pops = [], shake = 0;
     var state = opts.live ? "wait" : "count", t0 = performance.now(), last = t0, spawnIn = 0, ended = false, running = true, keys = {};
     var rnd = opts.seed ? seeded(opts.seed) : Math.random;
@@ -5284,6 +5290,18 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
         g.fillText(it.icon, 0, 0); g.restore();
         return true;
       });
+      // the other pet heads for whatever good thing is falling lowest, then hops when it scores
+      if (rival) {
+        if (!ox) ox = W * 0.25;
+        var aim = null;
+        items.forEach(function (it) { if (it.kind !== "rock" && it.y < catchY && (!aim || it.y > aim.y)) aim = it; });
+        var goal = aim ? aim.x : W / 2 + Math.sin(now / 900) * W * 0.25;
+        ox += Math.max(-260 * dt, Math.min(260 * dt, goal - ox));
+        oHop = Math.max(0, oHop - dt * 3);
+        var oy = H - 28 - OP + 5 - Math.sin(oHop * Math.PI) * 18;
+        g.fillStyle = "rgba(0,0,0,0.12)"; g.beginPath(); g.ellipse(ox, H - 26, OP * 0.42, 6, 0, 0, 7); g.fill();
+        if (rival.complete && rival.naturalWidth) g.drawImage(rival, ox - OP / 2, oy, OP, OP);
+      }
       // the pet
       var sx = shake > 0 ? Math.sin(now / 20) * 6 : 0; shake = Math.max(0, shake - dt);
       g.fillStyle = "rgba(0,0,0,0.15)"; g.beginPath(); g.ellipse(px, H - 26, P * 0.42, 8, 0, 0, 7); g.fill();
@@ -5319,7 +5337,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       wrap: wrap, close: close,
       // a duel: both phones start the 3-2-1 together
       start: function () { if (state === "wait") { state = "count"; t0 = performance.now(); last = t0; } },
-      opp: function (n) { if (opEl) opEl.textContent = n; },
+      opp: function (n) { if (n > oLast) oHop = 1; oLast = n; if (opEl) opEl.textContent = n; },
       quick: function (i) { var t = quickText(i); if (t) duelBubble(t, false); },
       status: function (t) { msg.className = "pg-gamemsg big"; msg.textContent = t; },
       score: function () { return score; }
@@ -6124,7 +6142,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261107082554";   // replaced by build_real.ps1
+    var APP_BUILD = "20261107083643";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -7902,7 +7920,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       function goBamboo(m) {
         var other = others()[0], latest = 0, sentN = -1, finals = {}, gone = false, judgeT = null, theirs = 0;
         var bam = startBambooGame({
-          pic: petPic(p.variant), seed: seedOf(room), live: true, them: { html: petTagHTML(other) },
+          pic: petPic(p.variant), seed: seedOf(room), live: true, them: { pic: petPic(other.variant), html: petTagHTML(other) },
           onScore: function (n) { latest = n; },
           onQuick: qcSend,
           onQuit: function () { leave(); openPlay(); },
@@ -8175,12 +8193,12 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       var lv = botLv("bamboo"), every = [1250, 1050, 900, 780, 680, 650, 620, 590][lv - 1], rocks = [0.14, 0.11, 0.08, 0.06, 0.04, 0.035, 0.03, 0.025][lv - 1];
       var botScore = 0, timer = null;
       var game = startBambooGame({
-        pic: petPic(p.variant), seed: (Math.random() * 1e9) >>> 0, live: true, them: { html: esc(botName("bamboo")) },
+        pic: petPic(p.variant), seed: (Math.random() * 1e9) >>> 0, live: true, them: { pic: petPic(botChallenge ? "panda_sakura" : "panda_golden"), html: esc(botChallenge ? "🔥 Bamboo" : "🤖 Bamboo") },
         onQuit: function () { clearTimeout(timer); raceNow = null; trackMe(); openPlay(); },
         onEnd: function (score) {
           clearTimeout(timer);
           var won = score > botScore ? true : score < botScore ? false : "draw";
-          logGame("bamboo", "bot", "Bamboo the bot", won === true ? "won" : won === false ? "lost" : "draw", null, score);
+          logGame("bamboo", "bot", botChallenge ? "Bamboo the champion" : "Bamboo the bot", won === true ? "won" : won === false ? "lost" : "draw", null, score);
           botEnd(game, score + ' <small class="vs">vs ' + botScore + "</small>",
             botResult("bamboo", won, "You beat Bamboo the bot!", "Bamboo the bot wins! Have another go.", "🤝 A draw with the bot!"), duelBot);
         }
