@@ -2529,6 +2529,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
               <button type="submit" class="pg-btn">Find</button>
             </form>
             <div id="g-adminfound"></div>
+            <button type="button" class="pg-btn" id="g-adminfoundclear" hidden>Close results</button>
           </section>
           <section class="pg-sec">
             <h3>Rooms open now</h3>
@@ -6118,7 +6119,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261107075818";   // replaced by build_real.ps1
+    var APP_BUILD = "20261107081734";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -9026,7 +9027,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
         box.appendChild(li);
       });
     }
-    function adminPlayer(u) {
+    function adminPlayer(u, onClose) {
       var d = adminRow("pg-chatrep");
       function draw() {
         d.innerHTML = "<b>" + esc(u.name) + "</b>" + (u.admin ? " · admin" : "") + (u.suspended ? " · 🚫 suspended" : "") + (u.banned ? " · chat stopped" : "") +
@@ -9052,13 +9053,17 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
           if (!u.suspended && !confirm("Suspend " + u.name + "? They won't be able to play until you lift it.")) return;
           await rpc("admin_suspend", { p_user: u.uid, p_on: !u.suspended }); u.suspended = !u.suspended; draw(); adminLog();
         }));
+        if (onClose) row.appendChild(adminBtn("Close", "", onClose));
         d.appendChild(row);
       }
       draw();
       return d;
     }
     // every registered player, newest first: tap a row for the actions
-    var adminPAt = 0;
+    var adminPAt = 0, adminPOpen = false;
+    function adminPHide() {
+      adminPOpen = false; $("g-adminplist").innerHTML = ""; $("g-adminpmore").hidden = true; $("g-adminpshow").textContent = "Show all players";
+    }
     function adminAgo(t) {
       if (!t) return "never";
       var d = Math.floor((Date.now() - new Date(t)) / 86400000);
@@ -9069,17 +9074,21 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       if (!more) { adminPAt = 0; box.innerHTML = ""; }
       try { r = await rpc("admin_players", { p_offset: adminPAt }); } catch (e) { say(friendly(e.message)); return; }
       $("g-adminptotal").textContent = "(" + r.total + ")";
-      $("g-adminpshow").hidden = true;
+      adminPOpen = true; $("g-adminpshow").textContent = "Hide players";
       (r.rows || []).forEach(function (u) {
-        var li = document.createElement("li"), b = document.createElement("button"); b.type = "button";
-        b.innerHTML = "<b>" + esc(u.name) + "</b>" + (u.suspended ? " 🚫" : "") + (u.banned ? " 🔇" : "") + "<small>" + esc((u.pets || []).join(", ") || "No pet") + " · 🐾 " + esc(String(u.coins)) + " · joined " + esc(adminAgo(u.joined)) + " · seen " + esc(adminAgo(u.seen)) + "</small>";
-        b.addEventListener("click", function () { li.innerHTML = ""; li.appendChild(adminPlayer(u)); });
-        li.appendChild(b); box.appendChild(li);
+        var li = document.createElement("li");
+        function shut() {
+          var b = document.createElement("button"); b.type = "button";
+          b.innerHTML = "<b>" + esc(u.name) + "</b>" + (u.suspended ? " 🚫" : "") + (u.banned ? " 🔇" : "") + "<small>" + esc((u.pets || []).join(", ") || "No pet") + " · 🐾 " + esc(String(u.coins)) + " · joined " + esc(adminAgo(u.joined)) + " · seen " + esc(adminAgo(u.seen)) + "</small>";
+          b.addEventListener("click", function () { li.innerHTML = ""; li.appendChild(adminPlayer(u, shut)); });
+          li.innerHTML = ""; li.appendChild(b);
+        }
+        shut(); box.appendChild(li);
       });
       adminPAt += (r.rows || []).length;
       $("g-adminpmore").hidden = adminPAt >= r.total;
     }
-    $("g-adminpshow").addEventListener("click", function () { adminPlayers(false); });
+    $("g-adminpshow").addEventListener("click", function () { if (adminPOpen) adminPHide(); else adminPlayers(false); });
     $("g-adminpmore").addEventListener("click", function () { adminPlayers(true); });
     $("g-adminfindform").addEventListener("submit", async function (e) {
       e.preventDefault();
@@ -9087,7 +9096,9 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       try { list = (await rpc("admin_find", { p_q: $("g-adminfind").value })) || []; } catch (err) { say(friendly(err.message)); return; }
       box.innerHTML = list.length ? "" : '<p class="pg-note">Nobody found.</p>';
       list.forEach(function (u) { box.appendChild(adminPlayer(u)); });
+      $("g-adminfoundclear").hidden = false;
     });
+    $("g-adminfoundclear").addEventListener("click", function () { $("g-adminfound").innerHTML = ""; $("g-adminfind").value = ""; this.hidden = true; });
     $("g-adminnewsgo").addEventListener("click", async function () {
       var t = $("g-adminnews").value.trim(); if (!t) { say("Type your message first."); return; }
       if (!confirm("Send this to every player?\n\n" + t)) return;
