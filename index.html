@@ -1721,6 +1721,24 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
 /* games switch off text selection, which can stop an input taking typing on iPhones */
 .pg-qctype input { -webkit-user-select: text; user-select: text; touch-action: auto; }
 .pg-roommembers small { font-size: 0.62rem; color: #b26a00; font-weight: 700; line-height: 1.1; text-align: center; }
+
+/* the Playground: a slim online bar and three tiles, so the games sit higher */
+button.pg-onlinenow.has { padding: 6px 10px; border-radius: 14px; margin: 8px 0 0; }
+button.pg-onlinenow.has .pg-ontext small { display: none; }
+button.pg-onlinenow.has .pg-onfaces img { width: 28px; height: 28px; }
+button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem; }
+.pg-ptiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 8px 0; }
+.pg-ptile { min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 1px; padding: 8px 4px; border: 0; border-radius: 16px; background: #fff; color: #14232b; font: inherit; box-shadow: 0 2px 10px rgba(60,30,90,0.06); }
+.pg-ptile i { font-style: normal; font-size: 1.35rem; line-height: 1.2; }
+.pg-ptile b { font-size: 0.92rem; }
+.pg-ptile small { max-width: 100%; color: #5c6b72; font-size: 0.72rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pg-ptile.rooms { background: linear-gradient(135deg, #5b7cfa, #7a5cf0); color: #fff; box-shadow: 0 4px 12px rgba(91,124,250,0.3); }
+.pg-ptile.rooms small { color: #fff; opacity: 0.92; }
+.pg-ptile.week { background: linear-gradient(135deg, #ffd76a, #ffb347); color: #4a2c00; box-shadow: 0 4px 12px rgba(255,170,60,0.3); }
+.pg-ptile.week small { color: #6b4300; }
+/* a bot while you wait */
+.pg-roombot { width: 100%; padding: 12px; }
+.pg-roomtoast { position: fixed; left: 50%; top: calc(70px + env(safe-area-inset-top, 0px)); transform: translateX(-50%); z-index: 70; width: max-content; max-width: calc(100vw - 32px); padding: 10px 16px; border-radius: 999px; background: #14232b; color: #fff; font-weight: 700; font-size: 0.9rem; text-align: center; box-shadow: 0 6px 18px rgba(0,0,0,0.25); }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -1855,9 +1873,11 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
           <button type="button" class="pg-winsbtn" id="g-mywins" aria-label="Your games this week">🏁 0 wins</button>
         </div>
         <button type="button" class="pg-onlinenow" id="g-onlinecount" aria-label="See who's online"></button>
-        <button type="button" class="pg-roomsbtn" id="g-openrooms"><span aria-hidden="true">🏠</span><span class="pg-grow"><b>Rooms</b><small>Play with other players</small></span><i aria-hidden="true">›</i></button>
-        <button type="button" class="pg-weekbtn" id="g-openweek"><span aria-hidden="true">🏆</span><span class="pg-grow"><b>Weekly ranking</b><small id="g-weeksub">Win games against other players to climb</small></span><i aria-hidden="true">›</i></button>
-        <button type="button" class="pg-histbtn" id="g-openhist"><span aria-hidden="true">🕘</span><span class="pg-grow"><b>Game history</b><small>Your games from the last 7 days</small></span><i aria-hidden="true">›</i></button>
+        <div class="pg-ptiles">
+          <button type="button" class="pg-ptile rooms" id="g-openrooms"><i aria-hidden="true">🏠</i><b>Rooms</b><small>Play others</small></button>
+          <button type="button" class="pg-ptile week" id="g-openweek"><i aria-hidden="true">🏆</i><b>Ranking</b><small id="g-weeksub">This week</small></button>
+          <button type="button" class="pg-ptile" id="g-openhist"><i aria-hidden="true">🕘</i><b>History</b><small>Last 7 days</small></button>
+        </div>
         <div class="pg-gamegrid">
           <button type="button" class="pg-gamecard bamboo" data-game="bamboo"><span class="art" aria-hidden="true">🎋</span><b>Bamboo catch</b><small>Catch the falling food</small></button>
           <button type="button" class="pg-gamecard race" data-game="race"><span class="art" aria-hidden="true">🏁</span><b>Treat race</b><small>Tap fastest · up to 4</small></button>
@@ -5929,7 +5949,7 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261107042613";   // replaced by build_real.ps1
+    var APP_BUILD = "20261107043518";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -6875,7 +6895,7 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
       return d > 0 ? d + "d " + h + "h" : h + "h";
     }
     function weekSub(b) {
-      $("g-weeksub").textContent = b.me ? "You're #" + b.me.place + " this week · " + b.me.wins + (b.me.wins === 1 ? " win" : " wins") : "Win games against other players to climb";
+      $("g-weeksub").textContent = b.me ? "#" + b.me.place + " · " + b.me.wins + (b.me.wins === 1 ? " win" : " wins") : "This week";
       if (b.prize) { say("🏆 You came #" + b.prize.place + " last week! +" + b.prize.paws + " paws 🐾"); sfx("levelUp"); loadAll({ quiet: true }); }
     }
     function loadWeekSub() { rpc("weekly_board").then(weekSub, function () {}); }
@@ -6933,7 +6953,20 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
         li.querySelector("button").addEventListener("click", function () { roomGo("room_join", { p_pet: pet().id, p_id: r.id }); });
         box.appendChild(li);
       });
-      if (!list.length) box.innerHTML = '<li class="pg-logempty">No open rooms right now. Create one and others can join! 🏠</li>';
+      if (!list.length) {
+        box.innerHTML = '<li class="pg-logempty">No open rooms right now. Create one and others can join! 🏠</li>';
+        var li = document.createElement("li"); li.className = "pg-center"; li.appendChild(roomBotButton("🤖 Play a bot instead")); box.appendChild(li);
+      }
+    }
+    // nobody to play with yet: a game against the bot. openPlay() comes back to the room afterwards
+    function roomBotButton(text) {
+      var b = document.createElement("button"); b.type = "button"; b.className = "pg-btn pg-roombot"; b.textContent = text;
+      b.addEventListener("click", function () { playBot(roomPickGame || "race"); });
+      return b;
+    }
+    function roomToast(text) {
+      var t = document.createElement("div"); t.className = "pg-roomtoast"; t.textContent = text;
+      document.body.appendChild(t); setTimeout(function () { t.remove(); }, 5000);
     }
     async function roomGo(fn, args) {
       if (!pet()) { say("Get a pet first, then you can join a room."); return; }
@@ -6977,7 +7010,11 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
       R.code = s.code; R.pub = s.public; R.max = s.max; R.host = s.host; R.members = s.members; R.stake = s.stake || null;
       R.members.forEach(function (m) { R.names[m.uid] = shownPetName(m.pet); });
       if (!first) {
-        R.members.forEach(function (m) { if (had.indexOf(m.uid) < 0) { roomNote(roomName(m.uid) + " joined 👋"); sfx("happy"); } });
+        R.members.forEach(function (m) {
+          if (had.indexOf(m.uid) >= 0) return;
+          roomNote(roomName(m.uid) + " joined 👋"); sfx("happy");
+          if (raceNow || document.querySelector(".pg-game")) roomToast("🏠 " + roomName(m.uid) + " joined your room! Finish up and head back.");
+        });
         had.forEach(function (u) { if (!R.members.some(function (m) { return m.uid === u; })) roomNote(roomName(u) + " left"); });
       }
       (s.msgs || []).forEach(function (m) { R.after = Math.max(R.after, m.id); roomLine(m); });
@@ -7078,6 +7115,7 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
         });
         g.appendChild(pw);
       }
+      if (n < 2) g.appendChild(roomBotButton("🤖 Play a bot while you wait"));
       var go = document.createElement("button"); go.type = "button"; go.className = "pg-feed pg-roomstart";
       var ready = roomPickGame && n >= 2 && (!two || others.length === 1 || roomOpp);
       // everyone in the game has to be back from the last one
@@ -7974,7 +8012,7 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
       var n = Object.keys(online).length;
       // a bold green button when people are here (with their pets' faces), a quiet line when nobody is
       var faces = Object.keys(online).slice(0, 3).map(function (k) { return '<img alt="" src="' + esc(petPic(online[k].variant)) + '">'; }).join("");
-      $("g-onlinecount").innerHTML = !showOnline() ? "🙈 You're hidden from the online list. Rooms still work."
+      $("g-onlinecount").innerHTML = !showOnline() ? "🙈 You're hidden. Rooms still work."
         : n ? '<span class="pg-onfaces">' + faces + '<i class="pg-onpulse" aria-hidden="true"></i></span>' +
               '<span class="pg-ontext"><b>' + n + (n === 1 ? " player" : " players") + " online now</b><small>Tap to see who's here and play</small></span>" +
               '<span class="see">See who ›</span>'
