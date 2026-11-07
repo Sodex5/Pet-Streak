@@ -1772,6 +1772,13 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
 .pg-roomopp button { min-height: 44px; }
 .pg-linkbtn.pg-small { padding: 12px 0; margin-top: 0; }
 #g-update { z-index: 16; }
+
+/* Delete my account */
+#g-delcard { z-index: 30; }
+.pg-safepin[hidden] { display: none; }
+.pg-delword { letter-spacing: 0.1em; }
+.pg-deldanger { background: #b3261e; box-shadow: none; }
+.pg-deldanger:disabled { opacity: 0.45; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -2082,6 +2089,18 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
         <input id="g-roomin" maxlength="200" autocomplete="off" placeholder="Only your friends see this…" aria-label="Message to your friends">
         <button type="submit" class="pg-btn pg-primary" aria-label="Send">➤</button>
       </form>
+    </div>
+    <!-- deleting the account: it can't be undone, so the player types DELETE -->
+    <div class="pg pg-adopt" id="g-delcard" hidden>
+      <div class="pg-card pg-modecard">
+        <div class="pg-modeart" aria-hidden="true">⚠️</div>
+        <h2>Delete my account?</h2>
+        <p class="pg-hint">This can't be undone. Your paws, items, friends, messages, game history and ranking will be gone for good. Pets you share stay with your co-parent, and pets you look after alone go to the sanctuary. Any paws on a game go to the other player.</p>
+        <input id="g-delpin" class="pg-safepin" type="password" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="Safe mode PIN" aria-label="Safe mode PIN" hidden>
+        <input id="g-delword" class="pg-safepin pg-delword" autocomplete="off" autocapitalize="characters" placeholder="Type DELETE" aria-label="Type DELETE to confirm">
+        <button type="button" class="pg-feed pg-deldanger" id="g-delok" disabled>Delete my account</button>
+        <button type="button" class="pg-linkbtn" id="g-delcancel">Keep my account</button>
+      </div>
     </div>
     <!-- Safe mode: turning it on or off, with an optional parent PIN -->
     <div class="pg pg-adopt" id="g-safecard" hidden>
@@ -2472,6 +2491,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
         </div>
         <!-- kept out of the way at the very bottom, so it's never tapped by mistake (it still asks first) -->
         <button type="button" class="pg-linkbtn pg-leavelink" id="g-leave">Leave Mochi</button>
+        <button type="button" class="pg-linkbtn pg-leavelink" id="g-delacct">Delete my account</button>
         <p class="pg-version" id="g-version"></p>
       </div>
     </div>
@@ -6003,7 +6023,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261107062511";   // replaced by build_real.ps1
+    var APP_BUILD = "20261107063158";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -8852,6 +8872,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
           try { await rpc("admin_chat_ban", { p_user: r.reported_id, p_ban: !r.banned }); say(r.banned ? "Chat allowed again." : "Chat stopped for " + r.reported + "."); } catch (e) { say(e.message); }
           loadChatReports();
         });
+        if (!r.reported_id) d.querySelector('[data-a="ban"]').remove();   // (they deleted their account)
         box.appendChild(d);
       });
     }
@@ -10713,7 +10734,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
     // asks first. On the main screen, a second back within 2 seconds closes the app.
     var BACK = [["g-tour", "g-tourskip"], ["g-achpop", "g-achok"], ["g-invite", "g-inviteno"], ["g-ask", "g-askcancel"], ["g-join", "g-joincancel"],
                 ["g-giftsend", "g-gsdone"], ["g-petopts", "g-poclose"], ["g-gamepick", "g-pickno"], ["g-gamehelp", "g-ghclose"], ["g-mode", "g-modeclose"],
-                ["g-pick", "g-pickclose"], ["g-history", "g-historyclose"], ".pg-game", ["g-msgsheet", "g-msgclose"], ["g-chatbar", "g-chatbarx"], ["g-chat", "g-chatback"], ["g-watch", "g-watchclose"], ["g-safecard", "g-safecancel"], ["g-roomnew", "g-roomnewcancel"], ["g-roompage", "g-roomback"], ["g-rooms", "g-roomsclose"],
+                ["g-pick", "g-pickclose"], ["g-history", "g-historyclose"], ".pg-game", ["g-msgsheet", "g-msgclose"], ["g-chatbar", "g-chatbarx"], ["g-chat", "g-chatback"], ["g-watch", "g-watchclose"], ["g-delcard", "g-delcancel"], ["g-safecard", "g-safecancel"], ["g-roomnew", "g-roomnewcancel"], ["g-roompage", "g-roomback"], ["g-rooms", "g-roomsclose"],
                 ["g-social", "g-socialclose"], ["g-play", "g-playclose"], ["g-bath", "g-bathcancel"], ["g-howto", "g-howskip"],
                 ["g-getapp", "g-gaclose"], ["g-streakinfo", "g-siok"], ["g-bonusintro", "g-bonusok"]].concat(CLOSABLE);
     function closeTop() {
@@ -10843,6 +10864,29 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       say("Tester is ready: level 100, everything unlocked 🧪");
     });
     $("g-signout").addEventListener("click", async function () { await sb.auth.signOut(); location.reload(); });
+    // deleting the account: first the server checks it's allowed, then the picture goes (only a signed-in player can
+    // remove it), then the account
+    $("g-delacct").addEventListener("click", function () {
+      $("g-delword").value = ""; $("g-delpin").value = ""; $("g-delpin").hidden = !safeOn(); $("g-delok").disabled = true;
+      $("g-delcard").hidden = false;
+    });
+    $("g-delcancel").addEventListener("click", function () { $("g-delcard").hidden = true; });
+    $("g-delword").addEventListener("input", function () { $("g-delok").disabled = this.value.trim().toUpperCase() !== "DELETE"; });
+    $("g-delok").addEventListener("click", async function () {
+      var b = this, pin = $("g-delpin").value;
+      b.disabled = true;
+      try {
+        var st = await rpc("delete_my_account", { p_pin: pin, p_go: false });
+        if (st === "wrong") { say("That PIN isn't right."); $("g-delpin").value = ""; b.disabled = false; return; }
+        if (st === "locked") { say("Too many tries. Please wait a few minutes."); b.disabled = false; return; }
+        var pic = avatarPath(profile && profile.avatar_url);
+        if (pic) { try { await sb.storage.from("avatars").remove([pic]); } catch (e) {} }
+        await rpc("delete_my_account", { p_pin: pin, p_go: true });
+      } catch (e) { say(friendly(e.message)); b.disabled = false; return; }
+      try { Object.keys(localStorage).forEach(function (k) { if (k.indexOf("petstreak.") === 0) localStorage.removeItem(k); }); } catch (e) {}
+      try { await sb.auth.signOut(); } catch (e) {}
+      location.reload();
+    });
     $("g-joinok").addEventListener("click", join);
     $("g-joincancel").addEventListener("click", function () { $("g-join").hidden = true; localStorage.removeItem(JOIN_KEY); render(); });
 
