@@ -1815,6 +1815,11 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
 .pg-adminplayers > li > button { display: block; width: 100%; padding: 8px 12px; min-height: 44px; border: 0; border-radius: 12px; background: #f1f5f6; font: inherit; text-align: left; color: #14232b; }
 .pg-adminplayers small { display: block; color: #55666e; }
 #g-fbdone, #g-adminpmore { margin-top: 8px; }
+
+/* tap a player's name to open or fold their card */
+.pg-adminname { display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 44px; padding: 0; border: 0; background: none; font: inherit; color: #14232b; text-align: left; }
+.pg-adminname i, .pg-adminarrow { font-style: normal; color: #55666e; }
+.pg-adminarrow { float: right; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -6119,7 +6124,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261107081734";   // replaced by build_real.ps1
+    var APP_BUILD = "20261107082554";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -9030,7 +9035,8 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
     function adminPlayer(u, onClose) {
       var d = adminRow("pg-chatrep");
       function draw() {
-        d.innerHTML = "<b>" + esc(u.name) + "</b>" + (u.admin ? " · admin" : "") + (u.suspended ? " · 🚫 suspended" : "") + (u.banned ? " · chat stopped" : "") +
+        // in the list, tapping the name folds the card away again
+        d.innerHTML = (onClose ? '<button type="button" class="pg-adminname" aria-expanded="true"><b>' + esc(u.name) + "</b><i aria-hidden=\"true\">▴</i></button>" : "<b>" + esc(u.name) + "</b>") + (u.admin ? " · admin" : "") + (u.suspended ? " · 🚫 suspended" : "") + (u.banned ? " · chat stopped" : "") +
           '<p class="pg-note">🐾 ' + esc(String(u.coins)) + " · Pets: " + esc((u.pets || []).join(", ") || "none") + " · Reports: " + esc(String(u.reports)) +
           (u.safe ? " · 🛡️ Safe mode" : "") + "<br>Joined " + esc(new Date(u.joined).toLocaleDateString()) + (u.seen ? " · Last seen " + esc(new Date(u.seen).toLocaleDateString()) : "") + "</p>";
         var row = adminRow("pg-adminacts");
@@ -9053,7 +9059,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
           if (!u.suspended && !confirm("Suspend " + u.name + "? They won't be able to play until you lift it.")) return;
           await rpc("admin_suspend", { p_user: u.uid, p_on: !u.suspended }); u.suspended = !u.suspended; draw(); adminLog();
         }));
-        if (onClose) row.appendChild(adminBtn("Close", "", onClose));
+        if (onClose) d.querySelector(".pg-adminname").addEventListener("click", onClose);
         d.appendChild(row);
       }
       draw();
@@ -9079,7 +9085,8 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
         var li = document.createElement("li");
         function shut() {
           var b = document.createElement("button"); b.type = "button";
-          b.innerHTML = "<b>" + esc(u.name) + "</b>" + (u.suspended ? " 🚫" : "") + (u.banned ? " 🔇" : "") + "<small>" + esc((u.pets || []).join(", ") || "No pet") + " · 🐾 " + esc(String(u.coins)) + " · joined " + esc(adminAgo(u.joined)) + " · seen " + esc(adminAgo(u.seen)) + "</small>";
+          b.setAttribute("aria-expanded", "false");
+          b.innerHTML = '<i class="pg-adminarrow" aria-hidden="true">▾</i><b>' + esc(u.name) + "</b>" + (u.suspended ? " 🚫" : "") + (u.banned ? " 🔇" : "") + "<small>" + esc((u.pets || []).join(", ") || "No pet") + " · 🐾 " + esc(String(u.coins)) + " · joined " + esc(adminAgo(u.joined)) + " · seen " + esc(adminAgo(u.seen)) + "</small>";
           b.addEventListener("click", function () { li.innerHTML = ""; li.appendChild(adminPlayer(u, shut)); });
           li.innerHTML = ""; li.appendChild(b);
         }
