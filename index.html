@@ -229,11 +229,11 @@ html, body { height: 100%; overflow: hidden; }
 .stage canvas { touch-action: none; }
 
 /* the app's colour: every button, chip and highlight uses these */
-:root { --brand: #2f7fe0; --brand-dark: #1e63b8; --brand-tint: #eaf3ff; --brand-2: #5fb0ff; --brand-glow: rgba(47,127,224,0.35); }
-:root.theme-lavender { --brand: #7c5cff; --brand-dark: #6243e0; --brand-tint: #f1edff; --brand-2: #f08bd6; --brand-glow: rgba(124,92,255,0.35); }
-:root.theme-coral { --brand: #f06a4a; --brand-dark: #d4512f; --brand-tint: #fff1ea; --brand-2: #ffb27a; --brand-glow: rgba(240,106,74,0.35); }
-:root.theme-berry { --brand: #e0457a; --brand-dark: #c02e62; --brand-tint: #ffeaf1; --brand-2: #ff8a80; --brand-glow: rgba(224,69,122,0.35); }
-:root.theme-green { --brand: #2f8a64; --brand-dark: #236a4c; --brand-tint: #eaf6f0; --brand-2: #55c394; --brand-glow: rgba(47,138,100,0.35); }
+:root { --brand: #2175db; --brand-dark: #1b60b4; --brand-tint: #eaf3ff; --brand-2: #5fb0ff; --brand-glow: rgba(47,127,224,0.35); }
+:root.theme-lavender { --brand: #7655ff; --brand-dark: #6243e0; --brand-tint: #f1edff; --brand-2: #f08bd6; --brand-glow: rgba(124,92,255,0.35); }
+:root.theme-coral { --brand: #dc3912; --brand-dark: #b42f0f; --brand-tint: #fff1ea; --brand-2: #ffb27a; --brand-glow: rgba(240,106,74,0.35); }
+:root.theme-berry { --brand: #dc2e6a; --brand-dark: #bb1f55; --brand-tint: #ffeaf1; --brand-2: #ff8a80; --brand-glow: rgba(224,69,122,0.35); }
+:root.theme-green { --brand: #2d8460; --brand-dark: #256c4f; --brand-tint: #eaf6f0; --brand-2: #55c394; --brand-glow: rgba(47,138,100,0.35); }
 /* the page underneath has its own (green) accent and dark-mode colours: follow the app's theme and stay light,
    so no green or dark strip shows at the screen edges */
 html:root, html:root:not([data-theme="light"]), html:root[data-theme="dark"] {
@@ -1781,7 +1781,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
 .pg-deldanger:disabled { opacity: 0.45; }
 
 /* the way back to a room */
-.pg-roombar { position: fixed; left: 50%; transform: translateX(-50%); top: calc(164px + env(safe-area-inset-top, 0px)); z-index: 6; min-height: 44px; padding: 0 18px; border: 0; border-radius: 999px; background: #2f7de1; color: #fff; font: inherit; font-weight: 700; white-space: nowrap; box-shadow: 0 6px 16px rgba(20,35,43,0.25); }
+.pg-roombar { position: fixed; left: 50%; transform: translateX(-50%); top: calc(164px + env(safe-area-inset-top, 0px)); z-index: 6; min-height: 44px; padding: 0 18px; border: 0; border-radius: 999px; background: var(--brand); color: #fff; font: inherit; font-weight: 700; white-space: nowrap; box-shadow: 0 6px 16px rgba(20,35,43,0.25); }
 .pg-roombar.ask { background: #e8556d; }
 .pg-roombar[hidden] { display: none; }
 
@@ -6102,7 +6102,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261107073530";   // replaced by build_real.ps1
+    var APP_BUILD = "20261107074524";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -6120,8 +6120,8 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
 
     // ---------- App colour themes (chosen in the menu, remembered on this phone) ----------
     var THEME_KEY = "petstreak.theme";
-    var THEMES = [["ocean", "Ocean blue", "#2f7fe0"], ["lavender", "Lavender dream", "#7c5cff"], ["coral", "Sunset coral", "#f06a4a"],
-                  ["berry", "Berry pink", "#e0457a"], ["green", "Forest green", "#2f8a64"]];
+    var THEMES = [["ocean", "Ocean blue", "#2175db"], ["lavender", "Lavender dream", "#7655ff"], ["coral", "Sunset coral", "#dc3912"],
+                  ["berry", "Berry pink", "#dc2e6a"], ["green", "Forest green", "#2d8460"]];
     function applyTheme(id) {
       var t = THEMES.filter(function (x) { return x[0] === id; })[0] || THEMES[0], root = document.documentElement;
       THEMES.forEach(function (x) { root.classList.remove("theme-" + x[0]); });
@@ -7338,7 +7338,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       }
       // friends can play a 2-player game for paws
       var rival = others.length === 1 ? others[0] : two ? others.filter(function (m) { return m.uid === roomOpp; })[0] : null;
-      var canStake = roomPickGame && rival && friendOf(rival.uid) && !safeOn();
+      var canStake = roomPickGame && rival && friendOf(rival.uid) && !safeOn() && !(profile && Date.now() - new Date(profile.created_at) < 3 * 86400000);
       if (!canStake) roomStake = 0;
       if (canStake) {
         var pw = document.createElement("div"); pw.className = "pg-roomopp"; pw.innerHTML = "<small>Play for paws</small>";
