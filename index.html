@@ -1717,6 +1717,10 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
 .pg-stakequitcard b { font-family: var(--display); font-size: 1.15rem; }
 .pg-stakequitcard p { margin: 0 0 6px; color: #33444c; line-height: 1.4; font-size: 0.95rem; }
 .pg-stakequitcard button { width: 100%; }
+
+/* games switch off text selection, which can stop an input taking typing on iPhones */
+.pg-qctype input { -webkit-user-select: text; user-select: text; touch-action: auto; }
+.pg-roommembers small { font-size: 0.62rem; color: #b26a00; font-weight: 700; line-height: 1.1; text-align: center; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -5925,7 +5929,7 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261107040659";   // replaced by build_real.ps1
+    var APP_BUILD = "20261107042613";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -6965,10 +6969,10 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
       var R = roomNow; if (!R || roomPoll.busy) return;
       roomPoll.busy = true;
       var s = null;
-      try { s = await rpc("room_state", { p_room: R.id, p_after: R.after }); } catch (e) {}
+      try { s = await rpc("room_state", { p_room: R.id, p_after: R.after, p_busy: !!raceNow }); } catch (e) {}
       roomPoll.busy = false;
       if (!s || roomNow !== R) return;
-      if (s.gone) { roomEnd(s.kicked ? "You were removed from the room." : "That room has closed."); return; }
+      if (s.gone) { roomEnd(s.kicked ? "You were removed from the room." : s.dropped ? "You were away for a while, so you left the room." : "That room has closed."); return; }
       var had = R.members.map(function (m) { return m.uid; }), first = R.seq === null;
       R.code = s.code; R.pub = s.public; R.max = s.max; R.host = s.host; R.members = s.members; R.stake = s.stake || null;
       R.members.forEach(function (m) { R.names[m.uid] = shownPetName(m.pet); });
@@ -6980,8 +6984,9 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
       if (first) R.seq = s.seq;
       else if (s.seq > R.seq) {
         R.seq = s.seq;
-        if ((s.game_players || []).indexOf(me.id) >= 0 && s.host !== me.id && !raceNow) { $("g-roompage").hidden = true; liveGame(s.game, s.game_room, false, { from: s.host }); }
-        else if (s.host !== me.id) roomNote(GAMES[s.game].art + " A game has started. You'll get the next one!");
+        var picked = (s.game_players || []).indexOf(me.id) >= 0;
+        if (picked && s.host !== me.id && !raceNow) { $("g-roompage").hidden = true; liveGame(s.game, s.game_room, false, { from: s.host }); }
+        else if (!picked) roomNote(GAMES[s.game].art + " A game has started. You'll get the next one!");
       }
       if (!$("g-roompage").hidden) roomDraw();
       // both have agreed the paws: the host's phone starts the game
@@ -7013,6 +7018,7 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
     }
     function roomLine(m) {
       var mine = m.uid === me.id, li = document.createElement("li"); li.className = mine ? "me" : "them";
+      li.dataset.uid = m.uid;
       li.innerHTML = (mine ? "" : '<small class="who">' + esc(roomName(m.uid)) + "</small>") + '<span class="b"></span>';
       li.querySelector(".b").textContent = m.body;
       if (!mine) li.querySelector(".b").addEventListener("click", function () { roomPerson(m.uid); });
@@ -7026,7 +7032,7 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
       var box = $("g-roommembers"); box.innerHTML = "";
       R.members.forEach(function (m) {
         var li = document.createElement("li");
-        li.innerHTML = '<button type="button"><img alt="" src="' + esc(petPic(m.variant)) + '"><span>' + esc(roomName(m.uid)) + "</span>" + (m.uid === R.host ? '<i aria-label="Host">👑</i>' : "") + "</button>";
+        li.innerHTML = '<button type="button"><img alt="" src="' + esc(petPic(m.variant)) + '"><span>' + esc(roomName(m.uid)) + "</span>" + (m.busy ? "<small>Finishing a game…</small>" : "") + (m.uid === R.host ? '<i aria-label="Host">👑</i>' : "") + "</button>";
         li.querySelector("button").addEventListener("click", function () { if (m.uid !== me.id) roomPerson(m.uid); });
         box.appendChild(li);
       });
@@ -7074,7 +7080,10 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
       }
       var go = document.createElement("button"); go.type = "button"; go.className = "pg-feed pg-roomstart";
       var ready = roomPickGame && n >= 2 && (!two || others.length === 1 || roomOpp);
-      go.textContent = n < 2 ? "Waiting for players…" : !roomPickGame ? "Pick a game" : two && others.length > 1 && !roomOpp ? "Pick who to play" : roomStake ? "Offer 🐾 " + roomStake + " to " + roomName(rival.uid) : "▶ Start " + GAMES[roomPickGame].name;
+      // everyone in the game has to be back from the last one
+      var late = (two || others.length === 1 ? (rival ? [rival] : []) : others).filter(function (m) { return m.busy; })[0];
+      if (late) ready = false;
+      go.textContent = n < 2 ? "Waiting for players…" : !roomPickGame ? "Pick a game" : two && others.length > 1 && !roomOpp ? "Pick who to play" : late ? "Waiting for " + roomName(late.uid) + " to finish…" : roomStake ? "Offer 🐾 " + roomStake + " to " + roomName(rival.uid) : "▶ Start " + GAMES[roomPickGame].name;
       go.disabled = !ready;
       go.addEventListener("click", function () {
         if (!roomStake) { roomStartGame(); return; }
@@ -7122,6 +7131,13 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
         if (!confirm("Report " + roomName(uid) + "? The Pet Streak team will read what they said in this room.")) return;
         rpc("room_report", { p_room: R.id, p_user: uid }).then(function () { say("Thanks for telling us. We'll take a look. 💛"); }, function (e) { say(e.message); });
       }, true]);
+      items.push(["🚫 Block", function () {
+        if (!confirm("Block " + roomName(uid) + "? You won't see their messages or be put in a game with them, and you won't be friends.")) return;
+        rpc("chat_block", { p_other: uid }).then(function () {
+          Array.prototype.forEach.call($("g-roomchat").querySelectorAll('[data-uid="' + uid + '"]'), function (li) { li.remove(); });
+          say("Blocked. You won't see their messages any more."); loadFriends();
+        }, function (e) { say(e.message); });
+      }, true]);
       if (m && R.host === me.id) items.push(["🚪 Remove from room", function () {
         rpc("room_kick", { p_room: R.id, p_user: uid }).then(function () { roomPoke(); roomPoll(); }, function (e) { say(e.message); });
       }, true]);
@@ -7161,6 +7177,7 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
       $("g-roomcodein").value = ""; roomGo("room_join", { p_pet: pet() && pet().id, p_code: c });
     });
     $("g-roomback").addEventListener("click", roomLeave);
+    document.addEventListener("visibilitychange", function () { if (!document.hidden && roomNow) roomPoll(); });   // back in the app: check in at once
     $("g-roominvite").addEventListener("click", roomInvite);
     $("g-roomform").addEventListener("submit", async function (e) {
       e.preventDefault();
@@ -7625,7 +7642,7 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
             if (x.status === "paid") { line.textContent = x.won ? "🐾 You won " + x.amount * 2 + " paws!" : "🐾 You lost your " + x.amount + " paws."; loadAll({ quiet: true }); return; }
             if (x.status === "refunded") { line.textContent = "🐾 Your " + x.amount + " paws were given back."; loadAll({ quiet: true }); return; }
             line.textContent = left ? "🐾 Waiting a moment in case they come back…" : "🐾 Checking the result with the other phone…";
-            if (++tries < 8) setTimeout(check, left ? 10000 : 1500);
+            if (++tries < (left ? 15 : 8)) setTimeout(check, left ? 10000 : 1500);
             else line.textContent = left ? "🐾 If they don't come back, you'll win their paws." : "🐾 If the other phone doesn't confirm, your paws come back soon.";
           }, function () {});
         })();
@@ -7860,6 +7877,7 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
       if (!e || !e.pet_id) return;
       if (!confirm("Block " + shownPetName(e.pet) + "? You won't see it in the Playground or get invites from it on this phone.")) return;
       if (blocked.indexOf(e.pet_id) < 0) { blocked.push(e.pet_id); saveBlocked(); }
+      if (e.uid) rpc("chat_block", { p_other: e.uid }).catch(function () {});   // and on the server, so it holds in rooms and chat
       delete online[e.uid];
       say("Blocked.");
       refreshPeople();
