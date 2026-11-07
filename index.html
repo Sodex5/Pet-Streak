@@ -1739,6 +1739,11 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
 /* a bot while you wait */
 .pg-roombot { width: 100%; padding: 12px; }
 .pg-roomtoast { position: fixed; left: 50%; top: calc(70px + env(safe-area-inset-top, 0px)); transform: translateX(-50%); z-index: 70; width: max-content; max-width: calc(100vw - 32px); padding: 10px 16px; border-radius: 999px; background: #14232b; color: #fff; font-weight: 700; font-size: 0.9rem; text-align: center; box-shadow: 0 6px 18px rgba(0,0,0,0.25); }
+
+/* Safe mode */
+#g-safecard { z-index: 30; }
+.pg-safepin { padding: 12px; border: 2px solid #d6e0e4; border-radius: 14px; font: inherit; font-size: 1.2rem; text-align: center; letter-spacing: 0.3em; color: #14232b; background: #fff; }
+.pg-safepin::placeholder { font-size: 0.95rem; letter-spacing: 0; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -2049,6 +2054,17 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
         <button type="submit" class="pg-btn pg-primary" aria-label="Send">➤</button>
       </form>
     </div>
+    <!-- Safe mode: turning it on or off, with an optional parent PIN -->
+    <div class="pg pg-adopt" id="g-safecard" hidden>
+      <div class="pg-card pg-modecard">
+        <div class="pg-modeart" aria-hidden="true">🛡️</div>
+        <h2 id="g-safetitle">Safe mode</h2>
+        <p class="pg-hint" id="g-safetext"></p>
+        <input id="g-safepin" class="pg-safepin" type="password" inputmode="numeric" maxlength="4" autocomplete="off" aria-label="4-digit PIN">
+        <button type="button" class="pg-feed" id="g-safeok">Turn on</button>
+        <button type="button" class="pg-linkbtn" id="g-safecancel">Cancel</button>
+      </div>
+    </div>
     <!-- the first-time tour: a spotlight on each part of the screen -->
     <div class="pg-tour" id="g-tour" hidden>
       <i class="pg-tourhole" id="g-tourhole"></i>
@@ -2354,6 +2370,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
               <select id="g-daynight" aria-label="Day and night"><option value="auto">Follow the time</option><option value="day">Always day</option><option value="night">Always night</option></select></label>
             <button type="button" class="pg-li pg-toggle" id="g-sound" aria-pressed="true"><span class="ic" aria-hidden="true">🔊</span><span class="lbl">Sounds</span><i class="sw" aria-hidden="true"></i></button>
             <button type="button" class="pg-li pg-toggle" id="g-music" aria-pressed="true"><span class="ic" aria-hidden="true">🎵</span><span class="lbl">Music</span><i class="sw" aria-hidden="true"></i></button>
+            <button type="button" class="pg-li pg-toggle" id="g-safebtn" aria-pressed="false"><span class="ic" aria-hidden="true">🛡️</span><span class="lbl">Safe mode</span><i class="sw" aria-hidden="true"></i></button>
             <div id="g-remsec">
               <button type="button" class="pg-li pg-toggle" id="g-rembtn" aria-pressed="false"><span class="ic" aria-hidden="true">🔔</span><span class="lbl">Reminders</span><i class="sw" aria-hidden="true"></i></button>
             </div>
@@ -5949,7 +5966,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261107044647";   // replaced by build_real.ps1
+    var APP_BUILD = "20261107045934";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -7072,7 +7089,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       var R = roomNow; if (!R) return;
       var hostM = R.members.filter(function (m) { return m.uid === R.host; })[0], iHost = R.host === me.id, n = R.members.length;
       $("g-roomtitle").textContent = hostM ? (R.host === me.id ? "Your room" : roomName(R.host) + "'s room") : "Room";
-      $("g-roommeta").innerHTML = (R.pub ? "🌍 Public" : "🔒 Private") + " · " + n + " of " + R.max + " players" + (R.code ? ' · Code <b>' + esc(R.code) + "</b>" : "");
+      $("g-roommeta").innerHTML = (R.pub ? "🌍 Public" : "🔒 Private") + " · " + n + " of " + R.max + " players" + (R.code ? ' · Code <b>' + esc(R.code) + "</b>" : "") + (safeOn() ? "<br>🛡️ Safe mode: you only see friends' messages" : "");
       var box = $("g-roommembers"); box.innerHTML = "";
       R.members.forEach(function (m) {
         var li = document.createElement("li");
@@ -7113,7 +7130,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       }
       // friends can play a 2-player game for paws
       var rival = others.length === 1 ? others[0] : two ? others.filter(function (m) { return m.uid === roomOpp; })[0] : null;
-      var canStake = roomPickGame && rival && friendOf(rival.uid);
+      var canStake = roomPickGame && rival && friendOf(rival.uid) && !safeOn();
       if (!canStake) roomStake = 0;
       if (canStake) {
         var pw = document.createElement("div"); pw.className = "pg-roomopp"; pw.innerHTML = "<small>Play for paws</small>";
@@ -10325,6 +10342,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
     // ---------- Menu ----------
     var sentGifts = [];
     function renderMenu() {
+      safeLabel();
       var name = profile ? profile.display_name : "";
       $("g-mename").textContent = name || "Player";
       setAvatarEl($("g-avatar"), profile && profile.avatar_url, name);
@@ -10395,6 +10413,28 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
     function soundLabel() { $("g-sound").setAttribute("aria-pressed", soundOn ? "true" : "false"); }
     soundLabel();
     $("g-sound").addEventListener("click", function () { setSound(!soundOn); soundLabel(); if (soundOn) setTimeout(function () { sfx("happy"); }, 60); });
+    // Safe mode: only friends' typed messages in rooms and games, and no playing for paws (the server enforces both)
+    function safeOn() { return !!(profile && profile.safe_mode); }
+    function safeLabel() { $("g-safebtn").setAttribute("aria-pressed", safeOn() ? "true" : "false"); }
+    $("g-safebtn").addEventListener("click", function () {
+      var on = !safeOn();
+      $("g-safetitle").textContent = on ? "Turn on Safe mode" : "Turn off Safe mode";
+      $("g-safetext").textContent = on ? "Only friends' messages will show in rooms and games, and playing for paws is switched off. Add a 4-digit PIN so a child can't turn this off, or leave it empty."
+        : "Strangers' messages will show again in rooms and games, and playing for paws comes back. Enter the PIN if one was set.";
+      $("g-safepin").value = ""; $("g-safepin").placeholder = on ? "PIN (optional)" : "PIN";
+      $("g-safeok").textContent = on ? "Turn on" : "Turn off";
+      $("g-safecard").hidden = false;
+    });
+    $("g-safecancel").addEventListener("click", function () { $("g-safecard").hidden = true; });
+    $("g-safeok").addEventListener("click", async function () {
+      var on = !safeOn();
+      var res;
+      try { res = await rpc("safe_mode_set", { p_on: on, p_pin: $("g-safepin").value }); } catch (e) { say(e.message); return; }
+      if (res === "wrong") { say("That PIN isn't right."); $("g-safepin").value = ""; return; }
+      if (res === "locked") { say("Too many tries. Please wait a few minutes."); return; }
+      profile.safe_mode = on; $("g-safecard").hidden = true; safeLabel();
+      say(on ? "🛡️ Safe mode is on." : "Safe mode is off.");
+    });
     function musicLabel() { $("g-music").setAttribute("aria-pressed", musicOn ? "true" : "false"); }
     musicLabel();
     $("g-music").addEventListener("click", function () { setMusic(!musicOn); musicLabel(); });
@@ -10435,7 +10475,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
     // asks first. On the main screen, a second back within 2 seconds closes the app.
     var BACK = [["g-tour", "g-tourskip"], ["g-achpop", "g-achok"], ["g-invite", "g-inviteno"], ["g-ask", "g-askcancel"], ["g-join", "g-joincancel"],
                 ["g-giftsend", "g-gsdone"], ["g-petopts", "g-poclose"], ["g-gamepick", "g-pickno"], ["g-gamehelp", "g-ghclose"], ["g-mode", "g-modeclose"],
-                ["g-pick", "g-pickclose"], ["g-history", "g-historyclose"], ".pg-game", ["g-msgsheet", "g-msgclose"], ["g-chatbar", "g-chatbarx"], ["g-chat", "g-chatback"], ["g-roomnew", "g-roomnewcancel"], ["g-roompage", "g-roomback"], ["g-rooms", "g-roomsclose"],
+                ["g-pick", "g-pickclose"], ["g-history", "g-historyclose"], ".pg-game", ["g-msgsheet", "g-msgclose"], ["g-chatbar", "g-chatbarx"], ["g-chat", "g-chatback"], ["g-safecard", "g-safecancel"], ["g-roomnew", "g-roomnewcancel"], ["g-roompage", "g-roomback"], ["g-rooms", "g-roomsclose"],
                 ["g-social", "g-socialclose"], ["g-play", "g-playclose"], ["g-bath", "g-bathcancel"], ["g-howto", "g-howskip"],
                 ["g-getapp", "g-gaclose"], ["g-streakinfo", "g-siok"], ["g-bonusintro", "g-bonusok"]].concat(CLOSABLE);
     function closeTop() {
