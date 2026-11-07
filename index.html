@@ -1702,6 +1702,14 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
 .pg-weeklist img { width: 38px; height: 38px; object-fit: contain; }
 .pg-weeklist .pg-grow { flex: 1; min-width: 0; }
 .pg-weeklist .pt { font-family: var(--display); font-size: 1.1rem; }
+
+/* friendly stakes */
+.pg-stakecard { display: flex; flex-direction: column; gap: 6px; padding: 12px 14px; border-radius: 16px; background: #fff8e6; border: 1px solid #f3dca2; color: #4a3a10; }
+.pg-stakecard b { font-size: 0.95rem; }
+.pg-stakecard small { color: #6b5a24; }
+.pg-stakecard .pg-row { gap: 8px; margin-top: 2px; }
+.pg-stakecard .pg-btn { flex: 1; }
+.pg-stakeend { margin: 4px 0 8px; font-weight: 800; color: #4a2c00; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -5910,7 +5918,7 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261107031707";   // replaced by build_real.ps1
+    var APP_BUILD = "20261107034440";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -6893,7 +6901,7 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
     // the server: each phone checks in every few seconds with room_state (who's here, new messages, whether a game has
     // started), and a "poke" on the room's channel makes the others check at once. When the host starts, the players go
     // into a normal live game, and openPlay() brings them back here afterwards.
-    var roomNow = null, roomTimer = null, roomCh = null, roomPickGame = null, roomOpp = null, roomVs = true, roomNewPub = true, roomNewMax = 4;
+    var roomNow = null, roomTimer = null, roomCh = null, roomPickGame = null, roomOpp = null, roomVs = true, roomNewPub = true, roomNewMax = 4, roomStake = 0;
     var ROOM_LINK_KEY = "petstreak.roomlink", roomGames = ["race", "ball", "penalty", "bamboo", "memory"];
     function roomsOpen(game) {
       if (game) roomPickGame = game;
@@ -6955,7 +6963,7 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
       if (!s || roomNow !== R) return;
       if (s.gone) { roomEnd(s.kicked ? "You were removed from the room." : "That room has closed."); return; }
       var had = R.members.map(function (m) { return m.uid; }), first = R.seq === null;
-      R.code = s.code; R.pub = s.public; R.max = s.max; R.host = s.host; R.members = s.members;
+      R.code = s.code; R.pub = s.public; R.max = s.max; R.host = s.host; R.members = s.members; R.stake = s.stake || null;
       R.members.forEach(function (m) { R.names[m.uid] = shownPetName(m.pet); });
       if (!first) {
         R.members.forEach(function (m) { if (had.indexOf(m.uid) < 0) { roomNote(roomName(m.uid) + " joined 👋"); sfx("happy"); } });
@@ -6969,6 +6977,28 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
         else if (s.host !== me.id) roomNote(GAMES[s.game].art + " A game has started. You'll get the next one!");
       }
       if (!$("g-roompage").hidden) roomDraw();
+      // both have agreed the paws: the host's phone starts the game
+      var st = R.stake;
+      if (st && st.status === "live" && st.from === me.id && R.stakeGo !== st.id && !raceNow) {
+        R.stakeGo = st.id; roomPickGame = st.game; roomOpp = st.to; roomStake = 0;
+        loadAll({ quiet: true }); roomStartGame();
+      }
+    }
+    // a friendly stake: the offer on both phones
+    function roomStakeCard(g) {
+      var R = roomNow, st = R.stake, c = document.createElement("div"), G = GAMES[st.game]; c.className = "pg-stakecard";
+      function btn(text, primary, go) { var b = document.createElement("button"); b.type = "button"; b.className = "pg-btn" + (primary ? " pg-primary" : ""); b.textContent = text; b.addEventListener("click", go); return b; }
+      function answer(ok) { rpc("stake_answer", { p_id: st.id, p_ok: ok }).then(function () { if (ok) loadAll({ quiet: true }); roomPoke(); roomPoll(); }, function (e) { say(e.message); roomPoll(); }); }
+      if (st.status === "offered" && st.to === me.id) {
+        c.innerHTML = "<b>🐾 " + esc(roomName(st.from)) + " wants to play " + esc(G.name) + " for " + st.amount + " paws each</b><small>The winner takes " + st.amount * 2 + ". If the game doesn't finish properly, you both get your paws back.</small>";
+        var row = document.createElement("div"); row.className = "pg-row";
+        row.appendChild(btn("No thanks", false, function () { answer(false); })); row.appendChild(btn("Accept 🐾 " + st.amount, true, function () { answer(true); }));
+        c.appendChild(row);
+      } else if (st.status === "offered") {
+        c.innerHTML = "<b>Waiting for " + esc(roomName(st.to)) + " to accept 🐾 " + st.amount + "…</b>";
+        c.appendChild(btn("Cancel", false, function () { rpc("stake_cancel", { p_id: st.id }).then(function () { roomPoke(); roomPoll(); }, function (e) { say(e.message); }); }));
+      } else c.innerHTML = "<b>🐾 Paws are in. Starting " + esc(G.name) + "…</b>";
+      g.appendChild(c);
     }
     function roomNote(text) {
       var li = document.createElement("li"); li.className = "pg-chatday"; li.textContent = text;
@@ -6995,6 +7025,7 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
       });
       for (var i = n; i < R.max; i++) { var e = document.createElement("li"); e.className = "free"; e.innerHTML = '<button type="button" aria-label="Invite someone"><b>＋</b><span>Free</span></button>'; e.querySelector("button").addEventListener("click", roomInvite); box.appendChild(e); }
       var g = $("g-roomgame"); g.innerHTML = "";
+      if (R.stake) { roomStakeCard(g); return; }
       if (!iHost) { g.innerHTML = '<p class="pg-roomwait">' + esc(n < 2 ? "Waiting for more players…" : "Waiting for " + roomName(R.host) + " to pick a game and start…") + "</p>"; return; }
       var row = document.createElement("div"); row.className = "pg-roompicks";
       roomGames.forEach(function (k) {
@@ -7022,10 +7053,26 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
         });
         g.appendChild(vs);
       }
+      // friends can play a 2-player game for paws
+      var rival = others.length === 1 ? others[0] : two ? others.filter(function (m) { return m.uid === roomOpp; })[0] : null;
+      var canStake = roomPickGame && rival && friendOf(rival.uid);
+      if (!canStake) roomStake = 0;
+      if (canStake) {
+        var pw = document.createElement("div"); pw.className = "pg-roomopp"; pw.innerHTML = "<small>Play for paws</small>";
+        [[0, "No"], [5, "🐾 5"], [10, "🐾 10"], [15, "🐾 15"], [20, "🐾 20"], [25, "🐾 25"], [50, "🐾 50"]].forEach(function (x) {
+          var b = document.createElement("button"); b.type = "button"; b.textContent = x[1]; b.setAttribute("aria-pressed", roomStake === x[0] ? "true" : "false");
+          b.addEventListener("click", function () { roomStake = x[0]; roomDraw(); }); pw.appendChild(b);
+        });
+        g.appendChild(pw);
+      }
       var go = document.createElement("button"); go.type = "button"; go.className = "pg-feed pg-roomstart";
       var ready = roomPickGame && n >= 2 && (!two || others.length === 1 || roomOpp);
-      go.textContent = n < 2 ? "Waiting for players…" : !roomPickGame ? "Pick a game" : two && others.length > 1 && !roomOpp ? "Pick who to play" : "▶ Start " + GAMES[roomPickGame].name;
-      go.disabled = !ready; go.addEventListener("click", roomStartGame);
+      go.textContent = n < 2 ? "Waiting for players…" : !roomPickGame ? "Pick a game" : two && others.length > 1 && !roomOpp ? "Pick who to play" : roomStake ? "Offer 🐾 " + roomStake + " to " + roomName(rival.uid) : "▶ Start " + GAMES[roomPickGame].name;
+      go.disabled = !ready;
+      go.addEventListener("click", function () {
+        if (!roomStake) { roomStartGame(); return; }
+        rpc("stake_offer", { p_room: R.id, p_to: rival.uid, p_amount: roomStake, p_game: roomPickGame }).then(function () { roomPoke(); roomPoll(); }, function (e) { say(e.message); });
+      });
       g.appendChild(go);
     }
     async function roomStartGame() {
@@ -7474,6 +7521,7 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
         var wins = p.race_wins || 0;
         if (won === true) { try { wins = await rpc("record_race_win", { p_id: p.id }); p.race_wins = wins; } catch (e) {} }
         if (won === true || won === false) rpc("report_match", { p_room: room, p_game: game, p_won: won }).catch(function () {});   // the weekly ranking
+        else if (won === "draw") rpc("stake_draw", { p_room: room }).catch(function () {});
         logGame(game, "live", o.against, won === true ? "won" : won === "draw" ? "draw" : "lost", o.place || null, o.score);
         var lone = others().length === 1 ? others()[0] : null, stranger = lone && !friendOf(lone.uid) ? lone : null, again = againUids();
         var end = document.createElement("div"); end.className = "pg-gameend";
@@ -7484,6 +7532,7 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
           (stranger ? '<div class="pg-row pg-endextra"><button type="button" class="pg-linkbtn pg-small" data-a="friend">➕ Add friend</button>' +
                       '<button type="button" class="pg-linkbtn pg-small" data-a="block">🚫 Block or report</button></div>' : "");
         wrap.appendChild(end);
+        stakeLine(end);
         sfx(won === true ? "levelUp" : "pat");
         end.querySelector('[data-a="done"]').addEventListener("click", function () { cleanup(); openPlay(); });
         var ag = end.querySelector('[data-a="again"]');
@@ -7493,11 +7542,28 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
         var bl = end.querySelector('[data-a="block"]');
         if (bl) bl.addEventListener("click", function () { cleanup(); openPlay(); openPetOpts(stranger); });
       }
+      // if there were paws on this game: how they ended up (both phones have to report, so it can take a moment)
+      function stakeLine(end, left) {
+        var line = document.createElement("p"); line.className = "pg-stakeend"; line.hidden = true;
+        end.insertBefore(line, end.querySelector(".pg-row"));
+        var tries = 0;
+        (function check() {
+          rpc("stake_result", { p_room: room }).then(function (x) {
+            if (!x) return;
+            line.hidden = false;
+            if (x.status === "paid") { line.textContent = x.won ? "🐾 You won " + x.amount * 2 + " paws!" : "🐾 You lost your " + x.amount + " paws."; loadAll({ quiet: true }); return; }
+            if (x.status === "refunded") { line.textContent = "🐾 Your " + x.amount + " paws were given back."; loadAll({ quiet: true }); return; }
+            line.textContent = left ? "🐾 The game didn't finish, so your paws will come back soon." : "🐾 Checking the result with the other phone…";
+            if (!left && ++tries < 8) setTimeout(check, 1500);
+            else if (!left) line.textContent = "🐾 If the other phone doesn't confirm, your paws come back soon.";
+          }, function () {});
+        })();
+      }
       function endLeft(wrap, text) {
         logGame(game, "live", others().map(label).join(", "), "left", null, null);
         var end = document.createElement("div"); end.className = "pg-gameend";
         end.innerHTML = '<div class="big">👋</div><p>' + esc(text) + '</p><div class="pg-row"><button type="button" class="pg-feed pg-grow" data-a="done">Done</button></div>';
-        wrap.appendChild(end);
+        wrap.appendChild(end); stakeLine(end, true);
         end.querySelector('[data-a="done"]').addEventListener("click", function () { cleanup(); openPlay(); });
       }
       function leave() { R.send("bye", { uid: me.id }); cleanup(); }
