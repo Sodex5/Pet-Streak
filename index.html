@@ -1795,6 +1795,17 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
 .pg-adminnews { width: 100%; box-sizing: border-box; padding: 10px; border: 1px solid #d6e0e4; border-radius: 12px; font: inherit; resize: vertical; margin-bottom: 6px; }
 .pg-adminlog { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; font-size: 0.85rem; }
 .pg-adminlog small { display: block; color: #55666e; }
+
+/* Find a co-parent */
+#g-seek { z-index: 25; max-height: 86%; overflow-y: auto; }
+.pg-seekhead { margin: 14px 0 6px; font-size: 0.95rem; color: #14232b; }
+.pg-seeklist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.pg-seeklist li:not(.pg-logempty) { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 14px; background: #f1f5f6; }
+.pg-seeklist img { width: 46px; height: 46px; object-fit: contain; flex: none; }
+.pg-seeklist .pg-grow { min-width: 0; }
+.pg-seeklist b { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #14232b; }
+.pg-seeklist small { color: #55666e; }
+.pg-seeklist .pg-btn { flex: none; min-height: 40px; padding: 0 14px; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -2118,6 +2129,16 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
         <button type="button" class="pg-feed pg-deldanger" id="g-delok" disabled>Delete my account</button>
         <button type="button" class="pg-linkbtn" id="g-delcancel">Keep my account</button>
       </div>
+    </div>
+    <!-- Find a co-parent: pets on the waiting list, and who's asking -->
+    <div class="pg pg-card pg-sheet" id="g-seek" hidden>
+      <h2><span>🔍 Find a co-parent</span> <button type="button" class="pg-x" id="g-seekclose" aria-label="Close Find a co-parent">✕</button></h2>
+      <p class="pg-hint">You only see pets, not players. A match shows up as "Your co-parent", and you can chat through a safety filter. You only become friends if you both agree.</p>
+      <button type="button" class="pg-feed" id="g-seektoggle"></button>
+      <h3 class="pg-seekhead" id="g-seekaskhead" hidden>Asking to co-parent</h3>
+      <ul class="pg-seeklist" id="g-seekasks"></ul>
+      <h3 class="pg-seekhead">Pets looking for a co-parent</h3>
+      <ul class="pg-seeklist" id="g-seeklist"></ul>
     </div>
     <!-- a message from the admin -->
     <div class="pg pg-adopt" id="g-news" hidden>
@@ -6081,7 +6102,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261107071643";   // replaced by build_real.ps1
+    var APP_BUILD = "20261107073530";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -9136,12 +9157,87 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
     // Only these 5, only between co-parents of the pet; the server checks the thing really happened today.
     var REACTIONS = ["❤️", "👏", "😂", "🤗", "🙏"];
     // a co-parent's card (tap their name under the pet): chat, a hello, and the reminder if they haven't fed
+    // ---------- Find a co-parent ----------
+    // Only pets are shown. A match isn't a friend: see update_045.sql.
+    var seekAsks = [], seekListed = [];
+    async function seekCheck() {
+      if (!me || !pets.length) return;
+      var r; try { r = await rpc("seek_mine"); } catch (e) { return; }
+      var was = seekAsks.length; seekAsks = r.asks || []; seekListed = r.listed || [];
+      if (was !== seekAsks.length && loaded) render();
+    }
+    function seekRow(q, label, btns) {
+      var li = document.createElement("li");
+      li.innerHTML = '<img alt="" src="' + esc(petPic(q.variant)) + '"><span class="pg-grow"><b>' + esc(shownPetName(q.name)) + "</b><small>" + esc(label) + "</small></span>";
+      btns.forEach(function (b) { li.appendChild(b); });
+      return li;
+    }
+    function seekBtn(text, primary, go) {
+      var b = document.createElement("button"); b.type = "button"; b.className = "pg-btn" + (primary ? " pg-primary" : ""); b.textContent = text;
+      b.addEventListener("click", async function () { b.disabled = true; try { await go(); } catch (e) { say(friendly(e.message)); b.disabled = false; } });
+      return b;
+    }
+    async function drawSeek() {
+      var p = pet(), mine = isOwner(p) && (p.members || []).length === 1, listed = seekListed.indexOf(p.id) >= 0;
+      await seekCheck();
+      listed = seekListed.indexOf(p.id) >= 0;
+      $("g-seektoggle").hidden = !mine;
+      $("g-seektoggle").textContent = listed ? "Stop looking for " + p.name : "List " + p.name + " as looking";
+      var asks = $("g-seekasks"); asks.innerHTML = ""; $("g-seekaskhead").hidden = !seekAsks.length;
+      seekAsks.forEach(function (a) {
+        var from = a.from || { name: "A new player" };
+        asks.appendChild(seekRow(from, "Wants to help with " + a.for, [
+          seekBtn("No", false, async function () { await rpc("seek_answer", { p_id: a.id, p_ok: false }); drawSeek(); }),
+          seekBtn("Yes", true, async function () { await rpc("seek_answer", { p_id: a.id, p_ok: true }); await loadAll(); say("🎉 You have a co-parent! Say hello in chat."); $("g-seek").hidden = true; seekCheck(); })
+        ]));
+      });
+      var box = $("g-seeklist"), list = [];
+      box.innerHTML = '<li class="pg-logempty">Loading…</li>';
+      try { list = (await rpc("seek_list")) || []; }
+      catch (e) { box.innerHTML = '<li class="pg-logempty">' + esc(friendly(e.message)) + "</li>"; return; }
+      box.innerHTML = list.length ? "" : '<li class="pg-logempty">No pets are looking right now. List yours, and someone can ask you! 🐾</li>';
+      list.forEach(function (q) {
+        var b = seekBtn(q.asked ? "Asked" : "Ask", !q.asked, async function () { await rpc("seek_ask", { p_pet: q.pet_id }); b.textContent = "Asked"; say("Asked! Their owner will decide. 🐾"); });
+        b.disabled = !!q.asked;
+        box.appendChild(seekRow(q, "Level " + (q.level || 1) + (q.best ? " · best streak " + q.best : ""), [b]));
+      });
+    }
+    function openSeek() {
+      if (safeOn()) { say("Safe mode is on, so you can't use Find a co-parent."); return; }
+      if (!pet()) return;
+      $("g-seek").hidden = false; drawSeek();
+    }
+    $("g-seekclose").addEventListener("click", function () { $("g-seek").hidden = true; });
+    $("g-seektoggle").addEventListener("click", async function () {
+      var p = pet(), on = seekListed.indexOf(p.id) < 0;
+      try { await rpc("seek_set", { p_pet: p.id, p_on: on }); } catch (e) { say(friendly(e.message)); return; }
+      say(on ? "🔍 " + p.name + " is on the list. You'll see here when someone asks." : p.name + " is off the list.");
+      drawSeek();
+    });
     function coParentCard(p, mb) {
       var acts = [{ text: "💬 Chat" + (unread[mb.id] ? " (" + unread[mb.id] + " new)" : ""), primary: true,
         go: function () { openChat({ id: mb.id, name: mb.name, pet: { name: p.name, level: p.level, variant: p.variant } }); } }];
+      if (mb.matched) {
+        acts.push({ text: "➕ Add as friend", go: async function () {
+          try { var r = await rpc("match_befriend", { p_other: mb.id }); say(r.status === "friends" ? "🎉 You're friends now!" : "➕ Asked. You'll be friends if they say yes too."); loadFriends(); loadAll({ quiet: true }); }
+          catch (e) { say(friendly(e.message)); }
+        } });
+        if (isOwner(p) && mb.idle >= 3) acts.push({ text: "🔍 Find a new co-parent", go: async function () {
+          if (!confirm("Remove your co-parent from " + p.name + " and look for a new one?")) return;
+          try { await rpc("remove_coparent", { p_id: p.id, p_user: mb.id }); await loadAll(); openSeek(); } catch (e) { say(friendly(e.message)); }
+        } });
+        acts.push({ text: "🚩 Report", go: async function () {
+          if (!confirm("Report your co-parent? The Pet Streak team will read your recent messages.")) return;
+          try { await rpc("chat_report", { p_other: mb.id }); say("Thanks. We'll take a look."); } catch (e) { say(friendly(e.message)); }
+        } });
+        acts.push({ text: "🚫 Block and end the match", go: async function () {
+          if (!confirm("Block your co-parent? This ends the match, and you won't hear from them again.")) return;
+          try { await rpc("chat_block", { p_other: mb.id }); await loadAll(); say("Blocked. The match has ended."); } catch (e) { say(friendly(e.message)); }
+        } });
+      }
       if (!mb.fed_today && p.status === "home") acts.push({ text: mb.nudged ? "👋 Reminded today" : "👋 Remind to feed " + p.name, disabled: !!mb.nudged, go: function () { nudge(p, mb, null); } });
       petOpts(safeUrl(mb.avatar) || petPic(p.variant), tagHTML(p.level, mb.name),
-        (mb.role === "owner" ? "Owner" : "Co-parent") + " of " + p.name + " · " + (mb.fed_today ? "Fed today ✓" : "Not fed yet today"), acts,
+        (mb.role === "owner" ? "Owner" : "Co-parent") + " of " + p.name + " · " + (mb.fed_today ? "Fed today ✓" : mb.matched && mb.idle >= 3 ? "⏰ Hasn't fed for " + mb.idle + " days" : "Not fed yet today"), acts,
         { label: "Send a hello:", go: function (em) { sendReaction(p, mb.id, "hello", em, mb.name); } });
     }
     async function sendReaction(p, to, kind, emoji, name) {
@@ -9929,6 +10025,12 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
         ib.textContent = alone ? "＋ Invite a co-parent to earn XP" : "＋ Invite";
         if (alone) ib.className = "hot";
         ib.addEventListener("click", invite); crew.appendChild(ib);
+      }
+      if (alone && !safeOn()) {
+        var fb = document.createElement("button"); fb.type = "button";
+        fb.textContent = seekAsks.length ? "🐾 " + seekAsks.length + " asking to co-parent" : "🔍 Find a co-parent";
+        if (seekAsks.length) fb.className = "hot";
+        fb.addEventListener("click", openSeek); crew.appendChild(fb);
       }
       crew.hidden = m === "away" || !!bathing;
       // the sanctuary
@@ -10925,7 +11027,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
     // asks first. On the main screen, a second back within 2 seconds closes the app.
     var BACK = [["g-tour", "g-tourskip"], ["g-achpop", "g-achok"], ["g-invite", "g-inviteno"], ["g-ask", "g-askcancel"], ["g-join", "g-joincancel"],
                 ["g-giftsend", "g-gsdone"], ["g-petopts", "g-poclose"], ["g-gamepick", "g-pickno"], ["g-gamehelp", "g-ghclose"], ["g-mode", "g-modeclose"],
-                ["g-pick", "g-pickclose"], ["g-history", "g-historyclose"], ".pg-game", ["g-msgsheet", "g-msgclose"], ["g-chatbar", "g-chatbarx"], ["g-chat", "g-chatback"], ["g-watch", "g-watchclose"], ["g-news", "g-newsok"], ["g-delcard", "g-delcancel"], ["g-safecard", "g-safecancel"], ["g-roomnew", "g-roomnewcancel"], ["g-roompage", "g-roomback"], ["g-rooms", "g-roomsclose"],
+                ["g-pick", "g-pickclose"], ["g-history", "g-historyclose"], ".pg-game", ["g-msgsheet", "g-msgclose"], ["g-chatbar", "g-chatbarx"], ["g-chat", "g-chatback"], ["g-watch", "g-watchclose"], ["g-seek", "g-seekclose"], ["g-news", "g-newsok"], ["g-delcard", "g-delcancel"], ["g-safecard", "g-safecancel"], ["g-roomnew", "g-roomnewcancel"], ["g-roompage", "g-roomback"], ["g-rooms", "g-roomsclose"],
                 ["g-social", "g-socialclose"], ["g-play", "g-playclose"], ["g-bath", "g-bathcancel"], ["g-howto", "g-howskip"],
                 ["g-getapp", "g-gaclose"], ["g-streakinfo", "g-siok"], ["g-bonusintro", "g-bonusok"]].concat(CLOSABLE);
     function closeTop() {
@@ -11186,6 +11288,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       setTimeout(checkPlayInvites, 3000);
       checkFriendLink(); checkRoomLink();
       markSeen(); setInterval(markSeen, 120000); moveOldAvatar(); roomRejoin(); setTimeout(checkNews, 2500);
+      seekCheck(); setInterval(function () { if (!document.hidden && !raceNow) seekCheck(); }, 60000);
       refreshSub();
       // co-parents feed on their own phones: check for news every 20 s while the app is open
       if (!polling) { polling = true; setInterval(function () { if (me && !document.hidden && !raceNow && !document.querySelector(".pg-game")) loadAll({ quiet: true }); }, 20000); }
