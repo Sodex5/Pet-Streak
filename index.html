@@ -6081,7 +6081,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261107070959";   // replaced by build_real.ps1
+    var APP_BUILD = "20261107071643";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -8348,6 +8348,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       if (!confirm("Send a friend request to " + shownPetName(e.pet) + "'s owner?\n\nIf they accept, you'll both see each other's names and can chat.")) return false;
       try {
         var r = await rpc("friend_request_pet", { p_pet: e.pet_id });
+        if (r.status === "requested") pushNote("friend");
         say(r.status === "friends" ? "🎉 You're friends with " + r.name + " now!" : "➕ Friend request sent. You'll see their name once they accept.");
         loadFriends();
         return true;
@@ -8639,6 +8640,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       try {
         var r = await rpc("friend_request_code", { p_code: c });
         if (r.status === "none") { say("No player has that friend code. Check it and try again."); return; }
+        if (r.status === "requested") pushNote("friend");
         $("g-codein").value = "";
         say(r.status === "friends" ? "🎉 You're friends with " + r.name + "!" : "➕ Friend request sent to " + r.name + ".");
         loadFriends();
@@ -8886,6 +8888,14 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
     setInterval(function () { if (chatWith && !document.hidden && !$("g-chat").hidden) loadChat(); }, 6000);
     var chatFailed = {};
     function refreshBadge() { updateSocialBadge(); }
+    // a notification for someone not in the app. It's a bonus: if it can't be sent, nothing else changes.
+    // (The server decides whether to send; this just avoids asking after every message.)
+    var pushAsked = {};
+    function pushNote(kind, to) {
+      var k = kind + (to || ""); if (Date.now() - (pushAsked[k] || 0) < 60000) return;
+      pushAsked[k] = Date.now();
+      try { sb.functions.invoke("send-friend-push", { body: { kind: kind, to: to || null } }).catch(function () {}); } catch (e) {}
+    }
     async function sendChat(text) {
       var f = chatWith; if (!f || !text.trim()) return;
       $("g-chatsend").disabled = true;
@@ -8901,6 +8911,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
         $("g-chatin").value = ""; setChatBar(null); $("g-chattyping").hidden = true;
         if (r.masked) say("Some words were hidden with *** to keep chat friendly.");
         sendLive("chat", { to: f.id, from: me.id });   // just a ping: they fetch the message from the server
+        pushNote("chat", f.id);
         await loadChat();
       } catch (e) {
         if (chatEdit) { say(friendly(e.message)); return; }
