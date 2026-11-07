@@ -1468,7 +1468,7 @@ html, body { overflow-x: hidden; }
 .pg-botmsg { margin: 0; max-width: 94%; background: #eef4f6; color: #14232b; border-radius: 4px 16px 16px 16px; padding: 9px 12px; font-size: 0.92rem; line-height: 1.4;
   opacity: 0; animation: pg-botin 0.35s ease forwards; }
 .pg-botmsg:nth-of-type(2) { animation-delay: 0.5s; } .pg-botmsg:nth-of-type(3) { animation-delay: 1s; } .pg-botmsg:nth-of-type(4) { animation-delay: 1.5s; }
-.pg-botwelcome > .pg-btn { align-self: flex-end; opacity: 0; animation: pg-botin 0.35s ease 1.9s forwards; }
+.pg-botwelcome > .pg-btn { align-self: flex-end; opacity: 0; animation: pg-botin 0.35s ease 2.4s forwards; }
 @keyframes pg-botin { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) { .pg-botmsg, .pg-botwelcome > .pg-btn { animation: none; opacity: 1; } }
 
@@ -1744,6 +1744,9 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
 #g-safecard { z-index: 30; }
 .pg-safepin { padding: 12px; border: 2px solid #d6e0e4; border-radius: 14px; font: inherit; font-size: 1.2rem; text-align: center; letter-spacing: 0.3em; color: #14232b; background: #fff; }
 .pg-safepin::placeholder { font-size: 0.95rem; letter-spacing: 0; }
+
+.pg-weeklist li.pg-weekhead { display: block; background: none; padding: 10px 2px 0; font-weight: 800; color: #14232b; }
+.pg-botmsg:nth-of-type(5) { animation-delay: 2s; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -5966,7 +5969,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261107045934";   // replaced by build_real.ps1
+    var APP_BUILD = "20261107051115";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -6941,6 +6944,14 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       (b.rows || []).forEach(function (r) { box.appendChild(weekRow(r)); });
       if (b.me && b.me.place > 20) box.appendChild(weekRow({ place: b.me.place, wins: b.me.wins, me: true, uid: me.id, pet: pet() && pet().name, variant: pet() && pet().variant, level: pet() && pet().level }));
       if (!(b.rows || []).length) box.innerHTML = '<li class="pg-logempty">Nobody has won yet this week. Play someone in a room and be first! 🏆</li>';
+      if (!tab && (b.last || []).length) {
+        var head = document.createElement("li"); head.className = "pg-weekhead"; head.textContent = "🏅 Last week's winners"; box.appendChild(head);
+        b.last.forEach(function (r) {
+          var li = weekRow({ place: r.place, wins: 0, me: r.me, uid: r.uid, pet: r.pet, variant: r.variant, level: r.level });
+          li.querySelector(".pt").textContent = "🐾 " + r.paws;
+          box.appendChild(li);
+        });
+      }
     }
     function weekRow(r) {
       var f = friendOf(r.uid), li = document.createElement("li"); li.className = r.me ? "me" : "";
@@ -8131,7 +8142,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       ["#g-coins", "Paws", "This is your money. Earn it by feeding, levelling up and playing."],
       ["#g-storebtn", "Store", "Spend paws on new pets, outfits and gifts."],
       ["#g-socialbtn", "Friends and chat", "Add friends, chat with them and invite them to play."],
-      ["#g-menubtn", "Menu", "Settings, your badges and how the app works. That's it, enjoy! 🎉"]
+      ["#g-menubtn", "Menu", "Settings, your badges and how the app works. Parents: Safe mode is in here too. That's it, enjoy! 🎉"]
     ];
     var TOUR_PLAY = [
       [null, "Welcome to the Playground! 🎮", "A quick look at what's here."],
@@ -8187,7 +8198,8 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       soc: ["Hi, welcome to Pet Streak! I'm Pip, the helper bot 🐼",
             "Here you raise a red panda and keep its streak going 🔥 by feeding it every day. Feeding, levelling up and new ranks earn paws 🐾 for pets and outfits.",
             "The heart of it is co-parenting: invite a friend or family member to share your pet. When " + FEEDS_PER_DAY + " of you feed it in a day, it gains XP and grows, and you both earn more paws.",
-            "This is where you chat with friends. Tap ➕ Add to share your friend code. Be kind, and never share your address or phone number 💛"],
+            "This is where you chat with friends. Tap ➕ Add to share your friend code. Be kind, and never share your address or phone number 💛",
+            "Parents: turn on 🛡️ Safe mode in the menu (☰), and only friends' messages will show in rooms and games."],
       play: ["Welcome to the Playground! I'm Pip, the helper bot 🐼",
              "Play solo against a bot, or tap the green players-online button to play with others. Your first 3 solo games of Bamboo catch and Memory match each day earn paws.",
              "Don't forget the main game: feed your pet every day with your co-parent. When " + FEEDS_PER_DAY + " of you feed it, it grows and you both earn more paws to spend.",
@@ -8352,7 +8364,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       var won = list.filter(function (g) { return g.mode === "live" && g.result === "won"; }).length, lives = list.filter(function (g) { return g.mode === "live"; }).length;
       $("g-histsum").textContent = list.length ? list.length + (list.length === 1 ? " game" : " games") + " this week" + (lives ? " · " + won + " of " + lives + " live games won 🏆" : "") : "";
       box.innerHTML = "";
-      if (!list.length) { box.innerHTML = '<li class="pg-logempty">No games in the last 7 days. Go play! 🎮</li>'; return; }
+      if (!list.length) { box.innerHTML = '<li class="pg-logempty">No games in the last 7 days. Go play! 🎮</li>'; }
       var lastDay = "";
       list.forEach(function (g) {
         var d = new Date(g.at), day = dayName(d);
@@ -8367,6 +8379,15 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
         li.innerHTML = '<span class="gi" aria-hidden="true">' + G.art + '</span><span class="pg-grow"><b>' + esc(G.name) + (g.mode === "bot" ? " · practice" : g.mode === "solo" ? " · solo" : "") + "</b>" +
           "<small>" + esc((g.against ? "with " + g.against + " · " : "") + d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })) + "</small></span>" +
           '<span class="res ' + cls + '">' + esc(res) + "</span>";
+        box.appendChild(li);
+      });
+      var stakes = [];
+      try { stakes = (await rpc("my_stakes")) || []; } catch (e) {}
+      if (stakes.length) { if (!list.length) box.innerHTML = ""; var sh = document.createElement("li"); sh.className = "pg-histday"; sh.textContent = "🐾 Paw games"; box.appendChild(sh); }
+      stakes.forEach(function (x) {
+        var G = GAMES[x.game] || GAMES.race, li = document.createElement("li"), paid = x.status === "paid";
+        li.innerHTML = '<span class="gi" aria-hidden="true">' + G.art + '</span><span class="pg-grow"><b>' + esc(G.name) + "</b><small>" + esc("with " + (x.name || "a friend") + " · " + dayName(new Date(x.at))) + "</small></span>" +
+          '<span class="res ' + (paid ? (x.won ? "won" : "lost") : "left") + '">' + esc(paid ? (x.won ? "+" : "−") + x.amount + " 🐾" : "Paws back") + "</span>";
         box.appendChild(li);
       });
     }
@@ -8614,7 +8635,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       if (!list.length) { box.innerHTML = '<p class="pg-note">No reported chats. 🎉</p>'; return; }
       list.forEach(function (r) {
         var d = document.createElement("div"); d.className = "pg-chatrep";
-        d.innerHTML = "<b>" + esc(r.reporter) + " reported " + esc(r.reported) + "</b>" + (r.banned ? " · chat stopped" : "") +
+        d.innerHTML = "<b>" + esc(r.reporter) + " reported " + esc(r.reported) + "</b>" + (r.source === "room" ? " · 🏠 in a room" : " · 💬 private chat") + (r.banned ? " · chat stopped" : "") +
           '<ol class="pg-chatlist small">' + r.messages.map(function (m) { return "<li><b>" + esc(m.from) + ":</b> " + esc(m.body) + "</li>"; }).join("") + "</ol>" +
           '<div class="pg-row"><button type="button" class="pg-btn" data-a="ok">Dismiss</button>' +
           '<button type="button" class="pg-btn pg-danger" data-a="ban">' + (r.banned ? "Allow chat again" : "Stop " + esc(r.reported) + " chatting") + "</button></div>";
