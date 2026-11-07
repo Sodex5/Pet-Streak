@@ -1710,6 +1710,13 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
 .pg-stakecard .pg-row { gap: 8px; margin-top: 2px; }
 .pg-stakecard .pg-btn { flex: 1; }
 .pg-stakeend { margin: 4px 0 8px; font-weight: 800; color: #4a2c00; }
+
+/* quitting a game with paws on it */
+.pg-stakequit { position: fixed; inset: 0; z-index: 60; display: flex; align-items: center; justify-content: center; padding: 16px; background: rgba(20,35,43,0.5); }
+.pg-stakequitcard { width: 100%; max-width: 360px; display: flex; flex-direction: column; gap: 8px; padding: 18px; border-radius: 20px; background: #fff; color: #14232b; text-align: center; }
+.pg-stakequitcard b { font-family: var(--display); font-size: 1.15rem; }
+.pg-stakequitcard p { margin: 0 0 6px; color: #33444c; line-height: 1.4; font-size: 0.95rem; }
+.pg-stakequitcard button { width: 100%; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -5918,7 +5925,7 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261107034440";   // replaced by build_real.ps1
+    var APP_BUILD = "20261107040659";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -6990,7 +6997,7 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
       function btn(text, primary, go) { var b = document.createElement("button"); b.type = "button"; b.className = "pg-btn" + (primary ? " pg-primary" : ""); b.textContent = text; b.addEventListener("click", go); return b; }
       function answer(ok) { rpc("stake_answer", { p_id: st.id, p_ok: ok }).then(function () { if (ok) loadAll({ quiet: true }); roomPoke(); roomPoll(); }, function (e) { say(e.message); roomPoll(); }); }
       if (st.status === "offered" && st.to === me.id) {
-        c.innerHTML = "<b>🐾 " + esc(roomName(st.from)) + " wants to play " + esc(G.name) + " for " + st.amount + " paws each</b><small>The winner takes " + st.amount * 2 + ". If the game doesn't finish properly, you both get your paws back.</small>";
+        c.innerHTML = "<b>🐾 " + esc(roomName(st.from)) + " wants to play " + esc(G.name) + " for " + st.amount + " paws each</b><small>The winner takes " + st.amount * 2 + ". Ending early needs you both to agree: quit without agreeing, and you lose your stake.</small>";
         var row = document.createElement("div"); row.className = "pg-row";
         row.appendChild(btn("No thanks", false, function () { answer(false); })); row.appendChild(btn("Accept 🐾 " + st.amount, true, function () { answer(true); }));
         c.appendChild(row);
@@ -7183,7 +7190,7 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
       var R = { on: function (ev, fn) { hs[ev] = fn; return R; },
         send: function (ev, p) { ch.send({ type: "broadcast", event: ev, payload: p || {} }); },
         close: function () { try { sb.removeChannel(ch); } catch (e) {} } };
-      ["here", "seat", "full", "go", "bye", "qc", "tx", "p", "fin", "result", "s", "final", "flip", "pass", "hit", "drop", "shot", "dive"].forEach(function (ev) {
+      ["here", "seat", "full", "go", "bye", "qc", "tx", "endask", "endok", "endno", "p", "fin", "result", "s", "final", "flip", "pass", "hit", "drop", "shot", "dive"].forEach(function (ev) {
         ch.on("broadcast", { event: ev }, function (m) { if (hs[ev]) hs[ev](m.payload || {}); });
       });
       ch.subscribe(function (st) { if (st === "SUBSCRIBED" && hs.ready) hs.ready(); });
@@ -7204,6 +7211,69 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
         return rpc("room_say", { p_room: room, p_body: text }).then(function (r) { typedId = r.id; return r.body; }, function (e) { say(friendly(e.message)); throw e; });
       };
       function qcSend(i) { if (typeof i === "string") R.send("tx", { uid: me.id, id: typedId }); else R.send("qc", { uid: me.id, i: i }); }
+      // paws on this game: ✕ offers to end it by agreement or to forfeit, and a player who vanishes loses
+      var stakeT = null, stakeBox = null, stakeWait = null;
+      rpc("stake_result", { p_room: room }).then(function (x) {
+        if (!x || x.status !== "live" || S.closed) return;
+        S.stakeAmt = x.amount;
+        var tries = 0;
+        stakeT = setInterval(function () {
+          if (++tries > 70) { clearInterval(stakeT); return; }
+          rpc("stake_claim", { p_room: room }).then(function (st) {
+            if (st === "live") return;
+            clearInterval(stakeT); S.stakeAmt = 0;
+            if (st === "won" && !S.closed && !S.stakeOver && S.bye) { var o = players.filter(function (q) { return q.uid !== me.id; })[0]; if (o) S.bye(o.uid); }
+          }, function () {});
+        }, 15000);
+      }, function () {});
+      function stakeName() { var o = players.filter(function (q) { return q.uid !== me.id; })[0]; var f = o && friendOf(o.uid); return f ? f.name : o ? nameOf(o.uid) : "The other player"; }
+      function stakeCard(title, text, btns) {
+        stakeClose();
+        stakeBox = document.createElement("div"); stakeBox.className = "pg-stakequit";
+        stakeBox.innerHTML = '<div class="pg-stakequitcard"><b></b><p></p></div>';
+        stakeBox.querySelector("b").textContent = title; stakeBox.querySelector("p").textContent = text;
+        btns.forEach(function (x) {
+          var b = document.createElement("button"); b.type = "button"; b.className = x[2] || "pg-btn"; b.textContent = x[0]; b.addEventListener("click", x[1]);
+          stakeBox.firstChild.appendChild(b);
+        });
+        document.body.appendChild(stakeBox);
+      }
+      function stakeClose() { clearTimeout(stakeWait); if (stakeBox) { stakeBox.remove(); stakeBox = null; } }
+      function stakeExit(text) { S.stakeOver = true; stakeClose(); say(text); leave(); openPlay(); loadAll({ quiet: true }); }
+      function stakeAsk() {
+        var n = S.stakeAmt, who = stakeName();
+        stakeCard("🐾 " + n + " paws are on this game", "End it early only if " + who + " agrees, and you both get your paws back. If you quit without agreeing, you lose your stake and " + who + " wins it.", [
+          ["🤝 Ask to end the game", function () {
+            rpc("stake_draw", { p_room: room }).then(function () {
+              R.send("endask", { uid: me.id });
+              stakeCard("Waiting for " + who + "…", "If they agree, you both get your paws back.", [["Keep playing", stakeTakeBack]]);
+              stakeWait = setTimeout(function () { stakeTakeBack(); say(who + " didn't answer. The game goes on."); }, 20000);
+            }, function (e) { say(e.message); });
+          }, "pg-feed"],
+          ["🏳️ Quit and lose 🐾 " + n, function () {
+            rpc("stake_forfeit", { p_room: room }).then(function () { clearInterval(stakeT); stakeExit("You quit and lost your " + n + " paws."); }, function (e) { say(e.message); });
+          }, "pg-btn pg-danger"],
+          ["Keep playing", stakeClose]
+        ]);
+      }
+      function stakeTakeBack() { stakeClose(); rpc("stake_draw", { p_room: room, p_on: false }).catch(function () {}); }
+      function stakeGuard(e) {
+        if (!S.stakeAmt || S.stakeOver || S.closed || !e.target.closest || !e.target.closest(".pg-gamex")) return;
+        e.stopPropagation(); e.preventDefault(); stakeAsk();
+      }
+      document.addEventListener("click", stakeGuard, true);
+      R.on("endask", function () {
+        if (!S.stakeAmt || S.stakeOver) return;
+        var who = stakeName();
+        stakeCard(who + " wants to end the game", "If you agree, you both get your " + S.stakeAmt + " paws back.", [
+          ["🤝 Agree to end it", function () {
+            rpc("stake_draw", { p_room: room }).then(function () { R.send("endok", {}); clearInterval(stakeT); stakeExit("Game ended. Your paws are back. 🐾"); }, function (e) { say(e.message); });
+          }, "pg-feed"],
+          ["Keep playing", function () { stakeClose(); R.send("endno", {}); }]
+        ]);
+      });
+      R.on("endok", function () { clearInterval(stakeT); stakeExit("Game ended. Your paws are back. 🐾"); });
+      R.on("endno", function () { stakeTakeBack(); say(stakeName() + " wants to keep playing."); });
       // the waiting room: who's coming, emoji to say hi, and (for the host) Start
       var wait = document.createElement("div"); wait.className = "pg-game pg-wait";
       wait.innerHTML = '<div class="pg-gamehud"><span class="lbl">' + G.art + " " + esc(G.name) + "</span>" +
@@ -7518,6 +7588,7 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
       }
       // the end of a live game: wins, history, and what next
       async function endCard(wrap, won, o) {
+        S.stakeOver = true; stakeClose();
         var wins = p.race_wins || 0;
         if (won === true) { try { wins = await rpc("record_race_win", { p_id: p.id }); p.race_wins = wins; } catch (e) {} }
         if (won === true || won === false) rpc("report_match", { p_room: room, p_game: game, p_won: won }).catch(function () {});   // the weekly ranking
@@ -7553,13 +7624,14 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
             line.hidden = false;
             if (x.status === "paid") { line.textContent = x.won ? "🐾 You won " + x.amount * 2 + " paws!" : "🐾 You lost your " + x.amount + " paws."; loadAll({ quiet: true }); return; }
             if (x.status === "refunded") { line.textContent = "🐾 Your " + x.amount + " paws were given back."; loadAll({ quiet: true }); return; }
-            line.textContent = left ? "🐾 The game didn't finish, so your paws will come back soon." : "🐾 Checking the result with the other phone…";
-            if (!left && ++tries < 8) setTimeout(check, 1500);
-            else if (!left) line.textContent = "🐾 If the other phone doesn't confirm, your paws come back soon.";
+            line.textContent = left ? "🐾 Waiting a moment in case they come back…" : "🐾 Checking the result with the other phone…";
+            if (++tries < 8) setTimeout(check, left ? 10000 : 1500);
+            else line.textContent = left ? "🐾 If they don't come back, you'll win their paws." : "🐾 If the other phone doesn't confirm, your paws come back soon.";
           }, function () {});
         })();
       }
       function endLeft(wrap, text) {
+        S.stakeOver = true; stakeClose();
         logGame(game, "live", others().map(label).join(", "), "left", null, null);
         var end = document.createElement("div"); end.className = "pg-gameend";
         end.innerHTML = '<div class="big">👋</div><p>' + esc(text) + '</p><div class="pg-row"><button type="button" class="pg-feed pg-grow" data-a="done">Done</button></div>';
@@ -7570,6 +7642,7 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
       function cleanup() {
         if (S.closed) return; S.closed = true;
         clearInterval(hereTimer); clearTimeout(autoT); timers.forEach(clearTimeout);
+        document.removeEventListener("click", stakeGuard, true); stakeClose();
         if (S.stop) S.stop(); else if (view) view.close();
         wait.remove(); R.close();
         if (raceNow === S) raceNow = null;
