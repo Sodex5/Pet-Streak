@@ -1638,7 +1638,7 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
 .pg-roomsbtn > span:first-child { font-size: 1.5rem; }
 .pg-roomsbtn .pg-grow { flex: 1; min-width: 0; }
 .pg-roomsbtn b { display: block; font-size: 1.05rem; }
-.pg-roomsbtn small { opacity: 0.9; }
+.pg-roomsbtn small { color: #fff; opacity: 0.92; }
 .pg-roomsbtn i { font-style: normal; font-weight: 800; font-size: 1.3rem; }
 .pg-roomacts { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
 .pg-roomacts .pg-btn { width: 100%; padding: 13px; }
@@ -1684,6 +1684,24 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
 .pg-qctype input { flex: 1; min-width: 0; padding: 8px 12px; border: 1px solid #d6e0e4; border-radius: 999px; font: inherit; font-size: 1rem; color: #14232b; background: #fff; }
 .pg-qcpal .pg-qctype button { flex: none; width: 38px; height: 38px; border: 0; border-radius: 50%; background: var(--brand); color: #fff; font-size: 1rem; padding: 0; }
 .pg-bubble { max-width: 190px; white-space: normal; word-break: break-word; }
+
+/* the weekly ranking */
+.pg-weekbtn { display: flex; align-items: center; gap: 10px; width: 100%; margin: 6px 0 0; padding: 10px 14px; border: 0; border-radius: 16px; background: linear-gradient(135deg, #ffd76a, #ffb347); color: #4a2c00; font: inherit; text-align: left; box-shadow: 0 4px 12px rgba(255,170,60,0.3); }
+.pg-weekbtn > span:first-child { font-size: 1.4rem; }
+.pg-weekbtn .pg-grow { flex: 1; min-width: 0; }
+.pg-weekbtn b { display: block; }
+.pg-weekbtn small { color: #6b4300; }
+.pg-weekbtn i { font-style: normal; font-weight: 800; font-size: 1.2rem; }
+.pg-weektabs { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 6px; }
+.pg-weektabs button { flex: none; padding: 7px 12px; border: 1px solid #d6e0e4; border-radius: 999px; background: #fff; color: #14232b; font: inherit; font-size: 0.85rem; font-weight: 700; }
+.pg-weektabs button[aria-selected="true"] { background: var(--brand); border-color: var(--brand); color: #fff; }
+.pg-weeklist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.pg-weeklist li:not(.pg-logempty) { display: flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 14px; background: #f3f6f7; }
+.pg-weeklist li.me { background: #fff1e6; box-shadow: inset 0 0 0 2px var(--brand); }
+.pg-weeklist .rk { width: 26px; text-align: center; font-weight: 800; }
+.pg-weeklist img { width: 38px; height: 38px; object-fit: contain; }
+.pg-weeklist .pg-grow { flex: 1; min-width: 0; }
+.pg-weeklist .pt { font-family: var(--display); font-size: 1.1rem; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -1819,6 +1837,7 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
         </div>
         <button type="button" class="pg-onlinenow" id="g-onlinecount" aria-label="See who's online"></button>
         <button type="button" class="pg-roomsbtn" id="g-openrooms"><span aria-hidden="true">🏠</span><span class="pg-grow"><b>Rooms</b><small>Play with other players</small></span><i aria-hidden="true">›</i></button>
+        <button type="button" class="pg-weekbtn" id="g-openweek"><span aria-hidden="true">🏆</span><span class="pg-grow"><b>Weekly ranking</b><small id="g-weeksub">Win games against other players to climb</small></span><i aria-hidden="true">›</i></button>
         <button type="button" class="pg-histbtn" id="g-openhist"><span aria-hidden="true">🕘</span><span class="pg-grow"><b>Game history</b><small>Your games from the last 7 days</small></span><i aria-hidden="true">›</i></button>
         <div class="pg-gamegrid">
           <button type="button" class="pg-gamecard bamboo" data-game="bamboo"><span class="art" aria-hidden="true">🎋</span><b>Bamboo catch</b><small>Catch the falling food</small></button>
@@ -2076,6 +2095,13 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
       <h2><span>🏁 Your games <small>last 7 days</small></span> <button type="button" class="pg-x" id="g-historyclose" aria-label="Close your games">✕</button></h2>
       <p class="pg-hint" id="g-histsum"></p>
       <ol class="pg-histlist" id="g-histlist"></ol>
+    </div>
+    <!-- the weekly ranking: wins against other players, all games or one game -->
+    <div class="pg pg-card pg-sheet pg-histsheet" id="g-week" hidden>
+      <h2><span>🏆 Weekly ranking</span> <button type="button" class="pg-x" id="g-weekclose" aria-label="Close the ranking">✕</button></h2>
+      <p class="pg-hint" id="g-weekhint"></p>
+      <div class="pg-weektabs" id="g-weektabs" role="tablist"></div>
+      <ol class="pg-weeklist" id="g-weeklist"></ol>
     </div>
     <!-- today's log: who fed, bathed, played and reminded, with the time -->
     <div class="pg pg-card pg-sheet" id="g-today" hidden>
@@ -5884,7 +5910,7 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261107030817";   // replaced by build_real.ps1
+    var APP_BUILD = "20261107031707";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -6823,6 +6849,45 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
       blockPet(inv.pet);
     });
 
+    // ---------- The weekly ranking: wins against other players, resetting every Monday ----------
+    var weekTab = "", WEEK_TABS = [["", "🏆 All"], ["race", "🏁 Race"], ["ball", "⚽ Ball"], ["penalty", "🥅 Penalty"], ["bamboo", "🎋 Bamboo"], ["memory", "🃏 Memory"]];
+    function weekLeft(ends) {
+      var ms = Date.parse(ends) - Date.now(), d = Math.floor(ms / 86400000), h = Math.max(0, Math.floor(ms % 86400000 / 3600000));
+      return d > 0 ? d + "d " + h + "h" : h + "h";
+    }
+    function weekSub(b) {
+      $("g-weeksub").textContent = b.me ? "You're #" + b.me.place + " this week · " + b.me.wins + (b.me.wins === 1 ? " win" : " wins") : "Win games against other players to climb";
+      if (b.prize) { say("🏆 You came #" + b.prize.place + " last week! +" + b.prize.paws + " paws 🐾"); sfx("levelUp"); loadAll({ quiet: true }); }
+    }
+    function loadWeekSub() { rpc("weekly_board").then(weekSub, function () {}); }
+    async function drawWeek() {
+      var box = $("g-weeklist"), tab = weekTab, b;
+      $("g-weektabs").innerHTML = "";
+      WEEK_TABS.forEach(function (t) {
+        var x = document.createElement("button"); x.type = "button"; x.textContent = t[1]; x.setAttribute("role", "tab"); x.setAttribute("aria-selected", t[0] === weekTab ? "true" : "false");
+        x.addEventListener("click", function () { weekTab = t[0]; drawWeek(); });
+        $("g-weektabs").appendChild(x);
+      });
+      box.innerHTML = '<li class="pg-logempty">Loading…</li>';
+      try { b = await rpc("weekly_board", { p_game: tab || null }); }
+      catch (e) { box.innerHTML = '<li class="pg-logempty">' + esc(/weekly_board/.test(e.message) ? "The ranking isn't switched on yet." : e.message) + "</li>"; return; }
+      if (tab !== weekTab) return;
+      if (!tab) weekSub(b);
+      $("g-weekhint").textContent = "Resets in " + weekLeft(b.ends) + ". " + (tab ? "This game's wins this week." : "The top 3 win 🐾 150, 100 and 50.");
+      box.innerHTML = "";
+      (b.rows || []).forEach(function (r) { box.appendChild(weekRow(r)); });
+      if (b.me && b.me.place > 20) box.appendChild(weekRow({ place: b.me.place, wins: b.me.wins, me: true, uid: me.id, pet: pet() && pet().name, variant: pet() && pet().variant, level: pet() && pet().level }));
+      if (!(b.rows || []).length) box.innerHTML = '<li class="pg-logempty">Nobody has won yet this week. Play someone in a room and be first! 🏆</li>';
+    }
+    function weekRow(r) {
+      var f = friendOf(r.uid), li = document.createElement("li"); li.className = r.me ? "me" : "";
+      li.innerHTML = '<span class="rk">' + (r.place <= 3 ? MEDALS[r.place - 1] : r.place) + '</span><img alt="" src="' + esc(petPic(r.variant)) + '"><span class="pg-grow"><span class="ttl">' +
+        tagHTML(r.level || 1, r.me ? "You" : f ? f.name : shownPetName(r.pet)) + '</span></span><b class="pt">' + r.wins + "</b>";
+      return li;
+    }
+    $("g-openweek").addEventListener("click", function () { weekTab = ""; $("g-week").hidden = false; drawWeek(); });
+    $("g-weekclose").addEventListener("click", function () { $("g-week").hidden = true; });
+
     // ---------- Rooms ----------
     // Someone opens a room (public: listed for everyone; private: joined with its code). Everything about a room lives on
     // the server: each phone checks in every few seconds with room_state (who's here, new messages, whether a game has
@@ -7220,7 +7285,7 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
         if (game === "bamboo") goBamboo(m); else if (game === "memory") goMemory(m); else if (game === "ball") goBall(m); else if (game === "penalty") goPenalty(m); else goRace(m);
       }
       function others() { return players.filter(function (x) { return x.uid !== me.id; }); }
-      function againUids() { return others().map(function (x) { return x.uid; }).filter(function (u) { return online[u] || friendOf(u); }); }
+      function againUids() { if (roomNow) return []; return others().map(function (x) { return x.uid; }).filter(function (u) { return online[u] || friendOf(u); }); }
 
       // the Treat race: the host referees (the first to reach the treat wins; the others by how far they got)
       function goRace(m) {
@@ -7408,6 +7473,7 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
       async function endCard(wrap, won, o) {
         var wins = p.race_wins || 0;
         if (won === true) { try { wins = await rpc("record_race_win", { p_id: p.id }); p.race_wins = wins; } catch (e) {} }
+        if (won === true || won === false) rpc("report_match", { p_room: room, p_game: game, p_won: won }).catch(function () {});   // the weekly ranking
         logGame(game, "live", o.against, won === true ? "won" : won === "draw" ? "draw" : "lost", o.place || null, o.score);
         var lone = others().length === 1 ? others()[0] : null, stranger = lone && !friendOf(lone.uid) ? lone : null, again = againUids();
         var end = document.createElement("div"); end.className = "pg-gameend";
@@ -7743,7 +7809,7 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
       $("g-play").hidden = false; $("g-menu").hidden = true;
       $("g-showonline").checked = showOnline();
       syncLobby();
-      renderPlay(); loadFriends();
+      renderPlay(); loadFriends(); loadWeekSub();
       botWelcome("play", $("g-playwelcome"));
       setTimeout(maybePlayTour, 700);
     }
@@ -7751,7 +7817,7 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
       var n = Object.keys(online).length;
       // a bold green button when people are here (with their pets' faces), a quiet line when nobody is
       var faces = Object.keys(online).slice(0, 3).map(function (k) { return '<img alt="" src="' + esc(petPic(online[k].variant)) + '">'; }).join("");
-      $("g-onlinecount").innerHTML = !showOnline() ? "🙈 You're hidden, so you can only play solo."
+      $("g-onlinecount").innerHTML = !showOnline() ? "🙈 You're hidden from the online list. Rooms still work."
         : n ? '<span class="pg-onfaces">' + faces + '<i class="pg-onpulse" aria-hidden="true"></i></span>' +
               '<span class="pg-ontext"><b>' + n + (n === 1 ? " player" : " players") + " online now</b><small>Tap to see who's here and play</small></span>" +
               '<span class="see">See who ›</span>'
@@ -7833,6 +7899,7 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
       ["#g-mywins", "Your wins", "This counts the games you've won against other players."],
       ["#g-onlinecount", "Who's online", "Green means people are here to play. Tap it to see them, and when your friends were last around."],
       ["#g-openrooms", "Rooms", "Create a room or join one to play with other people, and chat while you wait."],
+      ["#g-openweek", "Weekly ranking", "Win games against other players to climb. It resets every Monday, and the top 3 win paws."],
       ["#g-openhist", "Game history", "See every game you played in the last 7 days."],
       [".pg-gamegrid", "The games", "Tap a game to play solo or with others. The ? on each game shows you how to play."],
       [".pg-board", "Today's best", "The top scores today. Beat them!"],
@@ -10127,12 +10194,12 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
     // tidying up runs). That tap only closes: it doesn't also pat the pet or press the button underneath.
     var CLOSABLE = [["g-menu", "g-menuclose"], ["g-store", "g-storeclose"], ["g-sheet", "g-close"], ["g-ranks", "g-ranksclose"],
                     ["g-share", "g-shareclose"], ["g-petsheet", "g-petsheetclose"], ["g-adoptinfo", "g-aiclose"], ["g-tray", "g-trayclose"],
-                    ["g-today", "g-todayclose"], ["g-achs", "g-achsclose"], ["g-history", "g-historyclose"], ["g-petprev", "g-pvback"]];
+                    ["g-today", "g-todayclose"], ["g-achs", "g-achsclose"], ["g-history", "g-historyclose"], ["g-petprev", "g-pvback"], ["g-week", "g-weekclose"]];
     var swallowClick = 0;
     document.addEventListener("pointerdown", function (e) {
       // a full-screen card (gift, join, name...) is on top: leave everything as it is
       // (also leave sheets alone for taps on an invite card or inside a game)
-      if (e.target.closest && e.target.closest(".pg-adopt, .pg-invite, .pg-game, .pg-playpage, .pg-chatpage, #g-history, .pg-tour, .pg-msgsheet")) return;
+      if (e.target.closest && e.target.closest(".pg-adopt, .pg-invite, .pg-game, .pg-playpage, .pg-chatpage, #g-history, #g-week, .pg-tour, .pg-msgsheet")) return;
       var open = CLOSABLE.filter(function (c) { return !$(c[0]).hidden && !$(c[0]).contains(e.target); });
       if (!open.length) return;
       open.forEach(function (c) { $(c[1]).click(); });
