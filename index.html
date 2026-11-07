@@ -1498,13 +1498,13 @@ html, body { overflow-x: hidden; }
 /* How to play: the ? on a game's sheet, and the step-by-step tutorial with its little moving pictures */
 .pg-modecard { position: relative; }
 .pg-modehelp { position: absolute; top: 10px; right: 10px; width: 38px; height: 38px; border-radius: 50%; border: 0; background: var(--brand); color: #fff; font-family: var(--display); font-weight: 800; font-size: 1.2rem; line-height: 1; padding: 0; }
-#g-howto { z-index: 21; }
-.pg-howto { width: min(100%, 400px); display: flex; flex-direction: column; gap: 8px; text-align: center; }
-.pg-howtohead { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-weight: 800; font-size: 0.92rem; color: #55666e; text-align: left; }
-.pg-howto h2 { margin: 4px 0 0; font-size: 1.3rem; }
-.pg-howto p { margin: 0; min-height: 5.6em; color: #33444c; line-height: 1.4; font-size: 0.95rem; }
-.pg-howtoacts { display: flex; gap: 8px; }
-.pg-howtoacts .pg-btn { flex: 1 1 0; padding: 12px 8px; }
+#g-gamehelp { z-index: 21; }
+.pg-gamehelp { width: min(100%, 400px); display: flex; flex-direction: column; gap: 8px; text-align: center; }
+.pg-ghhead { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-weight: 800; font-size: 0.92rem; color: #55666e; text-align: left; }
+.pg-gamehelp h2 { margin: 4px 0 0; font-size: 1.3rem; }
+.pg-gamehelp p { margin: 0; min-height: 5.6em; color: #33444c; line-height: 1.4; font-size: 0.95rem; }
+.pg-ghacts { display: flex; gap: 8px; }
+.pg-ghacts .pg-btn { flex: 1 1 0; padding: 12px 8px; }
 .ht-dots { display: flex; justify-content: center; gap: 6px; }
 .ht-dots i { width: 8px; height: 8px; border-radius: 50%; background: #d6e0e4; }
 .ht-dots i.on { background: var(--brand); }
@@ -1558,6 +1558,41 @@ html, body { overflow-x: hidden; }
 @keyframes ht-word { 0%, 64% { opacity: 0; } 66%, 86% { opacity: 1; } 100% { opacity: 0; } }
 @keyframes ht-bar { from { left: 0; } to { left: calc(100% - 6px); } }
 @media (prefers-reduced-motion: reduce) { .ht-scene *, .ht-scene *::before { animation: none !important; } .ht-tapword { opacity: 1; } .ht-drop { top: 30px; } }
+
+/* Chat like a normal social app: day headers, quotes, reactions, ticks, typing, and the message options sheet */
+.pg-chatlist li.pg-chatday { align-self: center; max-width: none; padding: 3px 12px; margin: 6px 0; border-radius: 999px; background: rgba(255,255,255,0.75); color: #55666e; font-size: 0.76rem; font-weight: 700; }
+.pg-chatlist li .b { cursor: pointer; -webkit-user-select: none; user-select: none; }
+.pg-chatlist li.gone .b { background: transparent !important; color: #6d7a82 !important; font-style: italic; box-shadow: none; border: 1px dashed #b8c4cc; }
+.pg-chatlist li.flash .b { outline: 3px solid #f2c230; }
+.pg-chatlist li .q { display: block; width: 100%; max-width: 100%; border: 0; border-left: 3px solid var(--brand); border-radius: 8px; margin: 0 0 3px; padding: 4px 8px; background: rgba(255,255,255,0.7); color: #33444c; text-align: left; font: inherit; font-size: 0.8rem; min-width: 0; }
+.pg-chatlist li .q b { display: block; font-size: 0.74rem; }
+.pg-chatlist li .q span { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pg-chatlist li .rx { display: flex; gap: 3px; margin-top: -6px; padding: 0 8px; position: relative; }
+.pg-chatlist li .rx button { border: 1px solid #d6e0e4; border-radius: 999px; background: #fff; padding: 1px 6px; font-size: 0.82rem; line-height: 1.3; color: #33444c; }
+.pg-chatlist li .rx button.mine { border-color: var(--brand); background: #fff1e6; }
+.pg-chatlist .tick { color: #8a8399; letter-spacing: -2px; margin-left: 2px; }
+.pg-chatlist .tick.seen { color: #2f7fe0; font-weight: 800; }
+.pg-chattyping { flex: none; padding: 2px 18px 4px; color: #55666e; font-size: 0.8rem; display: flex; align-items: center; gap: 3px; }
+.pg-chattyping[hidden] { display: none; }
+.pg-chattyping i { width: 6px; height: 6px; border-radius: 50%; background: #8a9aa1; animation: pg-typing 1s infinite; }
+.pg-chattyping i:nth-child(2) { animation-delay: 0.15s; } .pg-chattyping i:nth-child(3) { animation-delay: 0.3s; }
+.pg-chattyping span { margin-left: 5px; }
+@keyframes pg-typing { 0%, 60%, 100% { transform: none; opacity: 0.5; } 30% { transform: translateY(-3px); opacity: 1; } }
+.pg-chatbar { flex: none; display: flex; align-items: center; gap: 8px; margin: 0 14px 6px; padding: 6px 8px 6px 12px; border-left: 3px solid var(--brand); border-radius: 10px; background: #fff; }
+.pg-chatbar[hidden] { display: none; }
+.pg-chatbar .pg-grow { min-width: 0; flex: 1; }
+.pg-chatbar b { display: block; font-size: 0.8rem; }
+.pg-chatbar small { display: block; color: #55666e; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pg-msgsheet { position: fixed; inset: 0; z-index: 22; display: flex; align-items: flex-end; justify-content: center; background: rgba(20,35,43,0.35); }
+.pg-msgcard { width: 100%; max-width: 460px; background: #fff; border-radius: 20px 20px 0 0; padding: 12px 12px calc(12px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: 8px; }
+.pg-msgreact { display: flex; justify-content: space-between; gap: 4px; padding-bottom: 8px; border-bottom: 1px solid #e4eaed; }
+.pg-msgreact[hidden] { display: none; }
+.pg-msgreact button { flex: 1; min-width: 0; height: 48px; border: 0; border-radius: 14px; background: #f3f6f7; font-size: 1.4rem; padding: 0; }
+.pg-msgreact button.mine { background: #fff1e6; box-shadow: inset 0 0 0 2px var(--brand); }
+.pg-msgacts { display: flex; flex-direction: column; }
+.pg-msgacts button { border: 0; background: none; padding: 13px 10px; text-align: left; font: inherit; font-weight: 700; color: #14232b; border-radius: 10px; }
+.pg-msgacts button.danger { color: #b3261e; }
+.pg-msgacts button:last-child { text-align: center; color: #55666e; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -1754,10 +1789,13 @@ html, body { overflow-x: hidden; }
         <button type="button" class="pg-btn pg-chatmore" id="g-chatmore" aria-label="Block or report">⋯</button>
       </header>
       <div class="pg-chatmenu" id="g-chatmenu" hidden>
+        <button type="button" class="pg-btn" id="g-chatclear">🧹 Clear this chat</button>
         <button type="button" class="pg-btn" id="g-chatreport">🚩 Report this chat</button>
         <button type="button" class="pg-btn pg-danger" id="g-chatblock">🚫 Block</button>
       </div>
       <ol class="pg-chatlist" id="g-chatlist" aria-live="polite"></ol>
+      <div class="pg-chattyping" id="g-chattyping" hidden><i></i><i></i><i></i> <span></span></div>
+      <div class="pg-chatbar" id="g-chatbar" hidden><span class="pg-grow"><b id="g-chatbartitle"></b><small id="g-chatbartext"></small></span><button type="button" class="pg-x" id="g-chatbarx" aria-label="Cancel">✕</button></div>
       <div class="pg-chatquick" id="g-chatquick"></div>
       <form class="pg-chatform" id="g-chatform">
         <input id="g-chatin" maxlength="200" autocomplete="off" placeholder="Say something nice…" aria-label="Message">
@@ -1806,17 +1844,24 @@ html, body { overflow-x: hidden; }
         <button type="button" class="pg-linkbtn" id="g-modeclose">Cancel</button>
       </div>
     </div>
+    <!-- tap or hold a chat message: react, reply, copy, edit, delete -->
+    <div class="pg pg-msgsheet" id="g-msgsheet" hidden>
+      <div class="pg-msgcard" role="dialog" aria-label="Message options">
+        <div class="pg-msgreact" id="g-msgreact"></div>
+        <div class="pg-msgacts" id="g-msgacts"></div><button type="button" id="g-msgclose" hidden></button>
+      </div>
+    </div>
     <!-- how to play: a game's tutorial, one step at a time -->
-    <div class="pg pg-adopt" id="g-howto" hidden>
-      <div class="pg-card pg-howto" role="dialog" aria-labelledby="g-howtotitle">
-        <div class="pg-howtohead"><span id="g-howtogame"></span><button type="button" class="pg-x" id="g-howtoclose" aria-label="Close">✕</button></div>
-        <div class="ht-scene" id="g-howtoscene" aria-hidden="true"></div>
-        <h2 id="g-howtotitle"></h2>
-        <p id="g-howtotext"></p>
-        <div class="ht-dots" id="g-howtodots" aria-hidden="true"></div>
-        <div class="pg-howtoacts">
-          <button type="button" class="pg-btn" id="g-howtoback">Back</button>
-          <button type="button" class="pg-btn pg-primary" id="g-howtonext">Next</button>
+    <div class="pg pg-adopt" id="g-gamehelp" hidden>
+      <div class="pg-card pg-gamehelp" role="dialog" aria-labelledby="g-ghtitle">
+        <div class="pg-ghhead"><span id="g-ghgame"></span><button type="button" class="pg-x" id="g-ghclose" aria-label="Close">✕</button></div>
+        <div class="ht-scene" id="g-ghscene" aria-hidden="true"></div>
+        <h2 id="g-ghtitle"></h2>
+        <p id="g-ghtext"></p>
+        <div class="ht-dots" id="g-ghdots" aria-hidden="true"></div>
+        <div class="pg-ghacts">
+          <button type="button" class="pg-btn" id="g-ghback">Back</button>
+          <button type="button" class="pg-btn pg-primary" id="g-ghnext">Next</button>
         </div>
       </div>
     </div>
@@ -5665,7 +5710,7 @@ html, body { overflow-x: hidden; }
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261106233528";   // replaced by build_real.ps1
+    var APP_BUILD = "20261107002324";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -6284,6 +6329,8 @@ html, body { overflow-x: hidden; }
         .on("broadcast", { event: "invite" }, function (m) { gotInvite(m.payload); })
         .on("broadcast", { event: "reply" }, function (m) { gotReply(m.payload); })
         .on("broadcast", { event: "chat" }, function (m) { if (m.payload && m.payload.to === me.id) { sfx("pat"); refreshUnread(); } })
+        .on("broadcast", { event: "chatup" }, function (m) { gotChatUpdate(m.payload); })
+        .on("broadcast", { event: "typing" }, function (m) { gotTyping(m.payload); })
         .subscribe(function (status) { if (status === "SUBSCRIBED") { lobbyReady = true; trackMe(); } });
     }
     var lastTracked = "";
@@ -6322,7 +6369,7 @@ html, body { overflow-x: hidden; }
       others: ["👫 Play someone", "Tap when the ring turns green. Miss it and they score. First to 5 wins."] };
     // ---------- How to play: the ? on a game's sheet walks through the game, one step at a time ----------
     // each step: a title, what to do, and a little moving picture (ht- styles in real.css)
-    function howToSteps(game) {
+    function gameHelpSteps(game) {
       var p = pet(), me = '<img class="ht-pet" alt="" src="' + esc(petPic(p && p.variant)) + '">', bot = '<img class="ht-pet" alt="" src="' + esc(petPic("panda_golden")) + '">';
       var finger = '<span class="ht-finger">👆</span>';
       var ring = '<div class="ht-ringbox"><i class="ht-ring"></i>' + me + '<b class="ht-tapword">TAP!</b></div>';
@@ -6360,28 +6407,28 @@ html, body { overflow-x: hidden; }
         ]
       }[game];
     }
-    var howSteps = [], howAt = 0;
-    function drawHowTo() {
-      var s = howSteps[howAt], last = howAt === howSteps.length - 1;
-      $("g-howtoscene").innerHTML = s[2];
-      $("g-howtotitle").textContent = s[0]; $("g-howtotext").textContent = s[1];
-      $("g-howtodots").innerHTML = howSteps.map(function (x, i) { return "<i" + (i === howAt ? ' class="on"' : "") + "></i>"; }).join("");
-      $("g-howtoback").style.visibility = howAt ? "visible" : "hidden";
-      $("g-howtonext").textContent = last ? "Got it 👍" : "Next";
+    var ghSteps = [], ghAt = 0;
+    function drawGameHelp() {
+      var s = ghSteps[ghAt], last = ghAt === ghSteps.length - 1;
+      $("g-ghscene").innerHTML = s[2];
+      $("g-ghtitle").textContent = s[0]; $("g-ghtext").textContent = s[1];
+      $("g-ghdots").innerHTML = ghSteps.map(function (x, i) { return "<i" + (i === ghAt ? ' class="on"' : "") + "></i>"; }).join("");
+      $("g-ghback").style.visibility = ghAt ? "visible" : "hidden";
+      $("g-ghnext").textContent = last ? "Got it 👍" : "Next";
     }
-    function openHowTo(game) {
-      howSteps = howToSteps(game); howAt = 0;
-      $("g-howtogame").textContent = GAMES[game].art + " How to play " + GAMES[game].name;
-      drawHowTo(); $("g-howto").hidden = false;
+    function openGameHelp(game) {
+      ghSteps = gameHelpSteps(game); ghAt = 0;
+      $("g-ghgame").textContent = GAMES[game].art + " How to play " + GAMES[game].name;
+      drawGameHelp(); $("g-gamehelp").hidden = false;
     }
-    $("g-howtoclose").addEventListener("click", function () { $("g-howto").hidden = true; });
-    $("g-howtoback").addEventListener("click", function () { if (howAt) { howAt--; drawHowTo(); } });
-    $("g-howtonext").addEventListener("click", function () { if (howAt === howSteps.length - 1) $("g-howto").hidden = true; else { howAt++; drawHowTo(); } });
+    $("g-ghclose").addEventListener("click", function () { $("g-gamehelp").hidden = true; });
+    $("g-ghback").addEventListener("click", function () { if (ghAt) { ghAt--; drawGameHelp(); } });
+    $("g-ghnext").addEventListener("click", function () { if (ghAt === ghSteps.length - 1) $("g-gamehelp").hidden = true; else { ghAt++; drawGameHelp(); } });
     function openMode(game) {
       var g = GAMES[game], n = Object.keys(online).length, vs = game === "ball" && ballVs;
       var solo = vs ? BALL_VS_TEXT.solo : g.solo, oth = vs ? BALL_VS_TEXT.others : g.others;
       $("g-modeart").textContent = g.art; $("g-modename").textContent = g.name;
-      $("g-modehelp").onclick = function () { openHowTo(game); };
+      $("g-modehelp").onclick = function () { openGameHelp(game); };
       $("g-modevs").hidden = game !== "ball";
       Array.prototype.forEach.call(document.querySelectorAll("#g-modevs [data-vs]"), function (b) { b.setAttribute("aria-selected", (b.dataset.vs === "1") === ballVs ? "true" : "false"); });
       $("g-modesolo").innerHTML = "<b>" + esc(solo[0]) + "</b><small>" + esc(solo[1]) + "</small>";
@@ -7525,6 +7572,7 @@ html, body { overflow-x: hidden; }
       var pp = f.pet;
       $("g-chattitle").innerHTML = tagHTML(pp ? pp.level : 1, f.name) + (pp ? ' <small class="pg-ofpet">' + esc(pp.name) + "</small>" : "");
       $("g-chatmenu").hidden = true; $("g-chatin").value = "";
+      setChatBar(null); chatDrawn = ""; $("g-chattyping").hidden = true;
       $("g-chatquick").innerHTML = "";
       CHAT_QUICK.forEach(function (t) {
         var b = document.createElement("button"); b.type = "button"; b.textContent = t.replace("Mochi", pet() ? pet().name : "our pet");
@@ -7542,7 +7590,12 @@ html, body { overflow-x: hidden; }
       catch (e) { $("g-chatlist").innerHTML = '<li class="pg-logempty">' + esc(/chat_history/.test(e.message) ? "Chat isn't switched on yet." : e.message) + "</li>"; return; }
       if (chatWith !== f) return;
       delete unread[f.id]; refreshBadge();
-      var box = $("g-chatlist"); box.innerHTML = "";
+      // nothing new (the check every few seconds): leave the screen alone
+      var drawn = JSON.stringify(list) + JSON.stringify(chatFailed[f.id] || []);
+      if (drawn === chatDrawn) return;
+      chatDrawn = drawn;
+      var box = $("g-chatlist"), wasEnd = box.scrollHeight - box.scrollTop - box.clientHeight < 80, oldTop = box.scrollTop; box.innerHTML = "";
+      sendLive("chatup", { to: f.id, from: me.id });   // my ticks and changes, for their open chat
       // the first time: a kind reminder about staying safe
       var seen = false; try { seen = !!localStorage.getItem(KIND_KEY); } catch (e) {}
       if (!seen) {
@@ -7553,7 +7606,10 @@ html, body { overflow-x: hidden; }
       }
       if (!list.length) { var e0 = document.createElement("li"); e0.className = "pg-logempty"; e0.textContent = "Say hi to " + f.name + "! 👋"; box.appendChild(e0); }
       // (messages that couldn't be sent stay in their place, with the reason)
+      var lastDay = "";
       list.concat(chatFailed[f.id] || []).sort(function (a, b) { return a.at < b.at ? -1 : a.at > b.at ? 1 : 0; }).forEach(function (m) {
+        var day = chatDay(m.at);
+        if (day !== lastDay) { lastDay = day; var dl = document.createElement("li"); dl.className = "pg-chatday"; dl.textContent = day; box.appendChild(dl); }
         var li = document.createElement("li");
         if (m.why) {
           li.className = "me failed";
@@ -7565,25 +7621,114 @@ html, body { overflow-x: hidden; }
             chatFailed[f.id] = (chatFailed[f.id] || []).filter(function (x) { return x !== m; }); li.remove();
           });
         } else {
-          li.className = m.me ? "me" : "them";
-          li.innerHTML = '<span class="b">' + esc(m.body) + "</span><time>" + esc(new Date(m.at).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })) + "</time>";
+          drawMessage(li, m);
         }
         box.appendChild(li);
       });
-      box.scrollTop = box.scrollHeight;
+      box.scrollTop = wasEnd || !oldTop ? box.scrollHeight : oldTop;
     }
+    var chatDrawn = "", chatEdit = null, chatReply = null, CHAT_REACTIONS = ["❤️", "😂", "😮", "😢", "👍", "🔥"];
+    function chatDay(at) {
+      var d = new Date(at), t = new Date(), y = new Date(); y.setDate(t.getDate() - 1);
+      return d.toDateString() === t.toDateString() ? "Today" : d.toDateString() === y.toDateString() ? "Yesterday" : d.toLocaleDateString([], { day: "numeric", month: "short" });
+    }
+    function drawMessage(li, m) {
+      li.className = (m.me ? "me" : "them") + (m.deleted ? " gone" : ""); li.dataset.id = m.id;
+      var quote = m.reply ? '<button type="button" class="q" data-to="' + m.reply.id + '"><b>' + esc(m.reply.me ? "You" : chatWith.name) + "</b><span>" + esc(m.reply.deleted ? "🚫 Message deleted" : m.reply.body) + "</span></button>" : "";
+      li.innerHTML = quote + '<span class="b">' + (m.deleted ? "🚫 " + (m.me ? "You deleted this message" : "This message was deleted") : esc(m.body)) + "</span>" +
+        ((m.reactions || []).length ? '<span class="rx">' + m.reactions.map(function (r) { return '<button type="button" class="' + (r.mine ? "mine" : "") + '" data-e="' + esc(r.e) + '">' + esc(r.e) + (r.n > 1 ? " " + r.n : "") + "</button>"; }).join("") + "</span>" : "") +
+        "<time>" + (m.edited && !m.deleted ? "edited · " : "") + esc(new Date(m.at).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })) +
+        (m.me && !m.deleted ? ' <span class="tick' + (m.seen ? " seen" : "") + '" aria-label="' + (m.seen ? "Seen" : "Sent") + '">' + (m.seen ? "✓✓" : "✓") + "</span>" : "") + "</time>";
+      var q = li.querySelector(".q");
+      if (q) q.addEventListener("click", function (e) {
+        e.stopPropagation();
+        var t = $("g-chatlist").querySelector('[data-id="' + q.dataset.to + '"]');
+        if (t) { t.scrollIntoView({ block: "center", behavior: "smooth" }); t.classList.add("flash"); setTimeout(function () { t.classList.remove("flash"); }, 1200); }
+      });
+      Array.prototype.forEach.call(li.querySelectorAll(".rx button"), function (b) { b.addEventListener("click", function (e) { e.stopPropagation(); reactTo(m, b.dataset.e); }); });
+      li.querySelector(".b").addEventListener("click", function () { openMsgSheet(m); });
+    }
+    async function chatChanged() { chatDrawn = ""; sendLive("chatup", { to: chatWith.id, from: me.id }); await loadChat(); }
+    async function reactTo(m, emoji) {
+      try { await rpc("chat_react", { p_id: m.id, p_emoji: emoji }); await chatChanged(); } catch (e) { say(e.message); }
+    }
+    // the bar above the box: replying to a message, or editing mine
+    function setChatBar(kind, m) {
+      chatReply = kind === "reply" ? m : null; chatEdit = kind === "edit" ? m : null;
+      $("g-chatbar").hidden = !kind;
+      if (!kind) return;
+      $("g-chatbartitle").textContent = kind === "edit" ? "✏️ Editing your message" : "↩️ Replying to " + (m.me ? "yourself" : chatWith.name);
+      $("g-chatbartext").textContent = m.body;
+      if (kind === "edit") $("g-chatin").value = m.body;
+      $("g-chatin").focus();
+    }
+    $("g-chatbarx").addEventListener("click", function () { if (chatEdit) $("g-chatin").value = ""; setChatBar(null); });
+    function openMsgSheet(m) {
+      var acts = $("g-msgacts"), rx = $("g-msgreact"), age = Date.now() - Date.parse(m.at);
+      acts.innerHTML = ""; rx.innerHTML = ""; rx.hidden = !!m.deleted;
+      function act(label, go, danger) {
+        var b = document.createElement("button"); b.type = "button"; b.textContent = label; if (danger) b.className = "danger";
+        b.addEventListener("click", function () { $("g-msgsheet").hidden = true; go(); });
+        acts.appendChild(b);
+      }
+      CHAT_REACTIONS.forEach(function (e) {
+        var b = document.createElement("button"); b.type = "button"; b.textContent = e; b.setAttribute("aria-label", "React with " + e);
+        if ((m.reactions || []).some(function (r) { return r.mine && r.e === e; })) b.className = "mine";
+        b.addEventListener("click", function () { $("g-msgsheet").hidden = true; reactTo(m, e); });
+        rx.appendChild(b);
+      });
+      if (!m.deleted) {
+        act("↩️ Reply", function () { setChatBar("reply", m); });
+        act("📋 Copy", function () { try { navigator.clipboard.writeText(m.body).then(function () { say("Copied"); }, function () { say("Couldn't copy that."); }); } catch (e) { say("Couldn't copy that."); } });
+        if (m.me && age < 15 * 60000) act("✏️ Edit", function () { setChatBar("edit", m); });
+      }
+      if (m.me && !m.deleted && age < 24 * 3600000) act("🗑️ Delete for everyone", function () {
+        if (!confirm("Delete this message for everyone?")) return;
+        rpc("chat_delete", { p_id: m.id, p_everyone: true }).then(chatChanged, function (e) { say(e.message); });
+      }, true);
+      act("🗑️ Delete for me", function () {
+        rpc("chat_delete", { p_id: m.id, p_everyone: false }).then(chatChanged, function (e) { say(e.message); });
+      }, true);
+      if (!m.me && !m.deleted) act("🚩 Report", function () { $("g-chatreport").click(); });
+      act("Cancel", function () {});
+      $("g-msgsheet").hidden = false;
+    }
+    $("g-msgsheet").addEventListener("click", function (e) { if (e.target === $("g-msgsheet")) $("g-msgsheet").hidden = true; });
+    $("g-msgclose").addEventListener("click", function () { $("g-msgsheet").hidden = true; });
+    // "typing…": a ping while I type, shown for a few seconds on their side
+    var typingSent = 0, typingHide = null;
+    $("g-chatin").addEventListener("input", function () {
+      if (!chatWith || !$("g-chatin").value || Date.now() - typingSent < 2500) return;
+      typingSent = Date.now(); sendLive("typing", { to: chatWith.id, from: me.id });
+    });
+    function gotTyping(p) {
+      if (!p || p.to !== me.id || !chatWith || p.from !== chatWith.id) return;
+      var t = $("g-chattyping"); t.querySelector("span").textContent = chatWith.name + " is typing";
+      t.hidden = false; clearTimeout(typingHide); typingHide = setTimeout(function () { t.hidden = true; }, 3500);
+    }
+    function gotChatUpdate(p) { if (p && p.to === me.id && chatWith && p.from === chatWith.id) loadChat(); }
+    // (and a quiet check every few seconds, for when the live connection is off)
+    setInterval(function () { if (chatWith && !document.hidden && !$("g-chat").hidden) loadChat(); }, 6000);
     var chatFailed = {};
     function refreshBadge() { updateSocialBadge(); }
     async function sendChat(text) {
       var f = chatWith; if (!f || !text.trim()) return;
       $("g-chatsend").disabled = true;
       try {
-        var r = await rpc("send_chat", { p_to: f.id, p_body: text });
-        $("g-chatin").value = "";
+        if (chatEdit) {
+          var ed = await rpc("chat_edit", { p_id: chatEdit.id, p_body: text });
+          $("g-chatin").value = ""; setChatBar(null);
+          if (ed.masked) say("Some words were hidden with *** to keep chat friendly.");
+          await chatChanged();
+          return;
+        }
+        var r = await rpc("send_chat", { p_to: f.id, p_body: text, p_reply: chatReply ? chatReply.id : null });
+        $("g-chatin").value = ""; setChatBar(null); $("g-chattyping").hidden = true;
         if (r.masked) say("Some words were hidden with *** to keep chat friendly.");
         sendLive("chat", { to: f.id, from: me.id });   // just a ping: they fetch the message from the server
         await loadChat();
       } catch (e) {
+        if (chatEdit) { say(friendly(e.message)); return; }
         $("g-chatin").value = "";
         (chatFailed[f.id] = chatFailed[f.id] || []).push({ body: text, why: friendly(e.message), at: new Date().toISOString(), me: true });
         sfx("pat");
@@ -7594,6 +7739,12 @@ html, body { overflow-x: hidden; }
     $("g-chatform").addEventListener("submit", function (e) { e.preventDefault(); sendChat($("g-chatin").value); });
     $("g-chatback").addEventListener("click", function () { $("g-chat").hidden = true; $("g-chatmenu").hidden = true; chatWith = null; if (!$("g-social").hidden) { renderSocial(); loadChatList(); } });
     $("g-chatmore").addEventListener("click", function () { $("g-chatmenu").hidden = !$("g-chatmenu").hidden; });
+    $("g-chatclear").addEventListener("click", async function () {
+      var f = chatWith; if (!f) return;
+      $("g-chatmenu").hidden = true;
+      if (!confirm("Clear this chat with " + f.name + "? It only empties your side; " + f.name + " keeps their messages.")) return;
+      try { await rpc("chat_clear", { p_other: f.id }); chatDrawn = ""; await loadChat(); loadChatList(); } catch (e) { say(e.message); }
+    });
     $("g-chatreport").addEventListener("click", async function () {
       var f = chatWith; if (!f) return;
       if (!confirm("Report this chat with " + f.name + "? The Pet Streak team will read the recent messages.")) return;
@@ -9434,7 +9585,7 @@ html, body { overflow-x: hidden; }
     // tidying up runs). That tap only closes: it doesn't also pat the pet or press the button underneath.
     var CLOSABLE = [["g-menu", "g-menuclose"], ["g-store", "g-storeclose"], ["g-sheet", "g-close"], ["g-ranks", "g-ranksclose"],
                     ["g-share", "g-shareclose"], ["g-petsheet", "g-petsheetclose"], ["g-adoptinfo", "g-aiclose"], ["g-tray", "g-trayclose"],
-                    ["g-today", "g-todayclose"], ["g-achs", "g-achsclose"], ["g-history", "g-historyclose"], ["g-petprev", "g-pvback"], ["g-howto", "g-howtoclose"]];
+                    ["g-today", "g-todayclose"], ["g-achs", "g-achsclose"], ["g-history", "g-historyclose"], ["g-petprev", "g-pvback"]];
     var swallowClick = 0;
     document.addEventListener("pointerdown", function (e) {
       // a full-screen card (gift, join, name...) is on top: leave everything as it is
@@ -9452,8 +9603,8 @@ html, body { overflow-x: hidden; }
     // The phone's back button (Android's back swipe): close whatever is on top instead of leaving the app. A game
     // asks first. On the main screen, a second back within 2 seconds closes the app.
     var BACK = [["g-achpop", "g-achok"], ["g-invite", "g-inviteno"], ["g-ask", "g-askcancel"], ["g-join", "g-joincancel"],
-                ["g-giftsend", "g-gsdone"], ["g-petopts", "g-poclose"], ["g-gamepick", "g-pickno"], ["g-mode", "g-modeclose"],
-                ["g-pick", "g-pickclose"], ["g-history", "g-historyclose"], ".pg-game", ["g-chat", "g-chatback"],
+                ["g-giftsend", "g-gsdone"], ["g-petopts", "g-poclose"], ["g-gamepick", "g-pickno"], ["g-gamehelp", "g-ghclose"], ["g-mode", "g-modeclose"],
+                ["g-pick", "g-pickclose"], ["g-history", "g-historyclose"], ".pg-game", ["g-msgsheet", "g-msgclose"], ["g-chatbar", "g-chatbarx"], ["g-chat", "g-chatback"],
                 ["g-social", "g-socialclose"], ["g-play", "g-playclose"], ["g-bath", "g-bathcancel"], ["g-howto", "g-howskip"],
                 ["g-getapp", "g-gaclose"], ["g-streakinfo", "g-siok"], ["g-bonusintro", "g-bonusok"]].concat(CLOSABLE);
     function closeTop() {
