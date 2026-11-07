@@ -5998,7 +5998,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261107060200";   // replaced by build_real.ps1
+    var APP_BUILD = "20261107061517";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -7108,7 +7108,8 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       var st = R.stake;
       if (st && st.status === "live" && st.from === me.id && R.stakeGo !== st.id && !raceNow) {
         R.stakeGo = st.id; roomPickGame = st.game; roomOpp = st.to; roomStake = 0; R.stakeAgain = st.amount;
-        loadAll({ quiet: true }); roomStartGame();
+        loadAll({ quiet: true });
+        roomStartGame().then(function (ok) { if (!ok && roomNow === R) R.stakeGo = null; });   // (it didn't start: try again on the next check)
       }
     }
     // a friendly stake: the offer on both phones
@@ -7217,15 +7218,18 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       g.appendChild(go);
     }
     async function roomStartGame() {
-      var R = roomNow, game = roomPickGame; if (!R || !game || raceNow) return;
+      var R = roomNow, game = roomPickGame; if (!R || !game || raceNow || R.starting) return false;
       var two = GAMES[game].max === 1, others = R.members.filter(function (m) { return m.uid !== me.id; });
       var chosen = two ? others.filter(function (m) { return others.length === 1 || m.uid === roomOpp; }) : others.slice(0, 3);
       var vs = game === "ball" && roomVs, res;
+      R.starting = true;
       try { res = await rpc("room_start", { p_room: R.id, p_game: game, p_players: [me.id].concat(chosen.map(function (m) { return m.uid; })), p_extra: { vs: vs } }); }
-      catch (e) { say(e.message); return; }
+      catch (e) { say(e.message); return false; }
+      finally { R.starting = false; }
       R.seq = (R.seq || 0) + 1; R.played = game; roomPoke();
       $("g-roompage").hidden = true;
       liveGame(game, res.game_room, true, { vs: vs, fast: false, guests: chosen.map(function (m) { return { uid: m.uid, html: petTagHTML(m), state: "wait" }; }) });
+      return true;
     }
     // Watching: the host's phone sends the scores once a second ("w") and anyone sitting out sees them on one scoreboard.
     // Only scores travel here, no chat, so Safe mode has nothing to hide.
@@ -7402,7 +7406,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       var R = { on: function (ev, fn) { hs[ev] = fn; return R; },
         send: function (ev, p) { ch.send({ type: "broadcast", event: ev, payload: p || {} }); },
         close: function () { try { sb.removeChannel(ch); } catch (e) {} } };
-      ["here", "seat", "full", "go", "bye", "w", "qc", "tx", "endask", "endok", "endno", "p", "fin", "result", "s", "final", "flip", "pass", "hit", "drop", "shot", "dive"].forEach(function (ev) {
+      ["here", "seat", "full", "go", "bye", "w", "qc", "tx", "endask", "endok", "endno", "endcancel", "p", "fin", "result", "s", "final", "flip", "pass", "hit", "drop", "shot", "dive"].forEach(function (ev) {
         ch.on("broadcast", { event: ev }, function (m) { if (hs[ev]) hs[ev](m.payload || {}); });
       });
       ch.subscribe(function (st) { if (st === "SUBSCRIBED" && hs.ready) hs.ready(); });
@@ -7469,7 +7473,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
           ["Keep playing", stakeClose]
         ]);
       }
-      function stakeTakeBack() { stakeClose(); rpc("stake_draw", { p_room: room, p_on: false }).catch(function () {}); }
+      function stakeTakeBack() { stakeClose(); R.send("endcancel", {}); rpc("stake_draw", { p_room: room, p_on: false }).catch(function () {}); }
       function stakeGuard(e) {
         if (!S.stakeAmt || S.stakeOver || S.closed || !e.target.closest || !e.target.closest(".pg-gamex")) return;
         e.stopPropagation(); e.preventDefault(); stakeAsk();
@@ -7480,12 +7484,16 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
         var who = stakeName();
         stakeCard(who + " wants to end the game", "If you agree, you both get your " + S.stakeAmt + " paws back.", [
           ["🤝 Agree to end it", function () {
-            rpc("stake_draw", { p_room: room }).then(function () { R.send("endok", {}); clearInterval(stakeT); stakeExit("Game ended. Your paws are back. 🐾"); }, function (e) { say(e.message); });
+            rpc("stake_draw", { p_room: room }).then(function (st) {
+              if (st !== "refunded") { stakeClose(); say(stakeName() + " changed their mind. The game goes on."); return; }
+              R.send("endok", {}); clearInterval(stakeT); stakeExit("Game ended. Your paws are back. 🐾");
+            }, function (e) { say(e.message); });
           }, "pg-feed"],
           ["Keep playing", function () { stakeClose(); R.send("endno", {}); }]
         ]);
       });
       R.on("endok", function () { clearInterval(stakeT); stakeExit("Game ended. Your paws are back. 🐾"); });
+      R.on("endcancel", function () { stakeClose(); });
       R.on("endno", function () { stakeTakeBack(); say(stakeName() + " wants to keep playing."); });
       // the waiting room: who's coming, emoji to say hi, and (for the host) Start
       var wait = document.createElement("div"); wait.className = "pg-game pg-wait";
@@ -7703,7 +7711,8 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
         }
         function show(scores) {
           if (done) return; done = true; clearTimeout(judgeT); clearInterval(pump);
-          var a = scores[me.id] | 0, b = scores[other.uid];
+          var a = finals[me.id] === undefined ? latest : finals[me.id], b = scores[other.uid], doubt = !host && scores[me.id] !== a;
+          if (doubt) { endLeft(bam.wrap, "We couldn't check the scores with " + label(other) + ". You scored " + a + "."); return; }
           var won = b === null || b === undefined ? null : a > b ? true : a < b ? false : "draw";
           if (won === null) { endLeft(bam.wrap, "We lost touch with " + label(other) + ". You scored " + a + "."); return; }
           endCard(bam.wrap, won, { big: a + ' <small class="vs">vs ' + b + "</small>", lbl: "points", lost: label(other) + " wins this time!", score: a,
@@ -7821,9 +7830,13 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       async function endCard(wrap, won, o) {
         S.stakeOver = true; stakeClose();
         var wins = p.race_wins || 0;
+        // first of all, and tried again: the ranking and any paws depend on it
+        if (won === true || won === false) (function report(n) {
+          rpc("report_match", { p_room: room, p_game: game, p_won: won }).catch(function () { if (n < 5) setTimeout(function () { report(n + 1); }, 3000 * (n + 1)); });
+        })(0);
+        if (won === false) clearInterval(stakeT);   // (the loser has nothing to claim)
         if (won === true) { try { wins = await rpc("record_race_win", { p_id: p.id }); p.race_wins = wins; } catch (e) {} }
-        if (won === true || won === false) rpc("report_match", { p_room: room, p_game: game, p_won: won }).catch(function () {});   // the weekly ranking
-        else if (won === "draw") rpc("stake_draw", { p_room: room }).catch(function () {});
+        if (won === "draw") rpc("stake_draw", { p_room: room }).catch(function () {});
         logGame(game, "live", o.against, won === true ? "won" : won === "draw" ? "draw" : "lost", o.place || null, o.score);
         var lone = others().length === 1 ? others()[0] : null, stranger = lone && !friendOf(lone.uid) ? lone : null, again = againUids();
         var end = document.createElement("div"); end.className = "pg-gameend";
