@@ -6142,7 +6142,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261107083643";   // replaced by build_real.ps1
+    var APP_BUILD = "20261107084717";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -7125,7 +7125,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       catch (e) { box.innerHTML = '<li class="pg-logempty">' + esc(/weekly_board/.test(e.message) ? "The ranking isn't switched on yet." : e.message) + "</li>"; return; }
       if (tab !== weekTab) return;
       if (!tab) weekSub(b);
-      $("g-weekhint").textContent = "Resets in " + weekLeft(b.ends) + ". " + (tab ? "This game's wins this week." : "The top 3 win 🐾 150, 100 and 50.");
+      $("g-weekhint").textContent = "Resets in " + weekLeft(b.ends) + ". " + (tab ? "This game's wins this week." : "The top 3 win 🐾 50, 25 and 15.");
       box.innerHTML = "";
       (b.rows || []).forEach(function (r) { box.appendChild(weekRow(r)); });
       if (b.me && b.me.place > 20) box.appendChild(weekRow({ place: b.me.place, wins: b.me.wins, me: true, uid: me.id, pet: pet() && pet().name, variant: pet() && pet().variant, level: pet() && pet().level }));
