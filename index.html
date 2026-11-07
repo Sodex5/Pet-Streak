@@ -1747,6 +1747,19 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
 
 .pg-weeklist li.pg-weekhead { display: block; background: none; padding: 10px 2px 0; font-weight: 800; color: #14232b; }
 .pg-botmsg:nth-of-type(5) { animation-delay: 2s; }
+
+/* watching a game in a room */
+#g-watch { z-index: 30; }
+.pg-roomwatch { width: 100%; }
+.pg-watchlist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.pg-watchlist li { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 16px; background: #f1f5f6; }
+.pg-watchlist img { width: 48px; height: 48px; object-fit: contain; flex: none; }
+.pg-watchlist b { display: block; color: #14232b; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pg-watchlist .pg-grow { min-width: 0; }
+.pg-watchlist .n { flex: none; font-weight: 800; font-size: 1.5rem; color: #14232b; }
+.pg-watchlist .n small { font-size: 0.75rem; font-weight: 600; color: #55666e; }
+.pg-watchlist .bar { display: block; height: 10px; margin-top: 6px; border-radius: 999px; background: #dbe4e8; overflow: hidden; }
+.pg-watchlist .bar i { display: block; height: 100%; border-radius: 999px; background: #e8556d; transition: width 0.4s ease; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -2153,6 +2166,12 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       <h2><span>🏁 Your games <small>last 7 days</small></span> <button type="button" class="pg-x" id="g-historyclose" aria-label="Close your games">✕</button></h2>
       <p class="pg-hint" id="g-histsum"></p>
       <ol class="pg-histlist" id="g-histlist"></ol>
+    </div>
+    <!-- watching a game in a room: one live scoreboard for every game -->
+    <div class="pg pg-card pg-sheet" id="g-watch" hidden>
+      <h2><span id="g-watchtitle"></span> <button type="button" class="pg-x" id="g-watchclose" aria-label="Stop watching">✕</button></h2>
+      <p class="pg-hint" id="g-watchnote" aria-live="polite"></p>
+      <ul class="pg-watchlist" id="g-watchlist"></ul>
     </div>
     <!-- the weekly ranking: wins against other players, all games or one game -->
     <div class="pg pg-card pg-sheet pg-histsheet" id="g-week" hidden>
@@ -5687,6 +5706,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       serve();
     }
     return {
+      pts: function () { return pts; },
       wrap: wrap, close: close,
       start: function () {
         var seen = false;
@@ -5936,6 +5956,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
     });
     function go() { live = true; msg.textContent = ""; nextKick(); }
     return {
+      goals: function () { return { me: goals.me.filter(Boolean).length, them: goals.them.filter(Boolean).length }; },
       wrap: wrap, close: close,
       start: function () {
         if (opts.live) countdownFrom(msg, LIVE_COUNTDOWN, "Kick off!", timers, function () { return over; }, go);
@@ -5969,7 +5990,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261107051115";   // replaced by build_real.ps1
+    var APP_BUILD = "20261107052614";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -7022,6 +7043,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       clearInterval(roomTimer); roomTimer = setInterval(roomPoll, 3000);
       roomPoll();
     }
+    $("g-watchclose").addEventListener("click", watchClose);
     function roomPoke() { try { if (roomCh) roomCh.send({ type: "broadcast", event: "poke", payload: {} }); } catch (e) {} }
     function roomShow() {
       $("g-play").hidden = true; $("g-rooms").hidden = true; $("g-roompage").hidden = false;
@@ -7043,6 +7065,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       if (s.gone) { roomEnd(s.kicked ? "You were removed from the room." : s.dropped ? "You were away for a while, so you left the room." : "That room has closed."); return; }
       var had = R.members.map(function (m) { return m.uid; }), first = R.seq === null;
       R.code = s.code; R.pub = s.public; R.max = s.max; R.host = s.host; R.members = s.members; R.stake = s.stake || null;
+      R.game = s.game; R.gameRoom = s.game_room; R.gamePlayers = s.game_players || [];
       R.members.forEach(function (m) { R.names[m.uid] = shownPetName(m.pet); });
       if (!first) {
         R.members.forEach(function (m) {
@@ -7058,7 +7081,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
         R.seq = s.seq;
         var picked = (s.game_players || []).indexOf(me.id) >= 0;
         if (picked && s.host !== me.id && !raceNow) { $("g-roompage").hidden = true; liveGame(s.game, s.game_room, false, { from: s.host }); }
-        else if (!picked) roomNote(GAMES[s.game].art + " A game has started. You'll get the next one!");
+        else if (!picked) { roomNote(GAMES[s.game].art + " A game has started. Tap 👀 Watch to see it!"); if (watchNow) watchOpen(); }
       }
       if (!$("g-roompage").hidden) roomDraw();
       // both have agreed the paws: the host's phone starts the game
@@ -7109,10 +7132,14 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
         box.appendChild(li);
       });
       for (var i = n; i < R.max; i++) { var e = document.createElement("li"); e.className = "free"; e.innerHTML = '<button type="button" aria-label="Invite someone"><b>＋</b><span>Free</span></button>'; e.querySelector("button").addEventListener("click", roomInvite); box.appendChild(e); }
-      var g = $("g-roomgame"); g.innerHTML = "";
+      var g = $("g-roomgame"), live = roomLive(); g.innerHTML = "";
+      if (live) {
+        var wb = document.createElement("button"); wb.type = "button"; wb.className = "pg-feed pg-roomwatch"; wb.textContent = "👀 Watch " + GAMES[R.game].name;
+        wb.addEventListener("click", watchOpen); g.appendChild(wb);
+      }
       if (R.stake) { roomStakeCard(g); return; }
       if (R.stakeAgain && !raceNow) { roomStake = R.stakeAgain; R.stakeAgain = 0; }   // Play again keeps the amount (they still have to agree)
-      if (!iHost) { g.innerHTML = '<p class="pg-roomwait">' + esc(n < 2 ? "Waiting for more players…" : "Waiting for " + roomName(R.host) + " to pick a game and start…") + "</p>"; return; }
+      if (!iHost) { if (!live) g.innerHTML = '<p class="pg-roomwait">' + esc(n < 2 ? "Waiting for more players…" : "Waiting for " + roomName(R.host) + " to pick a game and start…") + "</p>"; return; }
       var row = document.createElement("div"); row.className = "pg-roompicks";
       roomGames.forEach(function (k) {
         var b = document.createElement("button"); b.type = "button"; b.setAttribute("aria-pressed", roomPickGame === k ? "true" : "false");
@@ -7178,7 +7205,50 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       $("g-roompage").hidden = true;
       liveGame(game, res.game_room, true, { vs: vs, fast: false, guests: chosen.map(function (m) { return { uid: m.uid, html: petTagHTML(m), state: "wait" }; }) });
     }
+    // Watching: the host's phone sends the scores once a second ("w") and anyone sitting out sees them on one scoreboard.
+    // Only scores travel here, no chat, so Safe mode has nothing to hide.
+    var watchNow = null;
+    function roomLive() {
+      var R = roomNow; if (!R || !R.gameRoom || !GAMES[R.game] || (R.gamePlayers || []).indexOf(me.id) >= 0) return null;
+      var ps = R.members.filter(function (m) { return R.gamePlayers.indexOf(m.uid) >= 0; });
+      return ps.some(function (m) { return m.busy; }) ? ps : null;
+    }
+    function watchClose() {
+      var W = watchNow; $("g-watch").hidden = true; if (!W) return;
+      watchNow = null; clearInterval(W.t); W.R.close();
+    }
+    function watchOpen() {
+      var r = roomNow; if (!r || !r.gameRoom) return;
+      watchClose();
+      var W = watchNow = { R: openRoom(r.gameRoom), game: r.game, uids: r.gamePlayers.slice(), last: Date.now(), m: null, over: false };
+      W.R.on("w", function (m) { if (watchNow !== W) return; W.m = m; W.last = Date.now(); W.over = !!m.done; drawWatch(W); });
+      W.R.on("bye", function (m) {
+        if (watchNow !== W || W.over || (W.uids.length > 2 && !(roomNow && m.uid === roomNow.host))) return;
+        W.over = true; W.left = m.uid; drawWatch(W);
+      });
+      W.t = setInterval(function () { if (!W.over && Date.now() - W.last > 8000) { W.over = true; drawWatch(W); } }, 1000);
+      $("g-watch").hidden = false; drawWatch(W);
+    }
+    function drawWatch(W) {
+      var r = roomNow, G = GAMES[W.game], m = W.m || {}, s = m.s || {}, box = $("g-watchlist"); if (!r) return;
+      $("g-watchtitle").innerHTML = G.art + " " + esc(G.name);
+      var best = Math.max.apply(null, W.uids.map(function (u) { return s[u] | 0; }));
+      var top = W.uids.filter(function (u) { return (s[u] | 0) === best; });
+      var note = !W.m && !W.over ? "Waiting for the game to begin…" : !W.over ? "🔴 Live" :
+        W.left ? roomName(W.left) + " left the game." : !m.done ? "That game has finished." :
+        m.team ? "🤝 " + best + " passes together!" : top.length > 1 ? "It's a draw!" : "🏆 " + roomName(top[0]) + " wins!";
+      $("g-watchnote").textContent = note;
+      box.innerHTML = "";
+      W.uids.forEach(function (u) {
+        var who = r.members.filter(function (x) { return x.uid === u; })[0], li = document.createElement("li"), n = s[u] | 0;
+        li.innerHTML = (who ? '<img alt="" src="' + esc(petPic(who.variant)) + '">' : "") + '<span class="pg-grow"><b>' + esc(roomName(u)) + "</b>" +
+          (m.max ? '<i class="bar"><i style="width:' + Math.min(100, Math.round(n / m.max * 100)) + '%"></i></i>' : "") + "</span>" +
+          (m.max ? "" : '<span class="n">' + n + (m.lbl ? " <small>" + esc(n === 1 ? m.lbl.replace(/e?s$/, "") : m.lbl) + "</small>" : "") + "</span>");
+        box.appendChild(li);
+      });
+    }
     function roomEnd(why) {
+      watchClose();
       clearInterval(roomTimer); roomTimer = null;
       try { if (roomCh) sb.removeChannel(roomCh); } catch (e) {}
       roomCh = null; roomNow = null; $("g-roompage").hidden = true;
@@ -7300,7 +7370,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       var R = { on: function (ev, fn) { hs[ev] = fn; return R; },
         send: function (ev, p) { ch.send({ type: "broadcast", event: ev, payload: p || {} }); },
         close: function () { try { sb.removeChannel(ch); } catch (e) {} } };
-      ["here", "seat", "full", "go", "bye", "qc", "tx", "endask", "endok", "endno", "p", "fin", "result", "s", "final", "flip", "pass", "hit", "drop", "shot", "dive"].forEach(function (ev) {
+      ["here", "seat", "full", "go", "bye", "w", "qc", "tx", "endask", "endok", "endno", "p", "fin", "result", "s", "final", "flip", "pass", "hit", "drop", "shot", "dive"].forEach(function (ev) {
         ch.on("broadcast", { event: ev }, function (m) { if (hs[ev]) hs[ev](m.payload || {}); });
       });
       ch.subscribe(function (st) { if (st === "SUBSCRIBED" && hs.ready) hs.ready(); });
@@ -7309,7 +7379,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
     function hidePlayPages() { ["g-play", "g-social", "g-pick", "g-mode", "g-gamepick", "g-petopts", "g-chat", "g-rooms", "g-roompage"].forEach(function (id) { $(id).hidden = true; }); chatWith = null; }
     function liveGame(game, room, host, info) {
       var p = pet(); if (!p || raceNow) return;
-      hidePlayPages();
+      watchClose(); hidePlayPages();
       var R = openRoom(room), mine = myPresence(), G = GAMES[game];
       var players = host ? [mine] : [], guests = host ? info.guests : [], hostUid = host ? me.id : info.from;
       var started = false, done = false, timers = [], hereTimer = null, autoT = null, view = null;
@@ -7496,6 +7566,12 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
           if (!started) waitBubble(x.uid, x.body); else if (S.quick) S.quick(x.uid, x.body);
         }, function () {});
       });
+      // the scores for anyone watching: sent only while someone in the room is sitting out
+      function wSend() {
+        if (!S.ws || !roomNow || roomNow.members.length <= players.length) return;
+        var w = S.ws(); w.done = done; R.send("w", w);
+        if (done) clearInterval(S.wT);
+      }
       function startNow() {
         if (!host || started || players.length < 2) return;
         var m = { players: players.slice(), first: players[Math.floor(Math.random() * players.length)].uid, vs: !!info.vs, fast: !!info.fast };
@@ -7510,6 +7586,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
         wait.remove();
         players = m.players;
         if (game === "bamboo") goBamboo(m); else if (game === "memory") goMemory(m); else if (game === "ball") goBall(m); else if (game === "penalty") goPenalty(m); else goRace(m);
+        if (host) S.wT = setInterval(wSend, 1000);
       }
       function others() { return players.filter(function (x) { return x.uid !== me.id; }); }
       function againUids() { if (roomNow) return []; return others().map(function (x) { return x.uid; }).filter(function (u) { return online[u] || friendOf(u); }); }
@@ -7530,6 +7607,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
         R.on("fin", function (x) { if (host) referee(x.uid); });
         R.on("result", function (x) { if (!host) show(x.order || []); });
         S.quick = function (uid, i) { race.quick(uid, i); };
+        S.ws = function () { return { s: prog, max: RACE_STEPS }; };
         function referee(first) {
           if (done) return;
           var order = [first].concat(m.players.map(function (x) { return x.uid; })
@@ -7566,7 +7644,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       }
       // a Bamboo duel: both phones get the same falling food; the host compares the final scores
       function goBamboo(m) {
-        var other = others()[0], latest = 0, sentN = -1, finals = {}, gone = false, judgeT = null;
+        var other = others()[0], latest = 0, sentN = -1, finals = {}, gone = false, judgeT = null, theirs = 0;
         var bam = startBambooGame({
           pic: petPic(p.variant), seed: seedOf(room), live: true, them: { html: petTagHTML(other) },
           onScore: function (n) { latest = n; },
@@ -7579,7 +7657,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
         });
         view = bam;
         var pump = setInterval(function () { if (latest !== sentN) { sentN = latest; R.send("s", { uid: me.id, n: sentN }); } }, 300);
-        R.on("s", function (x) { if (x.uid === other.uid) bam.opp(x.n | 0); });
+        R.on("s", function (x) { if (x.uid === other.uid) { theirs = x.n | 0; bam.opp(theirs); } });
         R.on("final", function (x) { if (x.uid !== other.uid) return; finals[other.uid] = x.n | 0; bam.opp(x.n | 0); if (host) judge(); });
         R.on("result", function (x) { if (!host && x.scores) show(x.scores); });
         S.quick = function (uid, i) { bam.quick(i); };
@@ -7604,6 +7682,10 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
           if (finals[me.id] !== undefined) judge(true); else say(label(other) + " left the duel. Finish your round!");
         };
         S.stop = function () { clearInterval(pump); clearTimeout(judgeT); bam.close(); };
+        S.ws = function () {
+          var s = {}; s[me.id] = finals[me.id] === undefined ? latest : finals[me.id]; s[other.uid] = finals[other.uid] === undefined ? theirs : finals[other.uid];
+          return { s: s, lbl: "points" };
+        };
         bam.start();
       }
       // Memory match, taking turns: both phones apply the same flips in order, so they agree on the result
@@ -7629,6 +7711,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
         S.quick = function (uid, i) { mem.quick(i, esc(label(other))); };
         S.bye = function (uid) { if (uid !== other.uid || done) return; done = true; mem.stop(); endLeft(mem.wrap, label(other) + " left the game."); };
         S.stop = function () { mem.close(); };
+        S.ws = function () { return { s: mem.result().pairs, lbl: "pairs" }; };
         mem.start();
       }
       // Ball pass, together or versus: whoever the ball flies to judges their own tap ("hit" n, or "drop")
@@ -7669,6 +7752,10 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
         S.quick = function (uid, i) { bp.quick(i); };
         S.bye = function (uid) { if (uid === other.uid && !done) bp.left(); };
         S.stop = function () { bp.close(); };
+        S.ws = function () {
+          var s = {}, a = bp.pts(); s[me.id] = vs ? a.me : bp.score(); s[other.uid] = vs ? a.them : bp.score();
+          return { s: s, lbl: vs ? "points" : "passes", team: !vs };
+        };
         bp.start();
       }
       // Penalty kicks: each kick both choose in secret ("shot" / "dive"); both phones work out the same result
@@ -7694,6 +7781,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
         S.quick = function (uid, i) { pk.quick(i); };
         S.bye = function (uid) { if (uid === other.uid && !done) pk.left(); };
         S.stop = function () { pk.close(); };
+        S.ws = function () { var s = {}, a = pk.goals(); s[me.id] = a.me; s[other.uid] = a.them; return { s: s, lbl: "goals" }; };
         pk.start();
       }
       // the end of a live game: wins, history, and what next
@@ -7751,7 +7839,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       function leave() { R.send("bye", { uid: me.id }); cleanup(); }
       function cleanup() {
         if (S.closed) return; S.closed = true;
-        clearInterval(hereTimer); clearTimeout(autoT); timers.forEach(clearTimeout);
+        clearInterval(hereTimer); clearInterval(S.wT); clearTimeout(autoT); timers.forEach(clearTimeout);
         document.removeEventListener("click", stakeGuard, true); stakeClose();
         if (S.stop) S.stop(); else if (view) view.close();
         wait.remove(); R.close();
@@ -10496,7 +10584,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
     // asks first. On the main screen, a second back within 2 seconds closes the app.
     var BACK = [["g-tour", "g-tourskip"], ["g-achpop", "g-achok"], ["g-invite", "g-inviteno"], ["g-ask", "g-askcancel"], ["g-join", "g-joincancel"],
                 ["g-giftsend", "g-gsdone"], ["g-petopts", "g-poclose"], ["g-gamepick", "g-pickno"], ["g-gamehelp", "g-ghclose"], ["g-mode", "g-modeclose"],
-                ["g-pick", "g-pickclose"], ["g-history", "g-historyclose"], ".pg-game", ["g-msgsheet", "g-msgclose"], ["g-chatbar", "g-chatbarx"], ["g-chat", "g-chatback"], ["g-safecard", "g-safecancel"], ["g-roomnew", "g-roomnewcancel"], ["g-roompage", "g-roomback"], ["g-rooms", "g-roomsclose"],
+                ["g-pick", "g-pickclose"], ["g-history", "g-historyclose"], ".pg-game", ["g-msgsheet", "g-msgclose"], ["g-chatbar", "g-chatbarx"], ["g-chat", "g-chatback"], ["g-watch", "g-watchclose"], ["g-safecard", "g-safecancel"], ["g-roomnew", "g-roomnewcancel"], ["g-roompage", "g-roomback"], ["g-rooms", "g-roomsclose"],
                 ["g-social", "g-socialclose"], ["g-play", "g-playclose"], ["g-bath", "g-bathcancel"], ["g-howto", "g-howskip"],
                 ["g-getapp", "g-gaclose"], ["g-streakinfo", "g-siok"], ["g-bonusintro", "g-bonusok"]].concat(CLOSABLE);
     function closeTop() {
