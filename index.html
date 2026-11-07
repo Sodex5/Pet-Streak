@@ -1760,6 +1760,13 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
 .pg-watchlist .n small { font-size: 0.75rem; font-weight: 600; color: #55666e; }
 .pg-watchlist .bar { display: block; height: 10px; margin-top: 6px; border-radius: 999px; background: #dbe4e8; overflow: hidden; }
 .pg-watchlist .bar i { display: block; height: 100%; border-radius: 999px; background: #e8556d; transition: width 0.4s ease; }
+
+/* ready-made messages in a room; messages to the player sit above every page */
+.pg-roomsays { flex: none; display: flex; gap: 6px; overflow-x: auto; padding: 6px 12px; scrollbar-width: none; }
+.pg-roomsays::-webkit-scrollbar { display: none; }
+.pg-roomsays button { flex: none; min-height: 40px; padding: 0 14px; border: 1px solid #d6e0e4; border-radius: 999px; background: #fff; font: inherit; font-weight: 700; color: #14232b; white-space: nowrap; }
+#g-roomform[hidden] { display: none; }
+#g-msg { position: fixed; z-index: 80; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -2065,8 +2072,9 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       <ul class="pg-roommembers" id="g-roommembers"></ul>
       <div class="pg-roomgame" id="g-roomgame"></div>
       <ol class="pg-chatlist" id="g-roomchat" aria-live="polite"></ol>
-      <form class="pg-chatform" id="g-roomform">
-        <input id="g-roomin" maxlength="200" autocomplete="off" placeholder="Say hi to the room…" aria-label="Message">
+      <div class="pg-roomsays" id="g-roomsays"></div>
+      <form class="pg-chatform" id="g-roomform" hidden>
+        <input id="g-roomin" maxlength="200" autocomplete="off" placeholder="Only your friends see this…" aria-label="Message to your friends">
         <button type="submit" class="pg-btn pg-primary" aria-label="Send">➤</button>
       </form>
     </div>
@@ -5990,7 +5998,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261107052614";   // replaced by build_real.ps1
+    var APP_BUILD = "20261107060200";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -6560,9 +6568,10 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
     // rude pet names are shown to strangers as "A red panda" (the admin can also reset reported names)
     // whole words only (so "Grape" and "Peacock" are fine), with look-alike letters undone (sh1t, @ss)
     var RUDE = /\b(fu+c?k\w*|fuk\w*|sh[i]+t\w*|bitch\w*|cunts?|dick(head)?s?|cocks?|puss(y|ies)|ass(hole)?s?|bastards?|nigg\w*|fag\w*|sluts?|whores?|porn\w*|sexy|penis|vagina|rap(e|ist)|nazis?|hitler|retard\w*)\b/i;
+    var CONTACT_NAME = /(\d\D?){3}|\b(snap|kik|ig|wa|fb|tele|dm)\b|snapchat|insta|whats|telegram|discord|tiktok|facebook|wechat|gmail|yahoo|hotmail|outlook|@|http|www|\.com|dot ?com/i;
     function shownPetName(name) {
       var n = String(name || "").toLowerCase().replace(/1|!/g, "i").replace(/0/g, "o").replace(/3/g, "e").replace(/@|4/g, "a").replace(/\$|5/g, "s");
-      return RUDE.test(n) ? "A red panda" : name;
+      return RUDE.test(n) || CONTACT_NAME.test(String(name || "")) ? "A red panda" : String(name || "").slice(0, 16);
     }
     function friendOf(uid) { return friends.filter(function (f) { return f.kind === "friend" && f.id === uid; })[0] || null; }
     function label(e) { var f = e && friendOf(e.uid); return f ? f.name + "'s " + e.pet : shownPetName(e && e.pet); }
@@ -6847,9 +6856,10 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       uids.forEach(function (uid) {
         var f = friendOf(uid);
         if (online[uid]) {
-          sendLive("invite", { to: uid, from: me.id, room: room, game: game, vs: vs, fast: fast, me: myPresence() });
-          // a friend's app might be in the background: the server keeps it for them too
-          if (f) rpc("invite_friend", { p_to: uid, p_game: game, p_room: room }).catch(function () {});
+          // the server records it (and checks blocks and Safe mode), so a friend in the background gets it too; then a ping
+          rpc("invite_player", { p_to: uid, p_game: game, p_room: room }).then(function () {
+            sendLive("invite", { to: uid, from: me.id, room: room, game: game, vs: vs, fast: fast, me: myPresence() });
+          }, function (e) { say(friendly(e.message)); });
         } else if (f) inviteFriendAway(f, game, room);
       });
       liveGame(game, room, true, { guests: guests, vs: vs, fast: fast });
@@ -6873,10 +6883,16 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       if (key === undefined || key === null) return;
       try { var s = JSON.parse(localStorage.getItem(INV_SEEN_KEY) || "[]"); s.push(String(key)); localStorage.setItem(INV_SEEN_KEY, JSON.stringify(s.slice(-80))); } catch (e) {}
     }
-    function gotInvite(m) {
-      if (!m || m.to !== me.id || !m.me || !m.room || blocked.indexOf(m.me.pet_id) >= 0 || invSeen(m.room)) return;
+    // an invite ping: anyone could send one, so everything shown comes from the server's record of it
+    async function gotInvite(m) {
+      if (!m || m.to !== me.id || !m.room || invSeen(m.room)) return;
+      var list;
+      try { list = await rpc("my_play_invites"); } catch (e) { return; }
+      var inv = (list || []).filter(function (i) { return i.room === m.room && i.from === m.from; })[0];
+      if (!inv || !inv.pet || blocked.indexOf(inv.pet.pet_id) >= 0 || invSeen(m.room)) return;
       if (raceNow || inviteOpen) { sendLive("reply", { to: m.from, from: me.id, room: m.room, ok: false, busy: true }); return; }
-      showInvite({ from: m.from, room: m.room, game: gameOf(m.game), pic: petPic(m.me.variant), html: petTagHTML(m.me), canBlock: !friendOf(m.from), pet: m.me, vs: !!m.vs, fast: !!m.fast });
+      markInv(inv.id);
+      showInvite({ from: m.from, room: m.room, game: gameOf(inv.game), pic: petPic(inv.pet.variant), html: petTagHTML(inv.pet), canBlock: !friendOf(m.from), pet: inv.pet, vs: !!m.vs, fast: !!m.fast });
     }
     // invites friends saved for me: a fresh one (with its room) joins the game; an older one offers to invite back
     async function checkPlayInvites() {
@@ -6887,6 +6903,10 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       if (!inv || inviteOpen || raceNow) return;
       markInv(inv.id);
       var f = friendOf(inv.from), fresh = inv.room && (inv.secs || 0) < 90;
+      if (!f && inv.game !== "room") {   // not a friend: only ever their pet, and only while the game is waiting
+        if (fresh && inv.pet) showInvite({ from: inv.from, room: inv.room, game: gameOf(inv.game), pic: petPic(inv.pet.variant), html: petTagHTML(inv.pet), canBlock: true, pet: inv.pet, old: 0 });
+        return;
+      }
       if (inv.game === "room") {
         if (!inv.room || (roomNow && roomNow.code === inv.room.toUpperCase())) return;
         showInvite({ hub: inv.room.toUpperCase(), from: inv.from, game: "race", pic: petPic(f && f.pet && f.pet.variant), html: f ? friendTagHTML(f) : esc(inv.name), canBlock: false, old: 0 });
@@ -7124,6 +7144,8 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       var hostM = R.members.filter(function (m) { return m.uid === R.host; })[0], iHost = R.host === me.id, n = R.members.length;
       $("g-roomtitle").textContent = hostM ? (R.host === me.id ? "Your room" : roomName(R.host) + "'s room") : "Room";
       $("g-roommeta").innerHTML = (R.pub ? "🌍 Public" : "🔒 Private") + " · " + n + " of " + R.max + " players" + (R.code ? ' · Code <b>' + esc(R.code) + "</b>" : "") + (safeOn() ? "<br>🛡️ Safe mode: you only see friends' messages" : "");
+      // typing is for friends: without one here, ready-made messages are the only way to talk
+      $("g-roomform").hidden = !R.members.some(function (m) { return m.uid !== me.id && friendOf(m.uid); });
       var box = $("g-roommembers"); box.innerHTML = "";
       R.members.forEach(function (m) {
         var li = document.createElement("li");
@@ -7342,6 +7364,16 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
     $("g-roomback").addEventListener("click", roomLeave);
     document.addEventListener("visibilitychange", function () { if (!document.hidden && roomNow) roomPoll(); });   // back in the app: check in at once
     $("g-roominvite").addEventListener("click", roomInvite);
+    // ready-made messages: the server has the same list and only takes the number (room_phrase in update_039.sql)
+    var ROOM_SAYS = ["Hi! 👋", "Ready to play?", "Let's go!", "Good game! 🎉", "One more?", "Nice one! 👏", "Wait for me", "Bye! 👋", "😀", "😂", "😮", "👍", "🔥"];
+    ROOM_SAYS.forEach(function (t, i) {
+      var b = document.createElement("button"); b.type = "button"; b.textContent = t;
+      b.addEventListener("click", async function () {
+        var R = roomNow; if (!R) return;
+        try { await rpc("room_phrase", { p_room: R.id, p_i: i }); roomPoke(); roomPoll(); } catch (err) { say(friendly(err.message)); }
+      });
+      $("g-roomsays").appendChild(b);
+    });
     $("g-roomform").addEventListener("submit", async function (e) {
       e.preventDefault();
       var R = roomNow, t = $("g-roomin").value; if (!R || !t.trim()) return;
@@ -7387,7 +7419,8 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       trackMe();
       // typed chat: the words go through the server; the others get a ping and fetch the clean text from there
       var typedId = 0;
-      typedChat = function (text) {
+      var withFriend = host ? (info.guests || []).some(function (g) { return friendOf(g.uid); }) : !!friendOf(hostUid);
+      typedChat = !withFriend ? null : function (text) {
         return rpc("room_say", { p_room: room, p_body: text }).then(function (r) { typedId = r.id; return r.body; }, function (e) { say(friendly(e.message)); throw e; });
       };
       function qcSend(i) { if (typeof i === "string") R.send("tx", { uid: me.id, id: typedId }); else R.send("qc", { uid: me.id, i: i }); }
@@ -7558,7 +7591,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
           drawWait(nameOf(hostUid) + " left the game.", [{ text: "Back to the Playground", primary: true, go: function () { leave(); openPlay(); } }]);
         } else { players = players.filter(function (x) { return x.uid !== m.uid; }); drawWait(); }
       });
-      R.on("qc", function (m) { if (!started) waitBubble(m.uid, QUICK_CHAT[m.i | 0]); else if (S.quick) S.quick(m.uid, m.i | 0); });
+      R.on("qc", function (m) { if (safeOn() && !friendOf(m.uid)) return; if (!started) waitBubble(m.uid, QUICK_CHAT[m.i | 0]); else if (S.quick) S.quick(m.uid, m.i | 0); });
       R.on("tx", function (m) {
         rpc("room_read", { p_room: room, p_after: (m.id | 0) - 1 }).then(function (l) {
           var x = (l || []).filter(function (y) { return y.id === m.id && y.uid === m.uid; })[0];
@@ -8419,6 +8452,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       c = "PANDA-" + c;
       try {
         var r = await rpc("friend_request_code", { p_code: c });
+        if (r.status === "none") { say("No player has that friend code. Check it and try again."); return; }
         $("g-codein").value = "";
         say(r.status === "friends" ? "🎉 You're friends with " + r.name + "!" : "➕ Friend request sent to " + r.name + ".");
         loadFriends();
@@ -10430,20 +10464,31 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
         img.src = url;
       });
     }
+    // a picture's file name has a random part, so a player's id doesn't lead to their photo
+    function avatarPath(url) { var m = /\/avatars\/([^?]+)/.exec(url || ""); return m ? m[1] : null; }
+    function newAvatarPath() { return me.id + "-" + Array.from(crypto.getRandomValues(new Uint8Array(12)), function (b) { return (b % 36).toString(36); }).join("") + ".jpg"; }
+    async function saveAvatar(blob) {
+      var path = newAvatarPath(), old = avatarPath(profile && profile.avatar_url);
+      var up = await sb.storage.from("avatars").upload(path, blob, { contentType: "image/jpeg", cacheControl: "60" });
+      if (up.error) throw new Error(up.error.message);
+      await rpc("set_avatar", { p_url: sb.storage.from("avatars").getPublicUrl(path).data.publicUrl + "?v=" + Date.now() });
+      if (old) await sb.storage.from("avatars").remove([old]);
+    }
+    // a picture from before this change moves to a new name the next time its owner opens the app
+    async function moveOldAvatar() {
+      if (!profile || avatarPath(profile.avatar_url) !== me.id + ".jpg") return;
+      try { var res = await fetch(profile.avatar_url); if (res.ok) { await saveAvatar(await res.blob()); await loadAll({ quiet: true }); } } catch (e) {}
+    }
     $("g-avatarfile").addEventListener("change", async function () {
       var f = this.files && this.files[0]; this.value = "";
       if (!f || !me) return;
       try {
-        var blob = await squareJpeg(f), path = me.id + ".jpg";
-        var up = await sb.storage.from("avatars").upload(path, blob, { upsert: true, contentType: "image/jpeg", cacheControl: "60" });
-        if (up.error) throw new Error(up.error.message);
-        var pub = sb.storage.from("avatars").getPublicUrl(path).data.publicUrl + "?v=" + Date.now();
-        await rpc("set_avatar", { p_url: pub });
+        await saveAvatar(await squareJpeg(f));
         await loadAll(); renderMenu(); say("Picture updated 📷");
       } catch (e) { say("Couldn't change the picture: " + e.message); }
     });
     $("g-avatarremove").addEventListener("click", async function () {
-      try { await sb.storage.from("avatars").remove([me.id + ".jpg"]); await rpc("set_avatar", { p_url: null }); }
+      try { await sb.storage.from("avatars").remove([avatarPath(profile && profile.avatar_url)]); await rpc("set_avatar", { p_url: null }); }
       catch (e) { say(e.message); return; }
       await loadAll(); renderMenu(); say("Picture removed.");
     });
@@ -10528,8 +10573,8 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
     $("g-safebtn").addEventListener("click", function () {
       var on = !safeOn();
       $("g-safetitle").textContent = on ? "Turn on Safe mode" : "Turn off Safe mode";
-      $("g-safetext").textContent = on ? "Only friends' messages will show in rooms and games, and playing for paws is switched off. Add a 4-digit PIN so a child can't turn this off, or leave it empty."
-        : "Strangers' messages will show again in rooms and games, and playing for paws comes back. Enter the PIN if one was set.";
+      $("g-safetext").textContent = on ? "Strangers can only send ready-made messages. Safe mode hides those too, stops strangers inviting you, and switches off playing for paws. Add a 4-digit PIN so a child can't turn this off, or leave it empty."
+        : "Strangers' ready-made messages and invites will come back, and so will playing for paws. Enter the PIN if one was set.";
       $("g-safepin").value = ""; $("g-safepin").placeholder = on ? "PIN (optional)" : "PIN";
       $("g-safeok").textContent = on ? "Turn on" : "Turn off";
       $("g-safecard").hidden = false;
@@ -10821,7 +10866,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       setTimeout(maybeHowTo, 1200);
       setTimeout(checkPlayInvites, 3000);
       checkFriendLink(); checkRoomLink();
-      markSeen(); setInterval(markSeen, 120000);
+      markSeen(); setInterval(markSeen, 120000); moveOldAvatar();
       refreshSub();
       // co-parents feed on their own phones: check for news every 20 s while the app is open
       if (!polling) { polling = true; setInterval(function () { if (me && !document.hidden) loadAll({ quiet: true }); }, 20000); }
