@@ -1632,6 +1632,58 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
 .pg-tourcard p { margin: 0 0 8px; line-height: 1.4; font-size: 0.95rem; color: #33444c; }
 .pg-tourbtns { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .pg-botwelcome.off { display: none; }
+
+/* Rooms */
+.pg-roomsbtn { display: flex; align-items: center; gap: 10px; width: 100%; margin: 6px 0 0; padding: 12px 14px; border: 0; border-radius: 16px; background: linear-gradient(135deg, #5b7cfa, #7a5cf0); color: #fff; font: inherit; text-align: left; box-shadow: 0 6px 16px rgba(91,124,250,0.3); }
+.pg-roomsbtn > span:first-child { font-size: 1.5rem; }
+.pg-roomsbtn .pg-grow { flex: 1; min-width: 0; }
+.pg-roomsbtn b { display: block; font-size: 1.05rem; }
+.pg-roomsbtn small { opacity: 0.9; }
+.pg-roomsbtn i { font-style: normal; font-weight: 800; font-size: 1.3rem; }
+.pg-roomacts { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+.pg-roomacts .pg-btn { width: 100%; padding: 13px; }
+.pg-roomcode { display: flex; gap: 8px; margin-bottom: 6px; }
+.pg-roomcode input { flex: 1; min-width: 0; padding: 12px 14px; border: 2px solid #d6e0e4; border-radius: 14px; background: #fff; font: inherit; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #14232b; }
+.pg-roomcode input::placeholder { text-transform: none; letter-spacing: 0; font-weight: 500; }
+.pg-roomlist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.pg-roomrow { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 16px; background: #fff; box-shadow: 0 2px 8px rgba(60,30,90,0.06); }
+.pg-roomrow img { width: 46px; height: 46px; object-fit: contain; flex: none; }
+.pg-roomrow .pg-grow { flex: 1; min-width: 0; }
+.pg-roomrow .ttl { display: block; }
+.pg-roomrow small { color: #5c6b72; }
+.pg-roomlbl { display: block; text-align: left; font-weight: 700; color: #5c6b72; margin-top: 4px; }
+.pg-roompage .pg-playhead h2 { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pg-roominvite { flex: none; padding: 8px 14px; }
+.pg-roommeta { flex: none; padding: 8px 14px 0; text-align: center; color: #55666e; font-size: 0.85rem; }
+.pg-roommeta b { letter-spacing: 0.08em; color: #14232b; }
+.pg-roommembers { flex: none; list-style: none; margin: 0; padding: 8px 10px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.pg-roommembers button { position: relative; width: 100%; border: 0; border-radius: 14px; background: #fff; padding: 6px 2px; font: inherit; display: flex; flex-direction: column; align-items: center; gap: 2px; color: #14232b; min-width: 0; }
+.pg-roommembers img { width: 44px; height: 44px; object-fit: contain; }
+.pg-roommembers span { max-width: 100%; font-size: 0.74rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pg-roommembers i { position: absolute; top: 0; right: 4px; font-style: normal; font-size: 0.85rem; }
+.pg-roommembers .free button { background: rgba(255,255,255,0.45); border: 2px dashed #b8c4cc; color: #6d7a82; }
+.pg-roommembers .free b { height: 44px; display: flex; align-items: center; font-size: 1.5rem; }
+.pg-roomgame { flex: none; padding: 0 10px 6px; display: flex; flex-direction: column; gap: 6px; }
+.pg-roomwait { margin: 0; padding: 12px; border-radius: 14px; background: #fff; text-align: center; color: #55666e; font-weight: 600; font-size: 0.92rem; }
+.pg-roompicks { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; }
+.pg-roompicks button { flex: none; width: 74px; padding: 6px 2px; border: 2px solid transparent; border-radius: 14px; background: #fff; font: inherit; color: #14232b; display: flex; flex-direction: column; align-items: center; gap: 1px; }
+.pg-roompicks button[aria-pressed="true"] { background: #fff1e6; border-color: var(--brand); color: #14232b; }
+.pg-roompicks i { font-style: normal; font-size: 1.3rem; }
+.pg-roompicks span { font-size: 0.68rem; font-weight: 700; line-height: 1.15; text-align: center; }
+.pg-roomopp { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.pg-roomopp small { color: #55666e; font-weight: 700; }
+.pg-roomopp button { border: 1px solid #d6e0e4; border-radius: 999px; background: #fff; color: #14232b; padding: 5px 12px; font: inherit; font-size: 0.85rem; font-weight: 700; }
+.pg-roomopp button[aria-pressed="true"] { background: var(--brand); border-color: var(--brand); color: #fff; }
+.pg-roomstart { width: 100%; }
+.pg-roomstart[disabled] { background: #e3eaed; color: #8a9aa1; box-shadow: none; }
+#g-roomchat { min-height: 0; }
+#g-roomchat li .who { margin: 0 8px 1px; font-size: 0.72rem; font-weight: 700; color: #6d7a82; }
+#g-roomnew { z-index: 20; }
+/* typing in a game */
+.pg-qctype { flex: 1 1 100%; display: flex; gap: 6px; margin-top: 4px; }
+.pg-qctype input { flex: 1; min-width: 0; padding: 8px 12px; border: 1px solid #d6e0e4; border-radius: 999px; font: inherit; font-size: 1rem; color: #14232b; background: #fff; }
+.pg-qcpal .pg-qctype button { flex: none; width: 38px; height: 38px; border: 0; border-radius: 50%; background: var(--brand); color: #fff; font-size: 1rem; padding: 0; }
+.pg-bubble { max-width: 190px; white-space: normal; word-break: break-word; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -1766,6 +1818,7 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
           <button type="button" class="pg-winsbtn" id="g-mywins" aria-label="Your games this week">🏁 0 wins</button>
         </div>
         <button type="button" class="pg-onlinenow" id="g-onlinecount" aria-label="See who's online"></button>
+        <button type="button" class="pg-roomsbtn" id="g-openrooms"><span aria-hidden="true">🏠</span><span class="pg-grow"><b>Rooms</b><small>Play with other players</small></span><i aria-hidden="true">›</i></button>
         <button type="button" class="pg-histbtn" id="g-openhist"><span aria-hidden="true">🕘</span><span class="pg-grow"><b>Game history</b><small>Your games from the last 7 days</small></span><i aria-hidden="true">›</i></button>
         <div class="pg-gamegrid">
           <button type="button" class="pg-gamecard bamboo" data-game="bamboo"><span class="art" aria-hidden="true">🎋</span><b>Bamboo catch</b><small>Catch the falling food</small></button>
@@ -1882,6 +1935,61 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
         <button type="button" class="pg-modebtn chal" id="g-modechal"></button>
         <button type="button" class="pg-linkbtn" id="g-modeclose">Cancel</button>
       </div>
+    </div>
+    <!-- Rooms: find a public room, or create one -->
+    <div class="pg pg-playpage" id="g-rooms" hidden>
+      <header class="pg-playhead">
+        <button type="button" class="pg-playback" id="g-roomsclose" aria-label="Back">←</button>
+        <h2>🏠 Rooms</h2>
+        <span class="pg-headicon" aria-hidden="true"></span>
+      </header>
+      <div class="pg-playbody">
+        <div class="pg-roomacts">
+          <button type="button" class="pg-feed" id="g-roomcreate">➕ Create a room</button>
+          <button type="button" class="pg-btn" id="g-roomquick">⚡ Quick join</button>
+        </div>
+        <form class="pg-roomcode" id="g-roomcodeform">
+          <input id="g-roomcodein" maxlength="6" placeholder="Have a code?" autocapitalize="characters" autocomplete="off" spellcheck="false" aria-label="Room code">
+          <button type="submit" class="pg-btn pg-primary">Join</button>
+        </form>
+        <h3 class="pg-playh">🌍 Open rooms</h3>
+        <ul class="pg-roomlist" id="g-roomlist"></ul>
+      </div>
+    </div>
+    <div class="pg pg-adopt" id="g-roomnew" hidden>
+      <div class="pg-card pg-modecard">
+        <h2>Create a room</h2>
+        <small class="pg-roomlbl">Who can join?</small>
+        <div class="pg-tabs" id="g-roompubtabs" role="tablist">
+          <button type="button" role="tab" data-pub="1" aria-selected="true">🌍 Public</button>
+          <button type="button" role="tab" data-pub="0" aria-selected="false">🔒 Private</button>
+        </div>
+        <p class="pg-hint" id="g-roompubhint"></p>
+        <small class="pg-roomlbl">How many players?</small>
+        <div class="pg-tabs" id="g-roommaxtabs" role="tablist">
+          <button type="button" role="tab" data-max="2" aria-selected="false">2</button>
+          <button type="button" role="tab" data-max="3" aria-selected="false">3</button>
+          <button type="button" role="tab" data-max="4" aria-selected="true">4</button>
+        </div>
+        <button type="button" class="pg-feed" id="g-roomnewok">Create room</button>
+        <button type="button" class="pg-linkbtn" id="g-roomnewcancel">Cancel</button>
+      </div>
+    </div>
+    <!-- inside a room: who's here, the game, and the chat -->
+    <div class="pg pg-chatpage pg-roompage" id="g-roompage" hidden>
+      <header class="pg-playhead">
+        <button type="button" class="pg-playback" id="g-roomback" aria-label="Leave the room">←</button>
+        <h2 id="g-roomtitle">Room</h2>
+        <button type="button" class="pg-btn pg-primary pg-roominvite" id="g-roominvite">Invite</button>
+      </header>
+      <div class="pg-roommeta" id="g-roommeta"></div>
+      <ul class="pg-roommembers" id="g-roommembers"></ul>
+      <div class="pg-roomgame" id="g-roomgame"></div>
+      <ol class="pg-chatlist" id="g-roomchat" aria-live="polite"></ol>
+      <form class="pg-chatform" id="g-roomform">
+        <input id="g-roomin" maxlength="200" autocomplete="off" placeholder="Say hi to the room…" aria-label="Message">
+        <button type="submit" class="pg-btn pg-primary" aria-label="Send">➤</button>
+      </form>
     </div>
     <!-- the first-time tour: a spotlight on each part of the screen -->
     <div class="pg-tour" id="g-tour" hidden>
@@ -4867,7 +4975,7 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
     function aim(e) { var r = cv.getBoundingClientRect(); tx = Math.max(P / 2, Math.min(W - P / 2, e.clientX - r.left)); }
     cv.addEventListener("pointerdown", function (e) { aim(e); cv.setPointerCapture && cv.setPointerCapture(e.pointerId); });
     cv.addEventListener("pointermove", function (e) { if (e.buttons || e.pointerType === "touch") aim(e); });
-    function onKey(e) { if (e.key === "ArrowLeft" || e.key === "ArrowRight") { keys[e.key] = e.type === "keydown"; e.preventDefault(); } }
+    function onKey(e) { if (e.target.tagName === "INPUT") return; if (e.key === "ArrowLeft" || e.key === "ArrowRight") { keys[e.key] = e.type === "keydown"; e.preventDefault(); } }
     window.addEventListener("keydown", onKey); window.addEventListener("keyup", onKey);
     // leaving the app pauses the clock
     var pausedAt = 0;
@@ -4974,7 +5082,7 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
       // a duel: both phones start the 3-2-1 together
       start: function () { if (state === "wait") { state = "count"; t0 = performance.now(); last = t0; } },
       opp: function (n) { if (opEl) opEl.textContent = n; },
-      quick: function (i) { if (QUICK_CHAT[i]) duelBubble(QUICK_CHAT[i], false); },
+      quick: function (i) { var t = quickText(i); if (t) duelBubble(t, false); },
       status: function (t) { msg.className = "pg-gamemsg big"; msg.textContent = t; },
       score: function () { return score; }
     };
@@ -4984,10 +5092,24 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
   // ---------- Quick chat in games: emoji only ----------
   // Everyone (strangers too) can only send one of these, by number, never their own words.
   var QUICK_CHAT = ["😀", "😂", "😍", "😮", "😢", "😡", "👍", "👏", "🔥", "🤝"];
+  function quickText(i) { return typeof i === "string" ? i : QUICK_CHAT[i]; }   // an emoji by number, or typed words
   // the 💬 button in a game's top bar opens a row of emoji; onPick(i, emoji). A little pause stops spamming.
+  // typedChat(text): set during a live game. It sends the words through the server's filter and gives back the clean
+  // text, which appears with the same bubble as an emoji (onPick(text, text))
+  var typedChat = null;
   function quickPalette(wrap, onPick) {
     var btn = wrap.querySelector(".pg-qcbtn"), pal = wrap.querySelector(".pg-qcpal"), last = 0;
     if (!btn || !pal) return;
+    if (typedChat) {
+      var form = document.createElement("form"); form.className = "pg-qctype";
+      form.innerHTML = '<input maxlength="60" autocomplete="off" placeholder="Type a message…" aria-label="Message"><button type="submit" aria-label="Send">➤</button>';
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        var inp = form.querySelector("input"), text = inp.value.trim(); if (!text || !typedChat) return;
+        typedChat(text).then(function (clean) { inp.value = ""; inp.blur(); pal.hidden = true; onPick(clean, clean); }, function () {});
+      });
+      pal.appendChild(form);
+    }
     QUICK_CHAT.forEach(function (t, i) {
       var c = document.createElement("button"); c.type = "button"; c.textContent = t; c.setAttribute("aria-label", "Send " + t);
       c.addEventListener("click", function () { pal.hidden = true; if (Date.now() - last < 1200) return; last = Date.now(); onPick(i, t); });
@@ -5059,7 +5181,7 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
       if (l.n >= steps) { finished = true; btn.disabled = true; msg.textContent = "🏁"; if (opts.onFinish) opts.onFinish(); }
     }
     btn.addEventListener("pointerdown", tap);
-    function onKey(e) { if (e.key === " " || e.key === "Enter") tap(e); }
+    function onKey(e) { if (e.target.tagName === "INPUT") return; if (e.key === " " || e.key === "Enter") tap(e); }
     window.addEventListener("keydown", onKey);
     function close() { over = true; live = false; timers.forEach(clearTimeout); window.removeEventListener("keydown", onKey); wrap.remove(); }
     wrap.querySelector(".pg-gamex").addEventListener("click", function () {
@@ -5070,7 +5192,7 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
       wrap: wrap, close: close,
       start: function () { countdownFrom(msg, opts.onQuick ? LIVE_COUNTDOWN : 3, "Tap!", timers, function () { return over; }, function () { live = true; btn.disabled = false; }); },
       progress: function (uid, n) { var l = lanes[uid]; if (!l || over || uid === me) return; l.n = Math.max(l.n, n); place(uid); },
-      quick: function (uid, i) { if (QUICK_CHAT[i]) bubble(uid, QUICK_CHAT[i]); },
+      quick: function (uid, i) { var t = quickText(i); if (t) bubble(uid, t); },
       left: function (uid) { var l = lanes[uid]; if (l) { l.el.classList.add("gone"); l.el.querySelector(".place").textContent = "left"; } },
       status: function (t) { msg.textContent = t; },
       // the referee's word: order = player ids, first place first
@@ -5282,7 +5404,7 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
       wrap: wrap, close: close, start: countdown,
       flip: function (k) { if (live && k >= 0 && k < deck.length) reveal(k); },
       pass: pass,
-      quick: function (i, who) { if (QUICK_CHAT[i]) bubble(QUICK_CHAT[i], who || "🐾"); },
+      quick: function (i, who) { var t = quickText(i); if (t) bubble(t, who || "🐾"); },
       stop: function () { finish(false); },
       result: function () { return T ? { pairs: pairsBy } : { pairs: found, moves: moves, secs: secs() }; }
     };
@@ -5431,7 +5553,7 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
       if (opts.onHit) opts.onHit(n, fast);
     }
     wrap.addEventListener("pointerdown", tap);
-    function onKey(e) { if (e.key === " " || e.key === "Enter") tap(e); }
+    function onKey(e) { if (e.target.tagName === "INPUT") return; if (e.key === " " || e.key === "Enter") tap(e); }
     window.addEventListener("keydown", onKey);
     function drop() {
       if (over || !flight) return;
@@ -5504,7 +5626,7 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
       // the other player dropped it
       drop: function () { if (over) return; if (VS) pointTo("me"); else { msg.textContent = ""; end("dropped-them"); } },
       left: function () { end("left"); },
-      quick: function (i) { if (QUICK_CHAT[i]) bubble(themEl, QUICK_CHAT[i]); },
+      quick: function (i) { var t = quickText(i); if (t) bubble(themEl, t); },
       score: function () { return score; }
     };
   }
@@ -5744,7 +5866,7 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
         theirs[k] = { col: Math.max(0, Math.min(2, d.col | 0)), row: d.row ? 1 : 0 };
         if (k === r) maybePlay();
       },
-      quick: function (i) { if (QUICK_CHAT[i]) bubble(wrap.querySelector(".pk-side.them"), QUICK_CHAT[i]); },
+      quick: function (i) { var t = quickText(i); if (t) bubble(wrap.querySelector(".pk-side.them"), t); },
       left: function () { end("left"); }
     };
   }
@@ -5762,7 +5884,7 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261107012042";   // replaced by build_real.ps1
+    var APP_BUILD = "20261107030817";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -6495,10 +6617,7 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
       $("g-modechal").hidden = game === "ball" && !vs;
       $("g-modechal").innerHTML = "<b>🔥 Challenge</b><small>" + esc(chal) + "</small>";
       $("g-modechal").onclick = function () { $("g-mode").hidden = true; playBot(game, true); };
-      $("g-modeothers").onclick = function () {
-        if (!showOnline()) { say("Turn on \"Show me as online\" at the bottom of the Playground to play with others."); return; }
-        $("g-mode").hidden = true; openPick(game);
-      };
+      $("g-modeothers").onclick = function () { roomsOpen(game); };
       $("g-mode").hidden = false;
     }
     $("g-modeclose").addEventListener("click", function () { $("g-mode").hidden = true; });
@@ -6704,6 +6823,244 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
       blockPet(inv.pet);
     });
 
+    // ---------- Rooms ----------
+    // Someone opens a room (public: listed for everyone; private: joined with its code). Everything about a room lives on
+    // the server: each phone checks in every few seconds with room_state (who's here, new messages, whether a game has
+    // started), and a "poke" on the room's channel makes the others check at once. When the host starts, the players go
+    // into a normal live game, and openPlay() brings them back here afterwards.
+    var roomNow = null, roomTimer = null, roomCh = null, roomPickGame = null, roomOpp = null, roomVs = true, roomNewPub = true, roomNewMax = 4;
+    var ROOM_LINK_KEY = "petstreak.roomlink", roomGames = ["race", "ball", "penalty", "bamboo", "memory"];
+    function roomsOpen(game) {
+      if (game) roomPickGame = game;
+      if (roomNow) { roomShow(); return; }
+      $("g-mode").hidden = true; $("g-rooms").hidden = false;
+      roomsLoad();
+    }
+    async function roomsLoad() {
+      var box = $("g-roomlist"), list;
+      box.innerHTML = '<li class="pg-logempty">Looking for rooms…</li>';
+      try { list = (await rpc("room_list")) || []; }
+      catch (e) { box.innerHTML = '<li class="pg-logempty">' + esc(/room_list/.test(e.message) ? "Rooms aren't switched on yet." : e.message) + "</li>"; return; }
+      box.innerHTML = "";
+      list.forEach(function (r) {
+        var h = r.host || {}, li = document.createElement("li"); li.className = "pg-roomrow";
+        li.innerHTML = '<img alt="" src="' + esc(petPic(h.variant)) + '"><span class="pg-grow"><span class="ttl">' + tagHTML(h.level || 1, shownPetName(h.pet)) + "</span>" +
+          "<small>" + r.players + " of " + r.max + " players" + (r.game && GAMES[r.game] ? " · " + GAMES[r.game].art + " " + esc(GAMES[r.game].name) : "") + '</small></span><button type="button" class="pg-btn pg-primary">Join</button>';
+        li.querySelector("button").addEventListener("click", function () { roomGo("room_join", { p_pet: pet().id, p_id: r.id }); });
+        box.appendChild(li);
+      });
+      if (!list.length) box.innerHTML = '<li class="pg-logempty">No open rooms right now. Create one and others can join! 🏠</li>';
+    }
+    async function roomGo(fn, args) {
+      if (!pet()) { say("Get a pet first, then you can join a room."); return; }
+      var r;
+      try { r = await rpc(fn, args); } catch (e) { say(e.message); return; }
+      if (!r) { say("No open rooms right now. Create one! 🏠"); return; }
+      roomBegin(r);
+    }
+    function roomBegin(r) {
+      roomNow = { id: r.id, code: r.code, pub: r.public, max: r.max, after: 0, seq: null, host: null, members: [], names: {} };
+      roomOpp = null; $("g-roomchat").innerHTML = ""; $("g-roomin").value = "";
+      $("g-rooms").hidden = true; $("g-play").hidden = true; roomShow();
+      try {
+        roomCh = sb.channel("pg-hub-" + r.id, { config: { broadcast: { self: false } } });
+        roomCh.on("broadcast", { event: "poke" }, function () { roomPoll(); });
+        roomCh.subscribe(function () {});
+      } catch (e) { roomCh = null; }
+      clearInterval(roomTimer); roomTimer = setInterval(roomPoll, 3000);
+      roomPoll();
+    }
+    function roomPoke() { try { if (roomCh) roomCh.send({ type: "broadcast", event: "poke", payload: {} }); } catch (e) {} }
+    function roomShow() {
+      $("g-play").hidden = true; $("g-rooms").hidden = true; $("g-roompage").hidden = false;
+      roomDraw();
+    }
+    function roomName(uid) {
+      var m = roomNow.members.filter(function (x) { return x.uid === uid; })[0], f = friendOf(uid);
+      if (uid === me.id) return "You";
+      if (f) return f.name;
+      return m ? shownPetName(m.pet) : roomNow.names[uid] || "A player";
+    }
+    async function roomPoll() {
+      var R = roomNow; if (!R || roomPoll.busy) return;
+      roomPoll.busy = true;
+      var s = null;
+      try { s = await rpc("room_state", { p_room: R.id, p_after: R.after }); } catch (e) {}
+      roomPoll.busy = false;
+      if (!s || roomNow !== R) return;
+      if (s.gone) { roomEnd(s.kicked ? "You were removed from the room." : "That room has closed."); return; }
+      var had = R.members.map(function (m) { return m.uid; }), first = R.seq === null;
+      R.code = s.code; R.pub = s.public; R.max = s.max; R.host = s.host; R.members = s.members;
+      R.members.forEach(function (m) { R.names[m.uid] = shownPetName(m.pet); });
+      if (!first) {
+        R.members.forEach(function (m) { if (had.indexOf(m.uid) < 0) { roomNote(roomName(m.uid) + " joined 👋"); sfx("happy"); } });
+        had.forEach(function (u) { if (!R.members.some(function (m) { return m.uid === u; })) roomNote(roomName(u) + " left"); });
+      }
+      (s.msgs || []).forEach(function (m) { R.after = Math.max(R.after, m.id); roomLine(m); });
+      if (first) R.seq = s.seq;
+      else if (s.seq > R.seq) {
+        R.seq = s.seq;
+        if ((s.game_players || []).indexOf(me.id) >= 0 && s.host !== me.id && !raceNow) { $("g-roompage").hidden = true; liveGame(s.game, s.game_room, false, { from: s.host }); }
+        else if (s.host !== me.id) roomNote(GAMES[s.game].art + " A game has started. You'll get the next one!");
+      }
+      if (!$("g-roompage").hidden) roomDraw();
+    }
+    function roomNote(text) {
+      var li = document.createElement("li"); li.className = "pg-chatday"; li.textContent = text;
+      $("g-roomchat").appendChild(li); $("g-roomchat").scrollTop = $("g-roomchat").scrollHeight;
+    }
+    function roomLine(m) {
+      var mine = m.uid === me.id, li = document.createElement("li"); li.className = mine ? "me" : "them";
+      li.innerHTML = (mine ? "" : '<small class="who">' + esc(roomName(m.uid)) + "</small>") + '<span class="b"></span>';
+      li.querySelector(".b").textContent = m.body;
+      if (!mine) li.querySelector(".b").addEventListener("click", function () { roomPerson(m.uid); });
+      $("g-roomchat").appendChild(li); $("g-roomchat").scrollTop = $("g-roomchat").scrollHeight;
+    }
+    function roomDraw() {
+      var R = roomNow; if (!R) return;
+      var hostM = R.members.filter(function (m) { return m.uid === R.host; })[0], iHost = R.host === me.id, n = R.members.length;
+      $("g-roomtitle").textContent = hostM ? (R.host === me.id ? "Your room" : roomName(R.host) + "'s room") : "Room";
+      $("g-roommeta").innerHTML = (R.pub ? "🌍 Public" : "🔒 Private") + " · " + n + " of " + R.max + " players" + (R.code ? ' · Code <b>' + esc(R.code) + "</b>" : "");
+      var box = $("g-roommembers"); box.innerHTML = "";
+      R.members.forEach(function (m) {
+        var li = document.createElement("li");
+        li.innerHTML = '<button type="button"><img alt="" src="' + esc(petPic(m.variant)) + '"><span>' + esc(roomName(m.uid)) + "</span>" + (m.uid === R.host ? '<i aria-label="Host">👑</i>' : "") + "</button>";
+        li.querySelector("button").addEventListener("click", function () { if (m.uid !== me.id) roomPerson(m.uid); });
+        box.appendChild(li);
+      });
+      for (var i = n; i < R.max; i++) { var e = document.createElement("li"); e.className = "free"; e.innerHTML = '<button type="button" aria-label="Invite someone"><b>＋</b><span>Free</span></button>'; e.querySelector("button").addEventListener("click", roomInvite); box.appendChild(e); }
+      var g = $("g-roomgame"); g.innerHTML = "";
+      if (!iHost) { g.innerHTML = '<p class="pg-roomwait">' + esc(n < 2 ? "Waiting for more players…" : "Waiting for " + roomName(R.host) + " to pick a game and start…") + "</p>"; return; }
+      var row = document.createElement("div"); row.className = "pg-roompicks";
+      roomGames.forEach(function (k) {
+        var b = document.createElement("button"); b.type = "button"; b.setAttribute("aria-pressed", roomPickGame === k ? "true" : "false");
+        b.innerHTML = "<i>" + GAMES[k].art + "</i><span>" + esc(GAMES[k].name) + "</span>";
+        b.addEventListener("click", function () { roomPickGame = k; roomOpp = null; roomDraw(); });
+        row.appendChild(b);
+      });
+      g.appendChild(row);
+      var two = roomPickGame && GAMES[roomPickGame].max === 1, others = R.members.filter(function (m) { return m.uid !== me.id; });
+      if (roomOpp && !others.some(function (m) { return m.uid === roomOpp; })) roomOpp = null;
+      if (two && others.length > 1) {
+        var opp = document.createElement("div"); opp.className = "pg-roomopp"; opp.innerHTML = "<small>Play against</small>";
+        others.forEach(function (m) {
+          var b = document.createElement("button"); b.type = "button"; b.textContent = roomName(m.uid); b.setAttribute("aria-pressed", roomOpp === m.uid ? "true" : "false");
+          b.addEventListener("click", function () { roomOpp = m.uid; roomDraw(); }); opp.appendChild(b);
+        });
+        g.appendChild(opp);
+      }
+      if (roomPickGame === "ball") {
+        var vs = document.createElement("div"); vs.className = "pg-roomopp"; vs.innerHTML = "<small>Mode</small>";
+        [["⚔️ Versus", true], ["🤝 Together", false]].forEach(function (x) {
+          var b = document.createElement("button"); b.type = "button"; b.textContent = x[0]; b.setAttribute("aria-pressed", roomVs === x[1] ? "true" : "false");
+          b.addEventListener("click", function () { roomVs = x[1]; roomDraw(); }); vs.appendChild(b);
+        });
+        g.appendChild(vs);
+      }
+      var go = document.createElement("button"); go.type = "button"; go.className = "pg-feed pg-roomstart";
+      var ready = roomPickGame && n >= 2 && (!two || others.length === 1 || roomOpp);
+      go.textContent = n < 2 ? "Waiting for players…" : !roomPickGame ? "Pick a game" : two && others.length > 1 && !roomOpp ? "Pick who to play" : "▶ Start " + GAMES[roomPickGame].name;
+      go.disabled = !ready; go.addEventListener("click", roomStartGame);
+      g.appendChild(go);
+    }
+    async function roomStartGame() {
+      var R = roomNow, game = roomPickGame; if (!R || !game || raceNow) return;
+      var two = GAMES[game].max === 1, others = R.members.filter(function (m) { return m.uid !== me.id; });
+      var chosen = two ? others.filter(function (m) { return others.length === 1 || m.uid === roomOpp; }) : others.slice(0, 3);
+      var vs = game === "ball" && roomVs, res;
+      try { res = await rpc("room_start", { p_room: R.id, p_game: game, p_players: [me.id].concat(chosen.map(function (m) { return m.uid; })), p_extra: { vs: vs } }); }
+      catch (e) { say(e.message); return; }
+      R.seq = (R.seq || 0) + 1; roomPoke();
+      $("g-roompage").hidden = true;
+      liveGame(game, res.game_room, true, { vs: vs, fast: false, guests: chosen.map(function (m) { return { uid: m.uid, html: petTagHTML(m), state: "wait" }; }) });
+    }
+    function roomEnd(why) {
+      clearInterval(roomTimer); roomTimer = null;
+      try { if (roomCh) sb.removeChannel(roomCh); } catch (e) {}
+      roomCh = null; roomNow = null; $("g-roompage").hidden = true;
+      if (why) say(why);
+      if (!raceNow) { $("g-rooms").hidden = false; roomsLoad(); }
+    }
+    async function roomLeave() {
+      var R = roomNow; if (!R) return;
+      if (!confirm("Leave this room?")) return;
+      try { await rpc("room_leave", { p_room: R.id }); } catch (e) {}
+      roomPoke(); roomEnd();
+    }
+    function roomSheet(items) {
+      var acts = $("g-msgacts"); acts.innerHTML = ""; $("g-msgreact").hidden = true;
+      items.concat([["Cancel", function () {}]]).forEach(function (x) {
+        var b = document.createElement("button"); b.type = "button"; b.textContent = x[0]; if (x[2]) b.className = "danger";
+        b.addEventListener("click", function () { $("g-msgsheet").hidden = true; x[1](); });
+        acts.appendChild(b);
+      });
+      $("g-msgsheet").hidden = false;
+    }
+    function roomPerson(uid) {
+      var R = roomNow, m = R.members.filter(function (x) { return x.uid === uid; })[0], items = [];
+      if (m) items.push(["👤 See " + roomName(uid), function () { openPetOpts(m); }]);
+      items.push(["🚩 Report", function () {
+        if (!confirm("Report " + roomName(uid) + "? The Pet Streak team will read what they said in this room.")) return;
+        rpc("room_report", { p_room: R.id, p_user: uid }).then(function () { say("Thanks for telling us. We'll take a look. 💛"); }, function (e) { say(e.message); });
+      }, true]);
+      if (m && R.host === me.id) items.push(["🚪 Remove from room", function () {
+        rpc("room_kick", { p_room: R.id, p_user: uid }).then(function () { roomPoke(); roomPoll(); }, function (e) { say(e.message); });
+      }, true]);
+      roomSheet(items);
+    }
+    function roomInvite() {
+      var R = roomNow; if (!R) return;
+      var url = location.origin + location.pathname + "?room=" + encodeURIComponent(R.code), text = "Join my Pet Streak room! 🐾 Code: " + R.code;
+      var items = [["📋 Copy the code", function () { try { navigator.clipboard.writeText(R.code).then(function () { say("Code copied: " + R.code); }); } catch (e) { prompt("Room code:", R.code); } }],
+        ["📤 Share a link", async function () {
+          if (navigator.share) { try { await navigator.share({ text: text, url: url }); } catch (e) {} }
+          else { try { await navigator.clipboard.writeText(text + " " + url); say("Copied! Paste it to a friend."); } catch (e) { prompt("Send this to a friend:", text + " " + url); } }
+        }]];
+      friends.filter(function (f) { return f.kind === "friend" && !R.members.some(function (m) { return m.uid === f.id; }); }).slice(0, 5).forEach(function (f) {
+        items.push(["💬 Send to " + f.name, function () {
+          rpc("send_chat", { p_to: f.id, p_body: text }).then(function () { sendLive("chat", { to: f.id, from: me.id }); say("Sent to " + f.name + " 💌"); }, function (e) { say(e.message); });
+        }]);
+      });
+      roomSheet(items);
+    }
+    function setRoomNew() {
+      Array.prototype.forEach.call(document.querySelectorAll("#g-roompubtabs [data-pub]"), function (b) { b.setAttribute("aria-selected", (b.dataset.pub === "1") === roomNewPub ? "true" : "false"); });
+      Array.prototype.forEach.call(document.querySelectorAll("#g-roommaxtabs [data-max]"), function (b) { b.setAttribute("aria-selected", +b.dataset.max === roomNewMax ? "true" : "false"); });
+      $("g-roompubhint").textContent = roomNewPub ? "Anyone can see your room in the list and join." : "Hidden from the list. Only people with your code can join.";
+    }
+    $("g-openrooms").addEventListener("click", function () { roomsOpen(); });
+    $("g-roomsclose").addEventListener("click", function () { $("g-rooms").hidden = true; });
+    $("g-roomcreate").addEventListener("click", function () { setRoomNew(); $("g-roomnew").hidden = false; });
+    $("g-roomnewcancel").addEventListener("click", function () { $("g-roomnew").hidden = true; });
+    Array.prototype.forEach.call(document.querySelectorAll("#g-roompubtabs [data-pub]"), function (b) { b.addEventListener("click", function () { roomNewPub = b.dataset.pub === "1"; setRoomNew(); }); });
+    Array.prototype.forEach.call(document.querySelectorAll("#g-roommaxtabs [data-max]"), function (b) { b.addEventListener("click", function () { roomNewMax = +b.dataset.max; setRoomNew(); }); });
+    $("g-roomnewok").addEventListener("click", function () { $("g-roomnew").hidden = true; roomGo("room_create", { p_public: roomNewPub, p_max: roomNewMax, p_pet: pet() && pet().id }); });
+    $("g-roomquick").addEventListener("click", function () { roomGo("room_quick", { p_pet: pet() && pet().id }); });
+    $("g-roomcodeform").addEventListener("submit", function (e) {
+      e.preventDefault();
+      var c = $("g-roomcodein").value.trim(); if (!c) { say("Type the room's code first."); return; }
+      $("g-roomcodein").value = ""; roomGo("room_join", { p_pet: pet() && pet().id, p_code: c });
+    });
+    $("g-roomback").addEventListener("click", roomLeave);
+    $("g-roominvite").addEventListener("click", roomInvite);
+    $("g-roomform").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      var R = roomNow, t = $("g-roomin").value; if (!R || !t.trim()) return;
+      try { var r = await rpc("room_say", { p_room: R.id, p_body: t }); $("g-roomin").value = ""; if (r.masked) say("Some words were hidden with *** to keep chat friendly."); roomPoke(); roomPoll(); }
+      catch (err) { say(friendly(err.message)); }
+    });
+    // a shared room link (?room=CODE): straight in after sign-in
+    try {
+      var roomQ = new URLSearchParams(location.search).get("room");
+      if (roomQ) { localStorage.setItem(ROOM_LINK_KEY, roomQ); history.replaceState(null, "", location.pathname); }
+    } catch (e) {}
+    function checkRoomLink() {
+      var c = null; try { c = localStorage.getItem(ROOM_LINK_KEY); } catch (e) {}
+      if (!c || !pet()) return;
+      try { localStorage.removeItem(ROOM_LINK_KEY); } catch (e) {}
+      roomGo("room_join", { p_pet: pet().id, p_code: c });
+    }
+
     // --- a live game: the waiting room, then the game ---
     // The host waits for the invited players to arrive ("here"), seats them ("seat") and starts ("go", with the
     // players and who goes first). Players who arrive say "here" until they're seated. Then each game sends its own
@@ -6714,13 +7071,13 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
       var R = { on: function (ev, fn) { hs[ev] = fn; return R; },
         send: function (ev, p) { ch.send({ type: "broadcast", event: ev, payload: p || {} }); },
         close: function () { try { sb.removeChannel(ch); } catch (e) {} } };
-      ["here", "seat", "full", "go", "bye", "qc", "p", "fin", "result", "s", "final", "flip", "pass", "hit", "drop", "shot", "dive"].forEach(function (ev) {
+      ["here", "seat", "full", "go", "bye", "qc", "tx", "p", "fin", "result", "s", "final", "flip", "pass", "hit", "drop", "shot", "dive"].forEach(function (ev) {
         ch.on("broadcast", { event: ev }, function (m) { if (hs[ev]) hs[ev](m.payload || {}); });
       });
       ch.subscribe(function (st) { if (st === "SUBSCRIBED" && hs.ready) hs.ready(); });
       return R;
     }
-    function hidePlayPages() { ["g-play", "g-social", "g-pick", "g-mode", "g-gamepick", "g-petopts", "g-chat"].forEach(function (id) { $(id).hidden = true; }); chatWith = null; }
+    function hidePlayPages() { ["g-play", "g-social", "g-pick", "g-mode", "g-gamepick", "g-petopts", "g-chat", "g-rooms", "g-roompage"].forEach(function (id) { $(id).hidden = true; }); chatWith = null; }
     function liveGame(game, room, host, info) {
       var p = pet(); if (!p || raceNow) return;
       hidePlayPages();
@@ -6729,6 +7086,12 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
       var started = false, done = false, timers = [], hereTimer = null, autoT = null, view = null;
       var S = raceNow = { room: room, game: game };
       trackMe();
+      // typed chat: the words go through the server; the others get a ping and fetch the clean text from there
+      var typedId = 0;
+      typedChat = function (text) {
+        return rpc("room_say", { p_room: room, p_body: text }).then(function (r) { typedId = r.id; return r.body; }, function (e) { say(friendly(e.message)); throw e; });
+      };
+      function qcSend(i) { if (typeof i === "string") R.send("tx", { uid: me.id, id: typedId }); else R.send("qc", { uid: me.id, i: i }); }
       // the waiting room: who's coming, emoji to say hi, and (for the host) Start
       var wait = document.createElement("div"); wait.className = "pg-game pg-wait";
       wait.innerHTML = '<div class="pg-gamehud"><span class="lbl">' + G.art + " " + esc(G.name) + "</span>" +
@@ -6737,7 +7100,7 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
         '<div class="pg-waitbody"><div class="pg-waitart" aria-hidden="true">' + G.art + '</div><h2 class="pg-waittitle"></h2>' +
         '<ul class="pg-waitlist"></ul><p class="pg-waitnote"></p><div class="pg-waitacts"></div></div>';
       document.body.appendChild(wait);
-      quickPalette(wait, function (i, t) { R.send("qc", { uid: me.id, i: i }); waitBubble(me.id, t); });
+      quickPalette(wait, function (i, t) { qcSend(i); waitBubble(me.id, t); });
       wait.querySelector(".pg-gamex").addEventListener("click", function () { leave(); openPlay(); });
       function nameOf(uid) {
         var x = players.filter(function (q) { return q.uid === uid; })[0];
@@ -6834,6 +7197,13 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
         } else { players = players.filter(function (x) { return x.uid !== m.uid; }); drawWait(); }
       });
       R.on("qc", function (m) { if (!started) waitBubble(m.uid, QUICK_CHAT[m.i | 0]); else if (S.quick) S.quick(m.uid, m.i | 0); });
+      R.on("tx", function (m) {
+        rpc("room_read", { p_room: room, p_after: (m.id | 0) - 1 }).then(function (l) {
+          var x = (l || []).filter(function (y) { return y.id === m.id && y.uid === m.uid; })[0];
+          if (!x) return;
+          if (!started) waitBubble(x.uid, x.body); else if (S.quick) S.quick(x.uid, x.body);
+        }, function () {});
+      });
       function startNow() {
         if (!host || started || players.length < 2) return;
         var m = { players: players.slice(), first: players[Math.floor(Math.random() * players.length)].uid, vs: !!info.vs, fast: !!info.fast };
@@ -6859,7 +7229,7 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
           players: m.players.map(function (x) { return { uid: x.uid, pic: petPic(x.variant), html: x.uid === me.id ? tagHTML(p.level, p.name) : petTagHTML(x), me: x.uid === me.id }; }),
           onTap: function (n) { latest = n; prog[me.id] = n; },
           onFinish: function () { if (host) referee(me.id); else { R.send("fin", { uid: me.id }); race.status("🏁 Waiting for the result…"); } },
-          onQuick: function (i) { R.send("qc", { uid: me.id, i: i }); },
+          onQuick: qcSend,
           onQuit: function () { leave(); openPlay(); }
         });
         view = race;
@@ -6908,7 +7278,7 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
         var bam = startBambooGame({
           pic: petPic(p.variant), seed: seedOf(room), live: true, them: { html: petTagHTML(other) },
           onScore: function (n) { latest = n; },
-          onQuick: function (i) { R.send("qc", { uid: me.id, i: i }); },
+          onQuick: qcSend,
           onQuit: function () { leave(); openPlay(); },
           onEnd: function (score) {
             finals[me.id] = score; R.send("final", { uid: me.id, n: score });
@@ -6952,7 +7322,7 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
           turns: { players: m.players.map(function (x) { return { uid: x.uid, html: x.uid === me.id ? "You" : esc(label(x)), me: x.uid === me.id }; }), first: m.first },
           onFlip: function (k) { R.send("flip", { k: k }); },
           onPass: function () { R.send("pass", {}); },
-          onQuick: function (i) { R.send("qc", { uid: me.id, i: i }); },
+          onQuick: qcSend,
           onQuit: function () { leave(); openPlay(); },
           onEnd: function (r) {
             if (!r.done || done) return; done = true;
@@ -6977,7 +7347,7 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
           iServe: m.first === me.id, live: true, versus: vs, fast: !!m.fast,
           onHit: function (n, fast) { R.send("hit", { n: n, fast: !!fast }); },
           onDrop: function (n) { R.send("drop", { n: n }); },
-          onQuick: function (i) { R.send("qc", { uid: me.id, i: i }); },
+          onQuick: qcSend,
           onQuit: function () { leave(); openPlay(); },
           onEnd: function (score, why, pts) {
             if (done) return; done = true;
@@ -7017,7 +7387,7 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
           iFirst: m.first === me.id, live: true, seed: seedOf(room),
           onShot: function (k, shot) { R.send("shot", { k: k, shot: shot }); },
           onDive: function (k, col) { R.send("dive", { k: k, col: col }); },
-          onQuick: function (i) { R.send("qc", { uid: me.id, i: i }); },
+          onQuick: qcSend,
           onQuit: function () { leave(); openPlay(); },
           onEnd: function (res) {
             if (done) return; done = true;
@@ -7369,6 +7739,7 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
     // --- the Playground page ---
     function openPlay() {
       if (!pet()) { say("Get a pet first, then you can play with it 🎮"); return; }
+      if (roomNow) { roomShow(); return; }   // (back from a room's game: back to the room)
       $("g-play").hidden = false; $("g-menu").hidden = true;
       $("g-showonline").checked = showOnline();
       syncLobby();
@@ -7461,6 +7832,7 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
       [null, "Welcome to the Playground! 🎮", "A quick look at what's here."],
       ["#g-mywins", "Your wins", "This counts the games you've won against other players."],
       ["#g-onlinecount", "Who's online", "Green means people are here to play. Tap it to see them, and when your friends were last around."],
+      ["#g-openrooms", "Rooms", "Create a room or join one to play with other people, and chat while you wait."],
       ["#g-openhist", "Game history", "See every game you played in the last 7 days."],
       [".pg-gamegrid", "The games", "Tap a game to play solo or with others. The ? on each game shows you how to play."],
       [".pg-board", "Today's best", "The top scores today. Beat them!"],
@@ -9774,7 +10146,7 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
     // asks first. On the main screen, a second back within 2 seconds closes the app.
     var BACK = [["g-tour", "g-tourskip"], ["g-achpop", "g-achok"], ["g-invite", "g-inviteno"], ["g-ask", "g-askcancel"], ["g-join", "g-joincancel"],
                 ["g-giftsend", "g-gsdone"], ["g-petopts", "g-poclose"], ["g-gamepick", "g-pickno"], ["g-gamehelp", "g-ghclose"], ["g-mode", "g-modeclose"],
-                ["g-pick", "g-pickclose"], ["g-history", "g-historyclose"], ".pg-game", ["g-msgsheet", "g-msgclose"], ["g-chatbar", "g-chatbarx"], ["g-chat", "g-chatback"],
+                ["g-pick", "g-pickclose"], ["g-history", "g-historyclose"], ".pg-game", ["g-msgsheet", "g-msgclose"], ["g-chatbar", "g-chatbarx"], ["g-chat", "g-chatback"], ["g-roomnew", "g-roomnewcancel"], ["g-roompage", "g-roomback"], ["g-rooms", "g-roomsclose"],
                 ["g-social", "g-socialclose"], ["g-play", "g-playclose"], ["g-bath", "g-bathcancel"], ["g-howto", "g-howskip"],
                 ["g-getapp", "g-gaclose"], ["g-streakinfo", "g-siok"], ["g-bonusintro", "g-bonusok"]].concat(CLOSABLE);
     function closeTop() {
@@ -10010,7 +10382,7 @@ button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
       checkJoin();
       setTimeout(maybeHowTo, 1200);
       setTimeout(checkPlayInvites, 3000);
-      checkFriendLink();
+      checkFriendLink(); checkRoomLink();
       markSeen(); setInterval(markSeen, 120000);
       refreshSub();
       // co-parents feed on their own phones: check for news every 20 s while the app is open
