@@ -1593,6 +1593,45 @@ html, body { overflow-x: hidden; }
 .pg-msgacts button { border: 0; background: none; padding: 13px 10px; text-align: left; font: inherit; font-weight: 700; color: #14232b; border-radius: 10px; }
 .pg-msgacts button.danger { color: #b3261e; }
 .pg-msgacts button:last-child { text-align: center; color: #55666e; }
+
+/* the online button when nobody is here: quiet and grey, still tappable */
+button.pg-onlinenow.none { background: #e3e8ea; color: #5c6b72; box-shadow: none; padding: 12px 14px; border-radius: 16px; }
+button.pg-onlinenow.none i { font-style: normal; font-weight: 800; }
+/* game history */
+.pg-histbtn { display: flex; align-items: center; gap: 10px; width: 100%; margin: 6px 0 4px; padding: 10px 14px; border: 0; border-radius: 16px; background: #fff; color: #14232b; font: inherit; text-align: left; box-shadow: 0 2px 10px rgba(60,30,90,0.06); }
+.pg-histbtn .pg-grow { flex: 1; min-width: 0; }
+.pg-histbtn b { display: block; }
+.pg-histbtn small { color: #5c6b72; }
+.pg-histbtn i { font-style: normal; font-weight: 800; color: var(--brand); font-size: 1.2rem; }
+/* add friends */
+.pg-addcard { background: #fff; border-radius: 20px; padding: 16px; margin-bottom: 12px; box-shadow: 0 2px 10px rgba(60,30,90,0.06); }
+.pg-addcard h3 { margin: 0 0 2px; font-family: var(--display); font-size: 1.15rem; color: #14232b; }
+.pg-addcard p { margin: 0 0 12px; color: #5c6b72; font-size: 0.92rem; }
+.pg-codein { display: flex; align-items: center; gap: 2px; padding: 0 14px; margin-bottom: 10px; border: 2px solid #d6e0e4; border-radius: 14px; background: #f7fafb; font-family: var(--display); font-weight: 800; font-size: 1.15rem; color: #5c6b72; }
+.pg-codein:focus-within { border-color: var(--brand); background: #fff; }
+.pg-codein input { flex: 1; min-width: 0; border: 0; outline: 0; background: none; padding: 12px 0; font: inherit; color: #14232b; text-transform: uppercase; letter-spacing: 0.05em; }
+.pg-addcard .pg-feed { width: 100%; }
+.pg-mycode { display: grid; grid-template-columns: 1fr auto; align-items: center; width: 100%; margin-bottom: 10px; padding: 10px 14px; border: 2px dashed #d6e0e4; border-radius: 14px; background: #f7fafb; text-align: left; color: #14232b; font: inherit; }
+.pg-mycode small { grid-column: 1; color: #5c6b72; }
+.pg-mycode b { grid-column: 1; font-family: var(--display); font-size: 1.3rem; letter-spacing: 0.04em; }
+.pg-mycode span { grid-column: 2; grid-row: 1 / span 2; font-weight: 700; color: var(--brand); }
+.pg-addshare { width: 100%; padding: 13px; }
+/* chat: swipe a message to reply */
+.pg-chatlist li { position: relative; }
+.pg-chatlist li .b { touch-action: pan-y; }
+.pg-chatlist li.swiping::before { content: "↩️"; position: absolute; left: -38px; top: 8px; font-size: 1.1rem; }
+/* the first-time tour */
+.pg-tour { position: fixed; inset: 0; z-index: 40; }
+.pg-tour[hidden] { display: none; }
+.pg-tour.plain { background: rgba(20,35,43,0.6); }
+.pg-tourhole { position: fixed; display: block; border-radius: 16px; box-shadow: 0 0 0 9999px rgba(20,35,43,0.6), 0 0 0 3px #fff inset; transition: all 0.25s ease; pointer-events: none; }
+.pg-tourhole[hidden] { display: none; }
+.pg-tourcard { position: fixed; left: 50%; transform: translateX(-50%); width: min(calc(100vw - 32px), 360px); padding: 14px 16px; border-radius: 18px; background: #fff; color: #14232b; box-shadow: 0 10px 30px rgba(0,0,0,0.25); display: flex; flex-direction: column; gap: 4px; }
+.pg-tourcard small { color: #5c6b72; font-weight: 700; }
+.pg-tourcard b { font-family: var(--display); font-size: 1.15rem; }
+.pg-tourcard p { margin: 0 0 8px; line-height: 1.4; font-size: 0.95rem; color: #33444c; }
+.pg-tourbtns { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.pg-botwelcome.off { display: none; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -1727,6 +1766,7 @@ html, body { overflow-x: hidden; }
           <button type="button" class="pg-winsbtn" id="g-mywins" aria-label="Your games this week">🏁 0 wins</button>
         </div>
         <button type="button" class="pg-onlinenow" id="g-onlinecount" aria-label="See who's online"></button>
+        <button type="button" class="pg-histbtn" id="g-openhist"><span aria-hidden="true">🕘</span><span class="pg-grow"><b>Game history</b><small>Your games from the last 7 days</small></span><i aria-hidden="true">›</i></button>
         <div class="pg-gamegrid">
           <button type="button" class="pg-gamecard bamboo" data-game="bamboo"><span class="art" aria-hidden="true">🎋</span><b>Bamboo catch</b><small>Catch the falling food</small></button>
           <button type="button" class="pg-gamecard race" data-game="race"><span class="art" aria-hidden="true">🏁</span><b>Treat race</b><small>Tap fastest · up to 4</small></button>
@@ -1762,22 +1802,21 @@ html, body { overflow-x: hidden; }
         <ul class="pg-people pg-chats" id="g-socchats"></ul>
         <ul class="pg-people" id="g-socfriends" hidden></ul>
         <div class="pg-socadd" id="g-socadd" hidden>
-          <div class="pg-codecard">
-            <small>Your friend code</small>
-            <b id="g-mycode">…</b>
-            <div class="pg-row">
-              <button type="button" class="pg-btn pg-grow" id="g-copycode">📋 Copy</button>
-              <button type="button" class="pg-btn pg-primary pg-grow" id="g-sharecode">📤 Share</button>
-            </div>
-          </div>
-          <form class="pg-addform" id="g-addcode">
-            <label for="g-codein">Got a friend's code?</label>
-            <div class="pg-row">
-              <input id="g-codein" placeholder="PANDA-XXXXX" autocapitalize="characters" autocomplete="off" spellcheck="false">
-              <button type="submit" class="pg-btn pg-primary">Add</button>
-            </div>
-          </form>
-          <p class="pg-note">Friends can chat, see each other's names and invite each other to play, even when the app is closed. You can also tap a pet in the Playground to add its owner.</p>
+          <section class="pg-addcard">
+            <h3>Add a friend</h3>
+            <p>Ask your friend for their code, then type it here.</p>
+            <form id="g-addcode">
+              <label class="pg-codein" for="g-codein"><span>PANDA-</span><input id="g-codein" placeholder="XXXXX" autocapitalize="characters" autocomplete="off" spellcheck="false" aria-label="Friend code"></label>
+              <button type="submit" class="pg-feed">Send friend request</button>
+            </form>
+          </section>
+          <section class="pg-addcard">
+            <h3>Invite a friend</h3>
+            <p>Send your link. When they open it, your code is already filled in.</p>
+            <button type="button" class="pg-mycode" id="g-copycode" aria-label="Copy your friend code"><small>Your code</small><b id="g-mycode">…</b><span>📋 Copy</span></button>
+            <button type="button" class="pg-btn pg-primary pg-addshare" id="g-sharecode">📤 Share my invite link</button>
+          </section>
+          <p class="pg-note">You can also tap a pet in the Playground to add them. Friends can chat and invite each other to play.</p>
         </div>
       </div>
     </div>
@@ -1842,6 +1881,19 @@ html, body { overflow-x: hidden; }
         <button type="button" class="pg-modebtn others" id="g-modeothers"></button>
         <button type="button" class="pg-modebtn chal" id="g-modechal"></button>
         <button type="button" class="pg-linkbtn" id="g-modeclose">Cancel</button>
+      </div>
+    </div>
+    <!-- the first-time tour: a spotlight on each part of the screen -->
+    <div class="pg-tour" id="g-tour" hidden>
+      <i class="pg-tourhole" id="g-tourhole"></i>
+      <div class="pg-tourcard" id="g-tourcard" role="dialog" aria-labelledby="g-tourtitle">
+        <small id="g-tourstep"></small>
+        <b id="g-tourtitle"></b>
+        <p id="g-tourtext"></p>
+        <div class="pg-tourbtns">
+          <button type="button" class="pg-linkbtn" id="g-tourskip">Skip tour</button>
+          <button type="button" class="pg-btn pg-primary" id="g-tournext">Next</button>
+        </div>
       </div>
     </div>
     <!-- tap or hold a chat message: react, reply, copy, edit, delete -->
@@ -5710,7 +5762,7 @@ html, body { overflow-x: hidden; }
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261107002324";   // replaced by build_real.ps1
+    var APP_BUILD = "20261107012042";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -6039,6 +6091,7 @@ html, body { overflow-x: hidden; }
     function closeHowTo() {
       $("g-howto").hidden = true;
       try { localStorage.setItem(HOWTO_KEY, "1"); localStorage.setItem(BONUS_INTRO_KEY, "1"); } catch (e) {}
+      setTimeout(maybeHomeTour, 500);
     }
     function maybeHowTo(tries) {
       try { if (localStorage.getItem(HOWTO_KEY)) return; } catch (e) { return; }
@@ -6473,10 +6526,10 @@ html, body { overflow-x: hidden; }
     }
     // tap "🟢 N players online" in the Playground: the same list, just to look (tap someone for their card)
     function openOnlineList() {
-      if (!showOnline()) { say("Turn on \"Show me as online\" at the bottom of the Playground to see who's here."); return; }
+      var anyone = Object.keys(online).length > 0;
       pick = { game: null, chosen: {} };
-      $("g-picktitle").textContent = "🟢 Online now";
-      $("g-picksub").textContent = "Tap someone to play with them, add a friend and more.";
+      $("g-picktitle").textContent = anyone ? "🟢 Online now" : "👫 Your friends";
+      $("g-picksub").textContent = anyone ? "Tap someone to play with them, add a friend and more." : "See when your friends were last here.";
       $("g-picksend").hidden = true; $("g-pickbot").hidden = true; $("g-pickclose").textContent = "Close";
       $("g-pick").hidden = false;
       renderPick(); loadFriends();
@@ -6491,7 +6544,14 @@ html, body { overflow-x: hidden; }
           lb.appendChild(pickRow(e.uid, petPic(e.variant), petTagHTML(e),
             (e.busy ? "🎮 Playing right now" : (friendOf(e.uid) ? "👫 Friend · " : "") + "Lv " + e.level + " · 🏁 " + (e.wins || 0) + (e.wins === 1 ? " win" : " wins")), false, function () { openPetOpts(e); }));
         });
-        if (!all.length) lb.innerHTML = '<li class="pg-logempty">🌙 Nobody else is online right now.<br>Check back later, or invite a friend from 💬.</li>';
+        // and when my friends who aren't here were last around
+        var gone = friends.filter(function (f) { return f.kind === "friend" && !online[f.id]; })
+          .sort(function (a, b) { return (b.last_seen || "").localeCompare(a.last_seen || ""); });
+        if (gone.length) lb.appendChild(pickHead("👫 Friends"));
+        gone.forEach(function (f) {
+          lb.appendChild(pickRow(f.id, petPic(f.pet && f.pet.variant), friendTagHTML(f), seenText(f.last_seen), false, function () { openFriendOpts(f); }));
+        });
+        if (!all.length && !gone.length) lb.innerHTML = '<li class="pg-logempty">🌙 Nobody else is online right now.<br>Add friends from 💬 to see when they were last here.</li>';
         return;
       }
       var box = $("g-picklist"); box.innerHTML = "";
@@ -7314,6 +7374,7 @@ html, body { overflow-x: hidden; }
       syncLobby();
       renderPlay(); loadFriends();
       botWelcome("play", $("g-playwelcome"));
+      setTimeout(maybePlayTour, 700);
     }
     function renderOnlineCount() {
       var n = Object.keys(online).length;
@@ -7323,8 +7384,9 @@ html, body { overflow-x: hidden; }
         : n ? '<span class="pg-onfaces">' + faces + '<i class="pg-onpulse" aria-hidden="true"></i></span>' +
               '<span class="pg-ontext"><b>' + n + (n === 1 ? " player" : " players") + " online now</b><small>Tap to see who's here and play</small></span>" +
               '<span class="see">See who ›</span>'
-            : "🌙 Nobody else is online right now";
+            : '<span class="pg-grow">🌙 Nobody else is online right now</span><i aria-hidden="true">›</i>';
       $("g-onlinecount").classList.toggle("has", !!n && showOnline());
+      $("g-onlinecount").classList.toggle("none", !n || !showOnline());
     }
     // the high scores show one game at a time (tabs)
     var boardGame = "bamboo", BOARD_NAMES = { bamboo: "Bamboo catch", memory: "Memory match" };
@@ -7366,6 +7428,7 @@ html, body { overflow-x: hidden; }
     $("g-playclose").addEventListener("click", function () { $("g-play").hidden = true; render(); });
     $("g-playsocial").addEventListener("click", function () { openSocial(); });
     $("g-mywins").addEventListener("click", openHistory);
+    $("g-openhist").addEventListener("click", openHistory);
     $("g-onlinecount").addEventListener("click", openOnlineList);
     Array.prototype.forEach.call(document.querySelectorAll(".pg-boardtabs [data-board]"), function (b) {
       b.addEventListener("click", function () { boardGame = b.dataset.board; renderPlay(); });
@@ -7376,6 +7439,70 @@ html, body { overflow-x: hidden; }
     });
     document.addEventListener("visibilitychange", function () { syncLobby(); if (!document.hidden) checkPlayInvites(); });
     setInterval(function () { if (me && !document.hidden) checkPlayInvites(); }, 15000);
+
+    // friends can see when I was last here, unless I've chosen to be hidden
+    function markSeen() { if (me && showOnline() && !document.hidden) rpc("mark_seen").catch(function () {}); }
+
+    // ---------- The first-time tour: a spotlight moves over the screen, one thing at a time ----------
+    var TOUR_HOME = [
+      [null, "Welcome to your pet! 🐾", "Here's a quick look around. Tap your pet any time to play with it."],
+      ["#g-feed", "Feed your pet", "Tap here once a day. When " + FEEDS_PER_DAY + " of you feed it, it gains XP and your streak grows."],
+      ["#g-stats", "Your streak", "🔥 is how many days in a row you've kept going. ❄️ freezes protect your streak if you miss a day."],
+      ["#g-bigbadge", "Level and rank", "Your pet levels up and earns ranks. Tap the badge to see them all."],
+      ["#g-crew", "Co-parents", "Invite a friend or family member to raise your pet with you. That's how you earn the most paws."],
+      ["#g-wardrobe", "Dress up", "Try hats, glasses and rooms on your pet."],
+      ["#g-playbtn", "Playground", "Mini-games to play alone or with others."],
+      ["#g-coins", "Paws", "This is your money. Earn it by feeding, levelling up and playing."],
+      ["#g-storebtn", "Store", "Spend paws on new pets, outfits and gifts."],
+      ["#g-socialbtn", "Friends and chat", "Add friends, chat with them and invite them to play."],
+      ["#g-menubtn", "Menu", "Settings, your badges and how the app works. That's it, enjoy! 🎉"]
+    ];
+    var TOUR_PLAY = [
+      [null, "Welcome to the Playground! 🎮", "A quick look at what's here."],
+      ["#g-mywins", "Your wins", "This counts the games you've won against other players."],
+      ["#g-onlinecount", "Who's online", "Green means people are here to play. Tap it to see them, and when your friends were last around."],
+      ["#g-openhist", "Game history", "See every game you played in the last 7 days."],
+      [".pg-gamegrid", "The games", "Tap a game to play solo or with others. The ? on each game shows you how to play."],
+      [".pg-board", "Today's best", "The top scores today. Beat them!"],
+      ["#g-playsocial", "Friends", "Your friends and chats are here too. Have fun! 🎉"]
+    ];
+    var tourSteps = [], tourAt = 0, tourKey = "";
+    function tourSeen(k) { try { return !!localStorage.getItem(k); } catch (e) { return true; } }
+    function startTour(key, steps) {
+      if (tourKey || tourSeen(key)) return;
+      tourSteps = steps.filter(function (s) { if (!s[0]) return true; var el = document.querySelector(s[0]); return el && el.getClientRects().length; });
+      if (!tourSteps.length) return;
+      tourKey = key; tourAt = 0; $("g-tour").hidden = false; drawTour();
+    }
+    function drawTour() {
+      var s = tourSteps[tourAt], hole = $("g-tourhole"), card = $("g-tourcard"), el = s[0] && document.querySelector(s[0]);
+      $("g-tourstep").textContent = (tourAt + 1) + " of " + tourSteps.length;
+      $("g-tourtitle").textContent = s[1]; $("g-tourtext").textContent = s[2];
+      $("g-tournext").textContent = tourAt === tourSteps.length - 1 ? "Got it 👍" : "Next";
+      card.style.top = card.style.bottom = "";
+      if (!el) { hole.hidden = true; $("g-tour").classList.add("plain"); card.style.top = "50%"; card.style.transform = "translate(-50%, -50%)"; return; }
+      $("g-tour").classList.remove("plain"); hole.hidden = false; card.style.transform = "translateX(-50%)";
+      el.scrollIntoView({ block: "center" });
+      var r = el.getBoundingClientRect(), pad = 8, H = window.innerHeight;
+      var top = Math.max(4, r.top - pad), h = Math.min(H - top - 4, r.height + pad * 2);
+      hole.style.left = Math.max(4, r.left - pad) + "px"; hole.style.top = top + "px";
+      hole.style.width = Math.min(window.innerWidth - 8, r.width + pad * 2) + "px"; hole.style.height = h + "px";
+      if (r.top + r.height / 2 < H / 2) card.style.top = Math.min(H - 220, top + h + 12) + "px";
+      else card.style.bottom = Math.min(H - 220, H - top + 12) + "px";
+    }
+    function endTour() {
+      try { localStorage.setItem(tourKey, "1"); } catch (e) {}
+      tourKey = ""; $("g-tour").hidden = true;
+    }
+    $("g-tournext").addEventListener("click", function () { if (tourAt >= tourSteps.length - 1) endTour(); else { tourAt++; drawTour(); } });
+    $("g-tourskip").addEventListener("click", endTour);
+    function maybeHomeTour() {
+      if (!pet() || !tourSeen(HOWTO_KEY) || tourSeen("petstreak.tour.home")) return;
+      var busy = ["g-howto", "g-ask", "g-join", "g-giftsend", "g-store", "g-play", "g-social", "g-chat", "g-sheet", "g-menu", "g-petprev", "g-tray", "g-achpop", "g-invite"];
+      if (busy.some(function (id) { return !$(id).hidden; })) return;
+      startTour("petstreak.tour.home", TOUR_HOME);
+    }
+    function maybePlayTour() { if ($("g-playwelcome").hidden && !$("g-play").hidden) startTour("petstreak.tour.play", TOUR_PLAY); }
 
     // ---------- Pip, the helper bot: a welcome the first time a player opens Chats or the Playground ----------
     var WELCOME = {
@@ -7396,7 +7523,7 @@ html, body { overflow-x: hidden; }
         WELCOME[where].map(function (t) { return '<p class="pg-botmsg">' + esc(t) + "</p>"; }).join("") +
         '<button type="button" class="pg-btn pg-primary">Got it 👍</button>';
       el.hidden = false;
-      el.querySelector("button").onclick = function () { try { localStorage.setItem(k, "1"); } catch (e) {} el.hidden = true; };
+      el.querySelector("button").onclick = function () { try { localStorage.setItem(k, "1"); } catch (e) {} el.hidden = true; if (where === "play") maybePlayTour(); };
     }
 
     // ---------- Social: chats, friends and adding friends (💬 on the main screen and in the Playground) ----------
@@ -7428,6 +7555,11 @@ html, body { overflow-x: hidden; }
       });
       return li;
     }
+    function seenText(at) {
+      if (!at) return "Not seen yet";
+      var a = ago(at);
+      return a === "now" ? "Last seen just now" : "Last seen " + a + " ago";
+    }
     function ago(at) {
       var s = (Date.now() - Date.parse(at)) / 1000;
       return s < 60 ? "now" : s < 3600 ? Math.floor(s / 60) + "m" : s < 86400 ? Math.floor(s / 3600) + "h" : Math.floor(s / 86400) + "d";
@@ -7435,6 +7567,7 @@ html, body { overflow-x: hidden; }
     function renderSocial() {
       if ($("g-social").hidden) return;
       Array.prototype.forEach.call(document.querySelectorAll("#g-soctabs [data-tab]"), function (b) { b.setAttribute("aria-selected", b.dataset.tab === socialTab ? "true" : "false"); });
+      $("g-socwelcome").classList.toggle("off", socialTab !== "chats");
       $("g-socchats").hidden = socialTab !== "chats"; $("g-socfriends").hidden = socialTab !== "friends"; $("g-socadd").hidden = socialTab !== "add";
       var reqs = friends.filter(function (f) { return f.kind === "request"; });
       $("g-socreqdot").hidden = !reqs.length; $("g-socreqdot").textContent = reqs.length;
@@ -7472,7 +7605,7 @@ html, body { overflow-x: hidden; }
         .forEach(function (f) {
           var on = online[f.id];
           box.appendChild(personRow(petPic(f.pet && f.pet.variant), friendTagHTML(f),
-            (on ? (on.busy ? "🎮 Playing" : "🟢 Online") : "Away") + (f.pet ? " · Lv " + f.pet.level + " · 🏁 " + (f.pet.wins || 0) : ""),
+            (on ? (on.busy ? "🎮 Playing" : "🟢 Online") : seenText(f.last_seen)) + (f.pet ? " · Lv " + f.pet.level + " · 🏁 " + (f.pet.wins || 0) : ""),
             [{ text: "💬", label: "Chat with " + f.name, go: function () { openChat(f); } },
              { text: "🎮", label: "Play with " + f.name, primary: !!on, disabled: (on && on.busy) || !!raceNow, go: function () { inviteToGame(f.id); } }],
             function () { openFriendOpts(f); }));
@@ -7497,14 +7630,15 @@ html, body { overflow-x: hidden; }
     });
     $("g-sharecode").addEventListener("click", async function () {
       if (!myCode) return;
+      var url = location.origin + location.pathname + "?friend=" + encodeURIComponent(myCode);
       var text = "Be my friend on Pet Streak! 🐾 My friend code is " + myCode;
-      if (navigator.share) { try { await navigator.share({ text: text, url: location.origin + location.pathname }); } catch (e) {} }
-      else { try { await navigator.clipboard.writeText(text); say("Copied! Paste it to your friend."); } catch (e) { prompt("Send this to your friend:", text); } }
+      if (navigator.share) { try { await navigator.share({ text: text, url: url }); } catch (e) {} }
+      else { try { await navigator.clipboard.writeText(text + " " + url); say("Copied! Paste it to your friend."); } catch (e) { prompt("Send this to your friend:", text + " " + url); } }
     });
     $("g-addcode").addEventListener("submit", async function (e) {
       e.preventDefault();
-      var c = $("g-codein").value.trim(); if (!c) return;
-      if (!/^PANDA-/i.test(c)) c = "PANDA-" + c;
+      var c = $("g-codein").value.trim().replace(/^PANDA-?/i, ""); if (!c) { say("Type your friend's code first."); return; }
+      c = "PANDA-" + c;
       try {
         var r = await rpc("friend_request_code", { p_code: c });
         $("g-codein").value = "";
@@ -7513,7 +7647,20 @@ html, body { overflow-x: hidden; }
       } catch (err) { say(err.message); }
     });
 
-    // ---------- Game history (tap your wins in the Playground): the last 7 days ----------
+    // an invite link (?friend=PANDA-XXXXX): the code is waiting in the Add tab after sign-in
+    var FRIEND_LINK_KEY = "petstreak.friendlink";
+    try {
+      var friendQ = new URLSearchParams(location.search).get("friend");
+      if (friendQ) { localStorage.setItem(FRIEND_LINK_KEY, friendQ); history.replaceState(null, "", location.pathname); }
+    } catch (e) {}
+    function checkFriendLink() {
+      var c = null; try { c = localStorage.getItem(FRIEND_LINK_KEY); localStorage.removeItem(FRIEND_LINK_KEY); } catch (e) {}
+      if (!c) return;
+      openSocial("add"); $("g-codein").value = c.replace(/^PANDA-?/i, "");
+      say("Tap Send friend request to add your friend 🐾");
+    }
+
+    // ---------- Game history (the Game history button in the Playground): the last 7 days ----------
     function logGame(game, mode, against, result, place, score) {
       rpc("record_game", { p_game: game, p_mode: mode, p_against: against || null, p_result: result || null, p_place: place || null,
         p_score: score === undefined || score === null ? null : score }).catch(function () {});
@@ -7646,7 +7793,30 @@ html, body { overflow-x: hidden; }
         if (t) { t.scrollIntoView({ block: "center", behavior: "smooth" }); t.classList.add("flash"); setTimeout(function () { t.classList.remove("flash"); }, 1200); }
       });
       Array.prototype.forEach.call(li.querySelectorAll(".rx button"), function (b) { b.addEventListener("click", function (e) { e.stopPropagation(); reactTo(m, b.dataset.e); }); });
-      li.querySelector(".b").addEventListener("click", function () { openMsgSheet(m); });
+      messageGestures(li, m);
+    }
+    // tap or press and hold: the options. Swipe right: reply
+    function messageGestures(li, m) {
+      var b = li.querySelector(".b"), sx = 0, sy = 0, down = false, swiping = false, held = false, dx = 0, holdT = null;
+      function reset() { clearTimeout(holdT); down = false; li.style.transform = ""; li.classList.remove("swiping"); }
+      b.addEventListener("pointerdown", function (e) {
+        sx = e.clientX; sy = e.clientY; dx = 0; down = true; swiping = false; held = false;
+        holdT = setTimeout(function () { held = true; if (navigator.vibrate) try { navigator.vibrate(12); } catch (er) {} openMsgSheet(m); }, 450);
+      });
+      b.addEventListener("pointermove", function (e) {
+        if (!down) return;
+        dx = e.clientX - sx; var dy = e.clientY - sy;
+        if (Math.abs(dy) > 12 || Math.abs(dx) > 12) clearTimeout(holdT);
+        if (!swiping && dx > 14 && dx > Math.abs(dy) * 1.5 && !m.deleted) { swiping = true; try { b.setPointerCapture(e.pointerId); } catch (er) {} }
+        if (swiping) { li.style.transform = "translateX(" + Math.min(72, Math.max(0, dx)) + "px)"; li.classList.toggle("swiping", dx >= 56); }
+      });
+      b.addEventListener("pointerup", function () {
+        var did = swiping && dx >= 56; reset();
+        if (did) { if (navigator.vibrate) try { navigator.vibrate(10); } catch (er) {} setChatBar("reply", m); }
+      });
+      b.addEventListener("pointercancel", reset);
+      b.addEventListener("contextmenu", function (e) { e.preventDefault(); });
+      b.addEventListener("click", function () { if (!held && !swiping) openMsgSheet(m); swiping = false; held = false; });
     }
     async function chatChanged() { chatDrawn = ""; sendLive("chatup", { to: chatWith.id, from: me.id }); await loadChat(); }
     async function reactTo(m, emoji) {
@@ -7664,6 +7834,7 @@ html, body { overflow-x: hidden; }
     }
     $("g-chatbarx").addEventListener("click", function () { if (chatEdit) $("g-chatin").value = ""; setChatBar(null); });
     function openMsgSheet(m) {
+      if (m.deleted) return;
       var acts = $("g-msgacts"), rx = $("g-msgreact"), age = Date.now() - Date.parse(m.at);
       acts.innerHTML = ""; rx.innerHTML = ""; rx.hidden = !!m.deleted;
       function act(label, go, danger) {
@@ -7682,12 +7853,9 @@ html, body { overflow-x: hidden; }
         act("📋 Copy", function () { try { navigator.clipboard.writeText(m.body).then(function () { say("Copied"); }, function () { say("Couldn't copy that."); }); } catch (e) { say("Couldn't copy that."); } });
         if (m.me && age < 15 * 60000) act("✏️ Edit", function () { setChatBar("edit", m); });
       }
-      if (m.me && !m.deleted && age < 24 * 3600000) act("🗑️ Delete for everyone", function () {
-        if (!confirm("Delete this message for everyone?")) return;
+      if (m.me && !m.deleted) act("🗑️ Delete", function () {
+        if (!confirm("Delete this message? It will be removed for everyone.")) return;
         rpc("chat_delete", { p_id: m.id, p_everyone: true }).then(chatChanged, function (e) { say(e.message); });
-      }, true);
-      act("🗑️ Delete for me", function () {
-        rpc("chat_delete", { p_id: m.id, p_everyone: false }).then(chatChanged, function (e) { say(e.message); });
       }, true);
       if (!m.me && !m.deleted) act("🚩 Report", function () { $("g-chatreport").click(); });
       act("Cancel", function () {});
@@ -8553,6 +8721,7 @@ html, body { overflow-x: hidden; }
     setInterval(applyDayPhase, 60000);
     document.addEventListener("visibilitychange", function () { if (!document.hidden) applyDayPhase(); });
 
+    var homeTourT = null;
     function render() {
       $("g-loading").hidden = !(me && !loaded);
       var signedIn = !!me;
@@ -8565,6 +8734,7 @@ html, body { overflow-x: hidden; }
       if (bathing || pvItem) ["g-top", "g-mood", "g-crew", "g-bottom"].forEach(function (id) { $(id).hidden = true; });
       $("g-empty").hidden = !signedIn || !loaded || !!p || !$("g-store").hidden || !$("g-join").hidden || !!pvItem;
       if (!signedIn) { $("g-away").hidden = true; return; }
+      clearTimeout(homeTourT); homeTourT = setTimeout(maybeHomeTour, 1500);
       // big numbers shortened so the top bar fits small phones (12,500 -> 12.5k)
       var paws = profile ? profile.coins : 0;
       $("g-coinnum").textContent = paws >= 10000 ? (Math.floor(paws / 100) / 10).toString().replace(/\.0$/, "") + "k" : paws.toLocaleString();
@@ -9590,7 +9760,7 @@ html, body { overflow-x: hidden; }
     document.addEventListener("pointerdown", function (e) {
       // a full-screen card (gift, join, name...) is on top: leave everything as it is
       // (also leave sheets alone for taps on an invite card or inside a game)
-      if (e.target.closest && e.target.closest(".pg-adopt, .pg-invite, .pg-game, .pg-playpage, .pg-chatpage, #g-history")) return;
+      if (e.target.closest && e.target.closest(".pg-adopt, .pg-invite, .pg-game, .pg-playpage, .pg-chatpage, #g-history, .pg-tour, .pg-msgsheet")) return;
       var open = CLOSABLE.filter(function (c) { return !$(c[0]).hidden && !$(c[0]).contains(e.target); });
       if (!open.length) return;
       open.forEach(function (c) { $(c[1]).click(); });
@@ -9602,7 +9772,7 @@ html, body { overflow-x: hidden; }
     }, true);
     // The phone's back button (Android's back swipe): close whatever is on top instead of leaving the app. A game
     // asks first. On the main screen, a second back within 2 seconds closes the app.
-    var BACK = [["g-achpop", "g-achok"], ["g-invite", "g-inviteno"], ["g-ask", "g-askcancel"], ["g-join", "g-joincancel"],
+    var BACK = [["g-tour", "g-tourskip"], ["g-achpop", "g-achok"], ["g-invite", "g-inviteno"], ["g-ask", "g-askcancel"], ["g-join", "g-joincancel"],
                 ["g-giftsend", "g-gsdone"], ["g-petopts", "g-poclose"], ["g-gamepick", "g-pickno"], ["g-gamehelp", "g-ghclose"], ["g-mode", "g-modeclose"],
                 ["g-pick", "g-pickclose"], ["g-history", "g-historyclose"], ".pg-game", ["g-msgsheet", "g-msgclose"], ["g-chatbar", "g-chatbarx"], ["g-chat", "g-chatback"],
                 ["g-social", "g-socialclose"], ["g-play", "g-playclose"], ["g-bath", "g-bathcancel"], ["g-howto", "g-howskip"],
@@ -9840,6 +10010,8 @@ html, body { overflow-x: hidden; }
       checkJoin();
       setTimeout(maybeHowTo, 1200);
       setTimeout(checkPlayInvites, 3000);
+      checkFriendLink();
+      markSeen(); setInterval(markSeen, 120000);
       refreshSub();
       // co-parents feed on their own phones: check for news every 20 s while the app is open
       if (!polling) { polling = true; setInterval(function () { if (me && !document.hidden) loadAll({ quiet: true }); }, 20000); }
