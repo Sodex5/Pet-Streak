@@ -6202,7 +6202,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261111185451";   // replaced by build_real.ps1
+    var APP_BUILD = "20261111190025";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -9276,13 +9276,6 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       if (!me || !pet() || !nudgeFree() || !lsGet("petstreak.tour.home")) return;
       // reminders: once a week until they're on (only where this phone can show them)
       var asked = +lsGet(NUDGE_REM) || 0;
-      if (Date.now() - asked > 7 * 86400000 && pushState() === "ios-home") {
-        lsSet(NUDGE_REM, String(Date.now()));
-        nudgeShow({ art: "📲", title: "Add Pet Streak to your Home Screen", ok: "Show me how",
-          text: "On iPhone, reminders only work from the Home Screen. It takes a few seconds, then you can turn on reminders so " + pet().name + " never misses a feed.",
-          go: function () { openGetApp(); } });
-        return;
-      }
       if (Date.now() - asked > 7 * 86400000 && pushState() === "ok") {
         var s = null; try { s = await pushSub(); } catch (e) {}
         if (s && !s.sub && nudgeFree()) {
