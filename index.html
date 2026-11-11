@@ -1823,6 +1823,10 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
 
 /* a name in the game's top bar stays on one line */
 .pg-gamehud .op .nm { white-space: nowrap; text-overflow: ellipsis; }
+
+/* room chat: the reply / edit bar sits above the ready-made messages */
+#g-roomreply { margin: 0 12px; }
+#g-roomreply[hidden] { display: none; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -2122,13 +2126,14 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       <header class="pg-playhead">
         <button type="button" class="pg-playback" id="g-roomback" aria-label="Leave the room">←</button>
         <h2 id="g-roomtitle">Room</h2>
-        <button type="button" class="pg-playback" id="g-roommin" aria-label="Go to my pet while I wait">🐾</button>
+        <button type="button" class="pg-playback" id="g-roommin" aria-label="Go home while I wait">🏠</button>
         <button type="button" class="pg-btn pg-primary pg-roominvite" id="g-roominvite">Invite</button>
       </header>
       <div class="pg-roommeta" id="g-roommeta"></div>
       <ul class="pg-roommembers" id="g-roommembers"></ul>
       <div class="pg-roomgame" id="g-roomgame"></div>
       <ol class="pg-chatlist" id="g-roomchat" aria-live="polite"></ol>
+      <div class="pg-chatbar" id="g-roomreply" hidden><span class="pg-grow"><b id="g-roomreplytitle"></b><small id="g-roomreplytext"></small></span><button type="button" class="pg-x" id="g-roomreplyx" aria-label="Cancel">✕</button></div>
       <div class="pg-roomsays" id="g-roomsays"></div>
       <form class="pg-chatform" id="g-roomform" hidden>
         <input id="g-roomin" maxlength="200" autocomplete="off" placeholder="Only your friends see this…" aria-label="Message to your friends">
@@ -6142,7 +6147,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261107084717";   // replaced by build_real.ps1
+    var APP_BUILD = "20261111180343";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -7217,7 +7222,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       if (out) {
         var ask = roomNow.stake && roomNow.stake.status === "offered" && roomNow.stake.to === me.id;
         bar.classList.toggle("ask", !!ask);
-        var said = ask ? "🐾 Paw offer! Back to the room" : "🏠 Back to the room · " + roomNow.members.length + " here";
+        var said = ask ? "🐾 Paw offer! Back to the room" : "👥 Back to the room · " + roomNow.members.length + " here";
         if (bar.textContent !== said) bar.textContent = said;
       }
       if (!glWatched) { var c = document.querySelector("canvas"); if (c) { glWatched = true; c.addEventListener("webglcontextrestored", function () { glBack = true; }); } }
@@ -7237,7 +7242,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       roomNow = { id: r.id, code: r.code, pub: r.public, max: r.max, after: 0, seq: null, host: null, members: [], names: {} };
       try { localStorage.setItem(ROOM_KEY, r.id); } catch (e) {}
       keepAwake();
-      roomOpp = null; $("g-roomchat").innerHTML = ""; $("g-roomin").value = "";
+      roomOpp = null; $("g-roomchat").innerHTML = ""; $("g-roomin").value = ""; roomReplyBar(null);
       $("g-rooms").hidden = true; $("g-play").hidden = true; roomShow();
       try {
         roomCh = sb.channel("pg-hub-" + r.id, { config: { broadcast: { self: false } } });
@@ -7279,7 +7284,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
         });
         had.forEach(function (u) { if (!R.members.some(function (m) { return m.uid === u; })) roomNote(roomName(u) + " left"); });
       }
-      (s.msgs || []).forEach(function (m) { R.after = Math.max(R.after, m.id); roomLine(m); });
+      (s.msgs || []).forEach(function (m) { R.after = Math.max(R.after, m.rev || m.id); roomLine(m); });
       if (first) R.seq = s.seq;
       else if (s.seq > R.seq) {
         R.seq = s.seq;
@@ -7319,13 +7324,64 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       var li = document.createElement("li"); li.className = "pg-chatday"; li.textContent = text;
       $("g-roomchat").appendChild(li); $("g-roomchat").scrollTop = $("g-roomchat").scrollHeight;
     }
+    var roomReplyTo = null, roomEditing = null;
     function roomLine(m) {
-      var mine = m.uid === me.id, li = document.createElement("li"); li.className = mine ? "me" : "them";
-      li.dataset.uid = m.uid;
-      li.innerHTML = (mine ? "" : '<small class="who">' + esc(roomName(m.uid)) + "</small>") + '<span class="b"></span>';
-      li.querySelector(".b").textContent = m.body;
-      if (!mine) li.querySelector(".b").addEventListener("click", function () { roomPerson(m.uid); });
-      $("g-roomchat").appendChild(li); $("g-roomchat").scrollTop = $("g-roomchat").scrollHeight;
+      var box = $("g-roomchat"), old = m.id ? box.querySelector('li[data-id="' + m.id + '"]') : null, li = document.createElement("li"), mine = m.uid === me.id;
+      li.className = (mine ? "me" : "them") + (m.deleted ? " gone" : ""); li.dataset.uid = m.uid; if (m.id) li.dataset.id = m.id;
+      var quote = m.reply ? '<button type="button" class="q"><b>' + esc(m.reply.uid === me.id ? "You" : roomName(m.reply.uid)) + "</b><span>" + esc(m.reply.deleted ? "🚫 Message deleted" : m.reply.body) + "</span></button>" : "";
+      li.innerHTML = (mine ? "" : '<small class="who">' + esc(roomName(m.uid)) + "</small>") + quote + '<span class="b"></span>' +
+        ((m.reactions || []).length ? '<span class="rx">' + m.reactions.map(function (r) { return '<button type="button" class="' + (r.mine ? "mine" : "") + '" data-e="' + esc(r.e) + '">' + esc(r.e) + (r.n > 1 ? " " + r.n : "") + "</button>"; }).join("") + "</span>" : "") +
+        (m.at ? "<time>" + (m.edited && !m.deleted ? "edited · " : "") + esc(new Date(m.at).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })) + "</time>" : "");
+      li.querySelector(".b").textContent = m.deleted ? "🚫 " + (mine ? "You deleted this message" : "This message was deleted") : m.body;
+      var q = li.querySelector(".q");
+      if (q) q.addEventListener("click", function (e) {
+        e.stopPropagation();
+        var t = box.querySelector('li[data-id="' + m.reply.id + '"]');
+        if (t) { t.scrollIntoView({ block: "center", behavior: "smooth" }); t.classList.add("flash"); setTimeout(function () { t.classList.remove("flash"); }, 1200); }
+      });
+      Array.prototype.forEach.call(li.querySelectorAll(".rx button"), function (b) { b.addEventListener("click", function (e) { e.stopPropagation(); roomReact(m, b.dataset.e); }); });
+      messageGestures(li, m, roomMsgSheet, function (x) { roomReplyBar("reply", x); });
+      if (old) box.replaceChild(li, old); else { box.appendChild(li); box.scrollTop = box.scrollHeight; }
+    }
+    async function roomReact(m, e) {
+      try { await rpc("room_msg_react", { p_id: m.id, p_emoji: e }); roomPoke(); roomPoll(); } catch (err) { say(friendly(err.message)); }
+    }
+    // the bar above the typing box: replying to a message, or editing mine
+    function roomReplyBar(kind, m) {
+      roomReplyTo = kind === "reply" ? m : null; roomEditing = kind === "edit" ? m : null;
+      $("g-roomreply").hidden = !kind;
+      if (!kind) return;
+      $("g-roomreplytitle").textContent = kind === "edit" ? "✏️ Editing your message" : "↩️ Replying to " + (m.uid === me.id ? "yourself" : roomName(m.uid));
+      $("g-roomreplytext").textContent = m.body;
+      if (kind === "edit") { $("g-roomin").value = m.body; $("g-roomin").focus(); }
+    }
+    $("g-roomreplyx").addEventListener("click", function () { if (roomEditing) $("g-roomin").value = ""; roomReplyBar(null); });
+    function roomMsgSheet(m) {
+      if (m.deleted || !m.id) return;
+      var acts = $("g-msgacts"), rx = $("g-msgreact"), mine = m.uid === me.id, age = Date.now() - Date.parse(m.at || 0);
+      acts.innerHTML = ""; rx.innerHTML = ""; rx.hidden = false;
+      function act(label, go, danger) {
+        var b = document.createElement("button"); b.type = "button"; b.textContent = label; if (danger) b.className = "danger";
+        b.addEventListener("click", function () { $("g-msgsheet").hidden = true; go(); });
+        acts.appendChild(b);
+      }
+      CHAT_REACTIONS.forEach(function (e) {
+        var b = document.createElement("button"); b.type = "button"; b.textContent = e; b.setAttribute("aria-label", "React with " + e);
+        if ((m.reactions || []).some(function (r) { return r.mine && r.e === e; })) b.className = "mine";
+        b.addEventListener("click", function () { $("g-msgsheet").hidden = true; roomReact(m, e); });
+        rx.appendChild(b);
+      });
+      act("↩️ Reply", function () { roomReplyBar("reply", m); });
+      act("📋 Copy", function () { try { navigator.clipboard.writeText(m.body).then(function () { say("Copied"); }, function () { say("Couldn't copy that."); }); } catch (e) { say("Couldn't copy that."); } });
+      // (ready-made messages can't be edited, and typing needs the box, which shows when a friend is here)
+      if (mine && !m.quick && age < 15 * 60000 && !$("g-roomform").hidden) act("✏️ Edit", function () { roomReplyBar("edit", m); });
+      if (mine) act("🗑️ Delete", function () {
+        if (!confirm("Delete this message? It will be removed for everyone.")) return;
+        rpc("room_msg_delete", { p_id: m.id }).then(function () { roomPoke(); roomPoll(); }, function (e) { say(friendly(e.message)); });
+      }, true);
+      if (!mine) act("👤 " + roomName(m.uid) + ": block or report", function () { roomPerson(m.uid); });
+      act("Cancel", function () {});
+      $("g-msgsheet").hidden = false;
     }
     function roomDraw() {
       var R = roomNow; if (!R) return;
@@ -7566,14 +7622,18 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       var b = document.createElement("button"); b.type = "button"; b.textContent = t;
       b.addEventListener("click", async function () {
         var R = roomNow; if (!R) return;
-        try { await rpc("room_phrase", { p_room: R.id, p_i: i }); roomPoke(); roomPoll(); } catch (err) { say(friendly(err.message)); }
+        try { await rpc("room_phrase", { p_room: R.id, p_i: i, p_reply: roomReplyTo ? roomReplyTo.id : null }); if (!roomEditing) roomReplyBar(null); roomPoke(); roomPoll(); } catch (err) { say(friendly(err.message)); }
       });
       $("g-roomsays").appendChild(b);
     });
     $("g-roomform").addEventListener("submit", async function (e) {
       e.preventDefault();
       var R = roomNow, t = $("g-roomin").value; if (!R || !t.trim()) return;
-      try { var r = await rpc("room_say", { p_room: R.id, p_body: t }); $("g-roomin").value = ""; if (r.masked) say("Some words were hidden with *** to keep chat friendly."); roomPoke(); roomPoll(); }
+      try {
+        var r = roomEditing ? await rpc("room_msg_edit", { p_id: roomEditing.id, p_body: t }) : await rpc("room_say", { p_room: R.id, p_body: t, p_reply: roomReplyTo ? roomReplyTo.id : null });
+        $("g-roomin").value = ""; roomReplyBar(null);
+        if (r.masked) say("Some words were hidden with *** to keep chat friendly."); roomPoke(); roomPoll();
+      }
       catch (err) { say(friendly(err.message)); }
     });
     // a shared room link (?room=CODE): straight in after sign-in
@@ -8866,12 +8926,12 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       messageGestures(li, m);
     }
     // tap or press and hold: the options. Swipe right: reply
-    function messageGestures(li, m) {
+    function messageGestures(li, m, onOpen, onReply) {
       var b = li.querySelector(".b"), sx = 0, sy = 0, down = false, swiping = false, held = false, dx = 0, holdT = null;
       function reset() { clearTimeout(holdT); down = false; li.style.transform = ""; li.classList.remove("swiping"); }
       b.addEventListener("pointerdown", function (e) {
         sx = e.clientX; sy = e.clientY; dx = 0; down = true; swiping = false; held = false;
-        holdT = setTimeout(function () { held = true; if (navigator.vibrate) try { navigator.vibrate(12); } catch (er) {} openMsgSheet(m); }, 450);
+        holdT = setTimeout(function () { held = true; if (navigator.vibrate) try { navigator.vibrate(12); } catch (er) {} (onOpen || openMsgSheet)(m); }, 450);
       });
       b.addEventListener("pointermove", function (e) {
         if (!down) return;
@@ -8882,11 +8942,11 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       });
       b.addEventListener("pointerup", function () {
         var did = swiping && dx >= 56; reset();
-        if (did) { if (navigator.vibrate) try { navigator.vibrate(10); } catch (er) {} setChatBar("reply", m); }
+        if (did) { if (navigator.vibrate) try { navigator.vibrate(10); } catch (er) {} if (onReply) onReply(m); else setChatBar("reply", m); }
       });
       b.addEventListener("pointercancel", reset);
       b.addEventListener("contextmenu", function (e) { e.preventDefault(); });
-      b.addEventListener("click", function () { if (!held && !swiping) openMsgSheet(m); swiping = false; held = false; });
+      b.addEventListener("click", function () { if (!held && !swiping) (onOpen || openMsgSheet)(m); swiping = false; held = false; });
     }
     async function chatChanged() { chatDrawn = ""; sendLive("chatup", { to: chatWith.id, from: me.id }); await loadChat(); }
     async function reactTo(m, emoji) {
@@ -9077,6 +9137,14 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
           if (!u.suspended && !confirm("Suspend " + u.name + "? They won't be able to play until you lift it.")) return;
           await rpc("admin_suspend", { p_user: u.uid, p_on: !u.suspended }); u.suspended = !u.suspended; draw(); adminLog();
         }));
+        // put back a streak that was lost (the pet carries on from yesterday)
+        (u.petinfo || []).forEach(function (pt) {
+          row.appendChild(adminBtn("🔥 " + pt.name + "'s streak (" + pt.streak + ")", "", async function () {
+            var n = parseInt(prompt("Set " + pt.name + "'s streak to how many days? Their best was " + pt.best + ".", String(Math.max(pt.best, 1))) || "", 10); if (!n) return;
+            await rpc("admin_restore_streak", { p_pet: pt.id, p_streak: n }); pt.streak = n; pt.best = Math.max(pt.best, n);
+            say("🔥 " + pt.name + "'s streak is " + n + ". It carries on when they both feed today."); draw(); adminLog();
+          }));
+        });
         if (onClose) d.querySelector(".pg-adminname").addEventListener("click", onClose);
         d.appendChild(row);
       }
@@ -11104,7 +11172,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
     // asks first. On the main screen, a second back within 2 seconds closes the app.
     var BACK = [["g-tour", "g-tourskip"], ["g-achpop", "g-achok"], ["g-invite", "g-inviteno"], ["g-ask", "g-askcancel"], ["g-join", "g-joincancel"],
                 ["g-giftsend", "g-gsdone"], ["g-petopts", "g-poclose"], ["g-gamepick", "g-pickno"], ["g-gamehelp", "g-ghclose"], ["g-mode", "g-modeclose"],
-                ["g-pick", "g-pickclose"], ["g-history", "g-historyclose"], ".pg-game", ["g-msgsheet", "g-msgclose"], ["g-chatbar", "g-chatbarx"], ["g-chat", "g-chatback"], ["g-watch", "g-watchclose"], ["g-seek", "g-seekclose"], ["g-news", "g-newsok"], ["g-delcard", "g-delcancel"], ["g-safecard", "g-safecancel"], ["g-roomnew", "g-roomnewcancel"], ["g-roompage", "g-roomback"], ["g-rooms", "g-roomsclose"],
+                ["g-pick", "g-pickclose"], ["g-history", "g-historyclose"], ".pg-game", ["g-msgsheet", "g-msgclose"], ["g-chatbar", "g-chatbarx"], ["g-chat", "g-chatback"], ["g-watch", "g-watchclose"], ["g-roomreply", "g-roomreplyx"], ["g-roomnew", "g-roomnewcancel"], ["g-roompage", "g-roommin"], ["g-rooms", "g-roomsclose"], ["g-seek", "g-seekclose"], ["g-news", "g-newsok"], ["g-delcard", "g-delcancel"], ["g-safecard", "g-safecancel"], ["g-roomnew", "g-roomnewcancel"], ["g-roompage", "g-roomback"], ["g-rooms", "g-roomsclose"],
                 ["g-social", "g-socialclose"], ["g-play", "g-playclose"], ["g-bath", "g-bathcancel"], ["g-howto", "g-howskip"],
                 ["g-getapp", "g-gaclose"], ["g-streakinfo", "g-siok"], ["g-bonusintro", "g-bonusok"]].concat(CLOSABLE);
     function closeTop() {
