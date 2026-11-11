@@ -1879,6 +1879,47 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
 .pg-questlist small { color: #55666e; font-size: 0.78rem; }
 .pg-questlist .pg-btn { flex: none; min-height: 40px; padding: 0 12px; }
 @media (prefers-reduced-motion: reduce) { .pg-giftbox.shake .box { animation: none; } }
+
+/* the store: two cards a row on phones, so names and buttons don't squash */
+@media (max-width: 480px) { #g-storeitems { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+/* sheets are solid, so what's behind doesn't show through the text */
+.pg-card.pg-sheet { background: #f8fafb; }
+
+/* the tab bar along the bottom of the home screen */
+.pg-tabs { left: 0; right: 0; bottom: 0; z-index: 6; display: flex; justify-content: space-around; padding: 4px 6px calc(4px + env(safe-area-inset-bottom, 0px)); background: rgba(255,255,255,0.97); border-top: 1px solid #e3eaed; box-shadow: 0 -4px 16px rgba(20,35,43,0.08); }
+.pg-tabs[hidden] { display: none; }
+.pg-tab { flex: 1 1 0; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; min-height: 52px; max-width: 110px; padding: 0; border: 0; background: none; font: inherit; color: #55666e; cursor: pointer; }
+.pg-tab i { font-style: normal; font-size: 1.3rem; line-height: 1.15; }
+.pg-tab small { font-size: 0.7rem; font-weight: 700; }
+.pg-tab.on small { color: var(--brand); }
+.pg-tab .pg-dotcount { position: absolute; top: 4px; left: calc(50% + 6px); }
+/* with the tab bar, the action buttons and the dock sit above it */
+.pg-hastabs .pg-bottom { bottom: calc(86px + env(safe-area-inset-bottom, 0px)); }
+.pg-hastabs .pg-dock { bottom: calc(156px + env(safe-area-inset-bottom, 0px)); }
+.pg-hastabs .pg-msg { bottom: calc(230px + env(safe-area-inset-bottom, 0px)); }
+/* the next-step card */
+.pg-next { display: flex; align-items: center; gap: 10px; width: 100%; box-sizing: border-box; padding: 8px 10px 8px 12px; border-radius: 16px; text-align: left; }
+.pg-next[hidden] { display: none; }
+.pg-next .ic { flex: none; font-size: 1.5rem; }
+.pg-next .pg-grow { min-width: 0; }
+.pg-next b { display: block; color: #14232b; font-size: 0.98rem; line-height: 1.2; }
+.pg-next small { display: block; color: #55666e; font-size: 0.8rem; line-height: 1.25; }
+.pg-next .pg-btn { flex: none; min-height: 40px; padding: 0 16px; }
+.pg-next .pg-btn[hidden] { display: none; }
+/* the store tip, in one line */
+.pg-storetip.pg-storetip1 { display: flex; align-items: center; gap: 8px; padding: 8px 8px 8px 12px; font-size: 0.9rem; }
+.pg-storetip1 .pg-x { flex: none; width: 32px; height: 32px; }
+/* empty Friends */
+.pg-socempty { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; padding: 24px 16px; list-style: none; }
+.pg-socempty img { width: 120px; height: 120px; object-fit: contain; }
+.pg-socempty b { font-size: 1.15rem; color: #14232b; }
+.pg-socempty p { margin: 0 0 6px; color: #55666e; max-width: 300px; }
+
+.pg-tabs .pg-tab { border: 0; border-radius: 12px; background: none; box-shadow: none; min-width: 0; }
+.pg-tabs .pg-tab:active { background: rgba(20,35,43,0.06); }
+#g-socchats .pg-socempty img, .pg-people .pg-socempty img { width: 120px; height: 120px; border-radius: 0; background: none; box-shadow: none; object-fit: contain; }
+
+.pg-tabs { position: fixed; margin: 0; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -1926,11 +1967,16 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       <button type="button" class="pg-chip pg-petbtn" id="g-petbtn" aria-label="Switch pet"><span id="g-petbtnname">My pets</span> <small id="g-petcount"></small> ▾</button>
       <span class="pg-grow2"></span>
       <button type="button" class="pg-chip" id="g-coins" aria-label="Paws">🐾 <span id="g-coinnum">0</span></button>
-      <button type="button" class="pg-chip pg-socialchip" id="g-socialbtn" aria-label="Friends and chats">💬<span class="pg-dotcount" id="g-socialdot" hidden></span></button>
-      <button type="button" class="pg-chip pg-storechip" id="g-storebtn" aria-label="Store">🛍️<span class="pg-storelbl"> Store</span></button>
-      <button type="button" class="pg-chip" id="g-menubtn" aria-label="Menu">☰</button>
     </div>
+    <nav class="pg pg-tabs" id="g-tabs" hidden aria-label="Main">
+      <button type="button" class="pg-tab on" id="g-tabhome" aria-label="Home" aria-current="page"><i aria-hidden="true">🏠</i><small>Home</small></button>
+      <button type="button" class="pg-tab" id="g-playbtn" aria-label="Playground: mini-games"><i aria-hidden="true">🎮</i><small>Play</small></button>
+      <button type="button" class="pg-tab" id="g-socialbtn" aria-label="Friends and chats"><i aria-hidden="true">💬</i><small>Friends</small><span class="pg-dotcount" id="g-socialdot" hidden></span></button>
+      <button type="button" class="pg-tab" id="g-storebtn" aria-label="Store"><i aria-hidden="true">🛍️</i><small>Store</small></button>
+      <button type="button" class="pg-tab" id="g-menubtn" aria-label="Menu"><i aria-hidden="true">☰</i><small>Menu</small></button>
+    </nav>
     <div class="pg pg-dock" id="g-dock">
+      <div class="pg-card pg-next" id="g-next" hidden><span class="ic" aria-hidden="true" id="g-nextic"></span><span class="pg-grow"><b id="g-nexttitle"></b><small id="g-nextsub"></small></span><button type="button" class="pg-btn pg-primary" id="g-nextbtn"></button></div>
       <div class="pg-card pg-mood" id="g-mood" role="status" hidden>😊 Happy</div>
       <div class="pg-crew" id="g-crew" hidden></div>
     </div>
@@ -1957,7 +2003,6 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       <button type="button" class="pg-feed" id="g-feed">🍎 Feed</button>
       <button type="button" class="pg-wardrobe pg-bathbtn" id="g-bathbtn" hidden aria-label="Give your pet a bath">🛁<span class="pg-lbl"> Bath</span></button>
       <button type="button" class="pg-wardrobe" id="g-wardrobe" aria-label="Dress up">🎀<span class="pg-lbl"> Dress up</span></button>
-      <button type="button" class="pg-wardrobe pg-capbtn pg-playbtn" id="g-playbtn" aria-label="Playground: mini-games">🎮<small class="pg-cap" aria-hidden="true">Play</small></button>
       <button type="button" class="pg-wardrobe pg-capbtn" id="g-sharebtn" aria-label="Capture and share your pet"><small class="pg-cap pg-capphoto" aria-hidden="true">Photo</small><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l1.6-2.4A1.5 1.5 0 0 1 9.9 5h4.2a1.5 1.5 0 0 1 1.3.6L17 8h3a1.5 1.5 0 0 1 1.5 1.5v8A1.5 1.5 0 0 1 20 19H4a1.5 1.5 0 0 1-1.5-1.5v-8A1.5 1.5 0 0 1 4 8z"/><circle cx="12" cy="13" r="3.6"/></svg></button>
     </div>
 
@@ -2024,7 +2069,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
           <button type="button" class="pg-gamecard race" data-game="race"><span class="art" aria-hidden="true">🏁</span><b>Treat race</b><small>Tap fastest · up to 4</small></button>
           <button type="button" class="pg-gamecard memory" data-game="memory"><span class="art" aria-hidden="true">🃏</span><b>Memory match</b><small>Find the pairs</small></button>
           <button type="button" class="pg-gamecard ball" data-game="ball"><span class="art" aria-hidden="true">⚽</span><b>Ball pass</b><small>Keep it going · or versus</small></button>
-          <button type="button" class="pg-gamecard penalty" data-game="penalty"><span class="art" aria-hidden="true">🥅</span><b>Penalty kicks</b><small>Shoot, save, win the shootout</small><em class="pg-newtag">NEW</em></button>
+          <button type="button" class="pg-gamecard penalty" data-game="penalty"><span class="art" aria-hidden="true">🥅</span><b>Penalty kicks</b><small>Shoot, save, win the shootout</small></button>
         </div>
         <h3 class="pg-playh">🏆 Today's best</h3>
         <div class="pg-tabs pg-boardtabs" role="tablist">
@@ -6239,7 +6284,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261111191936";   // replaced by build_real.ps1
+    var APP_BUILD = "20261111202942";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -7315,6 +7360,8 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
     setInterval(function () {
       var game = document.querySelector(".pg-game");
       var page = document.querySelector(".pg-playpage:not([hidden]), .pg-chatpage:not([hidden])");
+      var tabsOff = $("g-bottom").hidden || !!game || !!page || !$("g-howto").hidden || !$("g-bath").hidden;
+      if ($("g-tabs").hidden !== tabsOff) { $("g-tabs").hidden = tabsOff; document.documentElement.classList.toggle("pg-hastabs", !tabsOff); }
       window.__petHidden = !!(game || page);
       var bar = $("g-roombar"), out = !!roomNow && !game && !page && !raceNow;
       bar.hidden = !out;
@@ -7712,6 +7759,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
     $("g-roomback").addEventListener("click", roomLeave);
     // popping out to look after the pet: you stay in the room, and a game that starts still brings you in
     $("g-roommin").addEventListener("click", function () { $("g-roompage").hidden = true; });
+    $("g-tabhome").addEventListener("click", function () { CLOSABLE.forEach(function (c) { if ($(c[0]) && !$(c[0]).hidden) { var x = $(c[1]); if (x) x.click(); } }); });
     $("g-roombar").addEventListener("click", roomShow);
     document.addEventListener("visibilitychange", function () { if (!document.hidden && roomNow) roomPoll(); });   // back in the app: check in at once
     $("g-roominvite").addEventListener("click", roomInvite);
@@ -8804,11 +8852,13 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
         box.appendChild(li);
       });
       if (!list.length) {
-        box.innerHTML = '<li class="pg-logempty">No chats yet. Add a friend to start chatting! 👋</li>';
-        var go = document.createElement("li"); go.className = "pg-center";
-        go.innerHTML = '<button type="button" class="pg-feed">➕ Add a friend</button>';
-        go.querySelector("button").addEventListener("click", function () { socialTab = "add"; renderSocial(); });
-        box.appendChild(go);
+        box.innerHTML = "";
+        var em = document.createElement("li"); em.className = "pg-socempty";
+        em.innerHTML = '<img alt="" src="' + esc(petPic(pet() && pet().variant)) + '"><b>Chat and play with friends</b>' +
+          '<p>Add a friend with their friend code, or share yours. Then you can chat, play games together and co-parent.</p>' +
+          '<button type="button" class="pg-feed">➕ Add a friend</button>';
+        em.querySelector("button").addEventListener("click", function () { socialTab = "add"; renderSocial(); });
+        box.appendChild(em);
       }
       // friends: requests first, then friends (online first), then requests you sent
       box = $("g-socfriends"); box.innerHTML = "";
@@ -9559,6 +9609,32 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       say(on ? "🔍 " + p.name + " is on the list. You'll see here when someone asks." : p.name + " is off the list.");
       drawSeek();
     });
+    // The next-step card: the one thing worth doing now, changing through the day
+    function drawNext(p, m) {
+      var card = $("g-next"), show = !!p && m !== "away" && !bathing;
+      card.hidden = !show; $("g-mood").hidden = $("g-mood").hidden || show;
+      if (!show) return;
+      var left = minutesLeftToday(p), who = others(p), fedBy = who.filter(function (x) { return x.fed_today; })[0], notYet = who.filter(function (x) { return !x.fed_today; })[0];
+      var claimable = daily && (daily.quests || []).filter(function (q) { return q.done >= q.target && !q.claimed; }).length;
+      var questsLeft = daily && (daily.quests || []).filter(function (q) { return !q.claimed; }).length;
+      function set(ic, title, sub, label, go) {
+        $("g-nextic").textContent = ic; $("g-nexttitle").textContent = title; $("g-nextsub").textContent = sub || "";
+        var b = $("g-nextbtn"); b.hidden = !label; b.textContent = label || ""; b.disabled = false; b.onclick = go || null;
+      }
+      var leftTxt = left !== null && !fullToday(p) ? "⏰ " + leftText(left) + " left today" : "";
+      if (!iFed(p)) {
+        if (m === "sick") set("🤒", p.name + " is sick", "Feed them to start getting better. " + leftTxt, "", null);
+        else if (m === "hungry") set("🥺", p.name + " is hungry", "They missed a day. " + leftTxt, "", null);
+        else if (fedBy) set("👋", fedBy.name + " fed " + p.name, "Your turn! " + leftTxt, "", null);
+        else if (missesYou(p)) set("🥺", p.name + " misses you", leftTxt, "", null);
+        else set("🍎", "Time to feed " + p.name, leftTxt, "", null);
+      } else if (daily && !daily.gift) set("🎁", "Your daily gift is ready", "Paws, or a streak freeze if you're lucky", "Open", openDaily);
+      else if (claimable) set("⭐", claimable === 1 ? "A quest is done!" : claimable + " quests are done!", "Claim the XP for " + p.name, "Claim", openDaily);
+      else if (!who.length && isOwner(p)) set("👥", "Get a co-parent", "XP and the streak count when " + FEEDS_PER_DAY + " of you feed", "Get one", safeOn() ? invite : coparentChoice);
+      else if (notYet && !fullToday(p)) set("⏳", "Waiting for " + notYet.name, "The day counts once you've both fed. " + leftTxt, notYet.nudged ? "" : "Remind", function () { nudge(p, notYet, $("g-nextbtn")); });
+      else if (questsLeft) set("🎯", questsLeft === 1 ? "1 quest left today" : questsLeft + " quests left today", "Each one gives " + p.name + " 10 XP", "See", openDaily);
+      else set("✅", "All done for today", p.name + " is happy. See you tomorrow!", "", null);
+    }
     // a friend you know, or someone looking too
     function coparentChoice() {
       roomSheet([["📨 Invite a friend", invite], ["🔍 Find someone looking for a co-parent", openSeek]]);
@@ -9925,10 +10001,12 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
         $("g-storehint").textContent = "Tap a pet to see it up close. Buy one for yourself, or as a gift: your friend becomes its owner and names it.";
         // new players (no pet yet, or just one) get a tip: co-parenting is how to save up for the pet they really want
         if (pets.length < 2) {
-          var tip = document.createElement("div"); tip.className = "pg-storetip";
-          tip.innerHTML = "<b>💡 Tip for new players</b>Can't afford the pet you really want yet? Get one you can afford now and find a co-parent to raise it with you. " +
-            "When " + FEEDS_PER_DAY + " of you feed it each day, it levels up and you both earn more paws. Once you've saved enough, come back for the one you love!";
-          box.appendChild(tip);
+          if (!lsGet("petstreak.storetip")) {
+            var tip = document.createElement("div"); tip.className = "pg-storetip pg-storetip1";
+            tip.innerHTML = '<span class="pg-grow">💡 Saving up? A co-parent helps you earn paws faster.</span><button type="button" class="pg-x" aria-label="Hide this tip">✕</button>';
+            tip.querySelector("button").addEventListener("click", function () { lsSet("petstreak.storetip", "1"); tip.remove(); });
+            box.appendChild(tip);
+          }
         }
         petsForSale().forEach(function (s, i) {
           var c = document.createElement("div"); c.className = "pg-card2";
@@ -10374,12 +10452,13 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
         crew.appendChild(dl);
       }
       // only the owner chooses co-parents
-      if (isOwner(p) && (p.members || []).length < 4) {
+      if (isOwner(p) && (p.members || []).length < 4 && (!alone || seekAsks.length)) {
         var ib = document.createElement("button"); ib.type = "button";
-        ib.textContent = alone && seekAsks.length ? "🐾 " + seekAsks.length + " asking to co-parent" : alone ? "＋ Get a co-parent to earn XP" : "＋ Invite";
+        ib.textContent = alone ? "🐾 " + seekAsks.length + " asking to co-parent" : "＋ Invite";
         if (alone) ib.className = "hot";
-        ib.addEventListener("click", alone && seekAsks.length ? openSeek : alone && !safeOn() ? coparentChoice : invite); crew.appendChild(ib);
+        ib.addEventListener("click", alone ? openSeek : invite); crew.appendChild(ib);
       }
+      drawNext(p, m);
       crew.hidden = m === "away" || !!bathing;
       // the sanctuary
       var away = m === "away";
