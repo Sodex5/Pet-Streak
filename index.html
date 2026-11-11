@@ -1857,6 +1857,28 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
 .pg-petsay[hidden] { display: none; }
 @keyframes pg-petsay { from { opacity: 0; transform: translateY(6px) scale(0.96); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) { .pg-petsay { animation: none; } }
+
+/* Daily: the gift box and quests */
+#g-daily { z-index: 25; max-height: 86%; overflow-y: auto; }
+.pg-todaychip.pg-dailyhot { background: var(--brand); color: #fff; border-color: transparent; }
+.pg-giftbox { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 100%; padding: 18px 12px; border: 2px dashed var(--brand); border-radius: 20px; background: var(--brand-tint); font: inherit; color: #14232b; cursor: pointer; }
+.pg-giftbox .box { font-size: 3.2rem; line-height: 1; }
+.pg-giftbox b { font-size: 1.15rem; }
+.pg-giftbox small { color: #55666e; }
+.pg-giftbox.opened { border-style: solid; border-color: #d6e0e4; background: #f7fafb; cursor: default; }
+.pg-giftbox.shake .box { animation: pg-giftshake 0.35s ease-in-out 2; }
+@keyframes pg-giftshake { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-12deg) scale(1.08); } 75% { transform: rotate(12deg) scale(1.08); } }
+.pg-questlist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.pg-questlist li { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 14px; background: #f1f5f6; }
+.pg-questlist li.claimed { opacity: 0.7; }
+.pg-questlist .qi { font-size: 1.5rem; flex: none; }
+.pg-questlist .pg-grow { min-width: 0; }
+.pg-questlist b { display: block; color: #14232b; }
+.pg-questlist .bar { display: block; height: 6px; margin: 5px 0 2px; border-radius: 999px; background: #dbe4e8; overflow: hidden; }
+.pg-questlist .bar i { display: block; height: 100%; background: var(--brand); border-radius: 999px; }
+.pg-questlist small { color: #55666e; font-size: 0.78rem; }
+.pg-questlist .pg-btn { flex: none; min-height: 40px; padding: 0 12px; }
+@media (prefers-reduced-motion: reduce) { .pg-giftbox.shake .box { animation: none; } }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -2192,6 +2214,14 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       <ul class="pg-seeklist" id="g-seekasks"></ul>
       <h3 class="pg-seekhead">Pets looking for a co-parent</h3>
       <ul class="pg-seeklist" id="g-seeklist"></ul>
+    </div>
+    <!-- Daily: the gift box and today's quests -->
+    <div class="pg pg-card pg-sheet pg-dailysheet" id="g-daily" hidden>
+      <h2><span>🎁 Daily</span> <button type="button" class="pg-x" id="g-dailyclose" aria-label="Close Daily">✕</button></h2>
+      <button type="button" class="pg-giftbox" id="g-giftbox"><span class="box" aria-hidden="true">🎁</span><b id="g-gifttitle">Open today's gift</b><small id="g-giftsub">Tap to open</small></button>
+      <h3 class="pg-seekhead">Today's quests <small id="g-questsum"></small></h3>
+      <ul class="pg-questlist" id="g-quests"></ul>
+      <p class="pg-hint" id="g-questnote">Each quest gives your pet 10 XP. Finish all three for 10 more.</p>
     </div>
     <!-- a gentle prompt: turn on reminders (weekly, until they're on) or pick a colour (once) -->
     <div class="pg pg-adopt" id="g-nudge" hidden>
@@ -6209,7 +6239,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261111190843";   // replaced by build_real.ps1
+    var APP_BUILD = "20261111191936";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -6400,6 +6430,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       // players who already have a pet going hear about bonus XP once, shortly after opening
       if (pet() && (pet().best > 0 || pet().level > 1)) setTimeout(maybeBonusIntro, 2500);
       render();
+      if (!(opts && opts.quiet)) dailyCheck();   // (a feed may have finished a quest)
     }
     // what each pet looked like at the last load, to notice co-parents' feeds while the app is open
     function remember() {
@@ -9406,6 +9437,71 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
     // Only these 5, only between co-parents of the pet; the server checks the thing really happened today.
     var REACTIONS = ["❤️", "👏", "😂", "🤗", "🙏"];
     // a co-parent's card (tap their name under the pet): chat, a hello, and the reminder if they haven't fed
+    // ---------- Daily: a gift box and three quests (update_051.sql) ----------
+    var daily = null, QUEST_TEXT = {
+      feed: ["🍎", function (p) { return "Feed " + p.name; }],
+      fav: ["⭐", function (p) { return "Feed " + p.name + " their favourite food"; }],
+      play2: ["🎮", function () { return "Play 2 games"; }],
+      win: ["🏆", function () { return "Win a game"; }],
+      hello: ["👋", function () { return "Say hello to your co-parent"; }],
+      chat: ["💬", function () { return "Send a friend a message"; }]
+    };
+    // how many things are waiting: an unopened gift, and finished quests not yet claimed
+    function dailyWaiting() {
+      if (!daily) return 0;
+      return (daily.gift ? 0 : 1) + (daily.quests || []).filter(function (q) { return q.done >= q.target && !q.claimed; }).length;
+    }
+    async function dailyCheck() {
+      if (!me || !pets.length) return;
+      var was = dailyWaiting();
+      try { daily = await rpc("daily_status"); } catch (e) { return; }
+      if (!$("g-daily").hidden) drawDaily();
+      if (loaded && was !== dailyWaiting()) render();
+    }
+    function drawDaily() {
+      var p = pet(), g = daily && daily.gift, box = $("g-giftbox");
+      box.disabled = !!g; box.classList.toggle("opened", !!g);
+      $("g-gifttitle").textContent = !g ? "Open today's gift" : g.kind === "freeze" ? "❄️ A streak freeze" : (g.amount >= 50 ? "🎉 Jackpot! " : "") + "+" + g.amount + " 🐾";
+      $("g-giftsub").textContent = !g ? "Tap to open" : "Come back tomorrow for another gift";
+      box.querySelector(".box").textContent = g ? "✨" : "🎁";
+      var list = $("g-quests"); list.innerHTML = "";
+      var qs = (daily && daily.quests) || [], claimed = qs.filter(function (q) { return q.claimed; }).length;
+      $("g-questsum").textContent = claimed + "/" + qs.length;
+      qs.forEach(function (q) {
+        var t = QUEST_TEXT[q.key] || ["✨", function () { return q.key; }], li = document.createElement("li"), done = q.done >= q.target;
+        li.className = q.claimed ? "claimed" : done ? "ready" : "";
+        li.innerHTML = '<span class="qi" aria-hidden="true">' + t[0] + '</span><span class="pg-grow"><b>' + esc(t[1](p)) + "</b>" +
+          '<i class="bar"><i style="width:' + Math.round(Math.min(1, q.done / q.target) * 100) + '%"></i></i><small>' + q.done + "/" + q.target + "</small></span>";
+        var b = document.createElement("button"); b.type = "button"; b.className = "pg-btn" + (done && !q.claimed ? " pg-primary" : "");
+        b.textContent = q.claimed ? "✓ Done" : done ? "+10 XP" : "To do"; b.disabled = q.claimed || !done;
+        b.addEventListener("click", async function () {
+          b.disabled = true;
+          try {
+            var r = await rpc("claim_quest", { p_pet: p.id, p_quest: q.key });
+            sfx(r.bonus ? "levelUp" : "happy"); floatText("+" + r.xp + " XP");
+            say(r.bonus ? "🎉 All three done! +" + r.xp + " XP for " + p.name : "+10 XP for " + p.name);
+            await loadAll({ quiet: true }); dailyCheck();
+          } catch (e) { say(friendly(e.message)); b.disabled = false; }
+        });
+        li.appendChild(b); list.appendChild(li);
+      });
+      $("g-questnote").textContent = daily && daily.bonus ? "🎉 All done today! New quests tomorrow." : "Each quest gives " + (p ? p.name : "your pet") + " 10 XP. Finish all three for 10 more.";
+    }
+    function openDaily() { $("g-daily").hidden = false; drawDaily(); dailyCheck(); }
+    $("g-dailyclose").addEventListener("click", function () { $("g-daily").hidden = true; });
+    $("g-giftbox").addEventListener("click", async function () {
+      var box = this, p = pet(); if (box.disabled) return;
+      box.disabled = true; box.classList.add("shake"); sfx("pat");
+      var r; try { r = await rpc("open_gift", { p_pet: p ? p.id : null }); } catch (e) { say(friendly(e.message)); box.classList.remove("shake"); box.disabled = false; return; }
+      setTimeout(async function () {
+        box.classList.remove("shake");
+        sfx(r.jackpot || r.kind === "freeze" ? "levelUp" : "happy");
+        if (r.kind !== "freeze") floatText("+" + r.amount + " 🐾");
+        say(r.kind === "freeze" ? "❄️ A streak freeze for " + (r.pet || "your pet") + "!" : r.jackpot ? "🎉 Jackpot! +50 paws" : "+" + r.amount + " paws 🐾");
+        daily = daily || {}; daily.gift = r; drawDaily(); await loadAll({ quiet: true }); render();
+      }, 700);
+    });
+
     // ---------- Find a co-parent ----------
     // Only pets are shown. A match isn't a friend: see update_045.sql.
     var seekAsks = [], seekListed = [];
@@ -10272,6 +10368,10 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
         lb.textContent = "📋 Today"; lb.setAttribute("aria-label", "What happened with " + p.name + " today");
         lb.addEventListener("click", openToday);
         crew.appendChild(lb);
+        var dl = document.createElement("button"); dl.type = "button"; dl.className = "pg-todaychip" + (dailyWaiting() ? " pg-dailyhot" : "");
+        dl.textContent = "🎁 Daily" + (dailyWaiting() ? " · " + dailyWaiting() : ""); dl.setAttribute("aria-label", "Daily gift and quests" + (dailyWaiting() ? ", " + dailyWaiting() + " waiting" : ""));
+        dl.addEventListener("click", openDaily);
+        crew.appendChild(dl);
       }
       // only the owner chooses co-parents
       if (isOwner(p) && (p.members || []).length < 4) {
@@ -11337,7 +11437,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
     // asks first. On the main screen, a second back within 2 seconds closes the app.
     var BACK = [["g-tour", "g-tourskip"], ["g-achpop", "g-achok"], ["g-invite", "g-inviteno"], ["g-ask", "g-askcancel"], ["g-join", "g-joincancel"],
                 ["g-giftsend", "g-gsdone"], ["g-petopts", "g-poclose"], ["g-gamepick", "g-pickno"], ["g-gamehelp", "g-ghclose"], ["g-mode", "g-modeclose"],
-                ["g-pick", "g-pickclose"], ["g-history", "g-historyclose"], ".pg-game", ["g-msgsheet", "g-msgclose"], ["g-chatbar", "g-chatbarx"], ["g-chat", "g-chatback"], ["g-watch", "g-watchclose"], ["g-roomreply", "g-roomreplyx"], ["g-roomnew", "g-roomnewcancel"], ["g-roompage", "g-roommin"], ["g-rooms", "g-roomsclose"], ["g-seek", "g-seekclose"], ["g-nudge", "g-nudgeno"], ["g-news", "g-newsok"], ["g-delcard", "g-delcancel"], ["g-safecard", "g-safecancel"], ["g-roomnew", "g-roomnewcancel"], ["g-roompage", "g-roomback"], ["g-rooms", "g-roomsclose"],
+                ["g-pick", "g-pickclose"], ["g-history", "g-historyclose"], ".pg-game", ["g-msgsheet", "g-msgclose"], ["g-chatbar", "g-chatbarx"], ["g-chat", "g-chatback"], ["g-watch", "g-watchclose"], ["g-roomreply", "g-roomreplyx"], ["g-roomnew", "g-roomnewcancel"], ["g-roompage", "g-roommin"], ["g-rooms", "g-roomsclose"], ["g-seek", "g-seekclose"], ["g-daily", "g-dailyclose"], ["g-nudge", "g-nudgeno"], ["g-news", "g-newsok"], ["g-delcard", "g-delcancel"], ["g-safecard", "g-safecancel"], ["g-roomnew", "g-roomnewcancel"], ["g-roompage", "g-roomback"], ["g-rooms", "g-roomsclose"],
                 ["g-social", "g-socialclose"], ["g-play", "g-playclose"], ["g-bath", "g-bathcancel"], ["g-howto", "g-howskip"],
                 ["g-getapp", "g-gaclose"], ["g-streakinfo", "g-siok"], ["g-bonusintro", "g-bonusok"]].concat(CLOSABLE);
     function closeTop() {
@@ -11605,6 +11705,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       checkFriendLink(); checkRoomLink();
       markSeen(); setInterval(markSeen, 120000); moveOldAvatar(); roomRejoin(); setTimeout(checkNews, 2500); setTimeout(maybeNudge, 6000); welcomeBack();
       seekCheck(); setInterval(function () { if (!document.hidden && !raceNow) seekCheck(); }, 60000);
+      dailyCheck(); setInterval(function () { if (!document.hidden && !raceNow) dailyCheck(); }, 60000);
       refreshSub();
       // co-parents feed on their own phones: check for news every 20 s while the app is open
       if (!polling) { polling = true; setInterval(function () { if (me && !document.hidden && !raceNow && !document.querySelector(".pg-game")) loadAll({ quiet: true }); }, 20000); }
