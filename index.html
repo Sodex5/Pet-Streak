@@ -2135,6 +2135,9 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
 .pg-seg button { white-space: nowrap; font-size: 0.84rem; padding: 0 2px; }
 #g-store .pg-stgrid.st-coins { grid-template-columns: minmax(0, 1fr); }
 .pg-stearn { min-width: 0; max-width: 100%; }
+
+.pg-nextadd .av { background: #fff !important; color: var(--brand) !important; border: 2px dashed var(--brand); box-sizing: border-box; font-size: 1.3rem !important; font-weight: 900; }
+.pg-nextadd { border-color: transparent; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -2865,7 +2868,7 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
               <button type="button" class="pg-btn pg-small" id="g-rename">Rename</button>
             </div>
             <div class="pg-coparents" id="g-coparents"></div>
-            <button type="button" class="pg-li pg-liaccent" id="g-invite2"><span class="ic" aria-hidden="true">➕</span><span class="lbl">Invite a co-parent</span><span class="chev" aria-hidden="true">›</span></button>
+            <button type="button" class="pg-li pg-liaccent" id="g-invite2"><span class="ic" aria-hidden="true">➕</span><span class="lbl">Invite or find a co-parent</span><span class="chev" aria-hidden="true">›</span></button>
           </div>
           <p class="pg-groupnote" id="g-rolenote"></p>
         </section>
@@ -6551,7 +6554,7 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261112053738";   // replaced by build_real.ps1
+    var APP_BUILD = "20261112055059";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -9893,7 +9896,14 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
         b.addEventListener("click", function (e) { e.stopPropagation(); coParentCard(p, mb); });
         crewBox.appendChild(b);
       });
-      crewBox.hidden = !others(p).length;
+      // a + to add a co-parent (invite a friend or find one), while there's room
+      if (isOwner(p) && (p.members || []).length < 4) {
+        var add = document.createElement("button"); add.type = "button"; add.className = "pg-nextav pg-nextadd";
+        add.innerHTML = '<i class="av" aria-hidden="true">+</i>'; add.setAttribute("aria-label", "Add a co-parent: invite a friend or find one");
+        add.addEventListener("click", function (e) { e.stopPropagation(); if (safeOn()) invite(); else coparentChoice(); });
+        crewBox.appendChild(add);
+      }
+      crewBox.hidden = !crewBox.children.length;
       var left = minutesLeftToday(p), who = others(p), fedBy = who.filter(function (x) { return x.fed_today; })[0], notYet = who.filter(function (x) { return !x.fed_today; })[0];
       var claimable = daily && (daily.quests || []).filter(function (q) { return q.done >= q.target && !q.claimed; }).length;
       var questsLeft = daily && (daily.quests || []).filter(function (q) { return !q.claimed; }).length;
@@ -12028,7 +12038,7 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
       try { await rpc("rename_pet", { p_id: p.id, p_name: $("g-petname").value }); } catch (e) { say(e.message); return; }
       $("g-petname").blur(); await loadAll(); renderMenu(); say("Renamed to " + pet().name + ".");
     });
-    $("g-invite2").addEventListener("click", function () { invite(); });
+    $("g-invite2").addEventListener("click", function () { if (safeOn()) invite(); else coparentChoice(); });
     $("g-leave").addEventListener("click", async function () {
       var p = pet(); if (!p) return;
       var own = isOwner(p), alone = (p.members || []).length <= 1;
