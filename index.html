@@ -3036,6 +3036,11 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
             </div>
           </section>
           <section class="pg-sec">
+            <h3>🎄 Christmas preview</h3>
+            <p class="pg-note">See the Christmas event before December 1st, on this phone only: snow, the Christmas Store items (try them on) and the advent calendar. Buying Christmas items and opening real advent doors still waits for December.</p>
+            <button type="button" class="pg-btn" id="g-adminxmas">Turn preview on</button>
+          </section>
+          <section class="pg-sec">
             <h3>What admins did</h3>
             <ol class="pg-adminlog" id="g-adminlog"></ol>
           </section>
@@ -6627,7 +6632,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261112082202";   // replaced by build_real.ps1
+    var APP_BUILD = "20261112083450";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -9845,6 +9850,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       var d = new Date(); return d.getMonth() === 11 || (d.getMonth() === 0 && d.getDate() === 1);
     }
     // a seasonal item shows when it's on sale, or when you already own it (the advent glasses: only when owned)
+    function xmasPreview() { try { return localStorage.getItem("petstreak.xmas") === "on"; } catch (e) { return false; } }
     function seasonOk(s) {
       if (!s || !s.season) return true;
       var have = !!owned[s.id];
@@ -9902,9 +9908,18 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       $("g-questnote").textContent = daily && daily.bonus ? "🎉 All done today! New quests tomorrow." : "Each quest gives " + (p ? p.name : "your pet") + " 10 XP. Finish all three for 10 more.";
     }
     function openDaily() { $("g-daily").hidden = false; drawDaily(); dailyCheck(); }
+    function drawXmasPreviewBtn() { $("g-adminxmas").textContent = xmasPreview() ? "Turn preview off" : "Turn preview on"; }
+    $("g-adminxmas").addEventListener("click", function () {
+      try { if (xmasPreview()) localStorage.removeItem("petstreak.xmas"); else localStorage.setItem("petstreak.xmas", "on"); } catch (e) {}
+      drawXmasPreviewBtn(); showSnow(); xmasChipSet = false; render();
+      say(xmasPreview() ? "🎄 Christmas preview is on (this phone only). Look at the Store, Dress up and Daily." : "Christmas preview is off.");
+    });
+    drawXmasPreviewBtn();
     // the advent calendar: 24 doors, today's one glows; door 24 can still be opened until Jan 1
     function drawAdvent() {
       var a = daily && daily.advent, sec = $("g-advent");
+      // the admin's Christmas preview: the calendar as it will look on December 1st
+      if ((!a || !a.door) && xmasPreview()) a = { door: 1, open_today: true, opened: [], preview: true };
       sec.hidden = !(a && a.door);
       if (sec.hidden) return;
       var opened = {}; (a.opened || []).forEach(function (o) { opened[o.door] = o; });
@@ -9916,7 +9931,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
           : "<b>" + d + "</b>" + (d === 24 ? '<small aria-hidden="true">🎁</small>' : "");
         b.disabled = !today;
         b.setAttribute("aria-label", "Door " + d + (o ? ", opened" : today ? ": open it" : d < a.door ? ", missed" : ""));
-        if (today) b.addEventListener("click", function () { openAdvent(b); });
+        if (today) b.addEventListener("click", function () { if (a.preview) { say("🎄 Preview: the doors open from December 1st."); return; } openAdvent(b); });
         grid.appendChild(b);
       })(d);
       $("g-adventsum").textContent = (a.opened || []).length + "/24";
