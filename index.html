@@ -6551,7 +6551,7 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261112052934";   // replaced by build_real.ps1
+    var APP_BUILD = "20261112053738";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -11982,18 +11982,23 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
     // Phones skip a history step that a page adds without a tap, so a step added while handling a back can be
     // jumped over by the next back, which then leaves the app. So the app keeps a few spare steps, added during
     // taps (those are never skipped), and each step remembers how deep it is (n).
-    var backAt = 0, histN = 0, HIST_SPARE = 3;
-    function histTopUp() {
-      try { while (histN < HIST_SPARE) { histN++; history.pushState({ ps: "app", n: histN }, ""); } } catch (e) {}
+    // Only a finished tap (click, touchend, key) counts: steps added on pointerdown, at start-up or while handling a
+    // back are all skippable. So after any such step (histOK false), the next tap adds HIST_SPARE fresh ones on top.
+    var backAt = 0, histN = 0, HIST_SPARE = 4, histOK = false;
+    function histTopUp(e) {
+      // only a real tap by the person counts (not the app clicking its own ✕ while it handles a back)
+      if (e && e.isTrusted === false) return;
+      if (navigator.userActivation && !navigator.userActivation.isActive) return;
+      if (histOK && histN >= HIST_SPARE) return;
+      try { for (var i = 0; i < HIST_SPARE; i++) { histN++; history.pushState({ ps: "app", n: histN }, ""); } histOK = true; } catch (e) {}
     }
     try {
       history.replaceState({ ps: "base", n: 0 }, "");
-      histTopUp();
-      document.addEventListener("pointerdown", function () { if (histN < HIST_SPARE) histTopUp(); }, true);
-      document.addEventListener("keydown", function () { if (histN < HIST_SPARE) histTopUp(); }, true);
+      histN = 1; history.pushState({ ps: "app", n: 1 }, "");   // until the first tap
+      ["click", "touchend", "keydown"].forEach(function (ev) { document.addEventListener(ev, histTopUp, true); });
       window.addEventListener("popstate", function (e) {
         histN = e.state && typeof e.state.n === "number" ? e.state.n : 0;
-        var keep = function () { if (histN < 1) { histN = 1; history.pushState({ ps: "app", n: 1 }, ""); } };
+        var keep = function () { if (histN < 1) { histN = 1; histOK = false; history.pushState({ ps: "app", n: 1 }, ""); } };
         // a back that comes right after a tap already closed something counts as that same close, never as leaving
         if (closeTop() || (Date.now() - outsideClosedAt < 1500)) { keep(); return; }
         if (Date.now() - backAt < 2000) { history.go(-(histN + 1)); return; }   // leave
