@@ -6298,7 +6298,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261112041410";   // replaced by build_real.ps1
+    var APP_BUILD = "20261112041953";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -10077,7 +10077,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
           card(box, a.name, v && v.color, (v ? v.name.replace(" red panda", "") + " · " : "") + "comes home at Lv " + a.level + " · 🐾 " + ADOPT_FEE, "Adopt", function () { showAdoptInfo(a); }, { id: a.variant });
         });
       } else {
-        $("g-storehint").textContent = "Backgrounds and things your pets can wear. Bought items are yours to use on any of your pets.";
+        $("g-storehint").textContent = "Hats, glasses and backgrounds. Bought items work on all your pets: put them on in Dress up 🎀";
         [["backdrop", "Backgrounds"], ["hat", "Hats"], ["glasses", "Glasses"]].forEach(function (sec) {
           var all = store.filter(function (s) { return s.kind === "wardrobe" && s.price > 0 && s.type === sec[0]; });
           var list = all.filter(function (s) { return !colourOf(s.id); });   // (colours show as dots on their original)
@@ -11119,8 +11119,6 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
     $("g-storeclose").addEventListener("click", function () { $("g-store").hidden = true; render(); });
     Array.prototype.forEach.call(document.querySelectorAll("#g-store [data-tab]"), function (b) {
       b.addEventListener("click", function () {
-        // hats, glasses and rooms are browsed, tried on and bought in one place: Dress up
-        if (b.getAttribute("data-tab") === "wardrobe") { openDress(); return; }
         storeTab = b.getAttribute("data-tab"); renderStore();
       });
     });
