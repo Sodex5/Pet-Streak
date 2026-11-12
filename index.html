@@ -2674,7 +2674,6 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
       <div id="g-ranklist"></div>
       <h3 class="pg-bonushead" id="g-bonushead">Bonus XP each day</h3>
       <ul class="pg-bonuslist">
-        <li>⭐ <b>Favourite food</b> +5 — feed the food your pet is craving (💭)</li>
         <li>🤝 <b>Fed together</b> +5 — two co-parents feed within an hour</li>
         <li>👨‍👩‍👧 <b>Bigger family</b> +5 — for each 3rd and 4th co-parent who feeds</li>
         <li>🎾 <b>Playtime</b> +3 — play with your pet 5 times (each co-parent)</li>
@@ -2718,7 +2717,7 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
           <section><div class="pg-howicon">🥺</div><h2>Don't miss a day</h2>
             <p>A missed day makes your pet hungry. More missed days make it sick and it loses levels. After a week it runs away to the sanctuary. A ❄️ <b>freeze</b> saves your streak for one missed day.</p></section>
           <section><div class="pg-howicon">✨</div><h2>Have fun with it</h2>
-            <p>Feed its favourite food 💭, play with it, bathe it when it's muddy 🛁 and dress it up 🎀. Bonus XP helps it rank up for big paw rewards.</p></section>
+            <p>Find the food it craves 💭 just for fun, play with it, bathe it when it's muddy 🛁 and dress it up 🎀. Bonus XP helps it rank up for big paw rewards.</p></section>
         </div>
         <div class="pg-howdots" id="g-howdots" aria-hidden="true"></div>
         <div class="pg-row">
@@ -2770,7 +2769,6 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
         <h2>New: Bonus XP!</h2>
         <p>Level up faster on the days you and a co-parent both feed:</p>
         <ul class="pg-bonuslist" style="text-align:left">
-          <li>⭐ <b>Favourite food</b> +5 — your pet craves one food each day (look for 💭)</li>
           <li>🤝 <b>Fed together</b> +5 — two co-parents feed within an hour</li>
           <li>👨‍👩‍👧 <b>Bigger family</b> +5 — for each 3rd and 4th co-parent</li>
           <li>🎾 <b>Playtime</b> +3 — play with your pet 5 times</li>
@@ -6585,7 +6583,7 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261112060735";   // replaced by build_real.ps1
+    var APP_BUILD = "20261112061347";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -7083,31 +7081,18 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
       if (r.already) { say("You already fed " + p.name + " today. Come back tomorrow!"); return; }
       await foodPackReady(2500);
       react(!!r.levelled);
-      var yum = "Yum! " + p.name + (dish ? " loved the " + dish.name.toLowerCase() + "." : " is happy.");
-      if (craveOpen && dish === crave) { cravDone[p.id] = true; thinkPop("⭐"); yum = "⭐ Yes! " + p.name + " was craving the " + dish.name.toLowerCase() + "!"; }
-      else if (craveOpen) {
-        thinkPop("🤔");
-        var finders = others(p).filter(function (m) { return !m.fed_today; }).map(function (m) { return m.name; });
-        yum += " 💭 Not what " + p.name + " was craving though." + (finders.length ? " Maybe " + finders.join(" or ") + " can find it!" : "");
-      }
+      // no message box after feeding (it covered the screen): the pet's happy reaction, a little ⭐ or 🤔 for the
+      // craving (just for fun, no reward), and the XP floating up say it. Only the rare moments get a message.
+      if (craveOpen && dish === crave) { cravDone[p.id] = true; thinkPop("⭐"); }
+      else if (craveOpen) thinkPop("🤔");
       if (r.counted) {
         floatText("+" + r.gain + " XP" + (r.coins ? "  +" + r.coins + " 🐾" : ""));
         var news = unlocksBetween(oldMax, r.level);
         if (news.length) say("Level " + r.level + "! Unlocked: " + news.join(", ") + " 🎀");
         else if (r.levelled) say("Level up! " + p.name + " is now level " + r.level + ".");
         else if (r.streak % 7 === 0) say(r.streak + " days in a row! You earned a freeze ❄️");
-        else say(yum + " Day complete 🔥 " + r.streak);
         if (r.ranked_up) { var lv = r.level; setTimeout(function () { rankUp({ name: p.name, level: lv }); }, 2600); }
-        if (r.bonuses && r.bonuses.length) setTimeout(function () { say("Bonus XP! " + bonusText(r.bonuses)); }, r.ranked_up ? 5800 : 2400);
-      } else {
-        // one feed keeps the pet healthy; the paws, XP and streak come when a second co-parent feeds (for both of
-        // them), so say so: otherwise the first one to feed thinks they got nothing
-        var waiting = others(p).filter(function (m) { return !m.fed_today; }).map(function (m) { return m.name; });
-        say(yum + " They're fed for today." + (r.bonuses && r.bonuses.length ? " " + bonusText(r.bonuses) + "." : "") + (waiting.length
-          ? " When " + waiting.join(" or ") + " feeds them too, you'll both get 10 🐾 and XP, and the streak grows."
-          : isOwner(p) ? " Invite a co-parent: XP and the streak only count when " + FEEDS_PER_DAY + " of you feed."
-                       : ""));
-      }
+      } else floatText("😋 Fed!");
       await loadAll();
       // new players hear about bonus XP after their first feed
       setTimeout(maybeBonusIntro, 4500);
@@ -9793,7 +9778,6 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
     // ---------- Daily: a gift box and three quests (update_051.sql) ----------
     var daily = null, QUEST_TEXT = {
       feed: ["🍎", function (p) { return "Feed " + p.name; }],
-      fav: ["⭐", function (p) { return "Feed " + p.name + " their favourite food"; }],
       play2: ["🎮", function () { return "Play 2 games"; }],
       win: ["🏆", function () { return "Win a game"; }],
       hello: ["👋", function () { return "Say hello to your co-parent"; }],
