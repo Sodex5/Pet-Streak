@@ -1889,7 +1889,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
 .pg-tabbar { left: 0; right: 0; bottom: 0; z-index: 6; display: flex; justify-content: space-around; padding: 4px 6px calc(4px + env(safe-area-inset-bottom, 0px)); background: rgba(255,255,255,0.97); border-top: 1px solid #e3eaed; box-shadow: 0 -4px 16px rgba(20,35,43,0.08); }
 .pg-tabbar[hidden] { display: none; }
 .pg-tab { flex: 1 1 0; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; min-height: 52px; max-width: 110px; padding: 0; border: 0; background: none; font: inherit; color: #55666e; cursor: pointer; }
-.pg-tab i { font-style: normal; font-size: 1.3rem; line-height: 1.15; }
+.pg-tab i { font-style: normal; font-size: 1.7rem; line-height: 1.1; }
 .pg-tab small { font-size: 0.7rem; font-weight: 700; }
 .pg-tab.on small { color: var(--brand); }
 .pg-tab .pg-dotcount { position: absolute; top: 4px; left: calc(50% + 6px); }
@@ -2056,6 +2056,26 @@ body:has(#g-store.staged:not([hidden])) #g-bottom, body:has(#g-store.staged:not(
 .pg-stearn, .pg-sitem, .pg-stfeat, .pg-stpet, .pg-stbtn { box-sizing: border-box; }
 #g-store .st-sanctuary .pg-empty-note { padding: 34px 20px; border-radius: 18px; background: #fff; box-shadow: 0 2px 10px rgba(20,35,43,0.06); text-align: center; font-size: 0.98rem; color: #3b4b53; line-height: 1.5; }
 #g-store .st-sanctuary .pg-empty-note::before { content: "🏡"; display: block; font-size: 2.6rem; margin-bottom: 8px; }
+
+/* ---------- Dress up: the Store's look (stage on top, wardrobe below, one bar at the bottom) ---------- */
+body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-bar { opacity: 0; pointer-events: none; }
+.pg-dresspage .pg-sthead h2 { font-size: 1.3rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.pg-dshop { padding: 0 16px; font-size: 0.95rem; }
+.pg-dresspage .pg-ststage { flex-basis: 36%; }
+#g-sheet .pg-dgrid { flex: none; overflow: visible; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; padding: 0; }
+#g-sheet .pg-dcard { border: 2px solid transparent; box-shadow: 0 2px 8px rgba(20,35,43,0.06); padding: 6px 6px 8px; box-sizing: border-box; }
+#g-sheet .pg-dcard .dpic { background: #f1f4f6; }
+#g-sheet .pg-dcard.on { border-color: #2fae6b; background: #fff; }
+#g-sheet .pg-dcard.on small { color: #1f8a52; }
+#g-sheet .pg-dcard .dtick { background: #2fae6b; }
+#g-sheet .pg-dcard.trying { border-color: var(--brand); background: #fff; box-shadow: 0 0 0 3px var(--brand-glow); }
+#g-sheet .pg-dcard.trying small { color: var(--brand); }
+#g-sheet .pg-dcard.sel:not(.on):not(.trying) { border-color: var(--brand); }
+#g-sheet .pg-dcard[aria-pressed="true"] { background: #fff; }
+#g-sheet .pg-stbuyrow .pg-stbtn { padding: 0 14px; }
+#g-sheet .pg-stbuyrow .pg-stbtn.ghost { background: #eef2f4; color: #3b4b53; }
+.pg-dempty { grid-column: 1 / -1; padding: 18px 16px; border-radius: 16px; background: #fff; text-align: center; color: #3b4b53; font-size: 0.92rem; line-height: 1.5; box-shadow: 0 2px 8px rgba(20,35,43,0.06); }
+.pg-dempty .pg-stbtn { margin-top: 10px; padding: 0 18px; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -2108,8 +2128,8 @@ body:has(#g-store.staged:not([hidden])) #g-bottom, body:has(#g-store.staged:not(
     </div>
     <nav class="pg pg-tabbar" id="g-tabs" hidden aria-label="Main">
       <button type="button" class="pg-tab on" id="g-tabhome" aria-label="Home" aria-current="page"><i aria-hidden="true">🏠</i><small>Home</small></button>
-      <button type="button" class="pg-tab" id="g-playbtn" aria-label="Playground: mini-games"><i aria-hidden="true">🎮</i><small>Play</small></button>
       <button type="button" class="pg-tab" id="g-socialbtn" aria-label="Friends and chats"><i aria-hidden="true">💬</i><small>Friends</small><span class="pg-dotcount" id="g-socialdot" hidden></span></button>
+      <button type="button" class="pg-tab" id="g-playbtn" aria-label="Playground: mini-games"><i aria-hidden="true">🎮</i><small>Play</small></button>
       <button type="button" class="pg-tab" id="g-storebtn" aria-label="Store"><i aria-hidden="true">🛍️</i><small>Store</small></button>
     </nav>
     <div class="pg pg-dock" id="g-dock">
@@ -2163,23 +2183,35 @@ body:has(#g-store.staged:not([hidden])) #g-bottom, body:has(#g-store.staged:not(
 
     <!-- sheets -->
     <!-- dress up: tabs for hats, glasses and rooms; tap anything to try it on the pet above -->
-    <div class="pg pg-card pg-sheet pg-dress" id="g-sheet" hidden>
-      <h2><span id="g-dresstitle">Dress up</span> <button type="button" class="pg-x" id="g-close" aria-label="Close dress up">✕</button></h2>
-      <div class="pg-tabs" role="tablist" id="g-dresstabs">
-        <button type="button" role="tab" data-slot="hat" aria-selected="true">🎩 Hats</button>
-        <button type="button" role="tab" data-slot="glasses" aria-selected="false">👓 Glasses</button>
-        <button type="button" role="tab" data-slot="backdrop" aria-selected="false">🖼️ Rooms</button>
+    <!-- the same layout as the Store's Items: the pet on a stage at the top, the wardrobe below, one bar at the bottom -->
+    <div class="pg pg-storepage pg-dresspage staged" id="g-sheet" hidden>
+      <div class="pg-sthead" id="g-dresshead">
+        <button type="button" class="pg-stback" id="g-close" aria-label="Close dress up">←</button>
+        <h2 id="g-dresstitle">Dress up</h2>
+        <button type="button" class="pg-stpaws pg-dshop" id="g-dshop" aria-label="Shop for more items">🛍️ Shop</button>
       </div>
-      <p class="pg-hint" id="g-dresshint">Tap anything to try it on.</p>
-      <div class="pg-dgrid" id="g-items"></div>
-      <!-- the chosen card: its name, its colours, and one clear button -->
-      <div class="pg-dpanel" id="g-tryon" hidden>
-        <div class="pg-dpinfo"><b id="g-tryontext"></b><small id="g-tryonsub"></small></div>
-        <div class="pg-dpacts">
-          <button type="button" class="pg-btn" id="g-tryonoff">Take off</button>
-          <button type="button" class="pg-btn pg-primary" id="g-tryonbtn">Wear it</button>
+      <div class="pg-ststage" id="g-dressstage"><span id="g-dressstagelabel"></span></div>
+      <div class="pg-stbody" id="g-dressbody">
+        <div class="pg-seg" role="tablist" id="g-dresstabs" aria-label="Wardrobe sections">
+          <button type="button" role="tab" data-slot="hat" aria-selected="true">🎩 Hats</button>
+          <button type="button" role="tab" data-slot="glasses" aria-selected="false">👓 Glasses</button>
+          <button type="button" role="tab" data-slot="backdrop" aria-selected="false">🖼️ Rooms</button>
         </div>
-        <div id="g-swatches"></div>
+        <div class="pg-stchips" id="g-dresschips" role="group" aria-label="Show">
+          <button type="button" data-dfilter="all" aria-pressed="true">Everything</button>
+          <button type="button" data-dfilter="mine" aria-pressed="false">✓ Yours</button>
+        </div>
+        <p class="pg-sthint" id="g-dresshint">Tap anything to try it on.</p>
+        <div class="pg-dgrid" id="g-items"></div>
+      </div>
+      <!-- the chosen card: its name, its colours, and one clear button -->
+      <div class="pg-stbuy" id="g-tryon" hidden>
+        <div class="pg-stbuyrow">
+          <span class="pg-grow"><b id="g-tryontext"></b><small id="g-tryonsub"></small></span>
+          <button type="button" class="pg-stbtn ghost" id="g-tryonoff">Take off</button>
+          <button type="button" class="pg-stbtn" id="g-tryonbtn">Wear it</button>
+        </div>
+        <div class="pg-sbswatch" id="g-swatches"></div>
       </div>
     </div>
     <!-- the Playground: its own page with the games, your wins and today's high scores -->
@@ -6460,7 +6492,7 @@ body:has(#g-store.staged:not([hidden])) #g-bottom, body:has(#g-store.staged:not(
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261112043936";   // replaced by build_real.ps1
+    var APP_BUILD = "20261112045325";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -10442,7 +10474,7 @@ body:has(#g-store.staged:not([hidden])) #g-bottom, body:has(#g-store.staged:not(
     // ---------- Dress up ----------
     // One tab at a time (hats first: the most fun), big pictures, and tap anything to try it on: it shows on the
     // pet straight away, even if it's locked or not bought yet, with a bar saying what it takes to keep it.
-    var dressSlot = "hat", tryOn = null;
+    var dressSlot = "hat", tryOn = null, dressFilter = "all";
     var DRESS = {
       hat: { none: "No hat", hint: "Tap a hat to try it on " },
       glasses: { none: "No glasses", hint: "Tap a pair of glasses to try them on " },
@@ -10472,9 +10504,13 @@ body:has(#g-store.staged:not([hidden])) #g-bottom, body:has(#g-store.staged:not(
         t.setAttribute("aria-selected", t.getAttribute("data-slot") === dressSlot ? "true" : "false");
       });
       $("g-dresshint").textContent = DRESS[dressSlot].hint + (dressSlot === "backdrop" ? "it behind " : "") + p.name + ".";
+      Array.prototype.forEach.call(document.querySelectorAll("#g-dresschips [data-dfilter]"), function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-dfilter") === dressFilter ? "true" : "false"); });
+      var shownCount = 0;
       dressItems(dressSlot).forEach(function (u0) {
         if (u0.id && colourOf(u0.id)) return;   // (colours are chosen in the panel)
         var cols = colourList(u0), u = shownColour(u0, cols, p);
+        if (dressFilter === "mine" && u0.id && !cols.some(function (c) { return owned[c.id] || (!c.price && p.max_level >= c.level_req); })) return;
+        shownCount++;
         var on = cols.some(function (c) { return (p[c.type] || null) === c.id; }) || (!u0.id && !p[u0.type]);
         var trying = !!tryOn && cols.some(function (c) { return tryOn.slot === c.type && tryOn.id === c.id; }) && !on;
         var levelOk = p.max_level >= u.level_req, have = cols.some(function (c) { return !c.price || owned[c.id]; });
@@ -10493,6 +10529,13 @@ body:has(#g-store.staged:not([hidden])) #g-bottom, body:has(#g-store.staged:not(
         b.addEventListener("click", function () { dressSel = u0.id || "none:" + u0.type; pickDress(u); });
         box.appendChild(b);
       });
+      if (dressFilter === "mine" && shownCount < 2) {
+        var note = document.createElement("div"); note.className = "pg-dempty";
+        note.innerHTML = "Nothing of your own here yet.<br>";
+        var go = document.createElement("button"); go.type = "button"; go.className = "pg-stbtn"; go.textContent = "🛍️ Shop for " + (dressSlot === "hat" ? "hats" : dressSlot === "glasses" ? "glasses" : "rooms");
+        go.addEventListener("click", function () { closeDress(); stItemsKind = dressSlot; openStore("wardrobe"); });
+        note.appendChild(go); box.appendChild(note);
+      }
       showTryOn();
       applyLook();
       // after the sheet is shown, so the little scene pictures know their size
@@ -10550,7 +10593,8 @@ body:has(#g-store.staged:not([hidden])) #g-bottom, body:has(#g-store.staged:not(
     function showTryOn() {
       var p = pet(), panel = $("g-tryon");
       var base = dressSel && dressSel.indexOf("none:") !== 0 ? item(dressSel) : null;
-      if (!p || !base) { panel.hidden = true; return; }
+      var lbl = $("g-dressstagelabel");
+      if (!p || !base) { panel.hidden = true; lbl.textContent = p ? "Tap anything to try it on " + p.name : ""; return; }
       var cols = colourList(base), u = shownColour(base, cols, p);
       var on = (p[u.type] || null) === u.id, levelOk = p.max_level >= u.level_req, have = !u.price || owned[u.id], coins = profile ? profile.coins : 0;
       panel.hidden = false;
@@ -10563,20 +10607,29 @@ body:has(#g-store.staged:not([hidden])) #g-bottom, body:has(#g-store.staged:not(
       var btn = $("g-tryonbtn");
       $("g-tryonoff").hidden = !on || u.type === "backdrop";
       btn.hidden = on || !levelOk;
-      btn.disabled = !have && coins < u.price;
-      btn.textContent = have ? "Wear it" : coins < u.price ? "Needs 🐾 " + u.price : "Buy & wear · 🐾 " + u.price;
+      btn.disabled = false;
+      btn.className = "pg-stbtn" + (!have && coins < u.price ? " ghost" : "");
+      btn.textContent = have ? "Wear it" : coins < u.price ? "How to earn" : "Buy · 🐾 " + u.price;
+      lbl.textContent = (on ? "Wearing: " : have ? "Yours: " : "Trying on: ") + u.name;
       $("g-tryonoff").textContent = "Take off";
     }
     $("g-tryonbtn").addEventListener("click", async function () {
       var p = pet(), base = dressSel && item(dressSel); if (!p || !base) return;
-      var u = shownColour(base, colourList(base), p), have = !u.price || owned[u.id];
+      var u = shownColour(base, colourList(base), p), have = !u.price || owned[u.id], coins = profile ? profile.coins : 0;
+      if (!have && coins < u.price) { closeDress(); openStore("coins"); return; }
+      if (!have) {
+        var a = await storeAsk({ pic: pic(u), title: "Buy the " + u.name + "?", text: "🐾 " + u.price + " · you'll have " + (coins - u.price) + " left. " + p.name + " puts it on straight away, and it works on all your pets.", ok: "Buy · 🐾 " + u.price });
+        if (a !== "ok") return;
+      }
       $("g-tryonbtn").disabled = true;
       if (!have) {
         try { await rpc("buy_item", { p_item: u.id }); } catch (e) { say(e.message); $("g-tryonbtn").disabled = false; return; }
-        sfx("buy"); owned[u.id] = true;
+        owned[u.id] = true;
       }
       tryOn = null;
-      if (await wear(p, u) && !have) say(p.name + " looks great in the " + u.name + "! ✨ It's yours for all your pets.");
+      var worn = await wear(p, u);
+      $("g-tryonbtn").disabled = false;
+      if (worn && !have) celebrate({ pic: pic(u), title: "It's yours! 🎉", text: p.name + " looks great in the " + u.name + ". It works on all your pets too.", ok: "Nice!" });
       renderItems();
     });
     $("g-tryonoff").addEventListener("click", async function () {
@@ -10588,7 +10641,11 @@ body:has(#g-store.staged:not([hidden])) #g-bottom, body:has(#g-store.staged:not(
       dressSel = null; renderItems();
     });
     Array.prototype.forEach.call(document.querySelectorAll("#g-dresstabs [data-slot]"), function (t) {
-      t.addEventListener("click", function () { dressSlot = t.getAttribute("data-slot"); tryOn = null; dressSel = null; renderItems(); $("g-items").scrollTop = 0; });
+      t.addEventListener("click", function () { dressSlot = t.getAttribute("data-slot"); tryOn = null; dressSel = null; renderItems(); $("g-dressbody").scrollTop = 0; });
+    });
+    $("g-dshop").addEventListener("click", function () { var k = dressSlot; closeDress(); stItemsKind = k; openStore("wardrobe"); });
+    Array.prototype.forEach.call(document.querySelectorAll("#g-dresschips [data-dfilter]"), function (b) {
+      b.addEventListener("click", function () { dressFilter = b.getAttribute("data-dfilter"); sfx("click"); renderItems(); });
     });
     function closeDress() { $("g-sheet").hidden = true; tryOn = null; dressSel = null; applyLook(); }
 
@@ -11319,10 +11376,10 @@ body:has(#g-store.staged:not([hidden])) #g-bottom, body:has(#g-store.staged:not(
     var PET_TOP = 1.2, PET_FOOT = -0.02;   // world heights: just above a tall hat, and the feet
     function dressCam(dt) {
       var sheet = $("g-sheet"), goalY = 0, goalZ = 1, staged = storeStage();
-      var lower = !sheet.hidden ? sheet : staged ? $("g-storebody") : null, upper = staged && sheet.hidden ? $("g-sthead") : $("g-bar");
+      var lower = !sheet.hidden ? $("g-dressbody") : staged ? $("g-storebody") : null, upper = !sheet.hidden ? $("g-dresshead") : staged ? $("g-sthead") : $("g-bar");
       if (lower) {
         var H = stage.clientHeight, sr = stage.getBoundingClientRect();
-        var top = upper.getBoundingClientRect().bottom - sr.top + (staged ? 34 : 8), bottom = lower.getBoundingClientRect().top - sr.top - 6;
+        var top = upper.getBoundingClientRect().bottom - sr.top + 34, bottom = lower.getBoundingClientRect().top - sr.top - 6;
         if (!probeCam) probeCam = camera.clone();
         probeCam.position.copy(camera.position); probeCam.quaternion.copy(camera.quaternion);
         probeCam.aspect = camera.aspect; probeCam.fov = camera.fov; probeCam.zoom = 1; probeCam.clearViewOffset(); probeCam.updateProjectionMatrix();
