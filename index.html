@@ -6551,7 +6551,7 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261112051802";   // replaced by build_real.ps1
+    var APP_BUILD = "20261112052125";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -11434,7 +11434,7 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
     var camShift = { y: 0, z: 1 }, probeCam = null, probeV = new THREE.Vector3();
     var PET_TOP = 1.2, PET_FOOT = -0.02;   // world heights: just above a tall hat, and the feet
     // Tapping a hat eases the view in a little on the head, glasses on the eyes (world height, extra zoom)
-    var FOCUS = { hat: [0.8, 1.2], glasses: [0.6, 1.35] };
+    var FOCUS = { hat: [0.76, 1.1], glasses: [0.6, 1.35] };
     function camFocus(sheetOpen, staged) {
       var t = null;
       if (staged && stSel) t = stSel.type;
