@@ -1920,6 +1920,19 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
 #g-socchats .pg-socempty img, .pg-people .pg-socempty img { width: 120px; height: 120px; border-radius: 0; background: none; box-shadow: none; object-fit: contain; }
 
 .pg-tabs { position: fixed; margin: 0; }
+
+/* a calmer home screen: no chips row; co-parents live on the next-step card */
+#g-crew { display: none !important; }
+.pg-next { cursor: pointer; }
+.pg-nextcrew { display: flex; flex: none; }
+.pg-nextcrew[hidden] { display: none; }
+.pg-nextav { position: relative; width: 36px; height: 36px; margin-left: -8px; padding: 0; border: 2px solid #fff; border-radius: 50%; background: none; flex: none; }
+.pg-nextav:first-child { margin-left: 0; }
+.pg-nextav .av { display: grid; place-items: center; width: 100%; height: 100%; border-radius: 50%; background: var(--brand-tint) center / cover; color: var(--brand); font-weight: 800; font-style: normal; font-size: 0.85rem; }
+.pg-nextav.fed { border-color: #2fae6b; }
+.pg-nextav em { position: absolute; right: -3px; bottom: -3px; width: 15px; height: 15px; border-radius: 50%; background: #2fae6b; color: #fff; font-size: 0.6rem; font-style: normal; display: grid; place-items: center; }
+.pg-nextav .pg-chipdot { position: absolute; top: -2px; right: -2px; }
+.pg-dailychip { position: relative; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -1966,17 +1979,18 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
     <div class="pg pg-bar" id="g-bar" hidden>
       <button type="button" class="pg-chip pg-petbtn" id="g-petbtn" aria-label="Switch pet"><span id="g-petbtnname">My pets</span> <small id="g-petcount"></small> ▾</button>
       <span class="pg-grow2"></span>
+      <button type="button" class="pg-chip pg-dailychip" id="g-dailybtn" aria-label="Daily gift and quests">🎁<span class="pg-dotcount" id="g-dailydot" hidden></span></button>
       <button type="button" class="pg-chip" id="g-coins" aria-label="Paws">🐾 <span id="g-coinnum">0</span></button>
+      <button type="button" class="pg-chip" id="g-menubtn" aria-label="Menu">☰</button>
     </div>
     <nav class="pg pg-tabs" id="g-tabs" hidden aria-label="Main">
       <button type="button" class="pg-tab on" id="g-tabhome" aria-label="Home" aria-current="page"><i aria-hidden="true">🏠</i><small>Home</small></button>
       <button type="button" class="pg-tab" id="g-playbtn" aria-label="Playground: mini-games"><i aria-hidden="true">🎮</i><small>Play</small></button>
       <button type="button" class="pg-tab" id="g-socialbtn" aria-label="Friends and chats"><i aria-hidden="true">💬</i><small>Friends</small><span class="pg-dotcount" id="g-socialdot" hidden></span></button>
       <button type="button" class="pg-tab" id="g-storebtn" aria-label="Store"><i aria-hidden="true">🛍️</i><small>Store</small></button>
-      <button type="button" class="pg-tab" id="g-menubtn" aria-label="Menu"><i aria-hidden="true">☰</i><small>Menu</small></button>
     </nav>
     <div class="pg pg-dock" id="g-dock">
-      <div class="pg-card pg-next" id="g-next" hidden><span class="ic" aria-hidden="true" id="g-nextic"></span><span class="pg-grow"><b id="g-nexttitle"></b><small id="g-nextsub"></small></span><button type="button" class="pg-btn pg-primary" id="g-nextbtn"></button></div>
+      <div class="pg-card pg-next" id="g-next" hidden><span class="ic" aria-hidden="true" id="g-nextic"></span><span class="pg-grow"><b id="g-nexttitle"></b><small id="g-nextsub"></small></span><span class="pg-nextcrew" id="g-nextcrew"></span><button type="button" class="pg-btn pg-primary" id="g-nextbtn"></button></div>
       <div class="pg-card pg-mood" id="g-mood" role="status" hidden>😊 Happy</div>
       <div class="pg-crew" id="g-crew" hidden></div>
     </div>
@@ -6284,7 +6298,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261111202942";   // replaced by build_real.ps1
+    var APP_BUILD = "20261112040211";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -8712,7 +8726,8 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       ["#g-feed", "Feed your pet", "Tap here once a day. When " + FEEDS_PER_DAY + " of you feed it, it gains XP and your streak grows."],
       ["#g-stats", "Your streak", "🔥 is how many days in a row you've kept going. ❄️ freezes protect your streak if you miss a day."],
       ["#g-bigbadge", "Level and rank", "Your pet levels up and earns ranks. Tap the badge to see them all."],
-      ["#g-crew", "Co-parents", "Invite a friend or family member to raise your pet with you. That's how you earn the most paws."],
+      ["#g-next", "What to do now", "This card tells you what's next, and shows your co-parents: tap one to chat or send a hello. Tap the card for today's log."],
+      ["#g-dailybtn", "Daily", "A free gift every day, and three quests that give your pet XP."],
       ["#g-wardrobe", "Dress up", "Try hats, glasses and rooms on your pet."],
       ["#g-playbtn", "Playground", "Mini-games to play alone or with others."],
       ["#g-coins", "Paws", "This is your money. Earn it by feeding, levelling up and playing."],
@@ -9538,6 +9553,8 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       $("g-questnote").textContent = daily && daily.bonus ? "🎉 All done today! New quests tomorrow." : "Each quest gives " + (p ? p.name : "your pet") + " 10 XP. Finish all three for 10 more.";
     }
     function openDaily() { $("g-daily").hidden = false; drawDaily(); dailyCheck(); }
+    $("g-dailybtn").addEventListener("click", openDaily);
+    $("g-next").addEventListener("click", function (e) { if (!e.target.closest("button")) openToday(); });
     $("g-dailyclose").addEventListener("click", function () { $("g-daily").hidden = true; });
     $("g-giftbox").addEventListener("click", async function () {
       var box = this, p = pet(); if (box.disabled) return;
@@ -9613,7 +9630,17 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
     function drawNext(p, m) {
       var card = $("g-next"), show = !!p && m !== "away" && !bathing;
       card.hidden = !show; $("g-mood").hidden = $("g-mood").hidden || show;
+      var n = dailyWaiting(); $("g-dailydot").hidden = !n; $("g-dailydot").textContent = n || "";
       if (!show) return;
+      var crewBox = $("g-nextcrew"); crewBox.innerHTML = "";
+      others(p).forEach(function (mb) {
+        var b = document.createElement("button"); b.type = "button"; b.className = "pg-nextav" + (mb.fed_today ? " fed" : "");
+        b.innerHTML = avatarDot(mb) + (mb.fed_today ? '<em aria-hidden="true">✓</em>' : "") + (unread[mb.id] ? '<i class="pg-chipdot" aria-hidden="true"></i>' : "");
+        b.setAttribute("aria-label", mb.name + (mb.fed_today ? ", fed today" : ", not fed yet") + ": chat or say hello");
+        b.addEventListener("click", function (e) { e.stopPropagation(); coParentCard(p, mb); });
+        crewBox.appendChild(b);
+      });
+      crewBox.hidden = !others(p).length;
       var left = minutesLeftToday(p), who = others(p), fedBy = who.filter(function (x) { return x.fed_today; })[0], notYet = who.filter(function (x) { return !x.fed_today; })[0];
       var claimable = daily && (daily.quests || []).filter(function (q) { return q.done >= q.target && !q.claimed; }).length;
       var questsLeft = daily && (daily.quests || []).filter(function (q) { return !q.claimed; }).length;
@@ -9629,6 +9656,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
         else if (missesYou(p)) set("🥺", p.name + " misses you", leftTxt, "", null);
         else set("🍎", "Time to feed " + p.name, leftTxt, "", null);
       } else if (daily && !daily.gift) set("🎁", "Your daily gift is ready", "Paws, or a streak freeze if you're lucky", "Open", openDaily);
+      else if (seekAsks.length && isOwner(p)) set("🐾", seekAsks.length === 1 ? "Someone wants to co-parent" : seekAsks.length + " want to co-parent", "See who's asking to help with " + p.name, "See", openSeek);
       else if (claimable) set("⭐", claimable === 1 ? "A quest is done!" : claimable + " quests are done!", "Claim the XP for " + p.name, "Claim", openDaily);
       else if (!who.length && isOwner(p)) set("👥", "Get a co-parent", "XP and the streak count when " + FEEDS_PER_DAY + " of you feed", "Get one", safeOn() ? invite : coparentChoice);
       else if (notYet && !fullToday(p)) set("⏳", "Waiting for " + notYet.name, "The day counts once you've both fed. " + leftTxt, notYet.nudged ? "" : "Remind", function () { nudge(p, notYet, $("g-nextbtn")); });
