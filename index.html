@@ -1886,8 +1886,8 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
 .pg-card.pg-sheet { background: #f8fafb; }
 
 /* the tab bar along the bottom of the home screen */
-.pg-tabs { left: 0; right: 0; bottom: 0; z-index: 6; display: flex; justify-content: space-around; padding: 4px 6px calc(4px + env(safe-area-inset-bottom, 0px)); background: rgba(255,255,255,0.97); border-top: 1px solid #e3eaed; box-shadow: 0 -4px 16px rgba(20,35,43,0.08); }
-.pg-tabs[hidden] { display: none; }
+.pg-tabbar { left: 0; right: 0; bottom: 0; z-index: 6; display: flex; justify-content: space-around; padding: 4px 6px calc(4px + env(safe-area-inset-bottom, 0px)); background: rgba(255,255,255,0.97); border-top: 1px solid #e3eaed; box-shadow: 0 -4px 16px rgba(20,35,43,0.08); }
+.pg-tabbar[hidden] { display: none; }
 .pg-tab { flex: 1 1 0; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; min-height: 52px; max-width: 110px; padding: 0; border: 0; background: none; font: inherit; color: #55666e; cursor: pointer; }
 .pg-tab i { font-style: normal; font-size: 1.3rem; line-height: 1.15; }
 .pg-tab small { font-size: 0.7rem; font-weight: 700; }
@@ -1915,11 +1915,11 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
 .pg-socempty b { font-size: 1.15rem; color: #14232b; }
 .pg-socempty p { margin: 0 0 6px; color: #55666e; max-width: 300px; }
 
-.pg-tabs .pg-tab { border: 0; border-radius: 12px; background: none; box-shadow: none; min-width: 0; }
-.pg-tabs .pg-tab:active { background: rgba(20,35,43,0.06); }
+.pg-tabbar .pg-tab { border: 0; border-radius: 12px; background: none; box-shadow: none; min-width: 0; }
+.pg-tabbar .pg-tab:active { background: rgba(20,35,43,0.06); }
 #g-socchats .pg-socempty img, .pg-people .pg-socempty img { width: 120px; height: 120px; border-radius: 0; background: none; box-shadow: none; object-fit: contain; }
 
-.pg-tabs { position: fixed; margin: 0; }
+.pg-tabbar { position: fixed; margin: 0; }
 
 /* a calmer home screen: no chips row; co-parents live on the next-step card */
 #g-crew { display: none !important; }
@@ -1983,7 +1983,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       <button type="button" class="pg-chip" id="g-coins" aria-label="Paws">🐾 <span id="g-coinnum">0</span></button>
       <button type="button" class="pg-chip" id="g-menubtn" aria-label="Menu">☰</button>
     </div>
-    <nav class="pg pg-tabs" id="g-tabs" hidden aria-label="Main">
+    <nav class="pg pg-tabbar" id="g-tabs" hidden aria-label="Main">
       <button type="button" class="pg-tab on" id="g-tabhome" aria-label="Home" aria-current="page"><i aria-hidden="true">🏠</i><small>Home</small></button>
       <button type="button" class="pg-tab" id="g-playbtn" aria-label="Playground: mini-games"><i aria-hidden="true">🎮</i><small>Play</small></button>
       <button type="button" class="pg-tab" id="g-socialbtn" aria-label="Friends and chats"><i aria-hidden="true">💬</i><small>Friends</small><span class="pg-dotcount" id="g-socialdot" hidden></span></button>
@@ -6298,7 +6298,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261112040211";   // replaced by build_real.ps1
+    var APP_BUILD = "20261112041410";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -7374,7 +7374,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
     setInterval(function () {
       var game = document.querySelector(".pg-game");
       var page = document.querySelector(".pg-playpage:not([hidden]), .pg-chatpage:not([hidden])");
-      var tabsOff = $("g-bottom").hidden || !!game || !!page || !$("g-howto").hidden || !$("g-bath").hidden;
+      var tabsOff = $("g-bottom").hidden || !!game || !!page || !$("g-howto").hidden || !$("g-bath").hidden || !!document.querySelector(".pg-sheet:not([hidden])");
       if ($("g-tabs").hidden !== tabsOff) { $("g-tabs").hidden = tabsOff; document.documentElement.classList.toggle("pg-hastabs", !tabsOff); }
       window.__petHidden = !!(game || page);
       var bar = $("g-roombar"), out = !!roomNow && !game && !page && !raceNow;
