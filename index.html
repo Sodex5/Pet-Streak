@@ -2206,6 +2206,117 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
 .pg-stfeat.xmas { background: linear-gradient(135deg, #12643a 0%, #1f8a4e 45%, #c8303a 100%); }
 .pg-stchips [data-kind="xmas"] { background: #e7f6ec; color: #13623a; }
 .pg-stchips [data-kind="xmas"][hidden] { display: none; }
+
+/* ---------- Admin: a page of its own ---------- */
+.pg-adminpage { inset: 0; z-index: 14; display: flex; flex-direction: column; background: #f3f5f7; }
+.pg-adminpage[hidden] { display: none; }
+.pg-adhead { flex: none; display: flex; align-items: center; gap: 10px; padding: calc(10px + env(safe-area-inset-top, 0px)) 14px 8px; background: #fff; }
+.pg-adhead h2 { flex: 1; margin: 0; font-family: var(--display); font-size: 1.35rem; color: #14232b; }
+.pg-adrefresh { width: 40px; height: 40px; border: 0; border-radius: 50%; background: #eef2f4; font-size: 1.15rem; color: #3b4b53; cursor: pointer; }
+.pg-adminpage .pg-stback { box-shadow: none; background: #eef2f4; width: 40px; height: 40px; }
+.pg-adtabs { flex: none; margin: 0; border-radius: 0; padding: 0 10px 10px; background: #fff; border: 0; box-shadow: 0 1px 0 #e3e8eb; position: static; gap: 4px; }
+.pg-adtabs button { min-height: 36px; font-size: 0.86rem; border-radius: 10px; color: #55666e; position: relative; }
+.pg-adtabs button[aria-selected="true"] { background: #14232b; color: #fff; box-shadow: none; }
+.pg-adbadge { position: absolute; top: 3px; right: 6px; min-width: 16px; height: 16px; padding: 0 4px; border-radius: 8px; background: #e2456f; color: #fff; font-style: normal; font-size: 0.65rem; font-weight: 800; line-height: 16px; box-sizing: border-box; }
+.pg-adbadge[hidden] { display: none; }
+.pg-adbody { flex: 1; min-height: 0; overflow-y: auto; padding: 12px 12px calc(20px + env(safe-area-inset-bottom, 0px)); }
+.pg-adbody section { display: flex; flex-direction: column; gap: 10px; }
+.pg-adbody section[hidden] { display: none; }
+.pg-adcard { background: #fff; border: 1px solid #e6ebee; border-radius: 14px; padding: 12px 14px; }
+.pg-adcard h3 { margin: 0 0 10px; font-size: 0.82rem; font-weight: 800; letter-spacing: 0.02em; color: #3b4b53; display: flex; align-items: baseline; gap: 6px; }
+.pg-adcard h3 small { font-weight: 600; color: #8a99a1; }
+.pg-adcard .pg-note { margin: 0 0 8px; font-size: 0.82rem; }
+.pg-adcard[hidden] { display: none; }
+.pg-adtoggle { display: flex; align-items: center; gap: 10px; }
+.pg-adtoggle .pg-grow { display: flex; flex-direction: column; min-width: 0; }
+.pg-adtoggle b { font-size: 0.92rem; color: #14232b; }
+.pg-adtoggle small { font-size: 0.78rem; color: #6b7a82; }
+.pg-adtoggle .pg-btn { flex: none; padding: 8px 12px; font-size: 0.85rem; }
+/* numbers */
+.pg-adkpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+.pg-adkpi { background: #fff; border: 1px solid #e6ebee; border-radius: 12px; padding: 8px 6px; text-align: center; min-width: 0; }
+.pg-adkpi b { display: block; font-size: 1.15rem; font-weight: 800; color: #14232b; line-height: 1.2; }
+.pg-adkpi small { display: block; font-size: 0.66rem; font-weight: 600; color: #6b7a82; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pg-adbars { display: flex; flex-direction: column; gap: 9px; }
+.pg-adbar { display: grid; grid-template-columns: 1fr auto; gap: 3px 8px; font-size: 0.84rem; color: #3b4b53; }
+.pg-adbar b { font-weight: 800; color: #14232b; }
+.pg-adbar b small { font-weight: 600; color: #8a99a1; }
+.pg-adbar i { grid-column: 1 / -1; height: 6px; border-radius: 3px; background: #edf1f3; overflow: hidden; }
+.pg-adbar u { display: block; height: 100%; border-radius: 3px; background: var(--brand); }
+.pg-adchart { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; height: 110px; align-items: end; }
+.pg-adchart .col { display: flex; flex-direction: column; align-items: center; gap: 4px; height: 100%; }
+.pg-adchart .bars { flex: 1; width: 100%; display: flex; align-items: flex-end; justify-content: center; gap: 2px; }
+.pg-adchart .bars i { width: 38%; min-height: 2px; border-radius: 3px 3px 0 0; }
+.pg-adchart small { font-size: 0.66rem; color: #8a99a1; font-weight: 700; }
+.l1 { background: #9fb7c4; } .l2 { background: var(--brand); }
+.pg-adlegend { margin: 8px 0 0; font-size: 0.74rem; color: #6b7a82; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.pg-adlegend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-left: 6px; }
+.pg-adlegend i:first-child { margin-left: 0; }
+.pg-adquests { list-style: none; margin: 0; padding: 0; }
+.pg-adquests li { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid #f0f3f5; font-size: 0.86rem; color: #3b4b53; }
+.pg-adquests li:last-child { border-bottom: 0; }
+.pg-adquests b { color: #14232b; }
+/* players */
+.pg-adsearch { display: flex; gap: 6px; }
+.pg-adsearch input { flex: 1; min-width: 0; min-height: 42px; padding: 0 12px; border: 1px solid #dfe5e8; border-radius: 12px; font: inherit; font-size: 0.92rem; background: #fff; box-sizing: border-box; }
+.pg-adsearch .pg-btn { flex: none; padding: 0 14px; min-height: 42px; }
+.pg-adlisthead { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin: 4px 2px -2px; }
+.pg-adlisthead b { font-size: 0.82rem; color: #3b4b53; }
+.pg-adlisthead small { font-size: 0.72rem; color: #8a99a1; }
+.pg-adplayers { list-style: none; margin: 0; padding: 0; background: #fff; border: 1px solid #e6ebee; border-radius: 14px; overflow: hidden; }
+.pg-adplayers li + li { border-top: 1px solid #f0f3f5; }
+.pg-adplayers .pg-note { padding: 12px; margin: 0; }
+.pg-adrow { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 12px; border: 0; background: none; font: inherit; text-align: left; color: #14232b; cursor: pointer; }
+.pg-adrow:active { background: #f5f7f8; }
+.pg-adrow .pg-grow { display: flex; flex-direction: column; min-width: 0; }
+.pg-adrow b { font-size: 0.92rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pg-adrow small { font-size: 0.76rem; color: #6b7a82; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pg-adav { flex: none; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: var(--brand-tint); color: var(--brand); font-weight: 800; font-size: 0.9rem; }
+.pg-adav.big { width: 44px; height: 44px; font-size: 1.1rem; }
+.tag { font-style: normal; font-size: 0.66rem; font-weight: 800; padding: 1px 6px; border-radius: 6px; background: #eef2f4; color: #55666e; vertical-align: 1px; }
+.tag.bad { background: #ffe5ea; color: #b4233f; }
+.pg-adflags { flex: none; display: flex; align-items: center; gap: 6px; }
+.pg-adflags i { font-style: normal; font-size: 0.9rem; }
+.pg-adflags i.off { opacity: 0.35; }
+.pg-adflags em { font-style: normal; font-size: 0.72rem; font-weight: 800; padding: 3px 7px; border-radius: 8px; background: #eef2f4; color: #6b7a82; }
+.pg-adflags em.some { background: #fff3d1; color: #8a5a00; }
+.pg-adflags em.all { background: #def6e7; color: #1f7a48; }
+.pg-admore { align-self: center; }
+/* one player */
+.pg-apd { inset: 0; z-index: 24; display: flex; align-items: flex-end; justify-content: center; background: rgba(20,35,43,0.42); }
+.pg-apd[hidden] { display: none; }
+.pg-apdcard { width: 100%; max-width: 520px; max-height: 86%; display: flex; flex-direction: column; background: #fff; border-radius: 20px 20px 0 0; padding-bottom: env(safe-area-inset-bottom, 0px); animation: pg-apdup 0.22s ease-out; }
+@keyframes pg-apdup { from { transform: translateY(30px); opacity: 0; } to { transform: none; opacity: 1; } }
+.pg-apdhead { flex: none; display: flex; align-items: center; gap: 10px; padding: 14px 14px 10px; border-bottom: 1px solid #f0f3f5; }
+.pg-apdhead .pg-grow { display: flex; flex-direction: column; min-width: 0; }
+.pg-apdhead b { font-size: 1.05rem; color: #14232b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pg-apdhead small { font-size: 0.76rem; color: #6b7a82; }
+.pg-apdbody { overflow-y: auto; padding: 10px 14px 16px; }
+.pg-apdbody h4 { margin: 14px 2px 6px; font-size: 0.74rem; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; color: #8a99a1; }
+.pg-adchips { display: flex; flex-wrap: wrap; gap: 6px; }
+.pg-adchips span { font-size: 0.8rem; font-weight: 700; padding: 5px 10px; border-radius: 10px; background: #f3f5f7; color: #3b4b53; }
+.pg-adtoday { display: flex; flex-direction: column; gap: 4px; }
+.pg-adtoday span { font-size: 0.86rem; color: #3b4b53; }
+.pg-adtoday .y { color: #1f7a48; } .pg-adtoday .s { color: #8a5a00; } .pg-adtoday .n { color: #8a99a1; }
+.pg-adpet { display: flex; align-items: center; gap: 6px; padding: 8px 0; border-bottom: 1px solid #f0f3f5; }
+.pg-adpet .pg-grow { display: flex; flex-direction: column; min-width: 0; }
+.pg-adpet b { font-size: 0.9rem; color: #14232b; }
+.pg-adpet small { font-size: 0.74rem; color: #6b7a82; }
+.pg-adsmall { flex: none; min-height: 34px; padding: 0 10px; border: 1px solid #dfe5e8; border-radius: 10px; background: #fff; font: inherit; font-size: 0.78rem; font-weight: 700; color: #3b4b53; cursor: pointer; }
+.pg-adacts { display: flex; flex-direction: column; border: 1px solid #e6ebee; border-radius: 14px; overflow: hidden; }
+.pg-adact { display: flex; align-items: center; gap: 10px; min-height: 46px; padding: 0 12px; border: 0; border-bottom: 1px solid #f0f3f5; background: #fff; font: inherit; font-size: 0.9rem; text-align: left; color: #14232b; cursor: pointer; }
+.pg-adact:last-child { border-bottom: 0; }
+.pg-adact:active { background: #f5f7f8; }
+.pg-adact .chev { color: #b4bfc5; }
+.pg-adact.bad { color: #b4233f; }
+.pg-adminpage .pg-chatrep, .pg-adminpage .pg-fb { border-radius: 12px; }
+
+.pg-adtoggle small { white-space: normal; overflow: visible; }
+.pg-adact { border-radius: 0 !important; box-shadow: none !important; margin: 0 !important; width: 100%; }
+.pg-adminpage .pg-chatrep { padding: 10px 12px; }
+.pg-adminpage .pg-chatrep .pg-btn, .pg-adminpage .pg-fb button { min-height: 36px; padding: 0 12px; font-size: 0.84rem; }
+.pg-adminpage .pg-row .pg-btn { min-height: 40px; }
+.pg-adminpage textarea.pg-adminnews { border-radius: 12px; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -2902,6 +3013,86 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         <button type="button" class="pg-linkbtn" id="g-cbalt" hidden></button>
       </div>
     </div>
+    <!-- admin tools: Overview · Players · Reports · Tools -->
+    <div class="pg pg-adminpage" id="g-admin" hidden>
+      <div class="pg-adhead">
+        <button type="button" class="pg-stback" id="g-adminclose" aria-label="Close admin tools">←</button>
+        <h2>Admin</h2>
+        <button type="button" class="pg-adrefresh" id="g-adminrefresh" aria-label="Refresh">↻</button>
+      </div>
+      <div class="pg-seg pg-adtabs" role="tablist" aria-label="Admin sections">
+        <button type="button" role="tab" data-atab="overview" aria-selected="true">Overview</button>
+        <button type="button" role="tab" data-atab="players" aria-selected="false">Players</button>
+        <button type="button" role="tab" data-atab="reports" aria-selected="false">Reports<i class="pg-adbadge" id="g-adrepcount" hidden></i></button>
+        <button type="button" role="tab" data-atab="tools" aria-selected="false">Tools</button>
+      </div>
+      <div class="pg-adbody" id="g-adbody">
+        <section data-apane="overview">
+          <div class="pg-adkpis" id="g-adminstats"></div>
+          <div class="pg-adcard"><h3>Daily tasks today <small id="g-addayname"></small></h3><div class="pg-adbars" id="g-admindaily"></div></div>
+          <div class="pg-adcard"><h3>Last 7 days</h3><div class="pg-adchart" id="g-adweek"></div>
+            <p class="pg-adlegend"><i class="l1" aria-hidden="true"></i>Fed their pet <i class="l2" aria-hidden="true"></i>Did a quest</p></div>
+          <div class="pg-adcard"><h3>Most-done quests <small>last 7 days</small></h3><ol class="pg-adquests" id="g-adquests"></ol></div>
+        </section>
+        <section data-apane="players" hidden>
+          <form class="pg-adsearch" id="g-adminfindform">
+            <input id="g-adminfind" type="search" autocomplete="off" placeholder="Name, pet, friend code or email" aria-label="Find a player">
+            <button type="submit" class="pg-btn pg-primary">Search</button>
+          </form>
+          <div id="g-adminfoundwrap" hidden>
+            <div class="pg-adlisthead"><b>Search results</b><button type="button" class="pg-linkbtn" id="g-adminfoundclear">Clear</button></div>
+            <ul class="pg-adplayers" id="g-adminfound"></ul>
+          </div>
+          <div class="pg-adlisthead"><b>All players <span id="g-adminptotal"></span></b><small>🔔 reminders · quests today</small></div>
+          <ul class="pg-adplayers" id="g-adminplist"></ul>
+          <button type="button" class="pg-btn pg-admore" id="g-adminpmore" hidden>Show more</button>
+          <button type="button" id="g-adminpshow" hidden></button>
+        </section>
+        <section data-apane="reports" hidden>
+          <div class="pg-adcard" id="g-adminchat" hidden><h3>Reported chats</h3><div id="g-chatreps"></div></div>
+          <div class="pg-adcard" id="g-adminrep" hidden><h3>Reported pet names</h3><div id="g-replist"></div></div>
+          <div class="pg-adcard" id="g-adminfb" hidden><h3>Feedback <small id="g-fbcount"></small></h3><div id="g-fblist"></div><button type="button" class="pg-btn" id="g-fbdone" hidden></button></div>
+        </section>
+        <section data-apane="tools" hidden>
+          <div class="pg-adcard"><h3>📢 Announcement</h3>
+            <p class="pg-note">Shown once to every player when they open the app, for 14 days.</p>
+            <textarea id="g-adminnews" class="pg-adminnews" maxlength="200" rows="2" placeholder="Your message to all players" aria-label="Announcement"></textarea>
+            <div class="pg-row">
+              <button type="button" class="pg-btn" id="g-adminnewsoff">Remove</button>
+              <button type="button" class="pg-btn pg-primary" id="g-adminnewsgo">Send to everyone</button>
+            </div>
+          </div>
+          <div class="pg-adcard pg-adtoggle"><span class="pg-grow"><b>🎄 Christmas preview</b><small>On this phone only, before December 1st</small></span>
+            <button type="button" class="pg-btn" id="g-adminxmas">Turn preview on</button></div>
+          <div class="pg-adcard"><h3>🏠 Rooms open now</h3><div id="g-adminrooms"></div></div>
+          <div class="pg-adcard" id="g-adminsec" hidden><h3>🐾 Give paws by email</h3>
+            <div class="pg-row">
+              <input id="g-adminemail" type="email" placeholder="friend@example.com" aria-label="Player email">
+            </div>
+            <div class="pg-row">
+              <input id="g-adminamount" type="number" min="1" max="100000" value="500" aria-label="Paws">
+              <button type="button" class="pg-btn" id="g-admingive">Give paws</button>
+            </div>
+          </div>
+          <div class="pg-adcard" id="g-testsec" hidden><h3>🧪 Test pet</h3>
+            <p class="pg-note">A pet called Tester at level 100 with every background, hat and glasses unlocked. Press again any time to reset it or change its colour.</p>
+            <div class="pg-row">
+              <select id="g-testvariant" aria-label="Test pet colour"></select>
+              <button type="button" class="pg-btn" id="g-testpet">🧪 Make test pet</button>
+            </div>
+          </div>
+          <div class="pg-adcard"><h3>🕘 What admins did</h3><ol class="pg-adminlog" id="g-adminlog"></ol></div>
+        </section>
+      </div>
+    </div>
+    <!-- one player, opened from the admin lists -->
+    <div class="pg pg-apd" id="g-apd" hidden>
+      <div class="pg-apdcard" role="dialog" aria-modal="true" aria-labelledby="g-apdname">
+        <div class="pg-apdhead"><span class="pg-adav big" id="g-apdav"></span><span class="pg-grow"><b id="g-apdname"></b><small id="g-apdsub"></small></span>
+          <button type="button" class="pg-x" id="g-apdclose" aria-label="Close">✕</button></div>
+        <div class="pg-apdbody" id="g-apdbody"></div>
+      </div>
+    </div>
     <div class="pg pg-panel pg-menu" id="g-menu" hidden>
       <div class="pg-panelhead">
         <h2>Menu</h2>
@@ -3000,82 +3191,10 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
           </div>
         </section>
 
-        <!-- admin tools (only the admin sees these) -->
-        <details class="pg-group pg-admin" id="g-adminwrap" hidden>
-          <summary class="pg-menuhead">🛠 Admin tools</summary>
-          <section class="pg-sec">
-            <h3>Overview</h3>
-            <div class="pg-adminstats" id="g-adminstats"></div>
-          </section>
-          <section class="pg-sec">
-            <h3>All players <span id="g-adminptotal"></span></h3>
-            <button type="button" class="pg-btn" id="g-adminpshow">Show all players</button>
-            <ul class="pg-adminplayers" id="g-adminplist"></ul>
-            <button type="button" class="pg-btn" id="g-adminpmore" hidden>Show more</button>
-          </section>
-          <section class="pg-sec">
-            <h3>Find a player</h3>
-            <form class="pg-row" id="g-adminfindform">
-              <input id="g-adminfind" autocomplete="off" placeholder="Name, pet, friend code or email" aria-label="Find a player">
-              <button type="submit" class="pg-btn">Find</button>
-            </form>
-            <div id="g-adminfound"></div>
-            <button type="button" class="pg-btn" id="g-adminfoundclear" hidden>Close results</button>
-          </section>
-          <section class="pg-sec">
-            <h3>Rooms open now</h3>
-            <div id="g-adminrooms"></div>
-          </section>
-          <section class="pg-sec">
-            <h3>Announcement</h3>
-            <p class="pg-note">Shown once to every player when they open the app, for 14 days.</p>
-            <textarea id="g-adminnews" class="pg-adminnews" maxlength="200" rows="2" placeholder="Your message to all players" aria-label="Announcement"></textarea>
-            <div class="pg-row">
-              <button type="button" class="pg-btn" id="g-adminnewsoff">Remove</button>
-              <button type="button" class="pg-btn pg-primary" id="g-adminnewsgo">Send to everyone</button>
-            </div>
-          </section>
-          <section class="pg-sec">
-            <h3>🎄 Christmas preview</h3>
-            <p class="pg-note">See the Christmas event before December 1st, on this phone only: snow, the Christmas Store items (try them on) and the advent calendar. Buying Christmas items and opening real advent doors still waits for December.</p>
-            <button type="button" class="pg-btn" id="g-adminxmas">Turn preview on</button>
-          </section>
-          <section class="pg-sec">
-            <h3>What admins did</h3>
-            <ol class="pg-adminlog" id="g-adminlog"></ol>
-          </section>
-          <section class="pg-sec" id="g-adminchat" hidden>
-            <h3>Reported chats</h3>
-            <div id="g-chatreps"></div>
-          </section>
-          <section class="pg-sec" id="g-adminrep" hidden>
-            <h3>Reported pet names</h3>
-            <div id="g-replist"></div>
-          </section>
-          <section class="pg-sec" id="g-adminfb" hidden>
-            <h3>Feedback <span id="g-fbcount"></span></h3>
-            <div id="g-fblist"></div>
-            <button type="button" class="pg-btn" id="g-fbdone" hidden></button>
-          </section>
-          <section class="pg-sec" id="g-testsec" hidden>
-            <h3>Test pet</h3>
-            <p class="pg-note">A pet called Tester at level 100 with every background, hat and glasses unlocked. Press again any time to reset it or change its colour.</p>
-            <div class="pg-row">
-              <select id="g-testvariant" aria-label="Test pet colour"></select>
-              <button type="button" class="pg-btn" id="g-testpet">🧪 Make test pet</button>
-            </div>
-          </section>
-          <section class="pg-sec" id="g-adminsec" hidden>
-            <h3>Give paws</h3>
-            <div class="pg-row">
-              <input id="g-adminemail" type="email" placeholder="friend@example.com" aria-label="Player email">
-            </div>
-            <div class="pg-row">
-              <input id="g-adminamount" type="number" min="1" max="100000" value="500" aria-label="Paws">
-              <button type="button" class="pg-btn" id="g-admingive">Give paws</button>
-            </div>
-          </section>
-        </details>
+        <!-- admin tools (only the admin sees this row): they open on a page of their own -->
+        <div class="pg-list" id="g-adminwrap" hidden>
+          <button type="button" class="pg-li" id="g-adminopen"><span class="ic" aria-hidden="true">🛠</span><span class="lbl">Admin tools</span><span class="chev" aria-hidden="true">›</span></button>
+        </div>
 
         <h3 class="pg-menuhead pg-accounthead">Account</h3>
         <div class="pg-list">
@@ -6632,7 +6751,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261112083450";   // replaced by build_real.ps1
+    var APP_BUILD = "20261112211459";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -9576,12 +9695,33 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       if (!(profile && profile.is_admin)) return;
       try {
         var st = await rpc("admin_stats"), box = $("g-adminstats"); box.innerHTML = "";
-        [["Players", st.players], ["New this week", st.new_week], ["Active today", st.active_today], ["Pets", st.pets], ["Rooms", st.rooms], ["Live stakes", st.stakes], ["Reports", st.reports], ["Suspended", st.suspended]].forEach(function (x) {
-          var d = adminRow("n"); d.innerHTML = "<b>" + esc(String(x[1])) + "</b><small>" + esc(x[0]) + "</small>"; box.appendChild(d);
-          if (x[0] === "Players") { d.classList.add("tap"); d.setAttribute("role", "button"); d.tabIndex = 0; d.setAttribute("aria-label", "Show all players"); d.addEventListener("click", function () { adminPlayers(false).then(function () { $("g-adminplist").scrollIntoView({ block: "start", behavior: "smooth" }); }); }); }
+        [["Players", st.players], ["Active today", st.active_today], ["New this week", st.new_week], ["Pets", st.pets],
+         ["Reminders on", st.reminders == null ? "–" : st.reminders], ["Rooms", st.rooms], ["Reports", st.reports], ["Suspended", st.suspended]].forEach(function (x) {
+          var d = adminRow("pg-adkpi"); d.innerHTML = "<b>" + esc(String(x[1])) + "</b><small>" + esc(x[0]) + "</small>"; box.appendChild(d);
         });
+        var rb = $("g-adrepcount"); rb.hidden = !st.reports; rb.textContent = st.reports || "";
       } catch (e) {}
-      adminRooms(); adminLog();
+      adminDaily(); adminRooms(); adminLog();
+    }
+    // daily tasks: bars for today, a 7-day chart and the favourite quests
+    var QUEST_NAMES = { feed: "🍎 Feed", play2: "🎮 Play 2 games", win: "🏆 Win a game", hello: "👋 Say hello", chat: "💬 Send a message", xmas: "🎄 Christmas quest" };
+    async function adminDaily() {
+      var d; try { d = await rpc("admin_daily"); } catch (e) { $("g-admindaily").innerHTML = '<p class="pg-note">Run update_055 to see daily tasks.</p>'; return; }
+      var n = Math.max(1, d.players), t = d.today || {};
+      $("g-addayname").textContent = new Date(d.day + "T12:00:00").toLocaleDateString([], { weekday: "short", day: "numeric", month: "short" });
+      var rows = [["Fed their pet", t.fed], ["Opened the gift", t.gift], ["Did a quest", t.quest_any], ["Finished all three", t.quest_all], ["Reminders on", d.reminders]];
+      if (t.advent) rows.push(["Opened an advent door", t.advent]);
+      $("g-admindaily").innerHTML = rows.map(function (r) {
+        var pc = Math.round((r[1] || 0) / n * 100);
+        return '<div class="pg-adbar"><span>' + esc(r[0]) + "</span><b>" + (r[1] || 0) + " <small>of " + d.players + " · " + pc + '%</small></b><i><u style="width:' + Math.max(pc, r[1] ? 2 : 0) + '%"></u></i></div>';
+      }).join("");
+      var wk = d.week || [], top = Math.max(1, Math.max.apply(null, wk.map(function (w) { return Math.max(w.fed, w.quests); })));
+      $("g-adweek").innerHTML = wk.map(function (w) {
+        var day = new Date(w.day + "T12:00:00").toLocaleDateString([], { weekday: "narrow" });
+        return '<div class="col" title="' + esc(w.day) + ": " + w.fed + " fed, " + w.quests + ' did a quest"><span class="bars"><i class="l1" style="height:' + Math.round(w.fed / top * 100) + '%"></i><i class="l2" style="height:' + Math.round(w.quests / top * 100) + '%"></i></span><small>' + esc(day) + "</small></div>";
+      }).join("");
+      var qs = d.quests || [];
+      $("g-adquests").innerHTML = qs.length ? qs.map(function (q) { return "<li><span>" + esc(QUEST_NAMES[q.key] || q.key) + "</span><b>" + q.n + "</b></li>"; }).join("") : '<li class="pg-note">No quests claimed yet this week.</li>';
     }
     async function adminRooms() {
       var box = $("g-adminrooms"), list = [];
@@ -9607,60 +9747,96 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         box.appendChild(li);
       });
     }
-    function adminPlayer(u, onClose) {
-      var d = adminRow("pg-chatrep");
+    function adminInitial(n) { return esc((String(n || "?").trim().charAt(0) || "?").toUpperCase()); }
+    // a player in the admin lists: name, pets, last seen, reminders and today's quests; tap for their card
+    function adminRowEl(u) {
+      var li = document.createElement("li"), b = document.createElement("button"), t = u.today || {}, q = t.quests || 0;
+      b.type = "button"; b.className = "pg-adrow";
+      b.innerHTML = '<span class="pg-adav">' + adminInitial(u.name) + "</span>" +
+        '<span class="pg-grow"><b>' + esc(u.name) + (u.admin ? ' <em class="tag">admin</em>' : "") + (u.suspended ? ' <em class="tag bad">suspended</em>' : "") + (u.banned ? ' <em class="tag">chat off</em>' : "") + "</b>" +
+        "<small>" + esc((u.pets || []).join(", ") || "No pet") + " · seen " + esc(adminAgo(u.seen)) + "</small></span>" +
+        '<span class="pg-adflags"><i class="' + (u.reminder ? "on" : "off") + '" aria-label="' + (u.reminder ? "Reminders on" : "Reminders off") + '">' + (u.reminder ? "🔔" : "🔕") + "</i>" +
+        '<em class="q' + (t.all ? " all" : q ? " some" : "") + '" aria-label="' + q + ' of 3 quests today">' + q + "/3</em></span>";
+      b.addEventListener("click", function () { adminPlayer(u); });
+      li.appendChild(b); return li;
+    }
+    // a player's card, over the admin page: who they are, today, their pets, and what you can do
+    function adminPlayer(u) {
+      var body = $("g-apdbody");
+      function act(ic, text, cls, go) {
+        var b = document.createElement("button"); b.type = "button"; b.className = "pg-adact" + (cls ? " " + cls : "");
+        b.innerHTML = '<span class="ic" aria-hidden="true">' + ic + '</span><span class="pg-grow">' + esc(text) + '</span><span class="chev" aria-hidden="true">›</span>';
+        b.addEventListener("click", async function () { try { await go(); } catch (e) { say(friendly(e.message)); } });
+        return b;
+      }
+      function head(t) { var h = document.createElement("h4"); h.textContent = t; return h; }
       function draw() {
-        // in the list, tapping the name folds the card away again
-        d.innerHTML = (onClose ? '<button type="button" class="pg-adminname" aria-expanded="true"><b>' + esc(u.name) + "</b><i aria-hidden=\"true\">▴</i></button>" : "<b>" + esc(u.name) + "</b>") + (u.admin ? " · admin" : "") + (u.suspended ? " · 🚫 suspended" : "") + (u.banned ? " · chat stopped" : "") +
-          '<p class="pg-note">🐾 ' + esc(String(u.coins)) + " · Pets: " + esc((u.pets || []).join(", ") || "none") + " · Reports: " + esc(String(u.reports)) +
-          (u.safe ? " · 🛡️ Safe mode" : "") + "<br>Joined " + esc(new Date(u.joined).toLocaleDateString()) + (u.seen ? " · Last seen " + esc(new Date(u.seen).toLocaleDateString()) : "") + "</p>";
-        var row = adminRow("pg-adminacts");
-        row.appendChild(adminBtn("Give / take paws", "", async function () {
+        var t = u.today || {};
+        $("g-apdav").innerHTML = adminInitial(u.name); $("g-apdname").textContent = u.name;
+        $("g-apdsub").textContent = (u.admin ? "Admin · " : "") + "Joined " + new Date(u.joined).toLocaleDateString() + " · seen " + adminAgo(u.seen);
+        body.innerHTML = "";
+        var chips = adminRow("pg-adchips");
+        [["🐾", u.coins + " paws"], [u.reminder ? "🔔" : "🔕", u.reminder ? "Reminders on" : "Reminders off"], ["🚩", u.reports + (u.reports === 1 ? " report" : " reports")]]
+          .concat(u.safe ? [["🛡️", "Safe mode"]] : []).concat(u.banned ? [["🔇", "Chat stopped"]] : []).concat(u.suspended ? [["🚫", "Suspended"]] : [])
+          .forEach(function (c) { var sp = document.createElement("span"); sp.textContent = c[0] + " " + c[1]; chips.appendChild(sp); });
+        body.appendChild(chips);
+        if (u.today) {
+          body.appendChild(head("Today"));
+          var td = adminRow("pg-adtoday");
+          td.innerHTML = [[t.fed, "Fed a pet"], [t.gift, "Opened the gift"], [t.all ? true : t.quests ? null : false, (t.quests || 0) + " of 3 quests" + (t.all ? " · all done" : "")]].map(function (x) {
+            return '<span class="' + (x[0] === true ? "y" : x[0] === null ? "s" : "n") + '">' + (x[0] === true ? "✓" : x[0] === null ? "◐" : "–") + " " + esc(x[1]) + "</span>";
+          }).join("");
+          body.appendChild(td);
+        }
+        if ((u.petinfo || []).length) {
+          body.appendChild(head("Pets"));
+          (u.petinfo || []).forEach(function (pt) {
+            var row = adminRow("pg-adpet");
+            row.innerHTML = '<span class="pg-grow"><b>' + esc(pt.name) + "</b><small>" + (pt.level ? "Level " + pt.level + " · " : "") + "🔥 " + pt.streak + " · best " + pt.best + (pt.owner ? " · owner" : " · co-parent") + "</small></span>";
+            var xb = document.createElement("button"); xb.type = "button"; xb.className = "pg-adsmall"; xb.textContent = "⭐ XP";
+            xb.addEventListener("click", async function () {
+              var n = parseInt(prompt("How much XP for " + pt.name + "? Use a minus to take, like -50. Taking can bring the level down.") || "", 10); if (!n) return;
+              try { var x = await rpc("admin_xp", { p_pet: pt.id, p_amount: n }); pt.level = x.level; say("⭐ " + pt.name + " is level " + x.level + " · " + x.xp + "/" + x.need + " XP."); draw(); adminLog(); } catch (e) { say(friendly(e.message)); }
+            });
+            var sb2 = document.createElement("button"); sb2.type = "button"; sb2.className = "pg-adsmall"; sb2.textContent = "🔥 Streak";
+            sb2.addEventListener("click", async function () {
+              var n = parseInt(prompt("Set " + pt.name + "'s streak to how many days? Their best was " + pt.best + ".", String(Math.max(pt.best, 1))) || "", 10); if (!n) return;
+              try { await rpc("admin_restore_streak", { p_pet: pt.id, p_streak: n }); pt.streak = n; pt.best = Math.max(pt.best, n); say("🔥 " + pt.name + "'s streak is " + n + ". It carries on when they both feed today."); draw(); adminLog(); } catch (e) { say(friendly(e.message)); }
+            });
+            row.appendChild(xb); row.appendChild(sb2); body.appendChild(row);
+          });
+        }
+        body.appendChild(head("Actions"));
+        var acts = adminRow("pg-adacts");
+        acts.appendChild(act("🐾", "Give or take paws", "", async function () {
           var n = parseInt(prompt("How many paws? Use a minus to take, like -50.") || "", 10); if (!n) return;
           u.coins = await rpc("admin_paws", { p_user: u.uid, p_amount: n }); say("Now has 🐾 " + u.coins + "."); draw(); adminLog();
         }));
-        row.appendChild(adminBtn(u.banned ? "Allow chat" : "Stop chat", "", async function () {
+        acts.appendChild(act(u.banned ? "💬" : "🔇", u.banned ? "Allow chat again" : "Stop chat", "", async function () {
           await rpc("admin_chat_ban", { p_user: u.uid, p_ban: !u.banned }); u.banned = !u.banned; draw();
         }));
-        row.appendChild(adminBtn("Reset names", "", async function () {
+        acts.appendChild(act("✏️", "Reset name and pet names", "", async function () {
           if (!confirm("Reset this player's name and their pets' names?")) return;
           await rpc("admin_reset_names", { p_user: u.uid }); u.name = "Player"; u.pets = (u.pets || []).map(function () { return "Red panda"; }); draw(); adminLog();
         }));
-        if (u.pin) row.appendChild(adminBtn("Clear Safe mode PIN", "", async function () {
+        if (u.pin) acts.appendChild(act("🛡️", "Clear Safe mode PIN", "", async function () {
           if (!confirm("Clear the PIN? Only do this if you're sure it's the parent asking.")) return;
           await rpc("admin_clear_pin", { p_user: u.uid }); u.pin = false; say("PIN cleared."); draw(); adminLog();
         }));
-        if (!u.admin) row.appendChild(adminBtn(u.suspended ? "Lift suspension" : "Suspend", "pg-danger", async function () {
+        if (!u.admin) acts.appendChild(act("🚫", u.suspended ? "Lift suspension" : "Suspend player", u.suspended ? "" : "bad", async function () {
           if (!u.suspended && !confirm("Suspend " + u.name + "? They won't be able to play until you lift it.")) return;
           await rpc("admin_suspend", { p_user: u.uid, p_on: !u.suspended }); u.suspended = !u.suspended; draw(); adminLog();
         }));
-        // give or take a pet's XP (no paws are paid for it)
-        (u.petinfo || []).forEach(function (pt) {
-          row.appendChild(adminBtn("⭐ " + pt.name + "'s XP", "", async function () {
-            var n = parseInt(prompt("How much XP for " + pt.name + "? Use a minus to take, like -50. Taking can bring the level down.") || "", 10); if (!n) return;
-            var x = await rpc("admin_xp", { p_pet: pt.id, p_amount: n });
-            say("⭐ " + pt.name + " is level " + x.level + " · " + x.xp + "/" + x.need + " XP."); adminLog();
-          }));
-        });
-        // put back a streak that was lost (the pet carries on from yesterday)
-        (u.petinfo || []).forEach(function (pt) {
-          row.appendChild(adminBtn("🔥 " + pt.name + "'s streak (" + pt.streak + ")", "", async function () {
-            var n = parseInt(prompt("Set " + pt.name + "'s streak to how many days? Their best was " + pt.best + ".", String(Math.max(pt.best, 1))) || "", 10); if (!n) return;
-            await rpc("admin_restore_streak", { p_pet: pt.id, p_streak: n }); pt.streak = n; pt.best = Math.max(pt.best, n);
-            say("🔥 " + pt.name + "'s streak is " + n + ". It carries on when they both feed today."); draw(); adminLog();
-          }));
-        });
-        if (onClose) d.querySelector(".pg-adminname").addEventListener("click", onClose);
-        d.appendChild(row);
+        body.appendChild(acts);
       }
       draw();
-      return d;
+      $("g-apd").hidden = false; body.scrollTop = 0;
     }
+    $("g-apdclose").addEventListener("click", function () { $("g-apd").hidden = true; });
+    $("g-apd").addEventListener("click", function (e) { if (e.target === this) this.hidden = true; });
     // every registered player, newest first: tap a row for the actions
     var adminPAt = 0, adminPOpen = false;
-    function adminPHide() {
-      adminPOpen = false; $("g-adminplist").innerHTML = ""; $("g-adminpmore").hidden = true; $("g-adminpshow").textContent = "Show all players";
-    }
+    function adminPHide() { adminPOpen = false; }
     function adminAgo(t) {
       if (!t) return "never";
       var d = Math.floor((Date.now() - new Date(t)) / 86400000);
@@ -9671,14 +9847,15 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       if (!more) { adminPAt = 0; box.innerHTML = ""; }
       try { r = await rpc("admin_players", { p_offset: adminPAt }); } catch (e) { say(friendly(e.message)); return; }
       $("g-adminptotal").textContent = "(" + r.total + ")";
-      adminPOpen = true; $("g-adminpshow").textContent = "Hide players";
-      (r.rows || []).forEach(function (u) {
+      adminPOpen = true;
+      (r.rows || []).forEach(function (u) { box.appendChild(adminRowEl(u)); });
+      (false ? [] : []).forEach(function (u) {
         var li = document.createElement("li");
         function shut() {
           var b = document.createElement("button"); b.type = "button";
           b.setAttribute("aria-expanded", "false");
           b.innerHTML = '<i class="pg-adminarrow" aria-hidden="true">▾</i><b>' + esc(u.name) + "</b>" + (u.suspended ? " 🚫" : "") + (u.banned ? " 🔇" : "") + "<small>" + esc((u.pets || []).join(", ") || "No pet") + " · 🐾 " + esc(String(u.coins)) + " · joined " + esc(adminAgo(u.joined)) + " · seen " + esc(adminAgo(u.seen)) + "</small>";
-          b.addEventListener("click", function () { li.innerHTML = ""; li.appendChild(adminPlayer(u, shut)); });
+          b.addEventListener("click", function () { li.innerHTML = ""; adminPlayer(u); });
           li.innerHTML = ""; li.appendChild(b);
         }
         shut(); box.appendChild(li);
@@ -9692,11 +9869,11 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       e.preventDefault();
       var box = $("g-adminfound"), list;
       try { list = (await rpc("admin_find", { p_q: $("g-adminfind").value })) || []; } catch (err) { say(friendly(err.message)); return; }
-      box.innerHTML = list.length ? "" : '<p class="pg-note">Nobody found.</p>';
-      list.forEach(function (u) { box.appendChild(adminPlayer(u)); });
-      $("g-adminfoundclear").hidden = false;
+      box.innerHTML = list.length ? "" : '<li class="pg-note">Nobody found.</li>';
+      list.forEach(function (u) { box.appendChild(adminRowEl(u)); });
+      $("g-adminfoundwrap").hidden = false;
     });
-    $("g-adminfoundclear").addEventListener("click", function () { $("g-adminfound").innerHTML = ""; $("g-adminfind").value = ""; this.hidden = true; });
+    $("g-adminfoundclear").addEventListener("click", function () { $("g-adminfound").innerHTML = ""; $("g-adminfind").value = ""; $("g-adminfoundwrap").hidden = true; });
     $("g-adminnewsgo").addEventListener("click", async function () {
       var t = $("g-adminnews").value.trim(); if (!t) { say("Type your message first."); return; }
       if (!confirm("Send this to every player?\n\n" + t)) return;
@@ -9705,7 +9882,23 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     $("g-adminnewsoff").addEventListener("click", async function () {
       try { await rpc("admin_announce", { p_body: "" }); say("Announcement removed."); adminLog(); } catch (e) { say(friendly(e.message)); }
     });
-    $("g-adminwrap").addEventListener("toggle", function () { if (this.open) adminDraw(); });
+    // the admin page: opened from the menu, four tabs
+    function adminTab(t) {
+      Array.prototype.forEach.call(document.querySelectorAll("#g-admin [data-atab]"), function (b) { b.setAttribute("aria-selected", b.getAttribute("data-atab") === t ? "true" : "false"); });
+      Array.prototype.forEach.call(document.querySelectorAll("#g-admin [data-apane]"), function (p) { p.hidden = p.getAttribute("data-apane") !== t; });
+      $("g-adbody").scrollTop = 0;
+    }
+    function openAdmin() {
+      if (!(profile && profile.is_admin)) return;
+      $("g-menu").hidden = true; $("g-admin").hidden = false; adminTab("overview");
+      adminDraw(); adminPlayers(false); loadFeedback(); loadReports(); loadChatReports();
+    }
+    $("g-adminopen").addEventListener("click", openAdmin);
+    $("g-adminclose").addEventListener("click", function () { $("g-admin").hidden = true; $("g-apd").hidden = true; });
+    $("g-adminrefresh").addEventListener("click", function () { adminDraw(); adminPlayers(false); loadFeedback(); loadReports(); loadChatReports(); say("Refreshed."); });
+    Array.prototype.forEach.call(document.querySelectorAll("#g-admin [data-atab]"), function (b) {
+      b.addEventListener("click", function () { adminTab(b.getAttribute("data-atab")); });
+    });
     // a message from the admin, shown once
     var NUDGE_REM = "petstreak.remask", NUDGE_COLOUR = "petstreak.colourtip";
     function nudgeShow(o) {
@@ -12175,7 +12368,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     }, true);
     // The phone's back button (Android's back swipe): close whatever is on top instead of leaving the app. A game
     // asks first. On the main screen, a second back within 2 seconds closes the app.
-    var BACK = [["g-tour", "g-tourskip"], ["g-celebrate", "g-cbok"], ["g-stconfirm", "g-sccancel"], ["g-achpop", "g-achok"], ["g-invite", "g-inviteno"], ["g-ask", "g-askcancel"], ["g-join", "g-joincancel"],
+    var BACK = [["g-tour", "g-tourskip"], ["g-apd", "g-apdclose"], ["g-admin", "g-adminclose"], ["g-celebrate", "g-cbok"], ["g-stconfirm", "g-sccancel"], ["g-achpop", "g-achok"], ["g-invite", "g-inviteno"], ["g-ask", "g-askcancel"], ["g-join", "g-joincancel"],
                 ["g-giftsend", "g-gsdone"], ["g-petopts", "g-poclose"], ["g-gamepick", "g-pickno"], ["g-gamehelp", "g-ghclose"], ["g-mode", "g-modeclose"],
                 ["g-pick", "g-pickclose"], ["g-history", "g-historyclose"], ".pg-game", ["g-msgsheet", "g-msgclose"], ["g-chatbar", "g-chatbarx"], ["g-chat", "g-chatback"], ["g-watch", "g-watchclose"], ["g-roomreply", "g-roomreplyx"], ["g-roomnew", "g-roomnewcancel"], ["g-roompage", "g-roommin"], ["g-rooms", "g-roomsclose"], ["g-seek", "g-seekclose"], ["g-daily", "g-dailyclose"], ["g-nudge", "g-nudgeno"], ["g-news", "g-newsok"], ["g-delcard", "g-delcancel"], ["g-safecard", "g-safecancel"], ["g-roomnew", "g-roomnewcancel"], ["g-roompage", "g-roomback"], ["g-rooms", "g-roomsclose"],
                 ["g-social", "g-socialclose"], ["g-play", "g-playclose"], ["g-bath", "g-bathcancel"], ["g-howto", "g-howskip"],
