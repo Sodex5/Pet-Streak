@@ -2076,6 +2076,65 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
 #g-sheet .pg-stbuyrow .pg-stbtn.ghost { background: #eef2f4; color: #3b4b53; }
 .pg-dempty { grid-column: 1 / -1; padding: 18px 16px; border-radius: 16px; background: #fff; text-align: center; color: #3b4b53; font-size: 0.92rem; line-height: 1.5; box-shadow: 0 2px 8px rgba(20,35,43,0.06); }
 .pg-dempty .pg-stbtn { margin-top: 10px; padding: 0 18px; }
+
+/* ---------- Store and Dress up: tap outside to close, and more colour ---------- */
+/* the page itself lets taps through: a tap on the dimmed home screen (Store) or on the pet's stage closes it */
+#g-store, #g-sheet { pointer-events: none; }
+#g-store > .pg-sthead, #g-store > .pg-stbody, #g-store > .pg-stbuy, #g-sheet > .pg-sthead, #g-sheet > .pg-stbody, #g-sheet > .pg-stbuy { pointer-events: auto; }
+/* Pets, Adopt and Earn: a tall card over the dimmed home screen */
+#g-store:not(.staged) { background: rgba(20,35,43,0.42); padding-top: calc(54px + env(safe-area-inset-top, 0px)); animation: pg-stup 0.28s cubic-bezier(.2,.9,.3,1); }
+@keyframes pg-stup { from { opacity: 0; } to { opacity: 1; } }
+#g-store:not(.staged) > .pg-sthead { padding-top: 14px; border-radius: 26px 26px 0 0; background: #fff3dc; }
+#g-store:not(.staged) > .pg-stbody { background: linear-gradient(180deg, #fff3dc 0%, #ffe6ef 40%, #e4f0ff 100%); }
+#g-store:not(.staged) .pg-sthint { color: #6a5560; }
+/* the sheet under the stage (Store Items and Dress up) */
+.pg-storepage.staged .pg-stbody { background: linear-gradient(180deg, #fff6e6 0%, #ffeaf2 55%, #e9f2ff 100%); }
+.pg-storepage.staged .pg-sthead { background: rgba(255,246,230,0.8); }
+/* header pills */
+.pg-stback { background: #fff; color: var(--brand); font-weight: 900; }
+.pg-stpaws { background: linear-gradient(135deg, #ffe79a 0%, #ffc94d 100%); color: #5a3a00; box-shadow: 0 3px 10px rgba(230,160,20,0.35); }
+.pg-stpaws i { background: #fff; color: #c27a00; }
+.pg-dshop { background: linear-gradient(135deg, var(--brand) 0%, var(--brand-2) 100%); color: #fff; box-shadow: 0 3px 12px var(--brand-glow); }
+/* section switcher: the chosen one is filled with colour */
+.pg-seg { background: rgba(255,255,255,0.75); box-shadow: 0 0 0 6px rgba(255,243,220,0); border: 1px solid rgba(20,35,43,0.06); }
+.pg-seg button { font-size: 0.88rem; color: #5a4a55; }
+.pg-seg button[aria-selected="true"] { background: linear-gradient(135deg, var(--brand) 0%, var(--brand-2) 100%); color: #fff; box-shadow: 0 3px 10px var(--brand-glow); }
+/* filter chips: each type has its own colour */
+.pg-stchips button { border: 0; box-shadow: 0 1px 4px rgba(20,35,43,0.08); }
+.pg-stchips [data-kind="hat"] { background: #ffe1ee; color: #a3245f; }
+.pg-stchips [data-kind="glasses"] { background: #dfeeff; color: #1d5aa6; }
+.pg-stchips [data-kind="backdrop"] { background: #def6e7; color: #1f7a48; }
+.pg-stchips [data-kind="all"], .pg-stchips [data-dfilter] { background: #fff; color: #3b4b53; }
+.pg-stchips button[aria-pressed="true"] { background: linear-gradient(135deg, var(--brand) 0%, var(--brand-2) 100%); color: #fff; box-shadow: 0 3px 10px var(--brand-glow); }
+/* buttons */
+.pg-stbtn:not(.ghost) { background: linear-gradient(135deg, var(--brand) 0%, var(--brand-2) 100%); box-shadow: 0 4px 12px var(--brand-glow); }
+.pg-stbtn.ghost { background: #fff0d6; color: #8a5a00; }
+/* pet cards: the pet's colour carries down the card, the price is a gold pill */
+.pg-stpet { background: linear-gradient(180deg, #fff 55%, color-mix(in srgb, var(--tint) 14%, #fff) 100%); border: 2px solid color-mix(in srgb, var(--tint) 30%, #fff); }
+.pg-stprice { align-self: flex-start; padding: 3px 10px; border-radius: 12px; background: #fff3d1; color: #7a4d00; font-size: 0.92rem; }
+.pg-stsave u { background: linear-gradient(90deg, #ffb341, #ff6f91); }
+/* item cards: hats pink, glasses blue, rooms green */
+.pg-sitem.t-hat .dpic, #g-sheet .pg-dcard.t-hat .dpic { background: linear-gradient(160deg, #fff0f6 0%, #ffd9e9 100%); }
+.pg-sitem.t-glasses .dpic, #g-sheet .pg-dcard.t-glasses .dpic { background: linear-gradient(160deg, #eef6ff 0%, #d6e8ff 100%); }
+.pg-sitem.t-backdrop .dpic, #g-sheet .pg-dcard.t-backdrop .dpic { background: linear-gradient(160deg, #eefbf3 0%, #d3f1df 100%); }
+.pg-sitem small { display: inline-block; }
+/* earn cards: each its own colour */
+.pg-stearn { border-left: 0; }
+.pg-stearn.c0 .ic { background: #ffe1e1; } .pg-stearn.c0 .bar u { background: linear-gradient(90deg, #ff7a7a, #ff4f6d); }
+.pg-stearn.c1 .ic { background: #dfeeff; } .pg-stearn.c1 .bar u { background: linear-gradient(90deg, #5aa7ff, #3d74e8); }
+.pg-stearn.c2 .ic { background: #fff1c9; } .pg-stearn.c2 .bar u { background: linear-gradient(90deg, #ffc94d, #f59e0b); }
+.pg-stearn.c3 .ic { background: #ffe6d4; } .pg-stearn.c3 .bar u { background: linear-gradient(90deg, #ffa24d, #ff6a3d); }
+.pg-stearn.c4 .ic { background: #ffe1ef; }
+.pg-stearn.c5 .ic { background: #ece3ff; }
+.pg-stearn > em { padding: 4px 10px; border-radius: 12px; background: var(--brand-tint); }
+/* the stage label */
+.pg-ststage span { background: linear-gradient(135deg, var(--brand) 0%, var(--brand-2) 100%); box-shadow: 0 4px 12px var(--brand-glow); }
+/* the buy bar */
+.pg-stbuy { background: linear-gradient(180deg, #fff 0%, #fff7ec 100%); border-top: 3px solid transparent; border-image: linear-gradient(90deg, #ffb341, #ff6f91, var(--brand)) 1; }
+
+.pg-seg button { white-space: nowrap; font-size: 0.84rem; padding: 0 2px; }
+#g-store .pg-stgrid.st-coins { grid-template-columns: minmax(0, 1fr); }
+.pg-stearn { min-width: 0; max-width: 100%; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -2729,10 +2788,10 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
       <div class="pg-stbody" id="g-storebody">
         <button type="button" class="pg-stfeat" id="g-stfeat" hidden></button>
         <div class="pg-seg" role="tablist" aria-label="Store sections">
-          <button type="button" role="tab" data-tab="pets" aria-selected="true">Pets</button>
-          <button type="button" role="tab" data-tab="wardrobe" aria-selected="false">Items</button>
-          <button type="button" role="tab" data-tab="sanctuary" aria-selected="false">Adopt</button>
-          <button type="button" role="tab" data-tab="coins" aria-selected="false">Earn</button>
+          <button type="button" role="tab" data-tab="pets" aria-selected="true">🐾 Pets</button>
+          <button type="button" role="tab" data-tab="wardrobe" aria-selected="false">🎀 Items</button>
+          <button type="button" role="tab" data-tab="sanctuary" aria-selected="false">🏡 Adopt</button>
+          <button type="button" role="tab" data-tab="coins" aria-selected="false">✨ Earn</button>
         </div>
         <div class="pg-stchips" id="g-stchips" role="group" aria-label="Item types" hidden>
           <button type="button" data-kind="all">All</button>
@@ -6492,7 +6551,7 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261112045325";   // replaced by build_real.ps1
+    var APP_BUILD = "20261112050809";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -10361,7 +10420,7 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
         rows.push(["🎁", "Daily gift and quests", "A free gift every day, and quests for XP", null, "Open", function () { openDaily(); }]);
         rows.push(["🏆", "Weekly game prizes", "The top 3 each week win 50, 25 or 15 paws", null, "Play", function () { closeStore(); $("g-playbtn").click(); }]);
         rows.forEach(function (e) {
-          var d = document.createElement(e[5] ? "button" : "div"); d.className = "pg-stearn"; if (e[5]) { d.type = "button"; d.addEventListener("click", e[5]); }
+          var d = document.createElement(e[5] ? "button" : "div"); d.className = "pg-stearn c" + rows.indexOf(e); if (e[5]) { d.type = "button"; d.addEventListener("click", e[5]); }
           d.innerHTML = '<span class="ic" aria-hidden="true">' + e[0] + '</span><span class="pg-grow"><b>' + esc(e[1]) + "</b><small>" + esc(e[2]) + "</small>" +
             (e[3] !== null ? '<i class="bar"><u style="width:' + Math.max(2, Math.min(100, e[3])) + '%"></u></i>' : "") + "</span>" + (e[4] ? "<em>" + esc(e[4]) + "</em>" : "");
           box.appendChild(d);
@@ -10393,7 +10452,7 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
           var have = cols.some(function (c) { return owned[c.id]; }), lvOk = maxLv >= u0.level_req;
           var sel = !!stSel && cols.some(function (c) { return c.id === stSel.id; });
           var b = document.createElement("button"); b.type = "button";
-          b.className = "pg-sitem" + (sel ? " sel" : "") + (!lvOk ? " locked" : "") + (have ? " have" : "");
+          b.className = "pg-sitem t-" + u0.type + (sel ? " sel" : "") + (!lvOk ? " locked" : "") + (have ? " have" : "");
           b.innerHTML = '<span class="dpic">' + (pic(shown) || (shown.color ? '<i class="swbig" style="background:' + shown.color + '"></i>' : "")) +
               (have ? '<em class="dtick" aria-label="Owned">✓</em>' : !lvOk ? '<em class="dlock" aria-hidden="true">🔒</em>' : "") +
               (cols.length > 1 ? '<em class="dcols">🎨 ' + cols.length + "</em>" : "") + "</span>" +
@@ -10519,7 +10578,7 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
         if (!u0.id && !on) sub = "Tap to remove";
         var b = document.createElement("button");
         b.type = "button";
-        b.className = "pg-dcard" + (!levelOk ? " locked" : "") + (trying ? " trying" : "") + (on ? " on" : "") + (!u.id ? " none" : "") + (dressSel === (u0.id || "none:" + u0.type) ? " sel" : "");
+        b.className = "pg-dcard t-" + u0.type + (!levelOk ? " locked" : "") + (trying ? " trying" : "") + (on ? " on" : "") + (!u.id ? " none" : "") + (dressSel === (u0.id || "none:" + u0.type) ? " sel" : "");
         b.setAttribute("aria-pressed", on ? "true" : "false");
         var up = u.id ? pic(u) : '<span class="pic nonepic" aria-hidden="true">🚫</span>';
         var label = u.type === "backdrop" && u.id && !SCENE_DRAW[u.id] ? u0.name.replace(/ backdrop$/i, "") + " (plain)" : u0.name;
@@ -11374,6 +11433,14 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
     // camera, eased each frame (taps on the pet still line up, they use the same camera).
     var camShift = { y: 0, z: 1 }, probeCam = null, probeV = new THREE.Vector3();
     var PET_TOP = 1.2, PET_FOOT = -0.02;   // world heights: just above a tall hat, and the feet
+    // Tapping a hat eases the view in a little on the head, glasses on the eyes (world height, extra zoom)
+    var FOCUS = { hat: [0.8, 1.2], glasses: [0.6, 1.35] };
+    function camFocus(sheetOpen, staged) {
+      var t = null;
+      if (staged && stSel) t = stSel.type;
+      else if (sheetOpen && dressSel && dressSel.indexOf("none:") !== 0) { var it = item(dressSel); t = it && it.type; }
+      return FOCUS[t] || null;
+    }
     function dressCam(dt) {
       var sheet = $("g-sheet"), goalY = 0, goalZ = 1, staged = storeStage();
       var lower = !sheet.hidden ? $("g-dressbody") : staged ? $("g-storebody") : null, upper = !sheet.hidden ? $("g-dresshead") : staged ? $("g-sthead") : $("g-bar");
@@ -11387,11 +11454,17 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
         var petTop = yOf(PET_TOP), petBot = yOf(PET_FOOT), avail = bottom - top;
         if (avail > 60 && petBot > petTop) {
           goalZ = Math.min(1, avail / (petBot - petTop));
-          var mid = H / 2 + ((petTop + petBot) / 2 - H / 2) * goalZ;
-          goalY = mid - (top + bottom) / 2;
+          var focus = camFocus(!sheet.hidden, staged);
+          if (focus) {
+            goalZ *= focus[1];
+            goalY = H / 2 + (yOf(focus[0]) - H / 2) * goalZ - (top + bottom) / 2;
+          } else {
+            var mid = H / 2 + ((petTop + petBot) / 2 - H / 2) * goalZ;
+            goalY = mid - (top + bottom) / 2;
+          }
         }
       }
-      var k = Math.min(1, dt * 7);
+      var k = Math.min(1, dt * 5);
       camShift.y += (goalY - camShift.y) * k; camShift.z += (goalZ - camShift.z) * k;
       if (!lower && Math.abs(camShift.y) < 0.5 && Math.abs(camShift.z - 1) < 0.002) {
         if (camera.view && camera.view.enabled) { camera.clearViewOffset(); camera.zoom = 1; camera.updateProjectionMatrix(); }
