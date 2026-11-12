@@ -6551,7 +6551,7 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261112052125";   // replaced by build_real.ps1
+    var APP_BUILD = "20261112052934";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -8053,7 +8053,7 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
     // a shared room link (?room=CODE): straight in after sign-in
     try {
       var roomQ = new URLSearchParams(location.search).get("room");
-      if (roomQ) { localStorage.setItem(ROOM_LINK_KEY, roomQ); history.replaceState(null, "", location.pathname); }
+      if (roomQ) { localStorage.setItem(ROOM_LINK_KEY, roomQ); history.replaceState(history.state, "", location.pathname); }
     } catch (e) {}
     function checkRoomLink() {
       var c = null; try { c = localStorage.getItem(ROOM_LINK_KEY); } catch (e) {}
@@ -9189,7 +9189,7 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
     var FRIEND_LINK_KEY = "petstreak.friendlink";
     try {
       var friendQ = new URLSearchParams(location.search).get("friend");
-      if (friendQ) { localStorage.setItem(FRIEND_LINK_KEY, friendQ); history.replaceState(null, "", location.pathname); }
+      if (friendQ) { localStorage.setItem(FRIEND_LINK_KEY, friendQ); history.replaceState(history.state, "", location.pathname); }
     } catch (e) {}
     function checkFriendLink() {
       var c = null; try { c = localStorage.getItem(FRIEND_LINK_KEY); localStorage.removeItem(FRIEND_LINK_KEY); } catch (e) {}
@@ -11979,17 +11979,27 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
       }
       return false;
     }
-    var backAt = 0;
+    // Phones skip a history step that a page adds without a tap, so a step added while handling a back can be
+    // jumped over by the next back, which then leaves the app. So the app keeps a few spare steps, added during
+    // taps (those are never skipped), and each step remembers how deep it is (n).
+    var backAt = 0, histN = 0, HIST_SPARE = 3;
+    function histTopUp() {
+      try { while (histN < HIST_SPARE) { histN++; history.pushState({ ps: "app", n: histN }, ""); } } catch (e) {}
+    }
     try {
-      history.replaceState({ ps: "base" }, "");
-      history.pushState({ ps: "app" }, "");
-      window.addEventListener("popstate", function () {
+      history.replaceState({ ps: "base", n: 0 }, "");
+      histTopUp();
+      document.addEventListener("pointerdown", function () { if (histN < HIST_SPARE) histTopUp(); }, true);
+      document.addEventListener("keydown", function () { if (histN < HIST_SPARE) histTopUp(); }, true);
+      window.addEventListener("popstate", function (e) {
+        histN = e.state && typeof e.state.n === "number" ? e.state.n : 0;
+        var keep = function () { if (histN < 1) { histN = 1; history.pushState({ ps: "app", n: 1 }, ""); } };
         // a back that comes right after a tap already closed something counts as that same close, never as leaving
-        if (closeTop() || (Date.now() - outsideClosedAt < 1500)) { history.pushState({ ps: "app" }, ""); return; }
-        if (Date.now() - backAt < 2000) { history.back(); return; }   // leave
+        if (closeTop() || (Date.now() - outsideClosedAt < 1500)) { keep(); return; }
+        if (Date.now() - backAt < 2000) { history.go(-(histN + 1)); return; }   // leave
         backAt = Date.now();
         say("Press back again to close Pet Streak");
-        history.pushState({ ps: "app" }, "");
+        keep();
       });
     } catch (e) {}
 
@@ -12209,7 +12219,7 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
         localStorage.setItem(GIFT_KEY, gift);
         $("g-signintext").textContent = "A friend sent you a red panda! 🎁 Sign in with your email to open your gift.";
       }
-      if (code || gift) history.replaceState(null, "", location.pathname + location.hash);
+      if (code || gift) history.replaceState(history.state, "", location.pathname + location.hash);
     })();
 
     // sign-in state can arrive twice at start (stored session + the auth event): handle each user once
