@@ -2317,6 +2317,8 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
 .pg-adminpage .pg-chatrep .pg-btn, .pg-adminpage .pg-fb button { min-height: 36px; padding: 0 12px; font-size: 0.84rem; }
 .pg-adminpage .pg-row .pg-btn { min-height: 40px; }
 .pg-adminpage textarea.pg-adminnews { border-radius: 12px; }
+
+.pg-apdmail { font-size: 0.7rem !important; color: #9aa7ae !important; user-select: all; -webkit-user-select: all; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -3088,7 +3090,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     <!-- one player, opened from the admin lists -->
     <div class="pg pg-apd" id="g-apd" hidden>
       <div class="pg-apdcard" role="dialog" aria-modal="true" aria-labelledby="g-apdname">
-        <div class="pg-apdhead"><span class="pg-adav big" id="g-apdav"></span><span class="pg-grow"><b id="g-apdname"></b><small id="g-apdsub"></small></span>
+        <div class="pg-apdhead"><span class="pg-adav big" id="g-apdav"></span><span class="pg-grow"><b id="g-apdname"></b><small id="g-apdsub"></small><small class="pg-apdmail" id="g-apdmail" hidden></small></span>
           <button type="button" class="pg-x" id="g-apdclose" aria-label="Close">✕</button></div>
         <div class="pg-apdbody" id="g-apdbody"></div>
       </div>
@@ -6751,7 +6753,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261112211459";   // replaced by build_real.ps1
+    var APP_BUILD = "20261112215812";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -9773,6 +9775,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       function draw() {
         var t = u.today || {};
         $("g-apdav").innerHTML = adminInitial(u.name); $("g-apdname").textContent = u.name;
+        $("g-apdmail").textContent = u.email || ""; $("g-apdmail").hidden = !u.email;
         $("g-apdsub").textContent = (u.admin ? "Admin · " : "") + "Joined " + new Date(u.joined).toLocaleDateString() + " · seen " + adminAgo(u.seen);
         body.innerHTML = "";
         var chips = adminRow("pg-adchips");
