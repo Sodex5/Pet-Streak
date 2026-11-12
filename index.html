@@ -2138,6 +2138,28 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
 
 .pg-nextadd .av { background: #fff !important; color: var(--brand) !important; border: 2px dashed var(--brand); box-sizing: border-box; font-size: 1.3rem !important; font-weight: 900; }
 .pg-nextadd { border-color: transparent; }
+
+/* the co-parents row, under the level and streak cards */
+#g-top { flex-wrap: wrap; }
+.pg-family { flex: 0 0 100%; display: flex; align-items: center; gap: 6px; min-height: 0; }
+.pg-family[hidden] { display: none; }
+.pg-family .lbl { padding: 5px 10px; border-radius: 14px; background: rgba(255,255,255,0.85); font-size: 0.78rem; font-weight: 800; color: #3b4b53; box-shadow: 0 1px 4px rgba(20,35,43,0.08); }
+.pg-family .pg-nextav { margin-left: 0; width: 38px; height: 38px; box-shadow: 0 2px 6px rgba(20,35,43,0.15); }
+.pg-famadd { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 14px 0 6px; border: 2px dashed var(--brand); border-radius: 20px; background: rgba(255,255,255,0.92); color: var(--brand); font: inherit; font-weight: 800; font-size: 0.9rem; cursor: pointer; box-shadow: 0 2px 8px rgba(20,35,43,0.10); }
+.pg-famadd i { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: var(--brand); color: #fff; font-style: normal; font-size: 1.1rem; line-height: 1; }
+.pg-famadd.small { width: 40px; height: 40px; padding: 0; justify-content: center; border-radius: 50%; }
+.pg-famadd.small i { background: none; color: var(--brand); font-size: 1.4rem; }
+/* the next-step card folded into a small icon at the side */
+.pg-next.mini { width: 54px; height: 54px; padding: 0; margin-left: auto; border-radius: 50%; justify-content: center; gap: 0; position: relative; animation: pg-minin 0.3s cubic-bezier(.2,1.4,.4,1); }
+.pg-next.mini > :not(.ic) { display: none !important; }
+.pg-next.mini .ic { font-size: 1.7rem; }
+.pg-next.mini.act::after { content: ""; position: absolute; top: 2px; right: 2px; width: 12px; height: 12px; border-radius: 50%; background: #e2456f; box-shadow: 0 0 0 2px #fff; }
+.pg-next.mini.act { animation: pg-minin 0.3s cubic-bezier(.2,1.4,.4,1), pg-minipulse 2.4s ease-in-out 0.4s infinite; }
+.pg-next:not(.mini) { animation: pg-nextin 0.3s ease; }
+@keyframes pg-minin { from { transform: scale(0.6); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes pg-nextin { from { transform: translateY(6px); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes pg-minipulse { 0%, 100% { box-shadow: 0 0 0 0 var(--brand-glow); } 50% { box-shadow: 0 0 0 8px rgba(0,0,0,0); } }
+@media (prefers-reduced-motion: reduce) { .pg-next.mini, .pg-next.mini.act, .pg-next:not(.mini) { animation: none; } }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -2180,6 +2202,8 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
         <div>🔥 <span id="g-streak">0</span> <small>day streak</small></div>
         <div>❄️ <span id="g-freezes">0</span> <small id="g-frzlbl">freezes</small></div>
       </div>
+      <!-- the co-parents, on their own row: their pictures, and a clear button to add one -->
+      <div class="pg-family" id="g-family" hidden></div>
     </div>
     <div class="pg pg-bar" id="g-bar" hidden>
       <button type="button" class="pg-chip pg-petbtn" id="g-petbtn" aria-label="Switch pet"><span id="g-petbtnname">My pets</span> <small id="g-petcount"></small> ▾</button>
@@ -6554,7 +6578,7 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261112055059";   // replaced by build_real.ps1
+    var APP_BUILD = "20261112060235";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -8982,7 +9006,8 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
       ["#g-feed", "Feed your pet", "Tap here once a day. When " + FEEDS_PER_DAY + " of you feed it, it gains XP and your streak grows."],
       ["#g-stats", "Your streak", "🔥 is how many days in a row you've kept going. ❄️ freezes protect your streak if you miss a day."],
       ["#g-bigbadge", "Level and rank", "Your pet levels up and earns ranks. Tap the badge to see them all."],
-      ["#g-next", "What to do now", "This card tells you what's next, and shows your co-parents: tap one to chat or send a hello. Tap the card for today's log."],
+      ["#g-family", "Co-parents", "Raise your pet with friends: tap + to invite a friend or find a co-parent. Tap a co-parent's picture to chat or say hello."],
+      ["#g-next", "What to do now", "This card tells you what's next. After a few seconds it folds into a small round icon: tap it to open it again."],
       ["#g-dailybtn", "Daily", "A free gift every day, and three quests that give your pet XP."],
       ["#g-wardrobe", "Dress up", "Try hats, glasses and rooms on your pet."],
       ["#g-playbtn", "Playground", "Mini-games to play alone or with others."],
@@ -9810,7 +9835,10 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
     }
     function openDaily() { $("g-daily").hidden = false; drawDaily(); dailyCheck(); }
     $("g-dailybtn").addEventListener("click", openDaily);
-    $("g-next").addEventListener("click", function (e) { if (!e.target.closest("button")) openToday(); });
+    $("g-next").addEventListener("click", function (e) {
+      if ($("g-next").classList.contains("mini")) { e.stopPropagation(); nextMini(false); return; }
+      if (!e.target.closest("button")) openToday();
+    });
     $("g-dailyclose").addEventListener("click", function () { $("g-daily").hidden = true; });
     $("g-giftbox").addEventListener("click", async function () {
       var box = this, p = pet(); if (box.disabled) return;
@@ -9887,24 +9915,47 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
       var card = $("g-next"), show = !!p && m !== "away" && !bathing;
       card.hidden = !show; $("g-mood").hidden = $("g-mood").hidden || show;
       var n = dailyWaiting(); $("g-dailydot").hidden = !n; $("g-dailydot").textContent = n || "";
+      drawFamily(p, show);
       if (!show) return;
-      var crewBox = $("g-nextcrew"); crewBox.innerHTML = "";
-      others(p).forEach(function (mb) {
+      var crewBox = $("g-nextcrew"); crewBox.innerHTML = ""; crewBox.hidden = true;
+      var leftN = minutesLeftToday(p), who = others(p), fedBy = who.filter(function (x) { return x.fed_today; })[0], notYet = who.filter(function (x) { return !x.fed_today; })[0];
+      drawNextBody(p, m, leftN, who, fedBy, notYet);
+    }
+    function drawFamily(p, show) {
+      var box = $("g-family"); box.innerHTML = "";
+      if (!show || !p) { box.hidden = true; return; }
+      var crew = others(p), canAdd = isOwner(p) && (p.members || []).length < 4;
+      if (crew.length) {
+        var lbl = document.createElement("span"); lbl.className = "lbl"; lbl.textContent = "Co-parents"; box.appendChild(lbl);
+      }
+      crew.forEach(function (mb) {
         var b = document.createElement("button"); b.type = "button"; b.className = "pg-nextav" + (mb.fed_today ? " fed" : "");
         b.innerHTML = avatarDot(mb) + (mb.fed_today ? '<em aria-hidden="true">✓</em>' : "") + (unread[mb.id] ? '<i class="pg-chipdot" aria-hidden="true"></i>' : "");
         b.setAttribute("aria-label", mb.name + (mb.fed_today ? ", fed today" : ", not fed yet") + ": chat or say hello");
         b.addEventListener("click", function (e) { e.stopPropagation(); coParentCard(p, mb); });
-        crewBox.appendChild(b);
+        box.appendChild(b);
       });
-      // a + to add a co-parent (invite a friend or find one), while there's room
-      if (isOwner(p) && (p.members || []).length < 4) {
-        var add = document.createElement("button"); add.type = "button"; add.className = "pg-nextav pg-nextadd";
-        add.innerHTML = '<i class="av" aria-hidden="true">+</i>'; add.setAttribute("aria-label", "Add a co-parent: invite a friend or find one");
+      // a clear button to add a co-parent (invite a friend or find one), while there's room
+      if (canAdd) {
+        var add = document.createElement("button"); add.type = "button"; add.className = "pg-famadd" + (crew.length ? " small" : "");
+        add.innerHTML = crew.length ? '<i aria-hidden="true">+</i>' : '<i aria-hidden="true">+</i><span>Add a co-parent</span>';
+        add.setAttribute("aria-label", "Add a co-parent: invite a friend or find one");
         add.addEventListener("click", function (e) { e.stopPropagation(); if (safeOn()) invite(); else coparentChoice(); });
-        crewBox.appendChild(add);
+        box.appendChild(add);
       }
-      crewBox.hidden = !crewBox.children.length;
-      var left = minutesLeftToday(p), who = others(p), fedBy = who.filter(function (x) { return x.fed_today; })[0], notYet = who.filter(function (x) { return !x.fed_today; })[0];
+      box.hidden = !box.children.length;
+    }
+    // The card shows what's next, then after a few seconds folds into a small round icon at the side, so it
+    // doesn't get in the way. It opens again when what it says changes, or when the icon is tapped.
+    var nextKey = "", nextMiniTimer = null;
+    function nextMini(mini) {
+      var card = $("g-next");
+      if (nextMiniTimer) { clearTimeout(nextMiniTimer); nextMiniTimer = null; }
+      card.classList.toggle("mini", mini);
+      card.setAttribute("aria-label", mini ? $("g-nexttitle").textContent + ". Tap to see more" : "");
+      if (!mini) nextMiniTimer = setTimeout(function () { nextMini(true); }, 8000);
+    }
+    function drawNextBody(p, m, left, who, fedBy, notYet) {
       var claimable = daily && (daily.quests || []).filter(function (q) { return q.done >= q.target && !q.claimed; }).length;
       var questsLeft = daily && (daily.quests || []).filter(function (q) { return !q.claimed; }).length;
       function set(ic, title, sub, label, go) {
@@ -9925,6 +9976,9 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
       else if (notYet && !fullToday(p)) set("⏳", "Waiting for " + notYet.name, "The day counts once you've both fed. " + leftTxt, notYet.nudged ? "" : "Remind", function () { nudge(p, notYet, $("g-nextbtn")); });
       else if (questsLeft) set("🎯", questsLeft === 1 ? "1 quest left today" : questsLeft + " quests left today", "Each one gives " + p.name + " 10 XP", "See", openDaily);
       else set("✅", "All done for today", p.name + " is happy. See you tomorrow!", "", null);
+      var card = $("g-next"), key = $("g-nexttitle").textContent;
+      card.classList.toggle("act", !$("g-nextbtn").hidden || !iFed(p));
+      if (key !== nextKey) { nextKey = key; nextMini(false); }
     }
     // a friend you know, or someone looking too
     function coparentChoice() {
