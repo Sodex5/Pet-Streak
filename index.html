@@ -2224,8 +2224,6 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
       <button type="button" class="pg-tab" id="g-storebtn" aria-label="Store"><i aria-hidden="true">🛍️</i><small>Store</small></button>
     </nav>
     <div class="pg pg-dock" id="g-dock">
-      <!-- the co-parents, on their own row just above the card: their pictures, and a clear button to add one -->
-      <div class="pg-family" id="g-family" hidden></div>
       <div class="pg-card pg-next" id="g-next" hidden><span class="ic" aria-hidden="true" id="g-nextic"></span><span class="pg-grow"><b id="g-nexttitle"></b><small id="g-nextsub"></small></span><span class="pg-nextcrew" id="g-nextcrew"></span><button type="button" class="pg-btn pg-primary" id="g-nextbtn"></button></div>
       <div class="pg-card pg-mood" id="g-mood" role="status" hidden>😊 Happy</div>
       <div class="pg-crew" id="g-crew" hidden></div>
@@ -6583,7 +6581,7 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261112062452";   // replaced by build_real.ps1
+    var APP_BUILD = "20261112063936";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -8998,8 +8996,7 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
       ["#g-feed", "Feed your pet", "Tap here once a day. When " + FEEDS_PER_DAY + " of you feed it, it gains XP and your streak grows."],
       ["#g-stats", "Your streak", "🔥 is how many days in a row you've kept going. ❄️ freezes protect your streak if you miss a day."],
       ["#g-bigbadge", "Level and rank", "Your pet levels up and earns ranks. Tap the badge to see them all."],
-      ["#g-family", "Co-parents", "Raise your pet with friends: tap + to invite a friend or find a co-parent. Tap a co-parent's picture to chat or say hello."],
-      ["#g-next", "What to do now", "This card tells you what's next. After a few seconds it folds into a small round icon: tap it to open it again."],
+      ["#g-next", "What to do now", "This card tells you what's next and shows your co-parents: tap + to invite or find one, or a picture to chat. After a few seconds it folds into a small round icon: tap it to open it again."],
       ["#g-dailybtn", "Daily", "A free gift every day, and three quests that give your pet XP."],
       ["#g-wardrobe", "Dress up", "Try hats, glasses and rooms on your pet."],
       ["#g-playbtn", "Playground", "Mini-games to play alone or with others."],
@@ -9906,19 +9903,16 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
       var card = $("g-next"), show = !!p && m !== "away" && !bathing;
       card.hidden = !show; $("g-mood").hidden = $("g-mood").hidden || show;
       var n = dailyWaiting(); $("g-dailydot").hidden = !n; $("g-dailydot").textContent = n || "";
-      drawFamily(p, show);
       if (!show) return;
-      var crewBox = $("g-nextcrew"); crewBox.innerHTML = ""; crewBox.hidden = true;
+      drawFamily(p, show);
       var leftN = minutesLeftToday(p), who = others(p), fedBy = who.filter(function (x) { return x.fed_today; })[0], notYet = who.filter(function (x) { return !x.fed_today; })[0];
       drawNextBody(p, m, leftN, who, fedBy, notYet);
     }
     function drawFamily(p, show) {
-      var box = $("g-family"); box.innerHTML = "";
+      // the co-parents' pictures in the card, and a + to add one
+      var box = $("g-nextcrew"); box.innerHTML = "";
       if (!show || !p) { box.hidden = true; return; }
       var crew = others(p), canAdd = isOwner(p) && (p.members || []).length < 4;
-      if (crew.length) {
-        var lbl = document.createElement("span"); lbl.className = "lbl"; lbl.textContent = "Co-parents"; box.appendChild(lbl);
-      }
       crew.forEach(function (mb) {
         var b = document.createElement("button"); b.type = "button"; b.className = "pg-nextav" + (mb.fed_today ? " fed" : "");
         b.innerHTML = avatarDot(mb) + (mb.fed_today ? '<em aria-hidden="true">✓</em>' : "") + (unread[mb.id] ? '<i class="pg-chipdot" aria-hidden="true"></i>' : "");
@@ -9928,8 +9922,8 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
       });
       // a clear button to add a co-parent (invite a friend or find one), while there's room
       if (canAdd) {
-        var add = document.createElement("button"); add.type = "button"; add.className = "pg-famadd" + (crew.length ? " small" : "");
-        add.innerHTML = crew.length ? '<i aria-hidden="true">+</i>' : '<i aria-hidden="true">+</i><span>Add a co-parent</span>';
+        var add = document.createElement("button"); add.type = "button"; add.className = "pg-nextav pg-nextadd";
+        add.innerHTML = '<i class="av" aria-hidden="true">+</i>';
         add.setAttribute("aria-label", "Add a co-parent: invite a friend or find one");
         add.addEventListener("click", function (e) { e.stopPropagation(); if (safeOn()) invite(); else coparentChoice(); });
         box.appendChild(add);
