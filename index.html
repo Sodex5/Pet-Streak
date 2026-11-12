@@ -2160,6 +2160,13 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
 @keyframes pg-nextin { from { transform: translateY(6px); opacity: 0; } to { transform: none; opacity: 1; } }
 @keyframes pg-minipulse { 0%, 100% { box-shadow: 0 0 0 0 var(--brand-glow); } 50% { box-shadow: 0 0 0 8px rgba(0,0,0,0); } }
 @media (prefers-reduced-motion: reduce) { .pg-next.mini, .pg-next.mini.act, .pg-next:not(.mini) { animation: none; } }
+
+/* the co-parents sit at the bottom, just above the card; when the card is folded they share its line */
+.pg-dock { flex-direction: row; flex-wrap: wrap; align-items: center; }
+.pg-dock > .pg-next, .pg-dock > .pg-mood, .pg-dock > .pg-crew { flex: 0 0 100%; }
+.pg-dock > .pg-next.mini { flex: 0 0 54px; margin-left: auto; }
+.pg-dock > .pg-mood { text-align: center; }
+.pg-dock > .pg-family { flex: 0 1 auto; min-width: 0; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -2202,8 +2209,6 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
         <div>🔥 <span id="g-streak">0</span> <small>day streak</small></div>
         <div>❄️ <span id="g-freezes">0</span> <small id="g-frzlbl">freezes</small></div>
       </div>
-      <!-- the co-parents, on their own row: their pictures, and a clear button to add one -->
-      <div class="pg-family" id="g-family" hidden></div>
     </div>
     <div class="pg pg-bar" id="g-bar" hidden>
       <button type="button" class="pg-chip pg-petbtn" id="g-petbtn" aria-label="Switch pet"><span id="g-petbtnname">My pets</span> <small id="g-petcount"></small> ▾</button>
@@ -2219,6 +2224,8 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
       <button type="button" class="pg-tab" id="g-storebtn" aria-label="Store"><i aria-hidden="true">🛍️</i><small>Store</small></button>
     </nav>
     <div class="pg pg-dock" id="g-dock">
+      <!-- the co-parents, on their own row just above the card: their pictures, and a clear button to add one -->
+      <div class="pg-family" id="g-family" hidden></div>
       <div class="pg-card pg-next" id="g-next" hidden><span class="ic" aria-hidden="true" id="g-nextic"></span><span class="pg-grow"><b id="g-nexttitle"></b><small id="g-nextsub"></small></span><span class="pg-nextcrew" id="g-nextcrew"></span><button type="button" class="pg-btn pg-primary" id="g-nextbtn"></button></div>
       <div class="pg-card pg-mood" id="g-mood" role="status" hidden>😊 Happy</div>
       <div class="pg-crew" id="g-crew" hidden></div>
@@ -6578,7 +6585,7 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261112060235";   // replaced by build_real.ps1
+    var APP_BUILD = "20261112060735";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
