@@ -2319,6 +2319,27 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
 .pg-adminpage textarea.pg-adminnews { border-radius: 12px; }
 
 .pg-apdmail { font-size: 0.7rem !important; color: #9aa7ae !important; user-select: all; -webkit-user-select: all; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* weekly prizes in admin */
+.pg-adnotice { display: flex; align-items: center; gap: 8px; width: 100%; padding: 12px 14px; border: 1px solid #f3d27a; border-radius: 14px; background: #fff8e1; font: inherit; font-size: 0.88rem; color: #6b4a00; text-align: left; cursor: pointer; }
+.pg-adnotice[hidden] { display: none; }
+.pg-adnotice b { flex: 1; }
+.pg-adnotice span { font-weight: 800; color: #8a5a00; }
+.pg-adprize { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; padding: 10px 0; border-bottom: 1px solid #f0f3f5; }
+.pg-adprize .medal { font-size: 1.6rem; line-height: 1; }
+.pg-adprize .pg-grow { display: flex; flex-direction: column; min-width: 0; }
+.pg-adprize b { font-size: 0.95rem; color: #14232b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pg-adprize small { font-size: 0.76rem; color: #6b7a82; }
+.pg-adprize .paws { font-style: normal; font-weight: 800; font-size: 0.85rem; padding: 4px 10px; border-radius: 10px; background: #fff3d1; color: #7a4d00; }
+.pg-adprizeacts { flex-basis: 100%; display: flex; justify-content: flex-end; gap: 8px; }
+.pg-adprizeacts .pg-btn { min-height: 36px; padding: 0 18px; font-size: 0.86rem; }
+.pg-adpayall { width: 100%; margin-top: 10px; min-height: 40px; }
+.pg-adsub { margin: 12px 0 4px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; color: #8a99a1; }
+.pg-adrecent { list-style: none; margin: 0; padding: 0; }
+.pg-adrecent li { display: flex; align-items: center; gap: 6px; padding: 5px 0; font-size: 0.84rem; color: #3b4b53; }
+.pg-adrecent li small { color: #8a99a1; }
+.pg-adrecent li span { margin-left: auto; font-size: 0.76rem; font-weight: 800; }
+.pg-adrecent .paid { color: #1f7a48; } .pg-adrecent .skip { color: #8a99a1; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -3026,10 +3047,11 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         <button type="button" role="tab" data-atab="overview" aria-selected="true">Overview</button>
         <button type="button" role="tab" data-atab="players" aria-selected="false">Players</button>
         <button type="button" role="tab" data-atab="reports" aria-selected="false">Reports<i class="pg-adbadge" id="g-adrepcount" hidden></i></button>
-        <button type="button" role="tab" data-atab="tools" aria-selected="false">Tools</button>
+        <button type="button" role="tab" data-atab="tools" aria-selected="false">Tools<i class="pg-adbadge" id="g-adprizecount" hidden></i></button>
       </div>
       <div class="pg-adbody" id="g-adbody">
         <section data-apane="overview">
+          <button type="button" class="pg-adnotice" id="g-adprizenote" hidden></button>
           <div class="pg-adkpis" id="g-adminstats"></div>
           <div class="pg-adcard"><h3>Daily tasks today <small id="g-addayname"></small></h3><div class="pg-adbars" id="g-admindaily"></div></div>
           <div class="pg-adcard"><h3>Last 7 days</h3><div class="pg-adchart" id="g-adweek"></div>
@@ -3056,6 +3078,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
           <div class="pg-adcard" id="g-adminfb" hidden><h3>Feedback <small id="g-fbcount"></small></h3><div id="g-fblist"></div><button type="button" class="pg-btn" id="g-fbdone" hidden></button></div>
         </section>
         <section data-apane="tools" hidden>
+          <div class="pg-adcard"><h3>🏆 Weekly prizes <small>you decide who gets paid</small></h3><div id="g-adprizes"></div></div>
           <div class="pg-adcard"><h3>📢 Announcement</h3>
             <p class="pg-note">Shown once to every player when they open the app, for 14 days.</p>
             <textarea id="g-adminnews" class="pg-adminnews" maxlength="200" rows="2" placeholder="Your message to all players" aria-label="Announcement"></textarea>
@@ -6753,7 +6776,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261112215812";   // replaced by build_real.ps1
+    var APP_BUILD = "20261112230040";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -9703,8 +9726,60 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         });
         var rb = $("g-adrepcount"); rb.hidden = !st.reports; rb.textContent = st.reports || "";
       } catch (e) {}
-      adminDaily(); adminRooms(); adminLog();
+      adminDaily(); adminRooms(); adminLog(); adminPrizes();
     }
+    // weekly prizes: the top 3 of each finished week wait here for Pay or Skip
+    var MEDAL = { 1: "🥇", 2: "🥈", 3: "🥉" };
+    async function adminPrizes() {
+      var box = $("g-adprizes"), d;
+      try { d = await rpc("admin_prizes"); } catch (e) { box.innerHTML = '<p class="pg-note">Run update_057 to decide weekly prizes.</p>'; return; }
+      var wait = d.waiting || [], n = wait.length;
+      $("g-adprizecount").hidden = !n; $("g-adprizecount").textContent = n || "";
+      var note = $("g-adprizenote"); note.hidden = !n;
+      note.innerHTML = "🏆 <b>" + n + (n === 1 ? " weekly prize is" : " weekly prizes are") + " waiting</b><span>Review →</span>";
+      box.innerHTML = "";
+      if (!n) box.innerHTML = '<p class="pg-note">No prizes waiting. When a week ends, its top 3 players (3+ wins) show up here.</p>';
+      wait.forEach(function (w) {
+        var row = adminRow("pg-adprize");
+        var wk = new Date(w.week + "T12:00:00").toLocaleDateString([], { day: "numeric", month: "short" });
+        row.innerHTML = '<span class="medal" aria-hidden="true">' + (MEDAL[w.place] || "🏅") + '</span><span class="pg-grow"><b>' + esc(w.name || "A player") + "</b><small>" +
+          (w.pet ? "🐾 " + esc(w.pet) + " · " : "") + w.wins + " wins · week of " + esc(wk) + '</small></span><em class="paws">' + w.paws + " 🐾</em>";
+        var acts = adminRow("pg-adprizeacts");
+        var pay = document.createElement("button"); pay.type = "button"; pay.className = "pg-btn pg-primary"; pay.textContent = "Pay";
+        var skip = document.createElement("button"); skip.type = "button"; skip.className = "pg-btn"; skip.textContent = "Skip";
+        async function decide(yes) {
+          if (!yes && !confirm("Skip the prize for " + (w.name || "this player") + "? They won't get the " + w.paws + " paws.")) return;
+          pay.disabled = skip.disabled = true;
+          try { await rpc("admin_pay_prize", { p_week: w.week, p_user: w.uid, p_pay: yes }); say(yes ? "🏆 Paid " + w.paws + " paws to " + (w.name || "the winner") + "." : "Prize skipped."); }
+          catch (e) { say(friendly(e.message)); }
+          adminPrizes(); adminLog();
+        }
+        pay.addEventListener("click", function () { decide(true); }); skip.addEventListener("click", function () { decide(false); });
+        acts.appendChild(skip); acts.appendChild(pay); row.appendChild(acts); box.appendChild(row);
+      });
+      if (n > 1) {
+        var all = document.createElement("button"); all.type = "button"; all.className = "pg-btn pg-adpayall"; all.textContent = "Pay all " + n + " (" + wait.reduce(function (a, w) { return a + w.paws; }, 0) + " paws)";
+        all.addEventListener("click", async function () {
+          if (!confirm("Pay all " + n + " winners?")) return;
+          all.disabled = true;
+          for (var i = 0; i < wait.length; i++) { try { await rpc("admin_pay_prize", { p_week: wait[i].week, p_user: wait[i].uid, p_pay: true }); } catch (e) {} }
+          say("🏆 All prizes paid."); adminPrizes(); adminLog();
+        });
+        box.appendChild(all);
+      }
+      var rec = d.recent || [];
+      if (rec.length) {
+        var h = document.createElement("h4"); h.className = "pg-adsub"; h.textContent = "Recently decided"; box.appendChild(h);
+        var ul = document.createElement("ul"); ul.className = "pg-adrecent";
+        rec.forEach(function (r) {
+          var li = document.createElement("li");
+          li.innerHTML = (MEDAL[r.place] || "🏅") + " " + esc(r.name || "A player") + (r.pet ? " <small>(" + esc(r.pet) + ")</small>" : "") + '<span class="' + (r.paid ? "paid" : "skip") + '">' + (r.paid ? r.paws + " 🐾 paid" : "skipped") + "</span>";
+          ul.appendChild(li);
+        });
+        box.appendChild(ul);
+      }
+    }
+    $("g-adprizenote").addEventListener("click", function () { adminTab("tools"); });
     // daily tasks: bars for today, a 7-day chart and the favourite quests
     var QUEST_NAMES = { feed: "🍎 Feed", play2: "🎮 Play 2 games", win: "🏆 Win a game", hello: "👋 Say hello", chat: "💬 Send a message", xmas: "🎄 Christmas quest" };
     async function adminDaily() {
