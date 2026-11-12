@@ -6551,7 +6551,7 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261112050809";   // replaced by build_real.ps1
+    var APP_BUILD = "20261112051802";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -11942,23 +11942,25 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
     var CLOSABLE = [["g-menu", "g-menuclose"], ["g-store", "g-storeclose"], ["g-sheet", "g-close"], ["g-ranks", "g-ranksclose"],
                     ["g-share", "g-shareclose"], ["g-petsheet", "g-petsheetclose"], ["g-adoptinfo", "g-aiclose"], ["g-tray", "g-trayclose"],
                     ["g-today", "g-todayclose"], ["g-achs", "g-achsclose"], ["g-history", "g-historyclose"], ["g-petprev", "g-pvback"], ["g-week", "g-weekclose"]];
-    var swallowClick = 0;
+    var swallowClick = 0, outsideClosedAt = 0;
     document.addEventListener("pointerdown", function (e) {
       // a full-screen card (gift, join, name...) is on top: leave everything as it is
       // (also leave sheets alone for taps on an invite card or inside a game)
       if (e.target.closest && e.target.closest(".pg-adopt, .pg-invite, .pg-game, .pg-playpage, .pg-chatpage, #g-history, #g-week, .pg-tour, .pg-msgsheet")) return;
+      // a touch at the very edge is the phone's back swipe starting: the back itself closes the page
+      if (e.pointerType !== "mouse" && (e.clientX < 28 || e.clientX > window.innerWidth - 28)) return;
       var open = CLOSABLE.filter(function (c) { return !$(c[0]).hidden && !$(c[0]).contains(e.target); });
       if (!open.length) return;
       open.forEach(function (c) { $(c[1]).click(); });
       e.preventDefault(); e.stopPropagation();
-      swallowClick = Date.now();
+      swallowClick = outsideClosedAt = Date.now();
     }, true);
     document.addEventListener("click", function (e) {
       if (swallowClick && Date.now() - swallowClick < 600) { swallowClick = 0; e.preventDefault(); e.stopPropagation(); }
     }, true);
     // The phone's back button (Android's back swipe): close whatever is on top instead of leaving the app. A game
     // asks first. On the main screen, a second back within 2 seconds closes the app.
-    var BACK = [["g-tour", "g-tourskip"], ["g-achpop", "g-achok"], ["g-invite", "g-inviteno"], ["g-ask", "g-askcancel"], ["g-join", "g-joincancel"],
+    var BACK = [["g-tour", "g-tourskip"], ["g-celebrate", "g-cbok"], ["g-stconfirm", "g-sccancel"], ["g-achpop", "g-achok"], ["g-invite", "g-inviteno"], ["g-ask", "g-askcancel"], ["g-join", "g-joincancel"],
                 ["g-giftsend", "g-gsdone"], ["g-petopts", "g-poclose"], ["g-gamepick", "g-pickno"], ["g-gamehelp", "g-ghclose"], ["g-mode", "g-modeclose"],
                 ["g-pick", "g-pickclose"], ["g-history", "g-historyclose"], ".pg-game", ["g-msgsheet", "g-msgclose"], ["g-chatbar", "g-chatbarx"], ["g-chat", "g-chatback"], ["g-watch", "g-watchclose"], ["g-roomreply", "g-roomreplyx"], ["g-roomnew", "g-roomnewcancel"], ["g-roompage", "g-roommin"], ["g-rooms", "g-roomsclose"], ["g-seek", "g-seekclose"], ["g-daily", "g-dailyclose"], ["g-nudge", "g-nudgeno"], ["g-news", "g-newsok"], ["g-delcard", "g-delcancel"], ["g-safecard", "g-safecancel"], ["g-roomnew", "g-roomnewcancel"], ["g-roompage", "g-roomback"], ["g-rooms", "g-roomsclose"],
                 ["g-social", "g-socialclose"], ["g-play", "g-playclose"], ["g-bath", "g-bathcancel"], ["g-howto", "g-howskip"],
@@ -11982,7 +11984,8 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
       history.replaceState({ ps: "base" }, "");
       history.pushState({ ps: "app" }, "");
       window.addEventListener("popstate", function () {
-        if (closeTop()) { history.pushState({ ps: "app" }, ""); return; }
+        // a back that comes right after a tap already closed something counts as that same close, never as leaving
+        if (closeTop() || (Date.now() - outsideClosedAt < 1500)) { history.pushState({ ps: "app" }, ""); return; }
         if (Date.now() - backAt < 2000) { history.back(); return; }   // leave
         backAt = Date.now();
         say("Press back again to close Pet Streak");
