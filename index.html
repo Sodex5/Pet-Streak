@@ -1933,6 +1933,129 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
 .pg-nextav em { position: absolute; right: -3px; bottom: -3px; width: 15px; height: 15px; border-radius: 50%; background: #2fae6b; color: #fff; font-size: 0.6rem; font-style: normal; display: grid; place-items: center; }
 .pg-nextav .pg-chipdot { position: absolute; top: -2px; right: -2px; }
 .pg-dailychip { position: relative; }
+
+/* ---------- the Store: a full-screen shop ---------- */
+.pg-storepage { inset: 0; z-index: 7; display: flex; flex-direction: column; background: linear-gradient(180deg, var(--brand-tint) 0%, #f5f7f9 34%, #f5f7f9 100%); }
+.pg-storepage[hidden] { display: none; }
+.pg-storepage.staged { background: transparent; }
+.pg-sthead { flex: none; display: flex; align-items: center; gap: 10px; padding: calc(10px + env(safe-area-inset-top, 0px)) 14px 10px; }
+.pg-storepage.staged .pg-sthead { background: rgba(255,255,255,0.72); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+.pg-sthead h2 { flex: 1; margin: 0; font-family: var(--display); font-size: 1.45rem; color: #14232b; }
+.pg-stback { width: 44px; height: 44px; border-radius: 50%; border: 0; background: #fff; font-size: 1.3rem; color: #14232b; box-shadow: 0 2px 8px rgba(20,35,43,0.10); cursor: pointer; }
+.pg-stpaws { display: inline-flex; align-items: center; gap: 6px; height: 44px; padding: 0 6px 0 14px; border: 0; border-radius: 22px; background: #fff; font: inherit; font-weight: 800; font-size: 1.05rem; color: #14232b; box-shadow: 0 2px 8px rgba(20,35,43,0.10); cursor: pointer; }
+.pg-stpaws i { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; background: var(--brand); color: #fff; font-style: normal; font-size: 1.15rem; }
+.pg-ststage { flex: 0 0 34%; position: relative; pointer-events: none; }
+.pg-ststage span { position: absolute; left: 50%; bottom: 10px; transform: translateX(-50%); max-width: 90%; padding: 6px 14px; border-radius: 16px; background: rgba(20,35,43,0.72); color: #fff; font-size: 0.82rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pg-ststage span:empty { display: none; }
+.pg-stbody { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 4px 14px calc(18px + env(safe-area-inset-bottom, 0px)); }
+.pg-storepage.staged .pg-stbody { background: #f5f7f9; border-radius: 22px 22px 0 0; box-shadow: 0 -6px 24px rgba(20,35,43,0.14); padding-top: 12px; padding-bottom: 12px; }
+.pg-stfeat { position: relative; display: flex; align-items: center; gap: 10px; width: 100%; margin: 4px 0 14px; padding: 14px 10px 14px 16px; border: 0; border-radius: 20px; text-align: left; font: inherit; color: #fff; cursor: pointer; overflow: hidden;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--tint) 75%, #14232b) 0%, var(--tint) 100%); box-shadow: 0 8px 22px color-mix(in srgb, var(--tint) 40%, transparent); }
+.pg-stfeat[hidden] { display: none; }
+.pg-stfeat::after { content: ""; position: absolute; right: -30px; top: -40px; width: 160px; height: 160px; border-radius: 50%; background: rgba(255,255,255,0.16); pointer-events: none; }
+.pg-stfeat .pg-grow { display: flex; flex-direction: column; gap: 2px; min-width: 0; position: relative; z-index: 1; }
+.pg-stfeat em { align-self: flex-start; font-style: normal; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.02em; padding: 3px 9px; border-radius: 10px; background: rgba(255,255,255,0.26); }
+.pg-stfeat b { font-family: var(--display); font-size: 1.25rem; line-height: 1.15; margin-top: 4px; text-shadow: 0 1px 2px rgba(0,0,0,0.18); }
+.pg-stfeat small { font-weight: 700; color: #fff; opacity: 0.95; font-size: 0.9rem; }
+.pg-stfeatgo { margin-top: 6px; align-self: flex-start; padding: 6px 12px; border-radius: 14px; background: #fff; color: #14232b; font-weight: 800; font-size: 0.85rem; }
+.pg-stfeat .pic, .pg-stfeat img { position: relative; z-index: 1; flex: none; width: 104px; height: 104px; object-fit: contain; background: none; margin: 0; filter: drop-shadow(0 6px 10px rgba(0,0,0,0.25)); animation: pgbob 3.2s ease-in-out infinite; }
+.pg-seg { position: sticky; top: -4px; z-index: 2; display: flex; gap: 3px; padding: 4px; margin: 0 0 10px; border-radius: 16px; background: #e4eaee; box-shadow: 0 0 0 6px #f5f7f9; }
+.pg-storepage.staged .pg-seg { top: -12px; }
+.pg-seg button { flex: 1; min-height: 40px; border: 0; border-radius: 12px; background: none; font: inherit; font-weight: 700; font-size: 0.92rem; color: #4a5b63; cursor: pointer; transition: background 0.18s, color 0.18s; }
+.pg-seg button[aria-selected="true"] { background: #fff; color: #14232b; box-shadow: 0 2px 6px rgba(20,35,43,0.12); }
+.pg-stchips { display: flex; gap: 6px; margin: 0 0 8px; overflow-x: auto; scrollbar-width: none; }
+.pg-stchips[hidden] { display: none; }
+.pg-stchips button { flex: none; min-height: 36px; padding: 0 14px; border: 1px solid #d6e0e4; border-radius: 18px; background: #fff; font: inherit; font-weight: 700; font-size: 0.88rem; color: #3b4b53; cursor: pointer; }
+.pg-stchips button[aria-pressed="true"] { background: var(--brand); border-color: var(--brand); color: #fff; }
+.pg-sthint { margin: 0 2px 10px; font-size: 0.86rem; color: #55666e; }
+#g-store .pg-stgrid { display: grid; gap: 10px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+#g-store .pg-stgrid.st-wardrobe { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+#g-store .pg-stgrid.st-coins { grid-template-columns: 1fr; }
+#g-store .pg-stgrid > .pg-storetip, #g-store .pg-stgrid > .pg-empty-note { grid-column: 1 / -1; }
+/* pet cards */
+.pg-stpet { display: flex; flex-direction: column; gap: 4px; padding: 8px 8px 10px; border-radius: 18px; background: #fff; box-shadow: 0 2px 10px rgba(20,35,43,0.07); min-width: 0; }
+.pg-stpetpic { position: relative; display: block; padding: 0; border: 0; border-radius: 14px; cursor: pointer; overflow: hidden;
+  background: radial-gradient(circle at 50% 35%, color-mix(in srgb, var(--tint) 22%, #fff) 0%, color-mix(in srgb, var(--tint) 42%, #fff) 100%); }
+.pg-stpetpic .pic { display: block; width: 100%; height: auto; aspect-ratio: 1 / 1; object-fit: contain; padding: 6px; box-sizing: border-box; background: none; margin: 0; transition: transform 0.25s; }
+.pg-stpetpic:active .pic { transform: scale(0.95); }
+.pg-rar, .pg-sthave { position: absolute; top: 7px; font-style: normal; font-size: 0.68rem; font-weight: 800; padding: 3px 8px; border-radius: 10px; }
+.pg-rar { left: 7px; }
+.pg-rar.com { background: #eef1f3; color: #3b4b53; }
+.pg-rar.rare { background: #e2efff; color: #134a8e; }
+.pg-rar.epic { background: #efe4ff; color: #5420a8; }
+.pg-rar.leg { background: linear-gradient(90deg, #ffe08a, #ffb84d); color: #6b3d00; }
+.pg-sthave { right: 7px; background: #2fae6b; color: #fff; }
+.pg-stpet > b { margin: 4px 2px 0; font-size: 0.98rem; color: #14232b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pg-stprice { margin: 0 2px; font-weight: 800; color: #14232b; }
+.pg-stsave { display: flex; flex-direction: column; gap: 4px; margin: 0 2px; }
+.pg-stsave small { font-size: 0.78rem; font-weight: 700; color: #55666e; }
+.pg-stsave i, .pg-stearn .bar { display: block; height: 7px; border-radius: 4px; background: #e8edf0; overflow: hidden; }
+.pg-stsave u, .pg-stearn .bar u { display: block; height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--brand), var(--brand-2)); }
+.pg-stbtn { margin-top: 4px; min-height: 40px; border: 0; border-radius: 12px; background: var(--brand); color: #fff; font: inherit; font-weight: 800; font-size: 0.95rem; cursor: pointer; transition: transform 0.12s; }
+.pg-stbtn.ghost { background: #eef2f4; color: #3b4b53; }
+.pg-stbtn:active, .pg-stpet:active, .pg-sitem:active, .pg-stearn:active, .pg-stfeat:active { transform: scale(0.97); }
+.pg-stbtn[hidden] { display: none; }
+/* item cards */
+.pg-sitem { position: relative; display: flex; flex-direction: column; gap: 2px; min-width: 0; padding: 6px 6px 8px; border: 2px solid transparent; border-radius: 16px; background: #fff; box-shadow: 0 2px 8px rgba(20,35,43,0.06); font: inherit; text-align: left; cursor: pointer; transition: transform 0.12s, border-color 0.15s; }
+.pg-sitem .dpic { position: relative; display: block; border-radius: 12px; overflow: hidden; background: #f1f4f6; }
+.pg-sitem .pic, .pg-sitem .swbig { display: block; width: 100%; aspect-ratio: 1 / 1; object-fit: contain; margin: 0; background: none; border: 0; border-radius: 0; }
+.pg-sitem .pic.scene { aspect-ratio: 1 / 1; object-fit: cover; }
+.pg-sitem b { font-size: 0.8rem; color: #14232b; margin: 4px 2px 0; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pg-sitem small { font-size: 0.74rem; font-weight: 800; color: #3b4b53; margin: 0 2px; }
+.pg-sitem.locked .pic, .pg-sitem.locked .swbig { opacity: 0.5; filter: grayscale(0.4); }
+.pg-sitem.locked small { color: #8a5a00; }
+.pg-sitem.have small { color: #1f8a52; }
+.pg-sitem.sel { border-color: var(--brand); box-shadow: 0 0 0 3px var(--brand-glow); }
+.pg-sitem.sel small { color: var(--brand); }
+.pg-sitem .dtick, .pg-sitem .dlock, .pg-sitem .dcols { position: absolute; font-style: normal; font-weight: 800; }
+.pg-sitem .dtick { top: 5px; right: 5px; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; background: #2fae6b; color: #fff; font-size: 0.75rem; }
+.pg-sitem .dlock { top: 5px; right: 5px; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; background: rgba(255,255,255,0.9); font-size: 0.7rem; }
+.pg-sitem .dcols { left: 5px; bottom: 5px; padding: 1px 6px; border-radius: 8px; background: rgba(255,255,255,0.92); font-size: 0.68rem; color: #3b4b53; }
+/* the buy bar under the stage */
+.pg-stbuy { flex: none; padding: 10px 14px calc(12px + env(safe-area-inset-bottom, 0px)); background: #fff; border-top: 1px solid #e3e9ec; box-shadow: 0 -4px 16px rgba(20,35,43,0.08); }
+.pg-stbuy[hidden] { display: none; }
+.pg-stbuyrow { display: flex; align-items: center; gap: 10px; }
+.pg-stbuyrow .pg-grow { display: flex; flex-direction: column; min-width: 0; }
+.pg-stbuyrow b { font-size: 1rem; color: #14232b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pg-stbuyrow small { font-size: 0.8rem; color: #55666e; font-weight: 600; }
+.pg-stbuyrow .pg-stbtn { margin: 0; flex: none; padding: 0 18px; min-height: 46px; }
+.pg-sbswatch { margin-top: 8px; }
+.pg-sbswatch[hidden] { display: none; }
+/* earn cards */
+.pg-stearn { display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px 14px; border: 0; border-radius: 16px; background: #fff; box-shadow: 0 2px 8px rgba(20,35,43,0.06); font: inherit; text-align: left; color: #14232b; }
+button.pg-stearn { cursor: pointer; }
+.pg-stearn .ic { flex: none; width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center; background: var(--brand-tint); font-size: 1.35rem; }
+.pg-stearn .pg-grow { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.pg-stearn b { font-size: 0.98rem; }
+.pg-stearn small { font-size: 0.8rem; color: #55666e; }
+.pg-stearn .bar { margin-top: 3px; }
+.pg-stearn > em { flex: none; font-style: normal; font-size: 0.78rem; font-weight: 800; color: var(--brand); white-space: nowrap; }
+/* placeholder cards while the sanctuary loads */
+.pg-skel { height: 190px; border-radius: 18px; background: linear-gradient(90deg, #eaeff2 25%, #f6f8f9 50%, #eaeff2 75%); background-size: 200% 100%; animation: pg-skel 1.2s linear infinite; }
+@keyframes pg-skel { from { background-position: 200% 0; } to { background-position: 0 0; } }
+#g-store .pg-stgrid .pg-item { border-radius: 18px; border: 0; box-shadow: 0 2px 10px rgba(20,35,43,0.07); }
+/* buy card and celebration */
+#g-stconfirm, #g-celebrate { z-index: 9; }
+#g-adoptinfo { z-index: 8; }
+.pg-stdialog .pg-card { text-align: center; }
+.pg-dlgpic { width: 120px; height: 120px; margin: 0 auto 6px; border-radius: 28px; background: radial-gradient(circle at 50% 40%, #fff 0%, var(--brand-tint) 100%); display: grid; place-items: center; overflow: hidden; }
+.pg-dlgpic .pic, .pg-dlgpic img, .pg-dlgpic .swbig { width: 100%; height: 100%; object-fit: contain; margin: 0; background: none; border: 0; border-radius: 0; aspect-ratio: auto; }
+.pg-dlgpic .pic.scene { object-fit: cover; }
+.pg-dlgpic.pop { animation: pg-pop 0.6s cubic-bezier(.2,1.6,.4,1) both; }
+@keyframes pg-pop { from { transform: scale(0.3) rotate(-12deg); opacity: 0; } to { transform: none; opacity: 1; } }
+.pg-scalt { display: block; width: 100%; min-height: 48px; margin-top: 8px; border: 2px solid var(--brand); border-radius: 14px; background: #fff; color: var(--brand); font: inherit; font-weight: 800; font-size: 1rem; cursor: pointer; }
+.pg-scalt[hidden] { display: none; }
+.pg-cbconfetti { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.pg-cbconfetti i { position: absolute; top: -12px; width: 9px; height: 14px; border-radius: 2px; animation: pg-confetti 1.9s cubic-bezier(.25,.6,.4,1) forwards; }
+@keyframes pg-confetti { 0% { transform: translate(0, 0) rotate(0); opacity: 1; } 100% { transform: translate(var(--dx), 105vh) rotate(var(--rot)); opacity: 0.9; } }
+/* while the Store's stage is up, the home screen behind the pet steps aside */
+body:has(#g-store.staged:not([hidden])) #g-top, body:has(#g-store.staged:not([hidden])) #g-dock,
+body:has(#g-store.staged:not([hidden])) #g-bottom, body:has(#g-store.staged:not([hidden])) #g-bar { opacity: 0; pointer-events: none; }
+@media (prefers-reduced-motion: reduce) { .pg-stfeat .pic, .pg-stfeat img, .pg-dlgpic.pop, .pg-cbconfetti i, .pg-skel { animation: none; } }
+
+.pg-stearn, .pg-sitem, .pg-stfeat, .pg-stpet, .pg-stbtn { box-sizing: border-box; }
+#g-store .st-sanctuary .pg-empty-note { padding: 34px 20px; border-radius: 18px; background: #fff; box-shadow: 0 2px 10px rgba(20,35,43,0.06); text-align: center; font-size: 0.98rem; color: #3b4b53; line-height: 1.5; }
+#g-store .st-sanctuary .pg-empty-note::before { content: "🏡"; display: block; font-size: 2.6rem; margin-bottom: 8px; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -2563,16 +2686,55 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
         <button type="button" class="pg-btn pg-primary" id="g-pvbuy">Buy</button>
       </div>
     </div>
-    <div class="pg pg-card pg-sheet" id="g-store" hidden>
-      <h2>Store <span class="pg-coinline">🐾 <span id="g-storecoins">0</span></span> <button type="button" class="pg-x" id="g-storeclose" aria-label="Close store">✕</button></h2>
-      <div class="pg-tabs" role="tablist">
-        <button type="button" role="tab" data-tab="pets" aria-selected="true">🐾 Pets</button>
-        <button type="button" role="tab" data-tab="sanctuary" aria-selected="false">🏡 Adopt</button>
-        <button type="button" role="tab" data-tab="wardrobe" aria-selected="false">🕶️ Items</button>
-        <button type="button" role="tab" data-tab="coins" aria-selected="false">🐾 Paws</button>
+    <!-- the Store: a full-screen shop. Items has a stage at the top where the pet tries things on -->
+    <div class="pg pg-storepage" id="g-store" hidden>
+      <div class="pg-sthead" id="g-sthead">
+        <button type="button" class="pg-stback" id="g-storeclose" aria-label="Close store">←</button>
+        <h2>Store</h2>
+        <button type="button" class="pg-stpaws" id="g-stpaws" aria-label="Your paws: see how to earn more">🐾 <span id="g-storecoins">0</span><i aria-hidden="true">+</i></button>
       </div>
-      <p class="pg-hint" id="g-storehint"></p>
-      <div class="pg-items" id="g-storeitems"></div>
+      <div class="pg-ststage" id="g-ststage" hidden><span id="g-ststagelabel"></span></div>
+      <div class="pg-stbody" id="g-storebody">
+        <button type="button" class="pg-stfeat" id="g-stfeat" hidden></button>
+        <div class="pg-seg" role="tablist" aria-label="Store sections">
+          <button type="button" role="tab" data-tab="pets" aria-selected="true">Pets</button>
+          <button type="button" role="tab" data-tab="wardrobe" aria-selected="false">Items</button>
+          <button type="button" role="tab" data-tab="sanctuary" aria-selected="false">Adopt</button>
+          <button type="button" role="tab" data-tab="coins" aria-selected="false">Earn</button>
+        </div>
+        <div class="pg-stchips" id="g-stchips" role="group" aria-label="Item types" hidden>
+          <button type="button" data-kind="all">All</button>
+          <button type="button" data-kind="hat">🎩 Hats</button>
+          <button type="button" data-kind="glasses">👓 Glasses</button>
+          <button type="button" data-kind="backdrop">🖼️ Rooms</button>
+        </div>
+        <p class="pg-sthint" id="g-storehint"></p>
+        <div class="pg-items pg-stgrid" id="g-storeitems"></div>
+      </div>
+      <div class="pg-stbuy" id="g-stbuy" hidden>
+        <div class="pg-stbuyrow"><span class="pg-grow"><b id="g-sbname"></b><small id="g-sbsub"></small></span><button type="button" class="pg-stbtn" id="g-sbbtn">Buy</button></div>
+        <div class="pg-sbswatch" id="g-sbswatch" hidden></div>
+      </div>
+    </div>
+    <div class="pg pg-adopt pg-stdialog" id="g-stconfirm" hidden>
+      <div class="pg-card">
+        <div class="pg-dlgpic" id="g-scpic"></div>
+        <h2 id="g-sctitle"></h2>
+        <p id="g-sctext"></p>
+        <button type="button" class="pg-feed" id="g-scok">Buy</button>
+        <button type="button" class="pg-scalt" id="g-scalt" hidden></button>
+        <button type="button" class="pg-linkbtn" id="g-sccancel">Not now</button>
+      </div>
+    </div>
+    <div class="pg pg-adopt pg-stdialog" id="g-celebrate" hidden>
+      <div class="pg-cbconfetti" id="g-cbconfetti" aria-hidden="true"></div>
+      <div class="pg-card">
+        <div class="pg-dlgpic pop" id="g-cbpic"></div>
+        <h2 id="g-cbtitle"></h2>
+        <p id="g-cbtext"></p>
+        <button type="button" class="pg-feed" id="g-cbok">Nice!</button>
+        <button type="button" class="pg-linkbtn" id="g-cbalt" hidden></button>
+      </div>
     </div>
     <div class="pg pg-panel pg-menu" id="g-menu" hidden>
       <div class="pg-panelhead">
@@ -6298,7 +6460,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261112041953";   // replaced by build_real.ps1
+    var APP_BUILD = "20261112043936";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -7374,7 +7536,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
     setInterval(function () {
       var game = document.querySelector(".pg-game");
       var page = document.querySelector(".pg-playpage:not([hidden]), .pg-chatpage:not([hidden])");
-      var tabsOff = $("g-bottom").hidden || !!game || !!page || !$("g-howto").hidden || !$("g-bath").hidden || !!document.querySelector(".pg-sheet:not([hidden])");
+      var tabsOff = $("g-bottom").hidden || !!game || !!page || !$("g-howto").hidden || !$("g-bath").hidden || !!document.querySelector(".pg-sheet:not([hidden]), .pg-storepage:not([hidden])");
       if ($("g-tabs").hidden !== tabsOff) { $("g-tabs").hidden = tabsOff; document.documentElement.classList.toggle("pg-hastabs", !tabsOff); }
       window.__petHidden = !!(game || page);
       var bar = $("g-roombar"), out = !!roomNow && !game && !page && !raceNow;
@@ -9377,7 +9539,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
     $("g-nudgeno").addEventListener("click", function () { $("g-nudge").hidden = true; });
     function nudgeFree() {
       return $("g-howto").hidden && $("g-news").hidden && $("g-tour").hidden && $("g-invite").hidden && !raceNow && !roomNow &&
-        !document.querySelector(".pg-game, .pg-adopt:not([hidden]), .pg-sheet:not([hidden]), .pg-playpage:not([hidden]), .pg-chatpage:not([hidden]), .pg-panel:not([hidden])");
+        !document.querySelector(".pg-game, .pg-adopt:not([hidden]), .pg-sheet:not([hidden]), .pg-storepage:not([hidden]), .pg-playpage:not([hidden]), .pg-chatpage:not([hidden]), .pg-panel:not([hidden])");
     }
     function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
     function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
@@ -9877,8 +10039,8 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       try { await navigator.clipboard.writeText(url); say("Gift link copied. Send it to your friend 🎁"); }
       catch (e) { prompt("Send this gift link to your friend:", url); }
     }
-    async function buyGift(s) {
-      if (!confirm("Buy a " + s.name.toLowerCase() + " as a gift for " + s.price + " paws? Next you can send it to a friend's email or Pet Streak name, or share a link.")) return;
+    async function buyGift(s, asked) {
+      if (!asked && !confirm("Buy a " + s.name.toLowerCase() + " as a gift for " + s.price + " paws? Next you can send it to a friend's email or Pet Streak name, or share a link.")) return;
       var code;
       try { code = await rpc("buy_gift", { p_variant: s.id }); } catch (e) { say(e.message); return; }
       await loadAll(); renderStore();
@@ -9997,7 +10159,8 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       localStorage.setItem(PET_KEY, id); cur = -1;
       pvItem = null; $("g-petprev").hidden = true;
       $("g-store").hidden = true; await loadAll();
-      say("Meet " + name + "! Invite a co-parent: XP and the streak count when " + FEEDS_PER_DAY + " of you feed.");
+      celebrate({ pic: pic(s), title: "Meet " + name + "! 🎉", text: "Your new " + s.name.toLowerCase() + " is home. Invite a co-parent: XP and the streak count when " + FEEDS_PER_DAY + " of you feed.",
+        ok: "Say hi 👋", go: function () { wake(); try { playOnce("Happy"); } catch (e) {} } });
     }
     // A closer look before buying: the store steps aside and the pet on screen turns that colour. ‹ › flip
     // through the pets in price order; ← Store goes back.
@@ -10019,88 +10182,192 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       pvItem = null; $("g-petprev").hidden = true;
       applyLook(); openStore("pets");
     }
-    async function renderStore() {
-      $("g-storecoins").textContent = profile ? profile.coins : 0;
-      Array.prototype.forEach.call(document.querySelectorAll("#g-store [data-tab]"), function (b) { b.setAttribute("aria-selected", b.getAttribute("data-tab") === storeTab ? "true" : "false"); });
-      var box = $("g-storeitems"); box.innerHTML = "";
-      var maxLv = pets.reduce(function (a, p) { return Math.max(a, p.max_level); }, 0);
+    // ---------- the Store: Pets · Items · Adopt · Earn ----------
+    // A full-screen shop. Items has a stage at the top: the pet stands there and wears whatever you tap
+    // (the same try-on as Dress up), and a bar at the bottom buys it.
+    var stItemsKind = "all", stSel = null;
+    function storeStage() { return !!$("g-store") && !$("g-store").hidden && storeTab === "wardrobe" && !!pet(); }
+    function maxPetLevel() { return pets.reduce(function (a, p) { return Math.max(a, p.max_level || 0); }, 0); }
+    function rarity(price) { return price >= 500 ? ["Legendary", "leg"] : price >= 400 ? ["Epic", "epic"] : price >= 300 ? ["Rare", "rare"] : ["Common", "com"]; }
+    // this week's pick: a pet, hat or pair of glasses, the same for everyone, changing every Monday
+    function weeklyPick() {
+      var list = petsForSale().concat(store.filter(function (s) { return s.kind === "wardrobe" && s.price > 0 && !colourOf(s.id) && s.type !== "backdrop" && ICONS.indexOf(s.id) >= 0; }));
+      return list.length ? list[Math.floor((Date.now() / 86400000 + 3) / 7) % list.length] : null;
+    }
+    // the store's own confirm card (not the browser's): resolves "ok", "alt" or null
+    function storeAsk(o) {
+      return new Promise(function (resolve) {
+        $("g-scpic").innerHTML = o.pic || ""; $("g-sctitle").textContent = o.title; $("g-sctext").textContent = o.text || "";
+        $("g-scok").textContent = o.ok; $("g-scalt").hidden = !o.alt; $("g-scalt").textContent = o.alt || "";
+        $("g-stconfirm").hidden = false;
+        function done(v) { $("g-stconfirm").hidden = true; $("g-scok").onclick = $("g-scalt").onclick = $("g-sccancel").onclick = null; resolve(v); }
+        $("g-scok").onclick = function () { done("ok"); };
+        $("g-scalt").onclick = function () { done("alt"); };
+        $("g-sccancel").onclick = function () { done(null); };
+      });
+    }
+    // the moment after buying: confetti, a sound and the obvious next step
+    function celebrate(o) {
+      $("g-cbpic").innerHTML = o.pic || ""; $("g-cbtitle").textContent = o.title; $("g-cbtext").textContent = o.text || "";
+      $("g-cbok").textContent = o.ok || "Nice!"; $("g-cbalt").hidden = !o.alt; $("g-cbalt").textContent = o.alt || "";
+      var box = $("g-cbconfetti"), cols = ["#ff5d8f", "#ffc23d", "#4cc38a", "#5aa7ff", "#a07bff", "#ff8a4c"];
+      box.innerHTML = "";
+      for (var i = 0; i < 40; i++) {
+        var c = document.createElement("i");
+        c.style.left = (Math.random() * 100) + "%"; c.style.background = cols[i % cols.length];
+        c.style.animationDelay = (Math.random() * 0.6).toFixed(2) + "s";
+        c.style.setProperty("--dx", Math.round(Math.random() * 140 - 70) + "px"); c.style.setProperty("--rot", Math.round(Math.random() * 900 - 450) + "deg");
+        box.appendChild(c);
+      }
+      sfx("buy"); setTimeout(function () { sfx("sparkle"); }, 380);
+      $("g-celebrate").hidden = false;
+      $("g-cbok").onclick = function () { $("g-celebrate").hidden = true; if (o.go) o.go(); };
+      $("g-cbalt").onclick = function () { $("g-celebrate").hidden = true; if (o.altGo) o.altGo(); };
+    }
+    function storeTo(tab) {
+      storeTab = tab;
+      if (tab !== "wardrobe") stSel = null;
+      renderStore(); applyLook();
+      $("g-storebody").scrollTop = 0;
+    }
+    // Get it: for me, or as a gift
+    async function getPet(s) {
       var coins = profile ? profile.coins : 0;
+      var a = await storeAsk({ pic: pic(s), title: s.name, text: "🐾 " + s.price + " · you'll have " + (coins - s.price) + " left. Keep it, or give it to a friend.", ok: "For me", alt: "🎁 As a gift" });
+      if (a === "ok") buyPet(s); else if (a === "alt") buyGift(s, true);
+    }
+    // tap an item: the pet tries it on (any item, even locked ones), and the bar shows what you can do
+    function storeSelect(u) {
+      stSel = u; storePick[baseId(u.id)] = u.id;
+      if (pet()) { tryOn = { slot: u.type, id: u.id }; wake(); try { playOnce("Happy"); } catch (e) {} }
+      storeTab = "wardrobe";
+      renderStore(); applyLook();
+    }
+    function drawFeature() {
+      var f = $("g-stfeat"), s = weeklyPick();
+      f.hidden = !s; if (!s) return;
+      var isPet = s.kind === "pet";
+      f.style.setProperty("--tint", s.color || "#b9a7ff");
+      f.innerHTML = '<span class="pg-grow"><em>⭐ Pick of the week</em><b>' + esc(s.name) + "</b><small>🐾 " + s.price + (isPet ? " · " + rarity(s.price)[0] : "") +
+        '</small><span class="pg-stfeatgo">' + (isPet ? "Take a look" : "Try it on") + " →</span></span>" + pic(s);
+      f.onclick = function () { if (isPet) previewPet(petsForSale().indexOf(s)); else { stItemsKind = "all"; storeSelect(s); } };
+    }
+    // the bar under the Items stage: the item being tried on, its colours, and one button
+    function drawStoreBuy() {
+      var bar = $("g-stbuy"), p = pet(), u = stSel, staged = storeStage();
+      if (!staged || !u || !p) {
+        bar.hidden = true;
+        $("g-ststagelabel").textContent = staged && p ? "Tap anything to try it on " + p.name : "";
+        return;
+      }
+      var base = colourOf(u.id) ? item(baseId(u.id)) || u : u, cols = colourList(base);
+      var coins = profile ? profile.coins : 0, have = !!owned[u.id], lvOk = maxPetLevel() >= u.level_req, on = (p[u.type] || null) === u.id;
+      bar.hidden = false;
+      $("g-sbname").textContent = u.name;
+      $("g-sbsub").textContent = on ? "✓ " + p.name + " is wearing this" : have ? "Yours · works on all your pets"
+        : !lvOk ? "🔒 Unlocks when a pet reaches level " + u.level_req : coins < u.price ? "🐾 " + u.price + " · " + (u.price - coins) + " more to go" : "🐾 " + u.price;
+      var sw = $("g-sbswatch"); sw.innerHTML = "";
+      if (cols.length > 1) sw.appendChild(colourDots(cols, u, function (c) { storeSelect(c); }));
+      sw.hidden = cols.length < 2;
+      var btn = $("g-sbbtn");
+      btn.hidden = on || (!have && !lvOk);
+      btn.className = "pg-stbtn" + (!have && coins < u.price ? " ghost" : "");
+      btn.textContent = have ? "Put it on" : coins < u.price ? "How to earn" : "Buy · 🐾 " + u.price;
+      $("g-ststagelabel").textContent = (on ? "Wearing: " : "Trying on: ") + u.name;
+    }
+    async function renderStore() {
+      var coins = profile ? profile.coins : 0, p = pet();
+      $("g-storecoins").textContent = coins;
+      Array.prototype.forEach.call(document.querySelectorAll("#g-store [data-tab]"), function (b) { b.setAttribute("aria-selected", b.getAttribute("data-tab") === storeTab ? "true" : "false"); });
+      Array.prototype.forEach.call(document.querySelectorAll("#g-stchips [data-kind]"), function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-kind") === stItemsKind ? "true" : "false"); });
+      var staged = storeStage();
+      if (!staged && (tryOn || stSel) && $("g-sheet").hidden) { tryOn = null; stSel = null; }
+      $("g-store").classList.toggle("staged", staged);
+      $("g-ststage").hidden = !staged;
+      $("g-stchips").hidden = storeTab !== "wardrobe";
+      $("g-stfeat").hidden = storeTab !== "pets";
+      if (storeTab === "pets") drawFeature();
+      drawStoreBuy();
+      var box = $("g-storeitems"); box.innerHTML = ""; box.className = "pg-items pg-stgrid st-" + storeTab;
+      var maxLv = maxPetLevel();
       if (storeTab === "pets") {
-        $("g-storehint").textContent = "Tap a pet to see it up close. Buy one for yourself, or as a gift: your friend becomes its owner and names it.";
+        $("g-storehint").textContent = "Tap a pet to see it up close. Keep it, or give it to a friend.";
         // new players (no pet yet, or just one) get a tip: co-parenting is how to save up for the pet they really want
-        if (pets.length < 2) {
-          if (!lsGet("petstreak.storetip")) {
-            var tip = document.createElement("div"); tip.className = "pg-storetip pg-storetip1";
-            tip.innerHTML = '<span class="pg-grow">💡 Saving up? A co-parent helps you earn paws faster.</span><button type="button" class="pg-x" aria-label="Hide this tip">✕</button>';
-            tip.querySelector("button").addEventListener("click", function () { lsSet("petstreak.storetip", "1"); tip.remove(); });
-            box.appendChild(tip);
-          }
+        if (pets.length < 2 && !lsGet("petstreak.storetip")) {
+          var tip = document.createElement("div"); tip.className = "pg-storetip pg-storetip1";
+          tip.innerHTML = '<span class="pg-grow">💡 Saving up? A co-parent helps you earn paws faster.</span><button type="button" class="pg-x" aria-label="Hide this tip">✕</button>';
+          tip.querySelector("button").addEventListener("click", function () { lsSet("petstreak.storetip", "1"); tip.remove(); });
+          box.appendChild(tip);
         }
         petsForSale().forEach(function (s, i) {
-          var c = document.createElement("div"); c.className = "pg-card2";
-          c.innerHTML = '<button type="button" class="pg-pvopen" aria-label="See the ' + esc(s.name) + '">' + pic(s) + "<b>" + esc(s.name) + "</b><span>🐾 " + s.price + "</span></button>" +
-            '<div class="acts"><button type="button">For me</button><button type="button" class="alt">🎁 Gift</button></div>';
-          var bs = c.querySelectorAll(".acts button");
-          if (coins < s.price) { bs[0].disabled = bs[1].disabled = true; c.querySelector("span").textContent = "🐾 " + s.price + " · you have " + coins; }
-          c.querySelector(".pg-pvopen").addEventListener("click", function () { previewPet(i); });
-          bs[0].addEventListener("click", function () { buyPet(s); });
-          bs[1].addEventListener("click", function () { buyGift(s); });
+          var r = rarity(s.price), have = pets.some(function (x) { return x.variant === s.id; }), short = s.price - coins;
+          var c = document.createElement("div"); c.className = "pg-stpet"; c.style.setProperty("--tint", s.color || "#cccccc");
+          c.innerHTML = '<button type="button" class="pg-stpetpic" aria-label="See the ' + esc(s.name) + ' up close">' + pic(s) +
+              '<em class="pg-rar ' + r[1] + '">' + r[0] + "</em>" + (have ? '<em class="pg-sthave">✓ Yours</em>' : "") + "</button>" +
+            "<b>" + esc(s.name.replace(/ red panda$/i, "")) + "</b>" +
+            (short > 0
+              ? '<span class="pg-stsave"><small>🐾 ' + coins + " / " + s.price + '</small><i><u style="width:' + Math.max(3, Math.round(coins / s.price * 100)) + '%"></u></i></span><button type="button" class="pg-stbtn ghost">' + short + " to go</button>"
+              : '<span class="pg-stprice">🐾 ' + s.price + '</span><button type="button" class="pg-stbtn">Get it</button>');
+          c.querySelector(".pg-stpetpic").addEventListener("click", function () { previewPet(i); });
+          c.querySelector(".pg-stbtn").addEventListener("click", function () { if (short > 0) storeTo("coins"); else getPet(s); });
           box.appendChild(c);
         });
       } else if (storeTab === "coins") {
-        // until paws can be bought, this tab explains how to earn them
-        $("g-storehint").textContent = "Paws buy pets, gifts, rescues and wardrobe items. Here's how to earn them:";
-        var earn = document.createElement("div"); earn.className = "pg-earn";
-        [["🍎", "10 paws a day", "Each day " + FEEDS_PER_DAY + " of you feed your pet"],
-         ["⬆️", "25 paws a level", "Every time your pet levels up (up to 100 paws a day from feeding and levels)"],
-         ["🏅", "50 to 3,000 paws", "When your pet reaches a new rank. Everyone who fed that day gets it"],
-         ["🔥", "50 to 2,000 paws", "At 7, 30, 100, 365 and 730 days of streak"]].forEach(function (e) {
-          var d = document.createElement("div");
-          d.innerHTML = "<span>" + e[0] + "</span><p style=\"margin:0\"><b>" + esc(e[1]) + "</b><small>" + esc(e[2]) + "</small></p>";
-          earn.appendChild(d);
+        $("g-storehint").textContent = "Paws buy pets, gifts, rescues and items. Here's where they come from:";
+        var rows = [];
+        if (p) {
+          var full = fullToday(p), fedMe = !!myMember(p).fed_today;
+          rows.push(["🍎", full ? "Fed today ✓" : "Feed " + p.name, "10 paws a day when " + FEEDS_PER_DAY + " of you feed", full ? 100 : fedMe ? 50 : 0,
+            full ? "Done" : fedMe ? "1 of " + FEEDS_PER_DAY + " fed" : "Not yet", full ? null : function () { closeStore(); }]);
+          var need = xpNeed(p.level);
+          rows.push(["⬆️", "Reach level " + (p.level + 1), "25 paws every new level", Math.round(p.xp / need * 100), p.xp + " / " + need + " XP"]);
+          var ri = rankIndex(p.level), nr = RANKS[ri + 1];
+          if (nr) rows.push(["🏅", nr.name + " rank", RANK_REWARDS[ri + 1] + " paws for everyone who fed that day", Math.round((p.level - RANKS[ri].min) / (nr.min - RANKS[ri].min) * 100), "Level " + p.level + " / " + nr.min]);
+          var ms = [[7, 50], [30, 150], [100, 400], [365, 1000], [730, 2000]].filter(function (m) { return (p.streak || 0) < m[0]; })[0];
+          if (ms) rows.push(["🔥", ms[0] + "-day streak", ms[1] + " paws when you get there", Math.round((p.streak || 0) / ms[0] * 100), (p.streak || 0) + " / " + ms[0] + " days"]);
+        }
+        rows.push(["🎁", "Daily gift and quests", "A free gift every day, and quests for XP", null, "Open", function () { openDaily(); }]);
+        rows.push(["🏆", "Weekly game prizes", "The top 3 each week win 50, 25 or 15 paws", null, "Play", function () { closeStore(); $("g-playbtn").click(); }]);
+        rows.forEach(function (e) {
+          var d = document.createElement(e[5] ? "button" : "div"); d.className = "pg-stearn"; if (e[5]) { d.type = "button"; d.addEventListener("click", e[5]); }
+          d.innerHTML = '<span class="ic" aria-hidden="true">' + e[0] + '</span><span class="pg-grow"><b>' + esc(e[1]) + "</b><small>" + esc(e[2]) + "</small>" +
+            (e[3] !== null ? '<i class="bar"><u style="width:' + Math.max(2, Math.min(100, e[3])) + '%"></u></i>' : "") + "</span>" + (e[4] ? "<em>" + esc(e[4]) + "</em>" : "");
+          box.appendChild(d);
         });
-        box.appendChild(earn);
         var note = document.createElement("div"); note.className = "pg-empty-note";
-        note.textContent = profile && profile.is_admin
-          ? "Buying paws isn't available yet. As the admin you can give paws to anyone from the menu (☰)."
-          : "Buying paws is coming later.";
+        note.textContent = profile && profile.is_admin ? "Buying paws isn't available yet. As the admin you can give paws to anyone from the menu (☰)." : "Buying paws is coming later.";
         box.appendChild(note);
       } else if (storeTab === "sanctuary") {
         $("g-storehint").textContent = "Pets whose owners left them, or that waited too long at the sanctuary. They come home at half their old level.";
+        for (var k = 0; k < 4; k++) { var sk = document.createElement("div"); sk.className = "pg-skel"; box.appendChild(sk); }
         var list;
         try { list = await rpc("adoptable_pets"); } catch (e) { say(e.message); list = []; }
         if (storeTab !== "sanctuary") return;
-        if (!list.length) { box.innerHTML = '<div class="pg-empty-note">No pets are waiting at the sanctuary right now. 🏡</div>'; return; }
+        box.innerHTML = "";
+        if (!list.length) { box.innerHTML = '<div class="pg-empty-note">No pets are waiting at the sanctuary right now. When a pet needs a new home, it shows up here.</div>'; return; }
         list.forEach(function (a) {
           var v = item(a.variant);
           // tapping a pet shows its details first; adopting is a button there
           card(box, a.name, v && v.color, (v ? v.name.replace(" red panda", "") + " · " : "") + "comes home at Lv " + a.level + " · 🐾 " + ADOPT_FEE, "Adopt", function () { showAdoptInfo(a); }, { id: a.variant });
         });
       } else {
-        $("g-storehint").textContent = "Hats, glasses and backgrounds. Bought items work on all your pets: put them on in Dress up 🎀";
-        [["backdrop", "Backgrounds"], ["hat", "Hats"], ["glasses", "Glasses"]].forEach(function (sec) {
-          var all = store.filter(function (s) { return s.kind === "wardrobe" && s.price > 0 && s.type === sec[0]; });
-          var list = all.filter(function (s) { return !colourOf(s.id); });   // (colours show as dots on their original)
-          if (!list.length) return;
-          var inGroup = groupHead(box, "store:" + sec[0], sec[1], all.length);
-          list.forEach(function (s0) {
-            var cols = colourList(s0), s = cols.filter(function (c) { return c.id === storePick[s0.id]; })[0] || s0;
-            var have = owned[s.id], open = maxLv >= s.level_req;
-            var el = card(box, s.name, s.color, have ? "Owned ✓" : open ? "🐾 " + s.price : "🔒 A pet needs Lv " + s.level_req, have ? null : "Buy",
-              have || !open ? null : async function () {
-                if (!confirm("Buy " + s.name + " for " + s.price + " paws?")) return;
-                try { await rpc("buy_item", { p_item: s.id }); } catch (e) { say(e.message); return; }
-                sfx("buy");
-                await loadAll(); renderStore();
-                say(s.name + " is yours! Put it on in Dress up 🎀");
-              }, s);
-            if (cols.length > 1) {
-              var w = document.createElement("div"); w.className = "pg-itemwrap";
-              box.replaceChild(w, el); w.appendChild(el);
-              w.appendChild(colourDots(cols, s, function (c) { storePick[s0.id] = c.id; renderStore(); }));
-              inGroup(w);
-            } else inGroup(el);
-          });
+        $("g-storehint").textContent = p ? "Tap anything to try it on " + p.name + ". What you buy works on all your pets." : "Get a pet first, then you can try things on.";
+        var order = { hat: 0, glasses: 1, backdrop: 2 };
+        var list = store.filter(function (s) { return s.kind === "wardrobe" && s.price > 0 && !colourOf(s.id) && (stItemsKind === "all" || s.type === stItemsKind); })
+          .sort(function (x, y) { return (stItemsKind === "all" ? order[x.type] - order[y.type] : 0) || x.level_req - y.level_req || x.price - y.price; });
+        if (!list.length) box.innerHTML = '<div class="pg-empty-note">Nothing here yet.</div>';
+        list.forEach(function (u0) {
+          var cols = colourList(u0), shown = cols.filter(function (c) { return c.id === storePick[u0.id]; })[0] || u0;
+          var have = cols.some(function (c) { return owned[c.id]; }), lvOk = maxLv >= u0.level_req;
+          var sel = !!stSel && cols.some(function (c) { return c.id === stSel.id; });
+          var b = document.createElement("button"); b.type = "button";
+          b.className = "pg-sitem" + (sel ? " sel" : "") + (!lvOk ? " locked" : "") + (have ? " have" : "");
+          b.innerHTML = '<span class="dpic">' + (pic(shown) || (shown.color ? '<i class="swbig" style="background:' + shown.color + '"></i>' : "")) +
+              (have ? '<em class="dtick" aria-label="Owned">✓</em>' : !lvOk ? '<em class="dlock" aria-hidden="true">🔒</em>' : "") +
+              (cols.length > 1 ? '<em class="dcols">🎨 ' + cols.length + "</em>" : "") + "</span>" +
+            "<b>" + esc(u0.name) + "</b><small>" + esc(sel ? "Trying on" : have ? "Owned" : !lvOk ? "Level " + u0.level_req : "🐾 " + u0.price) + "</small>";
+          b.addEventListener("click", function () { storeSelect(shown); });
+          box.appendChild(b);
         });
         setTimeout(function () { paintSceneThumbs(box); }, 0);
       }
@@ -10183,7 +10450,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
     };
     // what the pet shows: what it wears, with the item being tried on swapped in
     function dressView(p) {
-      if (!p || !tryOn || $("g-sheet").hidden) return p;
+      if (!p || !tryOn || ($("g-sheet").hidden && !storeStage())) return p;
       var v = Object.assign({}, p); v[tryOn.slot] = tryOn.id; return v;
     }
     function dressItems(slot) {
@@ -10630,7 +10897,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       var p = pet(), el = $("g-think"), now = Date.now();
       if (now < thinkHold) return;
       var trayOpen = !$("g-tray").hidden;
-      var covered = !!bathing || $("g-top").hidden || !!document.querySelector(".pg-sheet:not([hidden]), .pg-adopt:not([hidden]), .pg-playpage:not([hidden]), .pg-chatpage:not([hidden]), .pg-panel:not([hidden]), .pg-game");
+      var covered = !!bathing || $("g-top").hidden || !!document.querySelector(".pg-sheet:not([hidden]), .pg-storepage:not([hidden]), .pg-adopt:not([hidden]), .pg-playpage:not([hidden]), .pg-chatpage:not([hidden]), .pg-panel:not([hidden]), .pg-game");
       var want = wantsCraving(p) && !covered;
       if (want && !trayOpen && now > thinkNext && now > thinkUntil) { thinkUntil = now + 7000; thinkNext = now + 30000; }
       var show = want && (trayOpen || now < thinkUntil);
@@ -10663,7 +10930,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
     }
     setInterval(function () {
       var el = $("g-petsay"), now = Date.now(), p = pet();
-      var covered = !!bathing || $("g-top").hidden || !$("g-think").hidden || !!document.querySelector(".pg-sheet:not([hidden]), .pg-adopt:not([hidden]), .pg-playpage:not([hidden]), .pg-chatpage:not([hidden]), .pg-panel:not([hidden]), .pg-game");
+      var covered = !!bathing || $("g-top").hidden || !$("g-think").hidden || !!document.querySelector(".pg-sheet:not([hidden]), .pg-storepage:not([hidden]), .pg-adopt:not([hidden]), .pg-playpage:not([hidden]), .pg-chatpage:not([hidden]), .pg-panel:not([hidden]), .pg-game");
       if (!el.hidden && (now > sayUntil || covered)) el.hidden = true;
       if (covered || !missesYou(p) || now < sayNext) return;
       var who = others(p).filter(function (m) { return m.fed_today; })[0];
@@ -11051,10 +11318,11 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
     var camShift = { y: 0, z: 1 }, probeCam = null, probeV = new THREE.Vector3();
     var PET_TOP = 1.2, PET_FOOT = -0.02;   // world heights: just above a tall hat, and the feet
     function dressCam(dt) {
-      var sheet = $("g-sheet"), goalY = 0, goalZ = 1;
-      if (!sheet.hidden) {
+      var sheet = $("g-sheet"), goalY = 0, goalZ = 1, staged = storeStage();
+      var lower = !sheet.hidden ? sheet : staged ? $("g-storebody") : null, upper = staged && sheet.hidden ? $("g-sthead") : $("g-bar");
+      if (lower) {
         var H = stage.clientHeight, sr = stage.getBoundingClientRect();
-        var top = $("g-bar").getBoundingClientRect().bottom - sr.top + 8, bottom = sheet.getBoundingClientRect().top - sr.top - 6;
+        var top = upper.getBoundingClientRect().bottom - sr.top + (staged ? 34 : 8), bottom = lower.getBoundingClientRect().top - sr.top - 6;
         if (!probeCam) probeCam = camera.clone();
         probeCam.position.copy(camera.position); probeCam.quaternion.copy(camera.quaternion);
         probeCam.aspect = camera.aspect; probeCam.fov = camera.fov; probeCam.zoom = 1; probeCam.clearViewOffset(); probeCam.updateProjectionMatrix();
@@ -11068,7 +11336,7 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
       }
       var k = Math.min(1, dt * 7);
       camShift.y += (goalY - camShift.y) * k; camShift.z += (goalZ - camShift.z) * k;
-      if (sheet.hidden && Math.abs(camShift.y) < 0.5 && Math.abs(camShift.z - 1) < 0.002) {
+      if (!lower && Math.abs(camShift.y) < 0.5 && Math.abs(camShift.z - 1) < 0.002) {
         if (camera.view && camera.view.enabled) { camera.clearViewOffset(); camera.zoom = 1; camera.updateProjectionMatrix(); }
         camShift.y = 0; camShift.z = 1;
         return;
@@ -11112,14 +11380,34 @@ button.pg-onlinenow.none { padding: 9px 14px; margin: 8px 0 0; font-size: 0.9rem
     $("g-pvback").addEventListener("click", closePreview);
     $("g-pvbuy").addEventListener("click", function () { if (pvItem) buyPet(pvItem); });
     $("g-pvgift").addEventListener("click", function () { var s = pvItem; if (!s) return; closePreview(); buyGift(s); });
-    function openStore(tab) { storeTab = tab || storeTab; $("g-store").hidden = false; render(); renderStore(); }
+    function openStore(tab) { storeTab = tab || storeTab; stSel = null; tryOn = null; $("g-store").hidden = false; render(); renderStore(); applyLook(); $("g-storebody").scrollTop = 0; }
+    function closeStore() { $("g-store").hidden = true; tryOn = null; stSel = null; applyLook(); render(); }
+    $("g-stpaws").addEventListener("click", function () { storeTo("coins"); });
+    Array.prototype.forEach.call(document.querySelectorAll("#g-stchips [data-kind]"), function (b) {
+      b.addEventListener("click", function () { stItemsKind = b.getAttribute("data-kind"); sfx("click"); renderStore(); });
+    });
+    $("g-sbbtn").addEventListener("click", async function () {
+      var u = stSel, p = pet(); if (!u || !p) return;
+      var coins = profile ? profile.coins : 0;
+      if (owned[u.id]) { tryOn = null; if (await wear(p, u)) say(p.name + " is wearing the " + u.name + " ✨"); renderStore(); applyLook(); return; }
+      if (coins < u.price) { storeTo("coins"); return; }
+      var a = await storeAsk({ pic: pic(u), title: "Buy the " + u.name + "?", text: "🐾 " + u.price + " · you'll have " + (coins - u.price) + " left. It works on all your pets.", ok: "Buy · 🐾 " + u.price });
+      if (a !== "ok") return;
+      try { await rpc("buy_item", { p_item: u.id }); } catch (e) { say(e.message); return; }
+      owned[u.id] = true; await loadAll(); renderStore();
+      var fits = p.max_level >= u.level_req;
+      celebrate({ pic: pic(u), title: "It's yours! 🎉", text: "The " + u.name + " is in your wardrobe, for all your pets.",
+        ok: fits ? "Put it on " + p.name : "Nice!", alt: fits ? "Keep shopping" : "",
+        go: fits ? async function () { tryOn = null; await wear(pet() || p, u); renderStore(); applyLook(); } : null });
+    });
     $("g-storebtn").addEventListener("click", function () { openStore(); });
     $("g-coins").addEventListener("click", function () { openStore("coins"); });
     $("g-emptystore").addEventListener("click", function () { openStore("pets"); });
-    $("g-storeclose").addEventListener("click", function () { $("g-store").hidden = true; render(); });
+    $("g-storeclose").addEventListener("click", closeStore);
     Array.prototype.forEach.call(document.querySelectorAll("#g-store [data-tab]"), function (b) {
       b.addEventListener("click", function () {
-        storeTab = b.getAttribute("data-tab"); renderStore();
+        var t = b.getAttribute("data-tab"); if (t === storeTab) return;
+        sfx("click"); storeTo(t);
       });
     });
     function openDress() {
