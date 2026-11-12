@@ -2174,6 +2174,38 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
 @keyframes pg-onpulse { 0%, 100% { box-shadow: 0 0 0 2px #fff, 0 0 0 2px rgba(47,191,99,0.5); } 50% { box-shadow: 0 0 0 2px #fff, 0 0 0 6px rgba(47,191,99,0); } }
 
 .pg-tab .pg-dotcount { right: auto; top: 0; left: calc(50% + 6px); min-width: 18px; height: 18px; padding: 0 5px; box-sizing: border-box; }
+
+/* ---------- Christmas ---------- */
+.pg-snow { position: fixed; inset: 0; z-index: 2; pointer-events: none; overflow: hidden; }
+.pg-snow[hidden] { display: none; }
+.pg-snow i { position: absolute; top: -12px; border-radius: 50%; background: #fff; box-shadow: 0 0 4px rgba(255,255,255,0.8); animation: pg-snowfall linear infinite, pg-snowsway ease-in-out infinite alternate; }
+@keyframes pg-snowfall { from { transform: translateY(-20px); } to { transform: translateY(105vh); } }
+@keyframes pg-snowsway { from { margin-left: -14px; } to { margin-left: 14px; } }
+body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidden])) .pg-snow, body:has(.pg-game) .pg-snow { display: none; }
+@media (prefers-reduced-motion: reduce) { .pg-snow { display: none; } }
+.pg-xmas #g-dailybtn { background: linear-gradient(135deg, #fff 0%, #ffe9ec 100%); }
+/* the advent calendar */
+.pg-advent { margin: 0 0 14px; }
+.pg-adventgrid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; }
+.pg-door { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; aspect-ratio: 1 / 1; min-height: 40px; padding: 0; border: 0; border-radius: 12px; font: inherit; color: #fff; cursor: default;
+  background: linear-gradient(145deg, #1f7a45 0%, #145a33 100%); box-shadow: inset 0 0 0 2px rgba(255,255,255,0.18), 0 2px 4px rgba(20,35,43,0.15); }
+.pg-door:nth-child(3n+2) { background: linear-gradient(145deg, #c8303a 0%, #9c1f28 100%); }
+.pg-door:nth-child(4n+3) { background: linear-gradient(145deg, #d8a43a 0%, #b07d1c 100%); }
+.pg-door b { font-family: var(--display); font-size: 1.05rem; }
+.pg-door small { font-size: 0.62rem; font-weight: 800; line-height: 1.1; }
+.pg-door.big { background: linear-gradient(145deg, #f5c84a 0%, #d4952a 100%); color: #5a3500; box-shadow: inset 0 0 0 2px rgba(255,255,255,0.5), 0 2px 6px rgba(212,149,42,0.5); }
+.pg-door.big small { position: absolute; top: 2px; right: 4px; }
+.pg-door.missed { opacity: 0.45; }
+.pg-door.open { background: #fff; color: #3b4b53; box-shadow: inset 0 0 0 2px #e4eaee; }
+.pg-door.open span { font-size: 1.2rem; line-height: 1; }
+.pg-door.today { cursor: pointer; outline: 3px solid #ffd54a; outline-offset: 1px; animation: pg-doorglow 1.6s ease-in-out infinite; }
+@keyframes pg-doorglow { 0%, 100% { box-shadow: 0 0 0 0 rgba(255,213,74,0.7); } 50% { box-shadow: 0 0 0 8px rgba(255,213,74,0); } }
+.pg-door.shake { animation: pg-shake 0.5s ease-in-out 1; }
+.pg-dlgemoji { font-size: 4rem; line-height: 1; }
+/* the Christmas pick in the Store */
+.pg-stfeat.xmas { background: linear-gradient(135deg, #12643a 0%, #1f8a4e 45%, #c8303a 100%); }
+.pg-stchips [data-kind="xmas"] { background: #e7f6ec; color: #13623a; }
+.pg-stchips [data-kind="xmas"][hidden] { display: none; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -2530,6 +2562,11 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
     <!-- Daily: the gift box and today's quests -->
     <div class="pg pg-card pg-sheet pg-dailysheet" id="g-daily" hidden>
       <h2><span>🎁 Daily</span> <button type="button" class="pg-x" id="g-dailyclose" aria-label="Close Daily">✕</button></h2>
+      <section class="pg-advent" id="g-advent" hidden>
+        <h3 class="pg-seekhead">🎄 Advent calendar <small id="g-adventsum"></small></h3>
+        <div class="pg-adventgrid" id="g-adventgrid"></div>
+        <p class="pg-hint" id="g-adventnote"></p>
+      </section>
       <button type="button" class="pg-giftbox" id="g-giftbox"><span class="box" aria-hidden="true">🎁</span><b id="g-gifttitle">Open today's gift</b><small id="g-giftsub">Tap to open</small></button>
       <h3 class="pg-seekhead">Today's quests <small id="g-questsum"></small></h3>
       <ul class="pg-questlist" id="g-quests"></ul>
@@ -2831,6 +2868,7 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
           <button type="button" role="tab" data-tab="coins" aria-selected="false">✨ Earn</button>
         </div>
         <div class="pg-stchips" id="g-stchips" role="group" aria-label="Item types" hidden>
+          <button type="button" data-kind="xmas" hidden>🎄 Christmas</button>
           <button type="button" data-kind="all">All</button>
           <button type="button" data-kind="hat">🎩 Hats</button>
           <button type="button" data-kind="glasses">👓 Glasses</button>
@@ -3944,7 +3982,7 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
   var foods = {}, plainApple = null, foodChoice = null;
   // The foods and the extra hats live in a file of their own, so the first download is only the pet: it is fetched
   // quietly once the pet is on screen, or straight away if the food tray opens first.
-  var FOOD_PACK_URL = "food-pack.js?v=ce9f1aa1a5", foodPackLoad = null, packHats = [];
+  var FOOD_PACK_URL = "food-pack.js?v=4a66e0b07a", foodPackLoad = null, packHats = [], packGlasses = [];
   function loadFoodPack() {
     if (foodPackLoad || !FOOD_PACK_URL) return foodPackLoad || Promise.resolve(false);
     foodPackLoad = new Promise(function (resolve) {
@@ -3976,6 +4014,7 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
       pack.remove(o);
       if (/^Food_/.test(o.name)) foods[o.name.slice(5)] = o;
       else if (/^Hat_/.test(o.name)) packHats.push(o);
+      else if (/^Glasses_/.test(o.name)) packGlasses.push(o);
     });
   }
   function setFoodChoice(id) { foodChoice = id; }
@@ -6588,7 +6627,7 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261112072945";   // replaced by build_real.ps1
+    var APP_BUILD = "20261112082202";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -6666,7 +6705,8 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
     var ICONS = ["panda_classic", "panda_snowy", "panda_golden", "panda_cocoa", "panda_moss", "panda_sakura", "panda_midnight", "panda_cosmic",
       "panda_teal", "panda_lavender", "panda_ember", "panda_mint", "panda_coral", "panda_ash", "panda_royal", "panda_peach", "party", "gold",
       "RoundGold", "BlueRound", "PinkRound", "Aviator", "OrangeRound", "RedCatEye", "Butterfly", "Shutter", "Pixel", "Sunglasses", "Heart",
-      "Beanie", "Cap", "Santa", "Frog", "Fox", "CatBeanie", "Pizza", "Aussie", "Cowboy", "TopHat", "Witch", "Beret", "BucketHat", "SunHat"];
+      "Beanie", "Cap", "Santa", "Frog", "Fox", "CatBeanie", "Pizza", "Aussie", "Cowboy", "TopHat", "Witch", "Beret", "BucketHat", "SunHat",
+      "Elf", "Antlers", "SnowBeanie", "CandyGlasses", "SnowGlasses"];
     // scene backgrounds are drawn live (scenes.js); their pictures in the store are small drawings too
     // Colours of glasses and hats (update 24): "<base>__<colour>" is the base's model with its main part(s) in
     // that colour (ACC_COLORS: which parts, and each colour; metal: a shiny finish).
@@ -9799,7 +9839,20 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
     var REACTIONS = ["❤️", "👏", "😂", "🤗", "🙏"];
     // a co-parent's card (tap their name under the pet): chat, a hello, and the reminder if they haven't fed
     // ---------- Daily: a gift box and three quests (update_051.sql) ----------
+    // ---------- Christmas: Dec 1 – Jan 1 (by the phone's date; the server checks its own) ----------
+    function xmasOn() {
+      try { var f = localStorage.getItem("petstreak.xmas"); if (f === "on") return true; if (f === "off") return false; } catch (e) {}
+      var d = new Date(); return d.getMonth() === 11 || (d.getMonth() === 0 && d.getDate() === 1);
+    }
+    // a seasonal item shows when it's on sale, or when you already own it (the advent glasses: only when owned)
+    function seasonOk(s) {
+      if (!s || !s.season) return true;
+      var have = !!owned[s.id];
+      if (s.season === "advent") return have;
+      return have || (s.season === "xmas" && xmasOn());
+    }
     var daily = null, QUEST_TEXT = {
+      xmas: ["🎄", function (p) { return "Feed " + p.name + " wearing something Christmassy"; }],
       feed: ["🍎", function (p) { return "Feed " + p.name; }],
       play2: ["🎮", function () { return "Play 2 games"; }],
       win: ["🏆", function () { return "Win a game"; }],
@@ -9809,7 +9862,7 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
     // how many things are waiting: an unopened gift, and finished quests not yet claimed
     function dailyWaiting() {
       if (!daily) return 0;
-      return (daily.gift ? 0 : 1) + (daily.quests || []).filter(function (q) { return q.done >= q.target && !q.claimed; }).length;
+      return (daily.gift ? 0 : 1) + (daily.advent && daily.advent.open_today ? 1 : 0) + (daily.quests || []).filter(function (q) { return q.done >= q.target && !q.claimed; }).length;
     }
     async function dailyCheck() {
       if (!me || !pets.length) return;
@@ -9824,6 +9877,7 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
       $("g-gifttitle").textContent = !g ? "Open today's gift" : g.kind === "freeze" ? "❄️ A streak freeze" : (g.amount >= 50 ? "🎉 Jackpot! " : "") + "+" + g.amount + " 🐾";
       $("g-giftsub").textContent = !g ? "Tap to open" : "Come back tomorrow for another gift";
       box.querySelector(".box").textContent = g ? "✨" : "🎁";
+      drawAdvent();
       var list = $("g-quests"); list.innerHTML = "";
       var qs = (daily && daily.quests) || [], claimed = qs.filter(function (q) { return q.claimed; }).length;
       $("g-questsum").textContent = claimed + "/" + qs.length;
@@ -9833,13 +9887,13 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
         li.innerHTML = '<span class="qi" aria-hidden="true">' + t[0] + '</span><span class="pg-grow"><b>' + esc(t[1](p)) + "</b>" +
           '<i class="bar"><i style="width:' + Math.round(Math.min(1, q.done / q.target) * 100) + '%"></i></i><small>' + q.done + "/" + q.target + "</small></span>";
         var b = document.createElement("button"); b.type = "button"; b.className = "pg-btn" + (done && !q.claimed ? " pg-primary" : "");
-        b.textContent = q.claimed ? "✓ Done" : done ? "+10 XP" : "To do"; b.disabled = q.claimed || !done;
+        b.textContent = q.claimed ? "✓ Done" : done ? "+" + (q.xp || 10) + " XP" : "To do"; b.disabled = q.claimed || !done;
         b.addEventListener("click", async function () {
           b.disabled = true;
           try {
             var r = await rpc("claim_quest", { p_pet: p.id, p_quest: q.key });
             sfx(r.bonus ? "levelUp" : "happy"); floatText("+" + r.xp + " XP");
-            say(r.bonus ? "🎉 All three done! +" + r.xp + " XP for " + p.name : "+10 XP for " + p.name);
+            say(r.bonus ? "🎉 All three done! +" + r.xp + " XP for " + p.name : "+" + r.xp + " XP for " + p.name);
             await loadAll({ quiet: true }); dailyCheck();
           } catch (e) { say(friendly(e.message)); b.disabled = false; }
         });
@@ -9848,6 +9902,41 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
       $("g-questnote").textContent = daily && daily.bonus ? "🎉 All done today! New quests tomorrow." : "Each quest gives " + (p ? p.name : "your pet") + " 10 XP. Finish all three for 10 more.";
     }
     function openDaily() { $("g-daily").hidden = false; drawDaily(); dailyCheck(); }
+    // the advent calendar: 24 doors, today's one glows; door 24 can still be opened until Jan 1
+    function drawAdvent() {
+      var a = daily && daily.advent, sec = $("g-advent");
+      sec.hidden = !(a && a.door);
+      if (sec.hidden) return;
+      var opened = {}; (a.opened || []).forEach(function (o) { opened[o.door] = o; });
+      var grid = $("g-adventgrid"); grid.innerHTML = "";
+      for (var d = 1; d <= 24; d++) (function (d) {
+        var o = opened[d], today = d === a.door && a.open_today, b = document.createElement("button");
+        b.type = "button"; b.className = "pg-door" + (o ? " open" : "") + (today ? " today" : "") + (d === 24 ? " big" : "") + (!o && !today && d < a.door ? " missed" : "");
+        b.innerHTML = o ? '<span aria-hidden="true">' + (o.kind === "freeze" ? "❄️" : o.kind === "item" ? "👓" : "🐾") + "</span><small>" + (o.kind === "paws" ? "+" + o.amount : o.kind === "freeze" ? "freeze" : "glasses") + "</small>"
+          : "<b>" + d + "</b>" + (d === 24 ? '<small aria-hidden="true">🎁</small>' : "");
+        b.disabled = !today;
+        b.setAttribute("aria-label", "Door " + d + (o ? ", opened" : today ? ": open it" : d < a.door ? ", missed" : ""));
+        if (today) b.addEventListener("click", function () { openAdvent(b); });
+        grid.appendChild(b);
+      })(d);
+      $("g-adventsum").textContent = (a.opened || []).length + "/24";
+      $("g-adventnote").textContent = a.open_today ? (a.door === 24 ? "🎁 The last door has a special Christmas gift!" : "Door " + a.door + " is ready. Open one door every day until Christmas Eve.")
+        : a.door < 24 ? "See you tomorrow for door " + (a.door + 1) + "." : "Merry Christmas! 🎄";
+    }
+    async function openAdvent(btn) {
+      var p = pet(); btn.disabled = true; btn.classList.add("shake"); sfx("pat");
+      var r; try { r = await rpc("open_advent", { p_pet: p ? p.id : null }); } catch (e) { say(friendly(e.message)); btn.classList.remove("shake"); btn.disabled = false; return; }
+      setTimeout(async function () {
+        btn.classList.remove("shake");
+        var it = r.item ? item(r.item) : null;
+        celebrate({ pic: it ? pic(it) : '<span class="pg-dlgemoji">' + (r.kind === "freeze" ? "❄️" : "🐾") + "</span>",
+          title: r.kind === "item" ? "🎄 Snowflake glasses!" : r.kind === "freeze" ? "❄️ A streak freeze!" : "+" + r.amount + " paws!",
+          text: r.kind === "item" ? "Your Christmas Eve gift: they're yours to wear, and 50 paws too." : r.kind === "freeze" ? "For " + (r.pet || "your pet") + ": it saves the streak on a missed day." : "Door " + r.door + " of the advent calendar. See you tomorrow!",
+          ok: r.kind === "item" ? "Try them on" : "Nice!",
+          go: r.kind === "item" ? function () { $("g-daily").hidden = true; dressSlot = "glasses"; openDress(); } : null });
+        await loadAll({ quiet: true }); await dailyCheck(); drawDaily(); render();
+      }, 600);
+    }
     $("g-dailybtn").addEventListener("click", openDaily);
     $("g-next").addEventListener("click", function (e) {
       if ($("g-next").classList.contains("mini")) { e.stopPropagation(); nextMini(false); return; }
@@ -9981,7 +10070,8 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
         else if (fedBy) set("👋", fedBy.name + " fed " + p.name, "Your turn! " + leftTxt, "", null);
         else if (missesYou(p)) set("🥺", p.name + " misses you", leftTxt, "", null);
         else set("🍎", "Time to feed " + p.name, leftTxt, "", null);
-      } else if (daily && !daily.gift) set("🎁", "Your daily gift is ready", "Paws, or a streak freeze if you're lucky", "Open", openDaily);
+      } else if (daily && daily.advent && daily.advent.open_today) set("🎄", "Today's advent door is ready", "Door " + daily.advent.door + " of 24" + (daily.advent.door === 24 ? ": a special gift!" : ""), "Open", openDaily);
+      else if (daily && !daily.gift) set("🎁", "Your daily gift is ready", "Paws, or a streak freeze if you're lucky", "Open", openDaily);
       else if (seekAsks.length && isOwner(p)) set("🐾", seekAsks.length === 1 ? "Someone wants to co-parent" : seekAsks.length + " want to co-parent", "See who's asking to help with " + p.name, "See", openSeek);
       else if (claimable) {
         // say which quest is done, so it's clear what earned it
@@ -10362,7 +10452,11 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
     function rarity(price) { return price >= 500 ? ["Legendary", "leg"] : price >= 400 ? ["Epic", "epic"] : price >= 300 ? ["Rare", "rare"] : ["Common", "com"]; }
     // this week's pick: a pet, hat or pair of glasses, the same for everyone, changing every Monday
     function weeklyPick() {
-      var list = petsForSale().concat(store.filter(function (s) { return s.kind === "wardrobe" && s.price > 0 && !colourOf(s.id) && s.type !== "backdrop" && ICONS.indexOf(s.id) >= 0; }));
+      if (xmasOn()) {
+        var xl = store.filter(function (s) { return s.season === "xmas" && ICONS.indexOf(s.id) >= 0; });
+        if (xl.length) return xl[Math.floor(Date.now() / 86400000) % xl.length];   // a new Christmas pick every day
+      }
+      var list = petsForSale().concat(store.filter(function (s) { return s.kind === "wardrobe" && s.price > 0 && !colourOf(s.id) && !s.season && s.type !== "backdrop" && ICONS.indexOf(s.id) >= 0; }));
       return list.length ? list[Math.floor((Date.now() / 86400000 + 3) / 7) % list.length] : null;
     }
     // the store's own confirm card (not the browser's): resolves "ok", "alt" or null
@@ -10419,7 +10513,8 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
       f.hidden = !s; if (!s) return;
       var isPet = s.kind === "pet";
       f.style.setProperty("--tint", s.color || "#b9a7ff");
-      f.innerHTML = '<span class="pg-grow"><em>⭐ Pick of the week</em><b>' + esc(s.name) + "</b><small>🐾 " + s.price + (isPet ? " · " + rarity(s.price)[0] : "") +
+      f.classList.toggle("xmas", s.season === "xmas");
+      f.innerHTML = '<span class="pg-grow"><em>' + (s.season === "xmas" ? "🎄 Christmas special" : "⭐ Pick of the week") + '</em><b>' + esc(s.name) + "</b><small>🐾 " + s.price + (isPet ? " · " + rarity(s.price)[0] : "") +
         '</small><span class="pg-stfeatgo">' + (isPet ? "Take a look" : "Try it on") + " →</span></span>" + pic(s);
       f.onclick = function () { if (isPet) previewPet(petsForSale().indexOf(s)); else { stItemsKind = "all"; storeSelect(s); } };
     }
@@ -10524,7 +10619,9 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
       } else {
         $("g-storehint").textContent = p ? "Tap anything to try it on " + p.name + ". What you buy works on all your pets." : "Get a pet first, then you can try things on.";
         var order = { hat: 0, glasses: 1, backdrop: 2 };
-        var list = store.filter(function (s) { return s.kind === "wardrobe" && s.price > 0 && !colourOf(s.id) && (stItemsKind === "all" || s.type === stItemsKind); })
+        var xchip = document.querySelector('#g-stchips [data-kind="xmas"]'); xchip.hidden = !xmasOn();
+        if (stItemsKind === "xmas" && !xmasOn()) stItemsKind = "all";
+        var list = store.filter(function (s) { return s.kind === "wardrobe" && s.price > 0 && !colourOf(s.id) && s.season !== "advent" && (s.season !== "xmas" || xmasOn()) && (stItemsKind === "xmas" ? s.season === "xmas" : true) && (stItemsKind === "xmas" || stItemsKind === "all" || s.type === stItemsKind); })
           .sort(function (x, y) { return (stItemsKind === "all" ? order[x.type] - order[y.type] : 0) || x.level_req - y.level_req || x.price - y.price; });
         if (!list.length) box.innerHTML = '<div class="pg-empty-note">Nothing here yet.</div>';
         list.forEach(function (u0) {
@@ -10625,7 +10722,7 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
       var v = Object.assign({}, p); v[tryOn.slot] = tryOn.id; return v;
     }
     function dressItems(slot) {
-      var list = store.filter(function (s) { return s.kind === "wardrobe" && s.type === slot; });
+      var list = store.filter(function (s) { return s.kind === "wardrobe" && s.type === slot && seasonOk(s); });
       // rooms: the drawn scenes first, the plain colours after
       if (slot === "backdrop") list = list.filter(function (s) { return SCENE_DRAW[s.id]; }).concat(list.filter(function (s) { return !SCENE_DRAW[s.id]; }));
       if (DRESS[slot].none) list.unshift({ id: null, type: slot, name: DRESS[slot].none, level_req: 1, price: 0 });
@@ -10826,6 +10923,18 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
     var sky = document.createElement("div"); sky.className = "pg-sky"; sky.setAttribute("aria-hidden", "true");
     sky.innerHTML = '<i class="stars"></i><i class="stars s2"></i><span class="moon">🌙</span>';
     stage.appendChild(sky);
+    // Christmas: gentle snow over the home screen
+    var snow = document.createElement("div"); snow.className = "pg-snow"; snow.setAttribute("aria-hidden", "true"); snow.hidden = true;
+    for (var sf = 0; sf < 36; sf++) {
+      var fl = document.createElement("i"), sz = 4 + Math.random() * 7;
+      fl.style.left = (Math.random() * 100) + "%"; fl.style.width = fl.style.height = sz + "px";
+      fl.style.animationDuration = (8 + Math.random() * 9).toFixed(1) + "s, " + (3 + Math.random() * 3).toFixed(1) + "s";
+      fl.style.animationDelay = (-Math.random() * 16).toFixed(1) + "s, 0s"; fl.style.opacity = (0.55 + Math.random() * 0.4).toFixed(2);
+      snow.appendChild(fl);
+    }
+    stage.appendChild(snow);
+    function showSnow() { snow.hidden = !xmasOn(); document.documentElement.classList.toggle("pg-xmas", xmasOn()); }
+    showSnow(); setInterval(showSnow, 600000);
     function dayMode() { try { return localStorage.getItem(DAYNIGHT_KEY) || "auto"; } catch (e) { return "auto"; } }
     function phaseNow() {
       var m = dayMode(); if (m === "day" || m === "night") return m;
@@ -11382,6 +11491,16 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
           });
         });
       }
+      if (packGlasses.length) {
+        var gref = modelRoot.getObjectByName("Glasses_RoundGold");
+        packGlasses.splice(0).forEach(function (o) {
+          o.position.copy(gref.position); o.quaternion.copy(gref.quaternion); o.scale.copy(gref.scale);
+          o.visible = false; gref.parent.add(o);
+          o.traverse(function (k) { if (k.isMesh) k.material.envMapIntensity = 0.6; });
+          glassesNodes[o.name.slice(8)] = o;
+        });
+        glassesOn = undefined;
+      }
       var want = p && p.status === "home" ? (p.glasses || null) : null;
       if (want === glassesOn) return;
       Object.keys(glassesNodes).forEach(function (id) { glassesNodes[id].visible = id === baseId(want); });
@@ -11455,7 +11574,7 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
     }
     if (window.__mock) window.__hatTools = { fit: HAT_FIT, fitHat: fitHat, nodes: function () { return hatNodes; } };   // test copy only
     // the hats from the food file hang from the same bone, in the same spot, as the hats in the model
-    var PACK_HATS = { Beret: 1, BucketHat: 1, SunHat: 1 };
+    var PACK_HATS = { Beret: 1, BucketHat: 1, SunHat: 1, Elf: 1, Antlers: 1, SnowBeanie: 1 };
     function adoptPackHats() {
       var ref = modelRoot.getObjectByName("Hat_TopHat");
       packHats.splice(0).forEach(function (o) {
@@ -11590,7 +11709,8 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
     $("g-pvback").addEventListener("click", closePreview);
     $("g-pvbuy").addEventListener("click", function () { if (pvItem) buyPet(pvItem); });
     $("g-pvgift").addEventListener("click", function () { var s = pvItem; if (!s) return; closePreview(); buyGift(s); });
-    function openStore(tab) { storeTab = tab || storeTab; stSel = null; tryOn = null; $("g-store").hidden = false; render(); renderStore(); applyLook(); $("g-storebody").scrollTop = 0; }
+    var xmasChipSet = false;
+    function openStore(tab) { if (xmasOn() && !xmasChipSet) { xmasChipSet = true; stItemsKind = "xmas"; } storeTab = tab || storeTab; stSel = null; tryOn = null; $("g-store").hidden = false; render(); renderStore(); applyLook(); $("g-storebody").scrollTop = 0; }
     function closeStore() { $("g-store").hidden = true; tryOn = null; stSel = null; applyLook(); render(); }
     $("g-stpaws").addEventListener("click", function () { storeTo("coins"); });
     Array.prototype.forEach.call(document.querySelectorAll("#g-stchips [data-kind]"), function (b) {
