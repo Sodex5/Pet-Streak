@@ -2167,6 +2167,13 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
 .pg-dock > .pg-next.mini { flex: 0 0 54px; margin-left: auto; }
 .pg-dock > .pg-mood { text-align: center; }
 .pg-dock > .pg-family { flex: 0 1 auto; min-width: 0; }
+
+/* a friend is online: a green dot at the bottom of the Friends icon (the red one at the top is unread) */
+.pg-ondot { position: absolute; left: calc(50% + 7px); top: 20px; width: 12px; height: 12px; border-radius: 50%; background: #2fbf63; box-shadow: 0 0 0 2px #fff; animation: pg-onpulse 2.4s ease-in-out infinite; }
+.pg-ondot[hidden] { display: none; }
+@keyframes pg-onpulse { 0%, 100% { box-shadow: 0 0 0 2px #fff, 0 0 0 2px rgba(47,191,99,0.5); } 50% { box-shadow: 0 0 0 2px #fff, 0 0 0 6px rgba(47,191,99,0); } }
+
+.pg-tab .pg-dotcount { right: auto; top: 0; left: calc(50% + 6px); min-width: 18px; height: 18px; padding: 0 5px; box-sizing: border-box; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -2219,7 +2226,7 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
     </div>
     <nav class="pg pg-tabbar" id="g-tabs" hidden aria-label="Main">
       <button type="button" class="pg-tab on" id="g-tabhome" aria-label="Home" aria-current="page"><i aria-hidden="true">🏠</i><small>Home</small></button>
-      <button type="button" class="pg-tab" id="g-socialbtn" aria-label="Friends and chats"><i aria-hidden="true">💬</i><small>Friends</small><span class="pg-dotcount" id="g-socialdot" hidden></span></button>
+      <button type="button" class="pg-tab" id="g-socialbtn" aria-label="Friends and chats"><i aria-hidden="true">💬</i><small>Friends</small><span class="pg-dotcount" id="g-socialdot" hidden></span><span class="pg-ondot" id="g-socialon" hidden></span></button>
       <button type="button" class="pg-tab" id="g-playbtn" aria-label="Playground: mini-games"><i aria-hidden="true">🎮</i><small>Play</small></button>
       <button type="button" class="pg-tab" id="g-storebtn" aria-label="Store"><i aria-hidden="true">🛍️</i><small>Store</small></button>
     </nav>
@@ -6581,7 +6588,7 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261112065204";   // replaced by build_real.ps1
+    var APP_BUILD = "20261112072945";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -7226,6 +7233,7 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
     }
     // whatever is showing people: the online count, the player picker, the Social page
     function refreshPeople() {
+      updateOnlineDot();
       if (!$("g-play").hidden) renderOnlineCount();
       if (!$("g-pick").hidden) renderPick();
       if (!$("g-social").hidden) renderSocial();
@@ -9168,6 +9176,16 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
       });
       if (!box.children.length) box.innerHTML = '<li class="pg-logempty">No friends yet. Tap ➕ Add to share your friend code.</li>';
     }
+    // a green dot at the bottom of the Friends tab while a friend or co-parent is online (the red count is unread)
+    function updateOnlineDot() {
+      var el = $("g-socialon"); if (!el) return;
+      var mine = {};
+      friends.forEach(function (f) { if (f.kind === "friend") mine[f.id] = f.name; });
+      pets.forEach(function (p) { others(p).forEach(function (m) { mine[m.id] = m.name; }); });
+      var on = Object.keys(mine).filter(function (id) { return online[id]; });
+      el.hidden = !on.length;
+      $("g-socialbtn").setAttribute("aria-label", "Friends and chats" + (on.length ? " · " + on.length + (on.length === 1 ? " friend" : " friends") + " online" : ""));
+    }
     function updateSocialBadge() {
       var n = Object.keys(unread).reduce(function (a, k) { return a + unread[k]; }, 0) + friends.filter(function (f) { return f.kind === "request"; }).length;
       ["g-socialdot", "g-playsocialdot"].forEach(function (id) { $(id).hidden = !n; $(id).textContent = n > 9 ? "9+" : n; });
@@ -9911,6 +9929,7 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
       var card = $("g-next"), show = !!p && m !== "away" && !bathing;
       card.hidden = !show; $("g-mood").hidden = $("g-mood").hidden || show;
       var n = dailyWaiting(); $("g-dailydot").hidden = !n; $("g-dailydot").textContent = n || "";
+      updateOnlineDot();
       if (!show) return;
       drawFamily(p, show);
       var leftN = minutesLeftToday(p), who = others(p), fedBy = who.filter(function (x) { return x.fed_today; })[0], notYet = who.filter(function (x) { return !x.fed_today; })[0];
