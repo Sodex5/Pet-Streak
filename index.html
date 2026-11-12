@@ -2340,6 +2340,59 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
 .pg-adrecent li small { color: #8a99a1; }
 .pg-adrecent li span { margin-left: auto; font-size: 0.76rem; font-weight: 800; }
 .pg-adrecent .paid { color: #1f7a48; } .pg-adrecent .skip { color: #8a99a1; }
+
+/* ---------- Playground: numbers, quick play, challenge, tabs, swipe row ---------- */
+.pg-playpaws { margin-left: auto; margin-right: 8px; padding: 6px 12px; border-radius: 16px; background: #fff3d1; color: #7a4d00; font-weight: 800; font-size: 0.9rem; white-space: nowrap; }
+.pg-playhead h2 { flex: 0 1 auto; }
+.pg-pstats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.pg-pstat { display: flex; flex-direction: column; align-items: center; gap: 1px; padding: 10px 4px; border: 0; border-radius: 14px; background: rgba(255,255,255,0.85); box-shadow: 0 1px 4px rgba(20,35,43,0.06); font: inherit; color: #14232b; cursor: pointer; min-width: 0; }
+.pg-pstat b { font-size: 1.35rem; font-weight: 800; line-height: 1.1; }
+.pg-pstat small { font-size: 0.72rem; font-weight: 600; color: #6b7a82; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.pg-quickplay { display: flex; align-items: center; gap: 10px; width: 100%; margin-top: 10px; padding: 12px 14px; border: 0; border-radius: 16px; background: #26215c; color: #fff; font: inherit; text-align: left; cursor: pointer; box-sizing: border-box; }
+.pg-quickplay .pg-grow { display: flex; flex-direction: column; min-width: 0; }
+.pg-quickplay b { font-size: 1.02rem; }
+.pg-quickplay small { display: flex; align-items: center; gap: 5px; font-size: 0.78rem; color: #cecbf6; white-space: nowrap; overflow: hidden; }
+.pg-quickplay .pg-ondot { width: 8px; height: 8px; border-radius: 50%; background: #2fbf63; flex: none; }
+.pg-quickplay .pg-onfaces { display: inline-flex; margin-left: 6px; }
+.pg-quickplay .pg-onfaces img { width: 20px; height: 20px; border-radius: 50%; margin-left: -6px; border: 2px solid #26215c; background: #fff; object-fit: cover; }
+.pg-quickplay .go { flex: none; padding: 8px 14px; border-radius: 18px; background: #fff; color: #26215c; font-weight: 800; font-size: 0.88rem; }
+.pg-challenge { display: flex; flex-direction: column; gap: 4px; margin-top: 10px; padding: 12px 14px; border-radius: 16px; background: #faeeda; color: #412402; cursor: pointer; }
+.pg-challenge[hidden] { display: none; }
+.pg-challenge .lbl { font-size: 0.74rem; font-weight: 700; color: #854f0b; }
+.pg-challenge b { font-size: 0.98rem; }
+.pg-challenge .bar { display: block; height: 7px; border-radius: 4px; background: #fac775; overflow: hidden; margin: 2px 0; }
+.pg-challenge .bar u { display: block; height: 100%; border-radius: 4px; background: #ba7517; transition: width 0.4s; }
+.pg-challenge.done .bar u { background: #1f9a55; }
+.pg-chrow { display: flex; align-items: center; gap: 8px; min-height: 30px; }
+.pg-chrow small { flex: 1; font-size: 0.8rem; color: #854f0b; }
+.pg-chbtn { flex: none; min-height: 34px; padding: 0 14px; border: 0; border-radius: 17px; background: #1f9a55; color: #fff; font: inherit; font-weight: 800; font-size: 0.86rem; cursor: pointer; }
+.pg-chbtn[hidden] { display: none; }
+.pg-challenge.claimed { opacity: 0.8; }
+.pg-playtabs { margin: 12px 0 10px; position: static; background: rgba(255,255,255,0.7); }
+.pg-playtabs button[aria-selected="true"] { background: #26215c; color: #fff; box-shadow: none; }
+/* the games: a swipe row, the next card peeking in */
+.pg-gamestrip { display: flex !important; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; margin: 0 -16px; padding: 2px 16px 6px; scrollbar-width: none; -webkit-overflow-scrolling: touch; grid-template-columns: none !important; }
+.pg-gamestrip::-webkit-scrollbar { display: none; }
+.pg-gamestrip .pg-gamecard { flex: 0 0 41%; scroll-snap-align: start; min-height: 150px; grid-column: auto !important; }
+.pg-gamestrip .pg-gamecard small[data-stat] { font-weight: 700; }
+.pg-gamedots { display: flex; justify-content: center; gap: 5px; margin: 6px 0 12px; }
+.pg-gamedots i { width: 6px; height: 6px; border-radius: 3px; background: rgba(20,35,43,0.2); transition: width 0.2s; }
+.pg-gamedots i.on { width: 16px; background: #26215c; }
+.pg-playboard { background: rgba(255,255,255,0.8); border-radius: 16px; padding: 12px 12px 6px; }
+.pg-playboard .pg-playh { margin: 0 0 6px; font-size: 0.95rem; }
+.pg-playboard .pg-hint { font-size: 0.78rem; margin: 6px 2px 4px; }
+.pg-boardpet { width: 26px; height: 26px; border-radius: 50%; object-fit: cover; background: #fff; }
+.pg-onlineswitch { display: flex; align-items: center; gap: 8px; margin: 14px 2px 4px; font-size: 0.84rem; color: #3b4b53; }
+.pg-onlineswitch input { width: 18px; height: 18px; accent-color: var(--brand); }
+
+.pg-mepet[hidden] { display: none !important; }
+.pg-quickplay .pg-qdot { width: 8px; height: 8px; border-radius: 50%; background: #2fbf63; flex: none; }
+.pg-gamestrip { padding-left: 16px !important; padding-right: 16px !important; scroll-padding-left: 16px; }
+.pg-gamestrip .pg-gamecard, .pg-gamestrip .pg-gamecard.penalty { display: flex !important; flex-direction: column !important; align-items: flex-start !important; justify-content: flex-end; text-align: left !important; grid-column: auto !important; gap: 2px; }
+.pg-gamestrip .pg-gamecard .art { margin-bottom: auto; }
+.pg-gamestrip .pg-gamecard small[data-stat] { line-height: 1.25; }
+
+.pg-gamestrip .pg-gamecard .art { margin-left: 0 !important; margin-right: 0 !important; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -2483,36 +2536,50 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       <header class="pg-playhead">
         <button type="button" class="pg-playback" id="g-playclose" aria-label="Back to your pet">←</button>
         <h2>🎮 Playground</h2>
+        <span class="pg-playpaws" id="g-playpaws">🐾 0</span>
         <button type="button" class="pg-headicon" id="g-playsocial" aria-label="Friends and chats">💬<span class="pg-dotcount" id="g-playsocialdot" hidden></span></button>
       </header>
       <div class="pg-playbody">
         <div class="pg-botwelcome" id="g-playwelcome" hidden></div>
-        <div class="pg-mecard">
-          <span class="pg-mepet" id="g-mepet"></span>
-          <button type="button" class="pg-winsbtn" id="g-mywins" aria-label="Your games this week">🏁 0 wins</button>
+        <!-- your numbers: wins, rank this week, games today -->
+        <div class="pg-pstats">
+          <button type="button" class="pg-pstat" id="g-mywins" aria-label="Your wins"><b id="g-statwins">0</b><small>wins this week</small></button>
+          <button type="button" class="pg-pstat" id="g-statrank" aria-label="Your rank this week"><b id="g-weekrank">–</b><small id="g-weeksub">rank this week</small></button>
+          <button type="button" class="pg-pstat" id="g-stattoday" aria-label="Games played today"><b id="g-todaycount">0</b><small>played today</small></button>
         </div>
-        <button type="button" class="pg-onlinenow" id="g-onlinecount" aria-label="See who's online"></button>
-        <div class="pg-ptiles">
-          <button type="button" class="pg-ptile rooms" id="g-openrooms"><i aria-hidden="true">🏠</i><b>Rooms</b><small>Play others</small></button>
-          <button type="button" class="pg-ptile week" id="g-openweek"><i aria-hidden="true">🏆</i><b>Ranking</b><small id="g-weeksub">This week</small></button>
-          <button type="button" class="pg-ptile" id="g-openhist"><i aria-hidden="true">🕘</i><b>History</b><small>Last 7 days</small></button>
+        <span class="pg-mepet" id="g-mepet" hidden></span>
+        <!-- quick play: who's online, and find a game -->
+        <button type="button" class="pg-quickplay" id="g-onlinecount" aria-label="Quick play: see who's online"></button>
+        <!-- today's challenge -->
+        <div class="pg-challenge" id="g-challenge" hidden>
+          <span class="lbl">Today's challenge</span>
+          <b id="g-chtitle"></b>
+          <i class="bar" aria-hidden="true"><u id="g-chbar"></u></i>
+          <span class="pg-chrow"><small id="g-chsub"></small><button type="button" class="pg-chbtn" id="g-chbtn" hidden></button></span>
         </div>
-        <div class="pg-gamegrid">
-          <button type="button" class="pg-gamecard bamboo" data-game="bamboo"><span class="art" aria-hidden="true">🎋</span><b>Bamboo catch</b><small>Catch the falling food</small></button>
-          <button type="button" class="pg-gamecard race" data-game="race"><span class="art" aria-hidden="true">🏁</span><b>Treat race</b><small>Tap fastest · up to 4</small></button>
-          <button type="button" class="pg-gamecard memory" data-game="memory"><span class="art" aria-hidden="true">🃏</span><b>Memory match</b><small>Find the pairs</small></button>
-          <button type="button" class="pg-gamecard ball" data-game="ball"><span class="art" aria-hidden="true">⚽</span><b>Ball pass</b><small>Keep it going · or versus</small></button>
-          <button type="button" class="pg-gamecard penalty" data-game="penalty"><span class="art" aria-hidden="true">🥅</span><b>Penalty kicks</b><small>Shoot, save, win the shootout</small></button>
+        <div class="pg-seg pg-playtabs" role="tablist" aria-label="Playground">
+          <button type="button" role="tab" aria-selected="true" id="g-tabgames">Games</button>
+          <button type="button" role="tab" aria-selected="false" id="g-openweek">Ranking</button>
+          <button type="button" role="tab" aria-selected="false" id="g-openrooms">Rooms</button>
+          <button type="button" role="tab" aria-selected="false" id="g-openhist">History</button>
         </div>
-        <h3 class="pg-playh">🏆 Today's best</h3>
-        <div class="pg-tabs pg-boardtabs" role="tablist">
-          <button type="button" role="tab" data-board="bamboo" aria-selected="true">🎋 Bamboo catch</button>
-          <button type="button" role="tab" data-board="memory" aria-selected="false">🃏 Memory match</button>
+        <!-- the games: swipe for more -->
+        <div class="pg-gamestrip pg-gamegrid" id="g-gamestrip">
+          <button type="button" class="pg-gamecard bamboo" data-game="bamboo"><span class="art" aria-hidden="true">🎋</span><b>Bamboo catch</b><small data-stat>Catch the falling food</small></button>
+          <button type="button" class="pg-gamecard race" data-game="race"><span class="art" aria-hidden="true">🏁</span><b>Treat race</b><small data-stat>Tap fastest · up to 4</small></button>
+          <button type="button" class="pg-gamecard memory" data-game="memory"><span class="art" aria-hidden="true">🃏</span><b>Memory match</b><small data-stat>Find the pairs</small></button>
+          <button type="button" class="pg-gamecard ball" data-game="ball"><span class="art" aria-hidden="true">⚽</span><b>Ball pass</b><small data-stat>Keep it going · or versus</small></button>
+          <button type="button" class="pg-gamecard penalty" data-game="penalty"><span class="art" aria-hidden="true">🥅</span><b>Penalty kicks</b><small data-stat>Shoot, save, win</small></button>
         </div>
-        <ol class="pg-board" id="g-board"></ol>
-        <p class="pg-hint" id="g-gamereward"></p>
-        <label class="pg-switch"><input type="checkbox" id="g-showonline" checked> Show me as online, so others can invite me</label>
-        <p class="pg-note">Scores reset every day. Other players only ever see your pet, never your name, unless you're friends.</p>
+        <div class="pg-gamedots" id="g-gamedots" aria-hidden="true"></div>
+        <!-- the best for the game in front of you -->
+        <div class="pg-playboard">
+          <h3 class="pg-playh" id="g-boardtitle">Today's best</h3>
+          <ol class="pg-board" id="g-board"></ol>
+          <p class="pg-hint" id="g-gamereward"></p>
+        </div>
+        <label class="pg-onlineswitch"><input type="checkbox" id="g-showonline" checked> <span>Show me as online, so others can invite me</span></label>
+        <p class="pg-note">Scores reset every day. Other players only see your pet, never your name, unless you're friends.</p>
       </div>
     </div>
     <!-- Social: chats, friends, and adding a friend by code -->
@@ -6776,7 +6843,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261112230040";   // replaced by build_real.ps1
+    var APP_BUILD = "20261112234014";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -7738,7 +7805,8 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       return d > 0 ? d + "d " + h + "h" : h + "h";
     }
     function weekSub(b) {
-      $("g-weeksub").textContent = b.me ? "#" + b.me.place + " · " + b.me.wins + (b.me.wins === 1 ? " win" : " wins") : "This week";
+      $("g-weekrank").textContent = b.me ? "#" + b.me.place : "–";
+      $("g-statwins").textContent = b.me ? b.me.wins : 0;
       if (b.prize) { say("🏆 You came #" + b.prize.place + " last week! +" + b.prize.paws + " paws 🐾"); sfx("levelUp"); loadAll({ quiet: true }); }
     }
     function loadWeekSub() { rpc("weekly_board").then(weekSub, function () {}); }
@@ -9124,11 +9192,9 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       var n = Object.keys(online).length;
       // a bold green button when people are here (with their pets' faces), a quiet line when nobody is
       var faces = Object.keys(online).slice(0, 3).map(function (k) { return '<img alt="" src="' + esc(petPic(online[k].variant)) + '">'; }).join("");
-      $("g-onlinecount").innerHTML = !showOnline() ? "🙈 You're hidden. Rooms still work."
-        : n ? '<span class="pg-onfaces">' + faces + '<i class="pg-onpulse" aria-hidden="true"></i></span>' +
-              '<span class="pg-ontext"><b>' + n + (n === 1 ? " player" : " players") + " online now</b><small>Tap to see who's here and play</small></span>" +
-              '<span class="see">See who ›</span>'
-            : '<span class="pg-grow">🌙 Nobody else is online right now</span><i aria-hidden="true">›</i>';
+      $("g-onlinecount").innerHTML = '<span class="pg-grow"><b>Quick play</b><small>' +
+          (!showOnline() ? "🙈 You're hidden · rooms still work" : n ? '<i class="pg-qdot" aria-hidden="true"></i>' + n + (n === 1 ? " player" : " players") + " online" + (faces ? '<span class="pg-onfaces">' + faces + "</span>" : "") : "🌙 Nobody else online · play the bot") +
+          '</small></span><span class="go">' + (n && showOnline() ? "Find a game" : "Play") + "</span>";
       $("g-onlinecount").classList.toggle("has", !!n && showOnline());
       $("g-onlinecount").classList.toggle("none", !n || !showOnline());
     }
@@ -9143,9 +9209,15 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       var p = pet(); if (!p) return;
       var w = p.race_wins || 0;
       $("g-mepet").innerHTML = '<img alt="" src="' + esc(petPic(p.variant)) + '">' + tagHTML(p.level, p.name);
-      $("g-mywins").innerHTML = "🏁 <b>" + w + "</b> " + (w === 1 ? "win" : "wins") + ' <span aria-hidden="true">›</span>';
-      renderOnlineCount();
-      Array.prototype.forEach.call(document.querySelectorAll(".pg-boardtabs [data-board]"), function (b) { b.setAttribute("aria-selected", b.dataset.board === boardGame ? "true" : "false"); });
+      $("g-playpaws").textContent = "🐾 " + (profile ? profile.coins : 0);
+      renderOnlineCount(); drawChallenge(); drawGameDots();
+      rpc("my_game_history").then(function (h) {
+        var start = new Date(); start.setHours(0, 0, 0, 0);
+        $("g-todaycount").textContent = (h || []).filter(function (g) { return new Date(g.at) >= start; }).length;
+      }, function () {});
+      // games without a daily score show this week's wins for that game instead
+      if (!BOARD_NAMES[boardGame]) { drawWeekBoard(boardGame); return; }
+      $("g-boardtitle").textContent = "Today's best · " + BOARD_NAMES[boardGame];
       var d;
       try { d = await playData(); }
       catch (e) {
@@ -9154,6 +9226,8 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         return;
       }
       var paid = Math.max(0, GAME_PAID - d.plays);
+      var mine = d.board.filter(function (r) { return r.me; })[0], card = document.querySelector('.pg-gamecard[data-game="' + boardGame + '"] [data-stat]');
+      if (card) card.textContent = (mine ? "Best today " + mine.best + " · " : "") + (paid ? paid + " paid left" : "No paid games left");
       $("g-gamereward").textContent = paid
         ? "🐾 Solo " + BOARD_NAMES[boardGame] + ": your next " + (paid === 1 ? "game pays" : paid + " games pay") + " paws (1 for every 10 points, up to 5)."
         : "You've had today's 3 paw games of " + BOARD_NAMES[boardGame] + ". Keep playing for fun and a better score!";
@@ -9168,10 +9242,69 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       });
       if (!d.board.length) box.innerHTML = '<li class="pg-logempty">Nobody has played today yet. Be the first! 🎋</li>';
     }
+    var GAME_LABEL = { bamboo: "Bamboo catch", race: "Treat race", memory: "Memory match", ball: "Ball pass", penalty: "Penalty kicks" };
+    // race, ball pass and penalties: the week's wins for that game
+    async function drawWeekBoard(game) {
+      $("g-boardtitle").textContent = "This week · " + GAME_LABEL[game];
+      $("g-gamereward").textContent = "Win against other players (or the bot) to climb. Wins reset every Monday.";
+      var box = $("g-board"), b;
+      try { b = await rpc("weekly_board", { p_game: game }); } catch (e) { box.innerHTML = ""; return; }
+      if (boardGame !== game) return;
+      box.innerHTML = "";
+      (b.rows || []).slice(0, 5).forEach(function (row, i) {
+        var li = document.createElement("li"); if (row.me) li.className = "me";
+        li.innerHTML = '<span class="rk">' + (i < 3 ? MEDALS[i] : i + 1) + '</span><img class="pg-boardpet" alt="" src="' + esc(petPic(row.variant)) + '"><span class="nm">' + esc(row.me ? "You" : row.pet || "A pet") + '</span><b class="pt">' + row.wins + "</b>";
+        box.appendChild(li);
+      });
+      if (!(b.rows || []).length) box.innerHTML = '<li class="pg-logempty">No wins yet this week. Be the first! 🏆</li>';
+      var me = b.me, card = document.querySelector('.pg-gamecard[data-game="' + game + '"] [data-stat]');
+      if (card && me) card.textContent = "#" + me.place + " this week";
+    }
+    // the swipe row: dots underneath, and the board follows the game in front
+    function drawGameDots() {
+      var strip = $("g-gamestrip"), cards = strip.querySelectorAll(".pg-gamecard"), dots = $("g-gamedots");
+      if (dots.children.length !== cards.length) { dots.innerHTML = ""; for (var i = 0; i < cards.length; i++) dots.appendChild(document.createElement("i")); }
+      var at = 0, best = 1e9, mid = strip.getBoundingClientRect().left + 16;
+      Array.prototype.forEach.call(cards, function (c, i) { var d = Math.abs(c.getBoundingClientRect().left - mid); if (d < best) { best = d; at = i; } });
+      Array.prototype.forEach.call(dots.children, function (d, i) { d.className = i === at ? "on" : ""; });
+      return cards[at] ? cards[at].dataset.game : boardGame;
+    }
+    var stripTimer = null;
+    $("g-gamestrip").addEventListener("scroll", function () {
+      drawGameDots();
+      clearTimeout(stripTimer);
+      stripTimer = setTimeout(function () { var g = drawGameDots(); if (g && g !== boardGame) { boardGame = g; renderPlay(); } }, 180);
+    }, { passive: true });
+    // today's challenge: one goal, 15 paws
+    var challenge = null;
+    async function drawChallenge() {
+      var box = $("g-challenge"), c;
+      try { c = await rpc("my_challenge"); } catch (e) { box.hidden = true; return; }
+      challenge = c; if (!c) { box.hidden = true; return; }
+      box.hidden = false;
+      $("g-chtitle").textContent = c.title;
+      $("g-chbar").style.width = Math.round(c.progress / c.target * 100) + "%";
+      var btn = $("g-chbtn");
+      box.classList.toggle("done", !!c.done); box.classList.toggle("claimed", !!c.claimed);
+      $("g-chsub").textContent = c.claimed ? "✓ Done · new challenge tomorrow" : (c.target > 1 ? c.progress + " / " + c.target + " · " : "") + "+" + c.paws + " paws";
+      btn.hidden = !(c.done && !c.claimed); btn.textContent = "Claim " + c.paws + " 🐾";
+    }
+    $("g-chbtn").addEventListener("click", async function (e) {
+      e.stopPropagation(); var b = this; b.disabled = true;
+      try { await rpc("claim_challenge"); sfx("levelUp"); floatText("+15 🐾"); say("🏆 Challenge done! +15 paws"); await loadAll({ quiet: true }); }
+      catch (err) { say(friendly(err.message)); }
+      b.disabled = false; drawChallenge(); renderPlay();
+    });
+    $("g-challenge").addEventListener("click", function () {
+      if (!challenge || challenge.claimed || challenge.done) return;
+      if (challenge.game) openMode(challenge.game); else openOnlineList();
+    });
     $("g-playbtn").addEventListener("click", openPlay);
     $("g-playclose").addEventListener("click", function () { $("g-play").hidden = true; render(); });
     $("g-playsocial").addEventListener("click", function () { openSocial(); });
     $("g-mywins").addEventListener("click", openHistory);
+    $("g-stattoday").addEventListener("click", openHistory);
+    $("g-statrank").addEventListener("click", function () { $("g-openweek").click(); });
     $("g-openhist").addEventListener("click", openHistory);
     $("g-onlinecount").addEventListener("click", openOnlineList);
     Array.prototype.forEach.call(document.querySelectorAll(".pg-boardtabs [data-board]"), function (b) {
@@ -9204,13 +9337,12 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     ];
     var TOUR_PLAY = [
       [null, "Welcome to the Playground! 🎮", "A quick look at what's here."],
-      ["#g-mywins", "Your wins", "This counts the games you've won against other players."],
-      ["#g-onlinecount", "Who's online", "Green means people are here to play. Tap it to see them, and when your friends were last around."],
-      ["#g-openrooms", "Rooms", "Create a room or join one to play with other people, and chat while you wait."],
-      ["#g-openweek", "Weekly ranking", "Win games against other players to climb. It resets every Monday, and the top 3 win paws."],
-      ["#g-openhist", "Game history", "See every game you played in the last 7 days."],
-      [".pg-gamegrid", "The games", "Tap a game to play solo or with others. The ? on each game shows you how to play."],
-      [".pg-board", "Today's best", "The top scores today. Beat them!"],
+      [".pg-pstats", "Your numbers", "Your wins, your rank this week and how many games you've played today."],
+      ["#g-onlinecount", "Quick play", "See who's online and find a game. Nobody around? Play the bot."],
+      ["#g-challenge", "Today's challenge", "A new goal every day. Finish it and claim 15 paws."],
+      [".pg-playtabs", "Ranking, rooms and history", "The weekly ranking (top 3 win paws), rooms to play with others, and your last 7 days of games."],
+      [".pg-gamestrip", "The games", "Swipe for more games. Tap one to play solo, with others, or against the bot."],
+      [".pg-board", "The best", "The top players for the game in front of you. Beat them!"],
       ["#g-playsocial", "Friends", "Your friends and chats are here too. Have fun! 🎉"]
     ];
     var tourSteps = [], tourAt = 0, tourKey = "";
