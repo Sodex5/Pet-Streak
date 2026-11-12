@@ -6583,7 +6583,7 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261112061347";   // replaced by build_real.ps1
+    var APP_BUILD = "20261112062452";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -9962,7 +9962,11 @@ body:has(#g-sheet:not([hidden])) #g-bottom, body:has(#g-sheet:not([hidden])) #g-
         else set("🍎", "Time to feed " + p.name, leftTxt, "", null);
       } else if (daily && !daily.gift) set("🎁", "Your daily gift is ready", "Paws, or a streak freeze if you're lucky", "Open", openDaily);
       else if (seekAsks.length && isOwner(p)) set("🐾", seekAsks.length === 1 ? "Someone wants to co-parent" : seekAsks.length + " want to co-parent", "See who's asking to help with " + p.name, "See", openSeek);
-      else if (claimable) set("⭐", claimable === 1 ? "A quest is done!" : claimable + " quests are done!", "Claim the XP for " + p.name, "Claim", openDaily);
+      else if (claimable) {
+        // say which quest is done, so it's clear what earned it
+        var dq = (daily.quests || []).filter(function (q) { return q.done >= q.target && !q.claimed; })[0], qt = dq && QUEST_TEXT[dq.key];
+        set(qt ? qt[0] : "⭐", claimable === 1 ? "Quest done: " + (qt ? qt[1](p) : "a daily quest") : claimable + " quests are done!", "Claim 10 XP for " + p.name, "Claim", openDaily);
+      }
       else if (!who.length && isOwner(p)) set("👥", "Get a co-parent", "XP and the streak count when " + FEEDS_PER_DAY + " of you feed", "Get one", safeOn() ? invite : coparentChoice);
       else if (notYet && !fullToday(p)) set("⏳", "Waiting for " + notYet.name, "The day counts once you've both fed. " + leftTxt, notYet.nudged ? "" : "Remind", function () { nudge(p, notYet, $("g-nextbtn")); });
       else if (questsLeft) set("🎯", questsLeft === 1 ? "1 quest left today" : questsLeft + " quests left today", "Each one gives " + p.name + " 10 XP", "See", openDaily);
