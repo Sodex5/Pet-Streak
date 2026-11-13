@@ -2720,6 +2720,28 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
 
 #g-modesize[hidden] { display: none; }
 #g-modesize button { font-size: 0.86rem; padding-left: 6px; padding-right: 6px; }
+
+.pg-gamemsg.wave { top: 22%; font-size: 1.5rem; color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,0.35); padding: 0 16px; }
+
+/* Bamboo catch modes, the short board's See all, the chooser, the full leaderboard */
+#g-modebmode[hidden] { display: none; }
+.pg-seeall { display: block; margin: 6px auto 0; font-weight: 700; }
+.pg-seeall[hidden] { display: none; }
+#g-choose { z-index: 23; }
+.pg-choosecard { display: flex; flex-direction: column; gap: 10px; text-align: center; }
+.pg-choosecard h2 { margin: 0 0 4px; font-size: 1.15rem; }
+.pg-choosecard .pg-modebtn { margin: 0; }
+.pg-lbsheet { z-index: 23; display: flex; flex-direction: column; gap: 10px; max-height: 88%; }
+.pg-lbsheet h2 { display: flex; align-items: center; justify-content: space-between; margin: 0; font-size: 1.15rem; }
+.pg-lbtabs { margin: 0; }
+.pg-lblist { flex: 1; min-height: 120px; overflow-y: auto; margin: 0; }
+.pg-board .nm small { color: #8a979e; font-weight: 600; }
+.pg-lbfoot { display: flex; gap: 8px; }
+.pg-lbfoot:empty { display: none; }
+.pg-lbfoot span { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 8px; border-radius: 14px; background: #f4f1ec; }
+.pg-lbfoot small { font-size: 0.75rem; font-weight: 700; color: #6b7a82; }
+.pg-lbfoot b { font-family: var(--display); font-size: 1.1rem; color: #14232b; }
+.pg-gprow .pg-modebtn.chal b { color: #c2410c; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -3006,6 +3028,10 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         <h2 id="g-modename">Treat race</h2>
       </div>
       <div class="pg-gpbody" id="g-modebody">
+        <div class="pg-tabs pg-modevs" id="g-modebmode" role="tablist" aria-label="Game mode" hidden>
+          <button type="button" role="tab" data-bmode="endless" aria-selected="true">♾️ Endless</button>
+          <button type="button" role="tab" data-bmode="timed" aria-selected="false">⏱ 30 seconds</button>
+        </div>
         <div class="pg-gpstats" id="g-modestats"></div>
         <div class="pg-tabs pg-modevs" id="g-modevs" role="tablist" hidden>
           <button type="button" role="tab" data-vs="1" aria-selected="true">⚔️ Versus</button>
@@ -3026,8 +3052,29 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         <div class="pg-gpboard">
           <div class="pg-gpboardhead"><b id="g-modeboardtitle">Today's best</b><button type="button" class="pg-linkbtn" id="g-modehow">How to play</button></div>
           <ol class="pg-board" id="g-modeboard"></ol>
+          <button type="button" class="pg-linkbtn pg-seeall" id="g-modeall" hidden>See all</button>
           <p class="pg-hint" id="g-modereward"></p>
         </div>
+      </div>
+    </div>
+    <!-- a game's full leaderboard: today, this week, friends -->
+    <div class="pg pg-card pg-sheet pg-lbsheet" id="g-lboard" hidden>
+      <h2><span id="g-lbtitle">Leaderboard</span> <button type="button" class="pg-x" id="g-lbclose" aria-label="Close the leaderboard">✕</button></h2>
+      <div class="pg-tabs pg-lbtabs" id="g-lbtabs" role="tablist" aria-label="Which leaderboard">
+        <button type="button" role="tab" data-lb="today" aria-selected="true">Today</button>
+        <button type="button" role="tab" data-lb="week" aria-selected="false">This week</button>
+        <button type="button" role="tab" data-lb="friends" aria-selected="false">Friends</button>
+      </div>
+      <ol class="pg-board pg-lblist" id="g-lblist"></ol>
+      <div class="pg-lbfoot" id="g-lbfoot"></div>
+      <button type="button" class="pg-feed" id="g-lbplay">Play</button>
+    </div>
+    <div class="pg pg-adopt" id="g-choose" hidden>
+      <div class="pg-card pg-choosecard">
+        <h2 id="g-choosetitle"></h2>
+        <button type="button" class="pg-modebtn" id="g-choosea"></button>
+        <button type="button" class="pg-modebtn" id="g-chooseb"></button>
+        <button type="button" class="pg-linkbtn" id="g-chooseno">Cancel</button>
       </div>
     </div>
     <!-- Rooms: find a public room, or create one -->
@@ -6269,14 +6316,21 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
   function fxShake(wrap) { wrap.classList.remove("fx-shake"); void wrap.offsetWidth; wrap.classList.add("fx-shake"); }
   function fxCentre(wrap, el) { var r = el.getBoundingClientRect(), w = wrap.getBoundingClientRect(); return { x: r.left - w.left + r.width / 2, y: r.top - w.top + r.height / 2 }; }
 
-  var BAMBOO_TIME = 30;
+  // ---------- Bamboo catch Endless (opts.endless) ----------
+  // No clock: 3 hearts, and catching something bad (a rock, a bee, a poison mushroom) costs one. Dropping food only
+  // breaks your combo. Every 20 seconds a new wave: 2 adds zig-zagging bees, 3 poison mushrooms, 4 gusts of wind,
+  // and it all keeps getting faster. Points: food 10, golden bamboo 30, times your combo (x2 after 10 in a row, up to
+  // x5). Pick-ups: ❤️ a heart back (50 points if you're full), 🛡️ a shield for the next bad thing, 🧲 and ⏳.
+  // A duel (live + endless), "last panda standing": the same things fall for both; when one runs out of hearts, the
+  // other wins the moment they pass that score (oppDone(n)). After 2 minutes, sudden death: everything speeds up.
+  var BAMBOO_TIME = 30, BAMBOO_HEARTS = 3, BAMBOO_WAVE = 20, BAMBOO_SUDDEN = 120;
   var BAMBOO_FOODS = ["🍎", "🍌", "🥕", "🍓", "🍉", "🍇", "🍑"];
   function startBambooGame(opts) {
     var wrap = document.createElement("div"); wrap.className = "pg-game";
     wrap.innerHTML =
       '<canvas aria-label="Bamboo catch: move your pet to catch the falling food"></canvas>' +
       '<div class="pg-gamehud"><span class="sc">0</span><span class="cb" hidden></span><span class="pw" hidden></span>' + (opts.live ? '<span class="op"><span class="nm"></span> <b class="opn">0</b></span>' : "") +
-      '<span class="tm">' + BAMBOO_TIME + 's</span>' +
+      '<span class="tm">' + (opts.endless ? "❤️❤️❤️" : BAMBOO_TIME + "s") + '</span>' +
       (opts.onQuick ? '<button type="button" class="pg-qcbtn" aria-label="Send an emoji">💬</button>' : "") +
       '<button type="button" class="pg-gamex" aria-label="Stop the game">✕</button></div>' +
       '<div class="pg-qcpal" hidden></div><div class="pg-duelbubbles"></div>' +
@@ -6304,7 +6358,11 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     if (opts.live && opts.them && opts.them.pic) { rival = new Image(); rival.src = opts.them.pic; }
     var px = W / 2, tx = W / 2, score = 0, items = [], pops = [], shake = 0, sparks = [], squash = 0, hurt = 0, inRow = 0, lean = 0;
     var hudCombo = wrap.querySelector(".cb"), hudPower = wrap.querySelector(".pw"), magnetUntil = 0, slowUntil = 0;
-    function combo(n) { inRow = n; hudCombo.hidden = n < 3; hudCombo.textContent = "🔥 x" + n; if (n >= 3) { hudCombo.classList.remove("bump"); void hudCombo.offsetWidth; hudCombo.classList.add("bump"); } }
+    var E = !!opts.endless, hearts = BAMBOO_HEARTS, shield = false, wave = 1, theirOut = null, sudden = false, caught = 0, bestRow = 0;
+    function mult() { return E ? Math.min(5, 1 + Math.floor(inRow / 10)) : 1; }
+    function showHearts() { if (E) hudTime.textContent = "❤️".repeat(Math.max(0, hearts)) + "🤍".repeat(Math.max(0, BAMBOO_HEARTS - hearts)) + (shield ? " 🛡️" : ""); }
+    function banner(text) { msg.className = "pg-gamemsg wave"; msg.textContent = text; clearTimeout(banner.t); banner.t = setTimeout(function () { if (!ended) { msg.className = "pg-gamemsg"; msg.textContent = ""; } }, 1800); }
+    function combo(n) { inRow = n; bestRow = Math.max(bestRow, n); hudCombo.hidden = n < 3; hudCombo.textContent = E ? "x" + mult() + " · " + n + " in a row" : "🔥 x" + n; if (n >= 3) { hudCombo.classList.remove("bump"); void hudCombo.offsetWidth; hudCombo.classList.add("bump"); } }
     function sparkle(x, y, gold) { for (var k = 0; k < (gold ? 14 : 8); k++) { var a = Math.random() * 6.28, v = 60 + Math.random() * 120; sparks.push({ x: x, y: y, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 60, t: 0, c: gold ? "#ffc23d" : ["#7bd389", "#ffffff", "#ffd36b"][k % 3] }); } }
     var state = opts.live ? "wait" : "count", t0 = performance.now(), last = t0, spawnIn = 0, ended = false, running = true, keys = {};
     var rnd = opts.seed ? seeded(opts.seed) : Math.random;
@@ -6336,6 +6394,18 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         icon: kind === "gold" ? "🎋" : kind === "rock" ? "🪨" : kind === "magnet" ? "🧲" : kind === "slow" ? "⏳" : BAMBOO_FOODS[Math.floor(rnd() * BAMBOO_FOODS.length)],
         v: (H / 3.2) * (1 + elapsed / 22) * (0.85 + rnd() * 0.3), spin: (rnd() - 0.5) * 2 });
     }
+    function spawnEndless(elapsed) {
+      var r = rnd(), wv = 1 + Math.floor(elapsed / BAMBOO_WAVE), kind, c = 0;
+      var odds = [["gold", 0.08], ["rock", 0.13 + Math.min(0.1, elapsed / 400)], ["bee", wv >= 2 ? 0.07 : 0], ["shroom", wv >= 3 ? 0.07 : 0],
+                  ["heart", 0.012], ["shield", 0.016], ["magnet", elapsed > 5 ? 0.02 : 0], ["slow", elapsed > 5 ? 0.016 : 0]];
+      kind = "food";
+      for (var i = 0; i < odds.length; i++) { c += odds[i][1]; if (r < c) { kind = odds[i][0]; break; } }
+      var icon = { gold: "🎋", rock: "🪨", bee: "🐝", shroom: "🍄", heart: "❤️", shield: "🛡️", magnet: "🧲", slow: "⏳" }[kind];
+      var fast = (1 + Math.min(elapsed, 150) / 40) * (sudden ? 1.6 : 1);
+      items.push({ x: 24 + rnd() * (W - 48), y: -30, kind: kind, icon: icon || BAMBOO_FOODS[Math.floor(rnd() * BAMBOO_FOODS.length)],
+        v: (H / 3.2) * fast * (0.85 + rnd() * 0.3), spin: (rnd() - 0.5) * 2, ph: rnd() * 6 });
+    }
+    function bad(k) { return k === "rock" || k === "bee" || k === "shroom"; }
     function pop(x, y, text, color) { pops.push({ x: x, y: y, text: text, color: color, t: 0 }); }
 
     function stalk(s, now, col, node, leaf) {
@@ -6393,6 +6463,13 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         if (n > 0 && opts.live) msg.innerHTML = n + "<small>Get ready! Tap 💬 to send an emoji</small>"; else msg.textContent = n > 0 ? n : "Go!";
         msg.className = "pg-gamemsg big";
         if (since >= CD + 0.6) { state = "play"; t0 = now; msg.textContent = ""; msg.className = "pg-gamemsg"; }
+      } else if (state === "play" && E) {
+        var wv = 1 + Math.floor(since / BAMBOO_WAVE);
+        if (wv > wave) { wave = wv; banner(wave === 2 ? "Wave 2 · watch out for bees! 🐝" : wave === 3 ? "Wave 3 · poison mushrooms! 🍄" : wave === 4 ? "Wave 4 · here comes the wind! 💨" : "Wave " + wave + " · faster!"); if (typeof sfx === "function") sfx("sparkle"); }
+        if (opts.live && !sudden && since >= BAMBOO_SUDDEN) { sudden = true; banner("Sudden death! ⚡"); }
+        spawnIn -= dt;
+        if (spawnIn <= 0) { spawnEndless(since); spawnIn = Math.max(0.22, 0.85 - since / 70) * (sudden ? 0.6 : 1) * (0.7 + rnd() * 0.6); }
+        if (theirOut !== null && score > theirOut) finish();   // passed the player who's out: a win
       } else if (state === "play") {
         var left = Math.max(0, BAMBOO_TIME - since);
         hudTime.textContent = Math.ceil(left) + "s";
@@ -6412,16 +6489,35 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       if (magnet) { g.strokeStyle = "rgba(226,69,111," + (0.35 + Math.sin(now / 120) * 0.15) + ")"; g.lineWidth = 3; g.beginPath(); g.arc(px, H - 28 - P * 0.45, P * 0.85, 0, 7); g.stroke(); }
       items = items.filter(function (it) {
         it.y += it.v * dt * (slow ? 0.45 : 1);
+        if (it.kind === "bee") it.x += Math.cos(it.y / 38 + it.ph) * 120 * dt;
+        if (E && wave >= 4) it.x += Math.sin((now - t0) / 1700) * 70 * dt;
+        it.x = Math.max(16, Math.min(W - 16, it.x));
         if (magnet && (it.kind === "food" || it.kind === "gold") && it.y > H * 0.25) it.x += (px - it.x) * Math.min(1, dt * 2.6);
         if (state === "play" && it.y > catchY && it.y < catchY + P * 0.55 && Math.abs(it.x - px) < P * 0.55) {
-          if (it.kind === "magnet" || it.kind === "slow") {
+          if (E && (it.kind === "heart" || it.kind === "shield")) {
+            if (it.kind === "heart") { if (hearts < BAMBOO_HEARTS) { hearts++; pop(it.x, catchY, "+❤️", "#e2456f"); } else { score += 50; pop(it.x, catchY, "+50", "#e2456f"); } }
+            else { shield = true; pop(it.x, catchY, "Shield!", "#2f7fe0"); }
+            sparkle(it.x, catchY, true); squash = 0.22; showHearts();
+            if (typeof sfx === "function") sfx("sparkle");
+          }
+          else if (E && bad(it.kind)) {
+            if (shield) { shield = false; pop(it.x, catchY, "Blocked! 🛡️", "#2f7fe0"); if (typeof sfx === "function") sfx("pat"); }
+            else {
+              hearts--; pop(it.x, catchY, "💔", "#b3261e"); shake = 0.3; hurt = 0.45; combo(0);
+              if (typeof sfx === "function") sfx("splat");
+              if (navigator.vibrate) try { navigator.vibrate(60); } catch (er) {}
+            }
+            showHearts();
+            if (hearts <= 0) finish();
+          }
+          else if (it.kind === "magnet" || it.kind === "slow") {
             if (it.kind === "magnet") magnetUntil = now + 5000; else slowUntil = now + 4000;
             pop(it.x, catchY, it.kind === "magnet" ? "Magnet!" : "Slow-mo!", "#d4537e"); sparkle(it.x, catchY, true); squash = 0.22;
             if (typeof sfx === "function") sfx("sparkle");
           }
           else if (it.kind === "rock") { score = Math.max(0, score - 2); pop(it.x, catchY, "-2", "#b3261e"); shake = 0.3; hurt = 0.35; combo(0); if (typeof sfx === "function") sfx("splat"); }
           else {
-            var add = it.kind === "gold" ? 3 : 1; score += add; pop(it.x, catchY, "+" + add, it.kind === "gold" ? "#c98a00" : "#2b8a3e");
+            var add = E ? (it.kind === "gold" ? 30 : 10) * mult() : it.kind === "gold" ? 3 : 1; score += add; caught++; pop(it.x, catchY, "+" + add, it.kind === "gold" ? "#c98a00" : "#2b8a3e");
             sparkle(it.x, catchY, it.kind === "gold"); squash = 0.22; combo(inRow + 1);
             if (inRow > 0 && inRow % 5 === 0) pop(px, catchY - 46, inRow + " in a row!", "#d4537e");
             if (typeof sfx === "function") sfx(it.kind === "gold" ? "coin" : "click");
@@ -6432,7 +6528,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         }
         if (it.y > H + 40) { if (state === "play" && (it.kind === "food" || it.kind === "gold") && inRow) combo(0); return false; }
         g.save(); g.translate(it.x, it.y); g.rotate(it.spin * it.y / 300);
-        g.font = (it.kind === "gold" ? 40 : 34) + "px system-ui, 'Apple Color Emoji', 'Segoe UI Emoji'"; g.textAlign = "center"; g.textBaseline = "middle";
+        g.font = (it.kind === "gold" ? 40 : it.kind === "bee" ? 30 : 34) + "px system-ui, 'Apple Color Emoji', 'Segoe UI Emoji'"; g.textAlign = "center"; g.textBaseline = "middle";
         g.fillText(it.icon, 0, 0); g.restore();
         return true;
       });
@@ -6440,7 +6536,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       if (rival) {
         if (!ox) ox = W * 0.25;
         var aim = null;
-        items.forEach(function (it) { if (it.kind !== "rock" && it.y < catchY && (!aim || it.y > aim.y)) aim = it; });
+        items.forEach(function (it) { if (it.kind !== "rock" && !bad(it.kind) && it.y < catchY && (!aim || it.y > aim.y)) aim = it; });
         var goal = aim ? aim.x : W / 2 + Math.sin(now / 900) * W * 0.25;
         ox += Math.max(-260 * dt, Math.min(260 * dt, goal - ox));
         oHop = Math.max(0, oHop - dt * 3);
@@ -6478,9 +6574,9 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
 
     function finish() {
       if (ended) return; ended = true; state = "done";
-      hudTime.textContent = "0s";
-      msg.className = "pg-gamemsg big"; msg.textContent = "Time's up!";
-      setTimeout(function () { opts.onEnd(score, close, wrap); }, 900);
+      if (!E) hudTime.textContent = "0s";
+      msg.className = "pg-gamemsg big"; msg.textContent = !E ? "Time's up!" : hearts <= 0 ? "Out of hearts!" : "You win! 🏆";
+      setTimeout(function () { opts.onEnd(score, close, wrap, { caught: caught, combo: bestRow, wave: wave, out: hearts <= 0 }); }, 900);
     }
     function close() {
       running = false;
@@ -6497,6 +6593,11 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       // a duel: both phones start the 3-2-1 together
       start: function () { if (state === "wait") { state = "count"; t0 = performance.now(); last = t0; } },
       opp: function (n) { if (n > oLast) oHop = 1; oLast = n; if (opEl) opEl.textContent = n; },
+      // Endless duel: the other player is out with n points; pass it to win
+      oppDone: function (n) {
+        if (!E || theirOut !== null) return; theirOut = n; if (opEl) opEl.textContent = n + " 💔";
+        if (!ended) { if (score > n) finish(); else banner("They're out! Beat " + n + " to win! 🏁"); }
+      },
       quick: function (i) { var t = quickText(i); if (t) duelBubble(t, false); },
       status: function (t) { msg.className = "pg-gamemsg big"; msg.textContent = t; },
       score: function () { return score; }
@@ -7600,7 +7701,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261113044030";   // replaced by build_real.ps1
+    var APP_BUILD = "20261113051145";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -8287,6 +8388,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       var goal = function (cls, mark) { return '<div class="ht-goal ' + cls + '">' + [0, 1, 2, 3, 4, 5].map(function (i) { return "<i>" + (i === 2 ? mark : "") + "</i>"; }).join("") + "</div>"; };
       return {
         bamboo: [
+          ["Two ways to play", "Endless: 3 hearts and no clock. Catching a rock, a bee or a poison mushroom costs a heart, and new dangers arrive every 20 seconds. 30 seconds: a quick round against the clock.", '<div class="ht-big">♾️ ❤️❤️❤️</div>'],
           ["Move your pet", "Drag your finger left and right. Your pet follows along the bottom of the screen.", '<div class="ht-ground"><span class="ht-slide">' + me + "</span></div>" + '<span class="ht-arrows">⬅️ ➡️</span>'],
           ["Catch the food", "Every food you catch is +1. Golden bamboo is worth +3, so go for it!", '<span class="ht-drop d1">🍎</span><span class="ht-drop d2">🎋</span><span class="ht-drop d3">🍌</span><div class="ht-ground"><span class="ht-slide">' + me + "</span></div>"],
           ["Dodge the rocks", "A rock takes 2 points off your score. Move out of the way!", '<span class="ht-drop d2">🪨</span><span class="ht-minus">-2</span><div class="ht-ground"><span class="ht-slide fast">' + me + "</span></div>"],
@@ -8342,27 +8444,40 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     $("g-ghback").addEventListener("click", function () { if (ghAt) { ghAt--; drawGameHelp(); } });
     $("g-ghnext").addEventListener("click", function () { if (ghAt === ghSteps.length - 1) $("g-gamehelp").hidden = true; else { ghAt++; drawGameHelp(); } });
     // the game page: its scene, your stats for it, every way to play, and today's best (or this week's wins)
-    var BOT_TEXT = { bamboo: "The same food falls for you both. Beat its score.", memory: "Take turns finding pairs. Most pairs wins.",
+    var BOT_TEXT = { bamboo: "Last panda standing: the same food, 3 hearts each.", memory: "Take turns finding pairs. Most pairs wins.",
                      beat: "The same beat for 45 seconds. Highest score wins." }, modeGame = null;
+    // a leaderboard row's name: you, a friend by name, anyone else by their pet
+    function lbName(r) { return r.me ? "You" : r.name || r.pet || "A pet"; }
+    function lbRow(r) {
+      var li = document.createElement("li"); if (r.me) li.className = "me";
+      li.innerHTML = '<span class="rk">' + (r.place <= 3 ? MEDALS[r.place - 1] : r.place) + "</span>" +
+        '<img class="pg-boardpet" alt="" src="' + esc(petPic(r.variant)) + '"><span class="nm">' + esc(lbName(r)) + (r.name && !r.me && r.pet && r.pet !== r.name ? ' <small>' + esc(r.pet) + "</small>" : "") +
+        '</span><b class="pt">' + Number(r.best).toLocaleString() + "</b>";
+      return li;
+    }
     function modeTile(v, label) { return "<span><b>" + esc(String(v)) + "</b><small>" + esc(label) + "</small></span>"; }
     async function drawModeStats(game) {
       var stats = $("g-modestats"), board = $("g-modeboard"), scoreGame = !!BOARD_NAMES[game];
       stats.innerHTML = modeTile("…", "") + modeTile("…", "") + modeTile("…", ""); board.innerHTML = ""; $("g-modereward").textContent = "";
+      $("g-modeall").hidden = !scoreGame;
       if (scoreGame) {
-        $("g-modeboardtitle").textContent = "Today's best";
-        var d; try { d = await playData(game); } catch (e) { stats.innerHTML = ""; return; }
-        if (modeGame !== game) return;
-        var at = -1; d.board.forEach(function (r, i) { if (r.me) at = i; });
-        var mine = at >= 0 ? d.board[at] : null, paid = Math.max(0, GAME_PAID - d.plays);
-        stats.innerHTML = (game === "beat" ? modeTile(beatBest().toLocaleString(), "your best ever") : modeTile(mine ? mine.best : "–", "your best today")) +
-          modeTile(mine ? "#" + (at + 1) : "–", "rank today") + modeTile(paid, paid === 1 ? "paw game left" : "paw games left");
-        d.board.slice(0, 5).forEach(function (row, i) {
-          var li = document.createElement("li"); if (row.me) li.className = "me";
-          li.innerHTML = '<span class="rk">' + (i < 3 ? MEDALS[i] : i + 1) + "</span>" + avatarDot({ name: row.name, avatar: row.avatar }) +
-            '<span class="nm">' + esc(row.me ? "You" : row.name) + '</span><b class="pt">' + Number(row.best).toLocaleString() + "</b>";
-          board.appendChild(li);
-        });
-        if (!d.board.length) board.innerHTML = '<li class="pg-logempty">Nobody has played today yet. Be the first! ' + esc(GAMES[game].art) + "</li>";
+        var key = scoreKey(game), endless = key === "bamboo_endless";
+        $("g-modeboardtitle").textContent = "Today's best" + (game === "bamboo" ? (endless ? " · Endless" : " · 30 seconds") : "");
+        var sbd, plays = 0;
+        try {
+          var got = await Promise.all([rpc("score_board", { p_game: key, p_range: "today", p_scope: "all", p_tz: tz() }),
+            rpc("my_games_today", { p_game: game, p_tz: tz() }), game === "bamboo" ? rpc("my_games_today", { p_game: "bamboo_endless", p_tz: tz() }) : 0]);
+          sbd = got[0]; plays = (got[1] || 0) + (got[2] || 0);
+        } catch (e) { stats.innerHTML = ""; return; }
+        if (modeGame !== game || scoreKey(game) !== key) return;
+        var rows = sbd.rows || [], mine = sbd.me, paid = Math.max(0, GAME_PAID - plays);
+        stats.innerHTML = (game === "beat" ? modeTile(beatBest() ? beatBest().toLocaleString() : "–", "best ever") : endless ? modeTile(endlessBest() ? endlessBest().toLocaleString() : "–", "best ever")
+                           : modeTile(mine ? mine.best : "–", "best today")) +
+          modeTile(mine ? "#" + mine.place : "–", "rank today") + modeTile(paid, paid === 1 ? "paw game left" : "paw games left");
+        // the top 3, and you (wherever you are)
+        rows.slice(0, 3).forEach(function (r) { board.appendChild(lbRow(r)); });
+        if (mine && mine.place > 3) { var meRow = rows.filter(function (r) { return r.me; })[0] || { place: mine.place, best: mine.best, me: true, variant: pet() && pet().variant }; board.appendChild(lbRow(meRow)); }
+        if (!rows.length) board.innerHTML = '<li class="pg-logempty">Nobody has played today yet. Be the first! ' + esc(GAMES[game].art) + "</li>";
         $("g-modereward").textContent = paid ? "🐾 Your next " + (paid === 1 ? "solo game pays" : paid + " solo games pay") + " paws." : "You've had today's 3 paw games. Keep playing for a better score!";
       } else {
         $("g-modeboardtitle").textContent = "This week's wins";
@@ -8392,6 +8507,10 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       $("g-modehelp").onclick = $("g-modehow").onclick = function () { openGameHelp(game); };
       $("g-modevs").hidden = game !== "ball";
       Array.prototype.forEach.call(document.querySelectorAll("#g-modevs [data-vs]"), function (b) { b.setAttribute("aria-selected", (b.dataset.vs === "1") === ballVs ? "true" : "false"); });
+      // Bamboo catch: Endless or 30 seconds (the tiles, the big button and the board all follow it)
+      $("g-modebmode").hidden = game !== "bamboo";
+      Array.prototype.forEach.call(document.querySelectorAll("#g-modebmode [data-bmode]"), function (b) { b.setAttribute("aria-selected", b.dataset.bmode === bambooMode() ? "true" : "false"); });
+      if (game === "bamboo") solo = bambooMode() === "endless" ? ["▶ Play Endless", "3 hearts, no clock. How far can you go?"] : ["▶ Play 30 seconds", "A quick round. Beat the clock!"];
       // Memory match solo: a quick, classic or big board
       $("g-modesize").hidden = game !== "memory";
       Array.prototype.forEach.call(document.querySelectorAll("#g-modesize [data-size]"), function (b) { b.setAttribute("aria-selected", +b.dataset.size === memSize() ? "true" : "false"); });
@@ -8399,21 +8518,28 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       $("g-modesolo").innerHTML = "<b>" + esc(solo[0].replace(/^\S+ /, "▶ ")) + "</b><small>" + esc(solo[1]) + "</small>";
       // against the bot: for the games where solo means on your own
       $("g-modebot").hidden = !BOT_TEXT[game];
-      $("g-modebot").innerHTML = "<b>🤖 Vs the bot</b><small>" + esc(BOT_TEXT[game] || "") + "</small>";
-      $("g-modebot").onclick = function () { $("g-mode").hidden = true; playBot(game, false); };
-      $("g-modeothers").innerHTML = "<b>🌐 Play online</b><small>" + (showOnline() ? (n ? "🟢 " + n + " online now" : "Find a room or a player") : "🙈 You're hidden") + "</small>";
+      $("g-modebot").innerHTML = "<b>🤖 Vs the bot</b><small>" + esc(game === "bamboo" ? "Last panda standing" : BOT_TEXT[game] || "") + "</small>";
+      $("g-modebot").onclick = function () {
+        choose("🤖 " + g.name + " · vs the bot",
+          ["🤖 Bamboo the bot", BOT_TEXT[game], function () { $("g-mode").hidden = true; playBot(game, false); }],
+          ["🔥 Challenge", "Bamboo the champion: much tougher.", function () { $("g-mode").hidden = true; playBot(game, true); }, "chal"]);
+      };
+      $("g-modeothers").innerHTML = "<b>🌐 Play online</b><small>" + (showOnline() ? (n ? "🟢 " + n + " online now" : "Find a game or invite a friend") : "🙈 You're hidden") + "</small>";
       $("g-modeothers").classList.toggle("live", !!n && showOnline());
-      $("g-modeinvite").innerHTML = "<b>💌 Invite a friend</b><small>" + esc(oth[1]) + "</small>";
-      $("g-modeinvite").onclick = function () { openPick(game); };
+      $("g-modeinvite").hidden = true;
       $("g-modesolo").onclick = function () { $("g-mode").hidden = true; playSolo(game); };
       // 🔥 Challenge: the champion bot (Ball pass: in Versus only)
       var chal = { race: "A lightning-fast racer. You'll need two thumbs!", bamboo: "A bot that hardly ever misses a catch.",
                    memory: "A bot with a near-perfect memory.", ball: "Power shots and almost no misses.",
                    penalty: "A keeper that reads your kicks and a striker that rarely misses.", beat: "A bot that hardly ever misses a beat." }[game];
-      $("g-modechal").hidden = game === "ball" && !vs;
+      $("g-modechal").hidden = !!BOT_TEXT[game] || (game === "ball" && !vs);   // (with a bot button, Challenge is inside it)
       $("g-modechal").innerHTML = "<b>🔥 Challenge</b><small>" + esc(chal) + "</small>";
       $("g-modechal").onclick = function () { $("g-mode").hidden = true; playBot(game, true); };
-      $("g-modeothers").onclick = function () { roomsOpen(game); };
+      $("g-modeothers").onclick = function () {
+        choose("🌐 " + g.name + " · online",
+          ["🌐 Find a game", n && showOnline() ? "🟢 " + n + " online now. Join a room or start one." : "Join a room or start one.", function () { roomsOpen(game); }],
+          ["💌 Invite a friend", oth[1], function () { openPick(game); }]);
+      };
       // an odd button out stretches across the row
       var vis = Array.prototype.filter.call(document.querySelectorAll(".pg-gprow .pg-modebtn"), function (b) { b.classList.remove("wide"); return !b.hidden; });
       if (vis.length % 2) vis[vis.length - 1].classList.add("wide");
@@ -8421,6 +8547,48 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       drawModeStats(game);
     }
     $("g-modeclose").addEventListener("click", function () { $("g-mode").hidden = true; });
+    Array.prototype.forEach.call(document.querySelectorAll("#g-modebmode [data-bmode]"), function (b) {
+      b.addEventListener("click", function () { try { localStorage.setItem(BAMBOO_MODE_KEY, b.dataset.bmode); } catch (e) {} openMode("bamboo"); drawCardStats(); });
+    });
+    // a little sheet with two choices
+    function choose(title, a, b) {
+      $("g-choosetitle").textContent = title;
+      [[$("g-choosea"), a], [$("g-chooseb"), b]].forEach(function (x) {
+        x[0].className = "pg-modebtn" + (x[1][3] ? " " + x[1][3] : "");
+        x[0].innerHTML = "<b>" + esc(x[1][0]) + "</b><small>" + esc(x[1][1] || "") + "</small>";
+        x[0].onclick = function () { $("g-choose").hidden = true; x[1][2](); };
+      });
+      $("g-choose").hidden = false;
+    }
+    $("g-chooseno").addEventListener("click", function () { $("g-choose").hidden = true; });
+    // the full leaderboard
+    var lbGame = null, lbTab = "today";
+    async function drawLeaderboard() {
+      var key = scoreKey(lbGame), box = $("g-lblist");
+      Array.prototype.forEach.call(document.querySelectorAll("#g-lbtabs [data-lb]"), function (b) { b.setAttribute("aria-selected", b.dataset.lb === lbTab ? "true" : "false"); });
+      box.innerHTML = '<li class="pg-logempty">Loading…</li>'; $("g-lbfoot").innerHTML = "";
+      var d; try { d = await rpc("score_board", { p_game: key, p_range: lbTab === "week" ? "week" : "today", p_scope: lbTab === "friends" ? "friends" : "all", p_tz: tz() }); }
+      catch (e) { box.innerHTML = '<li class="pg-logempty">' + esc(friendly(e.message)) + "</li>"; return; }
+      if (scoreKey(lbGame) !== key) return;
+      box.innerHTML = "";
+      (d.rows || []).forEach(function (r) { box.appendChild(lbRow(r)); });
+      if (d.me && !(d.rows || []).some(function (r) { return r.me; })) box.appendChild(lbRow({ place: d.me.place, best: d.me.best, me: true, variant: pet() && pet().variant }));
+      if (!(d.rows || []).length) box.innerHTML = '<li class="pg-logempty">' + (lbTab === "friends" ? "None of your friends have played yet. Invite one! 💌" : "Nobody has played yet. Be the first! " + esc(GAMES[lbGame].art)) + "</li>";
+      var ever = key === "bamboo_endless" ? endlessBest() : key === "beat" ? beatBest() : null;
+      var left = Math.max(0, Date.parse(d.ends) - Date.now()), h = Math.floor(left / 3600000), m = Math.floor(left % 3600000 / 60000);
+      $("g-lbfoot").innerHTML = (ever !== null ? "<span><small>Your best ever</small><b>" + (ever ? ever.toLocaleString() : "–") + "</b></span>" : "") +
+        "<span><small>" + (lbTab === "week" ? "This week resets in" : "Resets in") + "</small><b>" + (h >= 24 ? Math.floor(h / 24) + "d " + (h % 24) + "h" : h + "h " + m + "m") + "</b></span>";
+    }
+    function openLeaderboard(game) {
+      lbGame = game; lbTab = "today";
+      $("g-lbtitle").textContent = GAMES[game].art + " " + GAMES[game].name + (game === "bamboo" ? (bambooMode() === "endless" ? " · Endless" : " · 30 seconds") : "");
+      $("g-lbplay").textContent = "▶ Play " + (game === "bamboo" ? (bambooMode() === "endless" ? "Endless" : "30 seconds") : GAMES[game].name);
+      $("g-lboard").hidden = false; drawLeaderboard();
+    }
+    $("g-modeall").addEventListener("click", function () { if (modeGame) openLeaderboard(modeGame); });
+    $("g-lbclose").addEventListener("click", function () { $("g-lboard").hidden = true; });
+    $("g-lbplay").addEventListener("click", function () { $("g-lboard").hidden = true; $("g-mode").hidden = true; playSolo(lbGame); });
+    Array.prototype.forEach.call(document.querySelectorAll("#g-lbtabs [data-lb]"), function (b) { b.addEventListener("click", function () { lbTab = b.dataset.lb; drawLeaderboard(); }); });
     var MEM_SIZE_KEY = "petstreak.memsize";
     function memSize() { var n = 12; try { n = +localStorage.getItem(MEM_SIZE_KEY) || 12; } catch (e) {} return [8, 12, 15].indexOf(n) >= 0 ? n : 12; }
     Array.prototype.forEach.call(document.querySelectorAll("#g-modesize [data-size]"), function (b) {
@@ -9523,25 +9691,28 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       // a Bamboo duel: both phones get the same falling food; the host compares the final scores
       function goBamboo(m) {
         var other = others()[0], latest = 0, sentN = -1, finals = {}, gone = false, judgeT = null, theirs = 0;
+        var endlessDuel = game === "bamboo";
         var bam = (game === "beat" ? startBeatDash : startBambooGame)({
-          pic: gamePic(p), seed: seedOf(room), live: true, them: { pic: petPic(other.variant), html: petTagHTML(other) },
+          pic: gamePic(p), seed: seedOf(room), live: true, endless: endlessDuel, them: { pic: petPic(other.variant), html: petTagHTML(other) },
           onScore: function (n) { latest = n; },
           onQuick: qcSend,
           onQuit: function () { leave(); openPlay(); },
           onEnd: function (score) {
             finals[me.id] = score; R.send("final", { uid: me.id, n: score });
-            if (host || gone) judge(gone); else judgeT = setTimeout(function () { show(finals); }, 7000);   // (no word from the host)
+            // Endless: if they're still going, they play on until they pass me or run out of hearts
+            if (endlessDuel && finals[other.uid] === undefined && !gone) bam.status("Waiting for " + label(other) + "… 🍀");
+            if (host || gone) judge(gone); else judgeT = setTimeout(function () { show(finals); }, endlessDuel ? 240000 : 7000);   // (no word from the host)
           }
         });
         view = bam;
         var pump = setInterval(function () { if (latest !== sentN) { sentN = latest; R.send("s", { uid: me.id, n: sentN }); } }, 300);
         R.on("s", function (x) { if (x.uid === other.uid) { theirs = x.n | 0; bam.opp(theirs); } });
-        R.on("final", function (x) { if (x.uid !== other.uid) return; finals[other.uid] = x.n | 0; bam.opp(x.n | 0); if (host) judge(); });
+        R.on("final", function (x) { if (x.uid !== other.uid) return; finals[other.uid] = x.n | 0; bam.opp(x.n | 0); if (bam.oppDone) bam.oppDone(x.n | 0); if (host) judge(); });
         R.on("result", function (x) { if (!host && x.scores) show(x.scores); });
         S.quick = function (uid, i) { bam.quick(i); };
         function judge(force) {
           if (done || finals[me.id] === undefined) return;
-          if (finals[other.uid] === undefined && !force) { if (!judgeT) judgeT = setTimeout(function () { judge(true); }, 6000); return; }
+          if (finals[other.uid] === undefined && !force) { if (!judgeT) judgeT = setTimeout(function () { judge(true); }, endlessDuel ? 240000 : 6000); return; }
           var scores = {}; scores[me.id] = finals[me.id]; scores[other.uid] = finals[other.uid] === undefined ? null : finals[other.uid];
           R.send("result", { scores: scores }); setTimeout(function () { R.send("result", { scores: scores }); }, 500);
           show(scores);
@@ -9813,13 +9984,24 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     function duelBot() {
       var p = pet(); if (!p || raceNow) return;
       hidePlayPages();
-      var lv = botLv("bamboo"), every = [1250, 1050, 900, 780, 680, 650, 620, 590][lv - 1], rocks = [0.14, 0.11, 0.08, 0.06, 0.04, 0.035, 0.03, 0.025][lv - 1];
-      var botScore = 0, timer = null;
+      // Endless, last panda standing: the bot catches about once a second (faster at higher levels), builds a combo
+      // like you, and now and then catches something bad and loses a heart (less often at higher levels)
+      var lv = botLv("bamboo"), every = [1250, 1050, 900, 780, 680, 650, 620, 590][lv - 1], hurtP = [0.05, 0.04, 0.03, 0.022, 0.016, 0.012, 0.009, 0.007][lv - 1];
+      var botScore = 0, timer = null, botHearts = 3, botRow = 0, botOut = false, startAt = Date.now() + 3800;
+      function botStep(boosted) {
+        var r = Math.random(), sudden = Date.now() - startAt > 120000;
+        if (r < hurtP * (boosted ? 0.3 : 1) * (sudden ? 3 : 1)) { botHearts--; botRow = 0; if (botHearts <= 0) { botOut = true; game.oppDone(botScore); } return; }
+        if (r > 0.93) { botRow = 0; return; }   // dropped one
+        botRow++; botScore += (r < 0.12 ? 30 : 10) * Math.min(5, 1 + Math.floor(botRow / 10));
+      }
       var game = startBambooGame({
-        pic: gamePic(p), seed: (Math.random() * 1e9) >>> 0, live: true, them: { pic: petPic(botChallenge ? "panda_sakura" : "panda_golden"), html: esc(botChallenge ? "🔥 Bamboo" : "🤖 Bamboo") },
+        pic: gamePic(p), seed: (Math.random() * 1e9) >>> 0, live: true, endless: true, them: { pic: petPic(botChallenge ? "panda_sakura" : "panda_golden"), html: esc(botChallenge ? "🔥 Bamboo" : "🤖 Bamboo") },
         onQuit: function () { clearTimeout(timer); raceNow = null; trackMe(); openPlay(); },
         onEnd: function (score) {
           clearTimeout(timer);
+          // I'm out first: the bot plays on until it passes me or runs out of hearts too
+          var guard = 0; while (!botOut && botScore <= score && guard++ < 5000) botStep(false);
+          game.opp(botScore);
           var won = score > botScore ? true : score < botScore ? false : "draw";
           logGame("bamboo", "bot", botChallenge ? "Bamboo the champion" : "Bamboo the bot", won === true ? "won" : won === false ? "lost" : "draw", null, score);
           botEnd(game, score + ' <small class="vs">vs ' + botScore + "</small>",
@@ -9835,8 +10017,9 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         var now = Date.now();
         if (now > nextBoost) { nextBoost = now + 7000 + Math.random() * 6000; if (Math.random() < boostChance) boostUntil = now + 4000; }
         var boosted = now < boostUntil, r = Math.random();
-        botScore = Math.max(0, botScore + (r < 0.1 ? 3 : r < 0.1 + rocks * (boosted ? 0.3 : 1) ? -2 : 1));
-        game.opp(botScore);
+        if (botOut) return;
+        botStep(boosted); game.opp(botScore);
+        if (botOut) return;
         timer = setTimeout(step, (every - 250 + Math.random() * 500) * (boosted ? 0.65 : 1));
       }, 3800);   // (after the 3-2-1)
     }
@@ -9926,27 +10109,42 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       end.querySelector('[data-a="again"]').addEventListener("click", function () { close(); again(); });
       end.querySelector('[data-a="done"]').addEventListener("click", function () { close(); boardGame = game; openPlay(); });
     }
-    async function saveSolo(game, score) {
+    async function saveSolo(game, score, logAs) {
       var res = null, err = null, lead = "";
       try { res = await rpc("submit_score", { p_game: game, p_score: score, p_tz: tz() }); } catch (e) { err = e.message; }
       if (res) {
         try {
-          var b = (await playData(game)).board;
-          if (b.length > 1) lead = b[0].me ? "You're top of today's high scores! 🥇" : b[0].name + " leads today with " + b[0].best + ". Can you beat it?";
+          var sb0 = await rpc("score_board", { p_game: game, p_range: "today", p_scope: "all", p_tz: tz() }), b = sb0.rows || [];
+          if (b.length > 1) lead = b[0].me ? "You're top of today's high scores! 🥇" : lbName(b[0]) + " leads today with " + Number(b[0].best).toLocaleString() + ". Can you beat it?";
         } catch (e) {}
       }
-      logGame(game, "solo", null, null, null, score);
+      logGame(logAs ? logAs.game : game, logAs ? logAs.mode : "solo", null, null, null, score);
       return { res: res, err: err, lead: lead };
     }
+    // Bamboo catch: Endless (the default) or 30 seconds, remembered on this phone
+    var BAMBOO_MODE_KEY = "petstreak.bamboomode", BAMBOO_EBEST_KEY = "petstreak.bambooebest";
+    function bambooMode() { try { return localStorage.getItem(BAMBOO_MODE_KEY) === "timed" ? "timed" : "endless"; } catch (e) { return "endless"; } }
+    function bambooKey() { return bambooMode() === "endless" ? "bamboo_endless" : "bamboo"; }
+    function endlessBest() { try { return +localStorage.getItem(BAMBOO_EBEST_KEY) || 0; } catch (e) { return 0; } }
+    // the score board's key for a game (Bamboo catch has two)
+    function scoreKey(game) { return game === "bamboo" ? bambooKey() : game; }
     function startGame() {
       var p = pet(); if (!p) return;
       hidePlayPages();
+      var endless = bambooMode() === "endless";
       startBambooGame({
-        pic: gamePic(p),
+        pic: gamePic(p), endless: endless,
         onQuit: function () { openPlay(); },
-        onEnd: async function (score, close, wrap) {
-          var s = await saveSolo("bamboo", score);
-          soloEnd(wrap, "bamboo", s.res, s.err, s.lead, '<div class="big">' + score + '</div><p class="lbl">points</p>', startGame, close);
+        onEnd: async function (score, close, wrap, st) {
+          if (!endless) {
+            var s = await saveSolo("bamboo", score);
+            soloEnd(wrap, "bamboo", s.res, s.err, s.lead, '<div class="big">' + score + '</div><p class="lbl">points</p>', startGame, close);
+            return;
+          }
+          var ever = score > endlessBest(); if (ever) { try { localStorage.setItem(BAMBOO_EBEST_KEY, String(score)); } catch (e) {} }
+          var s2 = await saveSolo("bamboo_endless", score, { game: "bamboo", mode: "endless" });
+          soloEnd(wrap, "bamboo", s2.res, s2.err, s2.lead, '<div class="big">' + score.toLocaleString() + '</div><p class="lbl">points · wave ' + st.wave + " · " + st.combo + " in a row</p>" +
+            (ever && score > 0 ? '<p class="pg-endever">🏆 Your best ever!</p>' : ""), startGame, close);
         }
       });
     }
@@ -10136,8 +10334,10 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         if (!tags) { tags = document.createElement("span"); tags.className = "pg-cardtags"; card.appendChild(tags); }
         try {
           if (BOARD_NAMES[game]) {
-            var d = await playData(game), mine = d.board.filter(function (r) { return r.me; })[0], paid = Math.max(0, GAME_PAID - d.plays);
-            if (mine && stat) stat.textContent = "Best today " + Number(mine.best).toLocaleString();
+            var d = await playData(scoreKey(game)), mine = d.board.filter(function (r) { return r.me; })[0];
+            var plays = d.plays + (game === "bamboo" ? (await rpc("my_games_today", { p_game: scoreKey(game) === "bamboo" ? "bamboo_endless" : "bamboo", p_tz: tz() })) || 0 : 0);
+            var paid = Math.max(0, GAME_PAID - plays);
+            if (stat) stat.textContent = mine ? "Best today " + Number(mine.best).toLocaleString() : game === "bamboo" ? (bambooMode() === "endless" ? "Endless · 3 hearts" : "30 seconds") : stat.textContent;
             var paw = tags.querySelector(".pg-pawtag");
             if (paid) { if (!paw) { paw = document.createElement("em"); paw.className = "pg-pawtag"; tags.appendChild(paw); } paw.textContent = "🐾 " + paid; paw.title = paid + " paw games left today"; }
             else if (paw) paw.remove();
@@ -10580,12 +10780,12 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         if (day !== lastDay) { lastDay = day; var h = document.createElement("li"); h.className = "pg-histday"; h.textContent = day; box.appendChild(h); }
         var G = GAMES[g.game] || GAMES.race, res, cls = "";
         if (g.game === "ball" && g.result !== "won" && g.result !== "lost") { res = (g.score || 0) + " passes"; cls = g.result === "left" ? "left" : ""; }
-        else if (g.mode === "solo") res = (g.score || 0) + " pts";
+        else if (g.mode === "solo" || g.mode === "endless") res = Number(g.score || 0).toLocaleString() + " pts";
         else if (g.result === "left") { res = "Left"; cls = "left"; }
         else if (g.place && g.game === "race") { res = PLACES[g.place - 1] || g.place + "th"; cls = g.place === 1 ? "won" : "lost"; }
         else { res = { won: "🏆 Won", lost: "Lost", draw: "🤝 Draw" }[g.result] || ""; cls = g.result || ""; }
         var li = document.createElement("li");
-        li.innerHTML = '<span class="gi" aria-hidden="true">' + G.art + '</span><span class="pg-grow"><b>' + esc(G.name) + (g.mode === "bot" ? " · practice" : g.mode === "solo" ? " · solo" : "") + "</b>" +
+        li.innerHTML = '<span class="gi" aria-hidden="true">' + G.art + '</span><span class="pg-grow"><b>' + esc(G.name) + (g.mode === "bot" ? " · practice" : g.mode === "solo" ? " · solo" : g.mode === "endless" ? " · endless" : "") + "</b>" +
           "<small>" + esc((g.against ? "with " + g.against + " · " : "") + d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })) + "</small></span>" +
           '<span class="res ' + cls + '">' + esc(res) + "</span>";
         box.appendChild(li);
@@ -13684,7 +13884,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     }, true);
     // The phone's back button (Android's back swipe): close whatever is on top instead of leaving the app. A game
     // asks first. On the main screen, a second back within 2 seconds closes the app.
-    var BACK = [["g-tour", "g-tourskip"], ["g-apd", "g-apdclose"], ["g-admin", "g-adminclose"], ["g-celebrate", "g-cbok"], ["g-stconfirm", "g-sccancel"], ["g-achpop", "g-achok"], ["g-invite", "g-inviteno"], ["g-ask", "g-askcancel"], ["g-join", "g-joincancel"],
+    var BACK = [["g-tour", "g-tourskip"], ["g-choose", "g-chooseno"], ["g-lboard", "g-lbclose"], ["g-apd", "g-apdclose"], ["g-admin", "g-adminclose"], ["g-celebrate", "g-cbok"], ["g-stconfirm", "g-sccancel"], ["g-achpop", "g-achok"], ["g-invite", "g-inviteno"], ["g-ask", "g-askcancel"], ["g-join", "g-joincancel"],
                 ["g-giftsend", "g-gsdone"], ["g-petopts", "g-poclose"], ["g-gamepick", "g-pickno"], ["g-gamehelp", "g-ghclose"], ["g-mode", "g-modeclose"],
                 ["g-pick", "g-pickclose"], ["g-history", "g-historyclose"], ".pg-game", ["g-msgsheet", "g-msgclose"], ["g-chatbar", "g-chatbarx"], ["g-chat", "g-chatback"], ["g-watch", "g-watchclose"], ["g-roomreply", "g-roomreplyx"], ["g-roomnew", "g-roomnewcancel"], ["g-roompage", "g-roommin"], ["g-rooms", "g-roomsclose"], ["g-seek", "g-seekclose"], ["g-daily", "g-dailyclose"], ["g-nudge", "g-nudgeno"], ["g-news", "g-newsok"], ["g-delcard", "g-delcancel"], ["g-safecard", "g-safecancel"], ["g-roomnew", "g-roomnewcancel"], ["g-roompage", "g-roomback"], ["g-rooms", "g-roomsclose"],
                 ["g-social", "g-socialclose"], ["g-play", "g-playclose"], ["g-bath", "g-bathcancel"], ["g-howto", "g-howskip"],
