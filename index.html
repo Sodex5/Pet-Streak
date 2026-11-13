@@ -2825,36 +2825,57 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
 .pk-side .dots i { display: grid; place-items: center; font-size: 0.6rem; font-weight: 800; color: #fff; font-style: normal; }
 
 /* ===== The room: pets live here ===== */
-.rm-scene { position: relative; flex: none; height: min(44vh, 340px); margin: 8px 10px 0; border-radius: 22px; overflow: hidden; background: #f6d9b8; box-shadow: 0 6px 18px rgba(80,40,10,0.14); touch-action: manipulation; user-select: none; -webkit-user-select: none; }
-.rm-wall { position: absolute; inset: 0 0 62% 0; background: linear-gradient(#ffe9cf, #f9d5ae); border-bottom: 6px solid #c98a55; }
-.rm-wall::before { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(90deg, transparent 0 38px, rgba(201,138,85,0.13) 38px 40px); }
-.rm-window { position: absolute; left: 50%; top: 14%; width: 22%; height: 62%; transform: translateX(-50%); border-radius: 12px 12px 4px 4px; background: linear-gradient(#bfe3ff, #e6f5ff); border: 4px solid #fff; box-shadow: 0 2px 0 #c98a55; }
+.pg-roompage { background: #eef1f4; }
+.rm-headtxt { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.rm-headtxt h2 { margin: 0; font-size: 1.15rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rm-headtxt .pg-roommeta { padding: 0; text-align: left; font-size: 0.72rem; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rm-scene { position: relative; isolation: isolate; z-index: 0; flex: 1; min-height: 0; margin: 8px 10px 8px; min-height: 230px; border-radius: 24px; overflow: hidden; background: #f6d9b8; box-shadow: 0 8px 22px rgba(80,40,10,0.16), inset 0 0 0 1px rgba(255,255,255,0.4); touch-action: manipulation; user-select: none; -webkit-user-select: none; }
+.rm-wall { position: absolute; inset: 0 0 72% 0; background: linear-gradient(#ffeedb, #fad9b4); border-bottom: 7px solid #c98a55; }
+.rm-wall::before { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(90deg, transparent 0 44px, rgba(201,138,85,0.12) 44px 46px); }
+.rm-window { position: absolute; left: 50%; top: 16%; width: 20%; height: 64%; transform: translateX(-50%); border-radius: 14px 14px 4px 4px; background: linear-gradient(#a9dbff, #e6f5ff 70%, #c8ecc0); border: 4px solid #fff; box-shadow: 0 3px 0 #c98a55; }
 .rm-window::after { content: ""; position: absolute; left: 50%; top: 0; bottom: 0; width: 4px; margin-left: -2px; background: #fff; }
-.rm-arcade { position: absolute; left: 3%; top: 12%; max-width: 46%; display: flex; align-items: center; gap: 6px; padding: 6px 10px 6px 8px; border: 0; border-radius: 14px; background: #3c3489; color: #fff; font: inherit; text-align: left; box-shadow: 0 3px 0 #26215c; z-index: 2; }
-.rm-arcade i { font-style: normal; font-size: 1.3rem; }
+.rm-shelf { position: absolute; left: 63%; bottom: 6%; font-size: 1.5rem; filter: drop-shadow(0 2px 1px rgba(80,40,10,0.25)); }
+.rm-arcade { position: absolute; left: 3%; top: 50%; transform: translateY(-50%); max-width: 42%; display: flex; align-items: center; gap: 8px; padding: 7px 12px 7px 9px; border: 0; border-radius: 14px; background: #3c3489; color: #fff; font: inherit; text-align: left; box-shadow: 0 3px 0 #26215c; z-index: 2; }
+.rm-arcade i { font-style: normal; font-size: 1.35rem; }
 .rm-arcade span { display: flex; flex-direction: column; min-width: 0; }
-.rm-arcade b { font-size: 0.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rm-arcade b { font-size: 0.78rem; line-height: 1.15; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .rm-arcade small { font-size: 0.66rem; color: #cecbf6; white-space: nowrap; }
-.rm-toybox { position: absolute; right: 4%; top: 18%; width: 48px; height: 48px; border: 0; border-radius: 14px; background: #fff; font-size: 1.6rem; box-shadow: 0 3px 0 #d9b48c; z-index: 2; }
-.rm-floor { position: absolute; inset: 38% 0 0 0; background: repeating-linear-gradient(90deg, #e9b47e 0 56px, #e1a970 56px 58px); cursor: pointer; }
-.rm-mat { position: absolute; left: 30%; top: 62%; width: 40%; height: 38%; border: 3px dashed #0f6e56; border-radius: 18px 18px 0 0; background: rgba(159,225,203,0.55); display: flex; justify-content: center; align-items: flex-start; pointer-events: none; transition: background 0.2s; }
-.rm-mat span { margin-top: -10px; padding: 1px 8px; border-radius: 999px; background: rgba(255,255,255,0.8); color: #04342c; font-size: 0.68rem; font-weight: 800; white-space: nowrap; }
-.rm-mat.on { background: rgba(93,202,165,0.75); border-style: solid; }
-.rm-seat { position: absolute; right: 3%; bottom: 6%; padding: 6px 10px; border: 2px dashed #8a6a4a; border-radius: 14px; background: rgba(255,255,255,0.55); color: #5c3d22; font: inherit; font-size: 0.75rem; font-weight: 800; z-index: 5; }
+.rm-toybox { position: absolute; right: 4%; top: 50%; transform: translateY(-50%); width: 50px; height: 50px; border: 0; border-radius: 15px; background: #fff; font-size: 1.7rem; box-shadow: 0 3px 0 #d9b48c; z-index: 2; }
+.rm-floor { position: absolute; inset: 28% 0 0 0; background: radial-gradient(ellipse at 50% 40%, rgba(255,255,255,0.18), transparent 70%), repeating-linear-gradient(90deg, #e9b47e 0 64px, #e1a970 64px 66px); cursor: pointer; }
+/* the ready rug: step onto it to ready up; a paw lights up for each player on it */
+.rm-mat { position: absolute; left: 50%; bottom: 5%; width: min(48%, 230px); aspect-ratio: 2 / 1.05; transform: translateX(-50%); border-radius: 50%; background: radial-gradient(ellipse at 50% 40%, #e9fbf4, #9fe1cb 62%, #5dcaa5); box-shadow: 0 4px 0 #3fa585, 0 10px 18px rgba(15,110,86,0.25); pointer-events: none; display: flex; align-items: center; justify-content: center; transition: box-shadow 0.3s; }
+.rm-matring { position: absolute; inset: 9% 7%; border-radius: 50%; border: 2.5px dashed rgba(255,255,255,0.95); }
+.rm-matpaws { position: relative; display: flex; gap: 6px; }
+.rm-matpaws i { width: 20px; height: 20px; border-radius: 50%; background: rgba(255,255,255,0.55); display: grid; place-items: center; font-style: normal; font-size: 0.7rem; filter: grayscale(1); opacity: 0.7; transition: all 0.25s; }
+.rm-matpaws i::before { content: "🐾"; }
+.rm-matpaws i.on { background: #ffc23d; filter: none; opacity: 1; transform: scale(1.12); box-shadow: 0 2px 0 #c98a10; }
+.rm-mat.on { box-shadow: 0 4px 0 #3fa585, 0 0 0 6px rgba(255,194,61,0.55), 0 10px 22px rgba(15,110,86,0.35); animation: rmMatGlow 1.6s ease-in-out infinite; }
+@keyframes rmMatGlow { 50% { box-shadow: 0 4px 0 #3fa585, 0 0 0 11px rgba(255,194,61,0.25), 0 10px 22px rgba(15,110,86,0.35); } }
+.rm-matsign { position: absolute; left: 50%; top: -10px; transform: translate(-50%, -100%); padding: 4px 12px; border-radius: 999px; background: #0f6e56; color: #fff; font-size: 0.72rem; font-weight: 800; white-space: nowrap; box-shadow: 0 3px 0 #085041; pointer-events: none; z-index: 4; }
+.rm-matsign::before { content: "🏁 "; }
+.rm-matsign::after { content: ""; position: absolute; left: 50%; bottom: -6px; margin-left: -6px; border: 6px solid transparent; border-bottom: 0; border-top-color: #0f6e56; }
+.rm-matsign.on { background: #ffc23d; color: #4a2c00; box-shadow: 0 3px 0 #c98a10; }
+.rm-matsign.on::before { content: "✅ "; }
+.rm-matsign.on::after { border-top-color: #ffc23d; }
+.rm-seat { position: absolute; right: 3%; bottom: 5%; padding: 8px 12px; border: 2px dashed #8a6a4a; border-radius: 16px; background: rgba(255,255,255,0.6); color: #5c3d22; font: inherit; font-size: 0.78rem; font-weight: 800; z-index: 5; }
 .rm-seat[hidden] { display: none; }
-.rm-ball { position: absolute; font-size: 1.35rem; line-height: 1; transform: translate(-50%, -60%) rotate(var(--r, 0deg)); cursor: pointer; filter: drop-shadow(0 3px 1px rgba(80,40,10,0.25)); }
-.rm-pet { position: absolute; width: 74px; padding: 0; border: 0; background: none; font: inherit; display: flex; flex-direction: column; align-items: center; transform: translate(-50%, -88%) scale(var(--s, 1)); transform-origin: 50% 88%; cursor: pointer; }
-.rm-pet img { width: 66px; height: 66px; object-fit: contain; transform: scaleX(var(--f, 1)); filter: drop-shadow(0 4px 2px rgba(80,40,10,0.22)); }
-.rm-pet::after { content: ""; position: absolute; left: 16%; right: 16%; top: 60px; height: 10px; border-radius: 50%; background: rgba(80,40,10,0.18); z-index: -1; }
-.rm-pet.ready::after { background: rgba(15,110,86,0.55); box-shadow: 0 0 0 3px #5dcaa5; }
+.rm-ball { position: absolute; font-size: 1.45rem; line-height: 1; transform: translate(-50%, -60%) rotate(var(--r, 0deg)); cursor: pointer; filter: drop-shadow(0 3px 1px rgba(80,40,10,0.25)); }
+.rm-pet { position: absolute; width: 92px; padding: 0; border: 0; background: none; font: inherit; display: flex; flex-direction: column; align-items: center; transform: translate(-50%, -88%) scale(var(--s, 1)); transform-origin: 50% 88%; cursor: pointer; }
+.rm-pet img { width: 82px; height: 82px; object-fit: contain; transform: scaleX(var(--f, 1)); filter: drop-shadow(0 4px 2px rgba(80,40,10,0.22)); }
+.rm-pet::after { content: ""; position: absolute; left: 20%; right: 20%; top: 74px; height: 12px; border-radius: 50%; background: rgba(80,40,10,0.18); z-index: -1; }
+.rm-pet.ready::after { background: rgba(255,194,61,0.6); box-shadow: 0 0 0 3px #ffc23d; }
 .rm-pet.busy { opacity: 0.55; }
 .rm-pet.busy .rm-tag::after { content: " · 🎮"; }
-.rm-tag { margin-top: -2px; max-width: 110px; padding: 1px 7px; border-radius: 999px; background: rgba(255,255,255,0.92); color: #4a1b0c; font-size: 0.66rem; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rm-tag { margin-top: -3px; max-width: 120px; display: flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 999px; background: rgba(255,255,255,0.94); color: #4a1b0c; font-size: 0.68rem; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; box-shadow: 0 1px 3px rgba(0,0,0,0.12); }
 .rm-pet.me .rm-tag { background: #ff8a4c; color: #fff; }
-.rm-say { position: absolute; bottom: 92%; left: 50%; transform: translateX(-50%) scale(0.6); max-width: 150px; width: max-content; padding: 4px 9px; border-radius: 12px; background: #fff; color: #2c2c2a; font-size: 0.72rem; font-weight: 700; line-height: 1.25; box-shadow: 0 2px 6px rgba(0,0,0,0.15); opacity: 0; transition: opacity 0.2s, transform 0.2s; pointer-events: none; }
+/* who brought the pet: its owner (green) or a co-parent (yellow) */
+.rl { flex: none; display: inline-block; width: 9px; height: 9px; border-radius: 50%; box-shadow: 0 0 0 2px #fff; vertical-align: middle; }
+.rl.owner { background: #2fbf71; }
+.rl.cop { background: #ffc23d; }
+.rm-say { position: absolute; bottom: 94%; left: 50%; transform: translateX(-50%) scale(0.6); max-width: 160px; width: max-content; padding: 5px 10px; border-radius: 13px; background: #fff; color: #2c2c2a; font-size: 0.74rem; font-weight: 700; line-height: 1.25; box-shadow: 0 2px 8px rgba(0,0,0,0.16); opacity: 0; transition: opacity 0.2s, transform 0.2s; pointer-events: none; }
 .rm-say::after { content: ""; position: absolute; left: 50%; bottom: -5px; margin-left: -5px; border: 5px solid transparent; border-bottom: 0; border-top-color: #fff; }
 .rm-say.show { opacity: 1; transform: translateX(-50%) scale(1); }
-.rm-emo { position: absolute; top: -8px; left: 50%; font-style: normal; font-size: 1.4rem; opacity: 0; transform: translate(-50%, 0); pointer-events: none; }
+.rm-emo { position: absolute; top: -6px; left: 50%; font-style: normal; font-size: 1.5rem; opacity: 0; transform: translate(-50%, 0); pointer-events: none; }
 .rm-emo.show { animation: rmEmo 1.6s ease-out; }
 @keyframes rmEmo { 0% { opacity: 0; transform: translate(-50%, 10px) scale(0.5); } 15% { opacity: 1; transform: translate(-50%, -6px) scale(1.15); } 75% { opacity: 1; transform: translate(-50%, -16px) scale(1); } 100% { opacity: 0; transform: translate(-50%, -26px); } }
 .rm-pet.walk img { animation: rmWalk 0.36s ease-in-out infinite; }
@@ -2866,9 +2887,9 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
 .rm-pet.p-spin img { animation: rmSpin 0.8s ease-in-out 2; }
 @keyframes rmSpin { to { rotate: y 360deg; } }
 .rm-pet.p-jump img, .rm-pet.p-five img { animation: rmJump 0.5s cubic-bezier(.3,1.6,.5,1) 2; }
-@keyframes rmJump { 0%, 100% { translate: 0 0; } 45% { translate: 0 -24px; } }
-.rm-pet.p-sit img { scale: 1 0.86; translate: 0 5px; transition: scale 0.2s, translate 0.2s; }
-.rm-pet.p-sleep img { rotate: -10deg; scale: 1 0.88; translate: 0 5px; }
+@keyframes rmJump { 0%, 100% { translate: 0 0; } 45% { translate: 0 -26px; } }
+.rm-pet.p-sit img { scale: 1 0.86; translate: 0 6px; transition: scale 0.2s, translate 0.2s; }
+.rm-pet.p-sleep img { rotate: -10deg; scale: 1 0.88; translate: 0 6px; }
 .rm-pet.p-sleep .rm-emo { opacity: 1; animation: rmZz 2s ease-in-out infinite; }
 @keyframes rmZz { 0%, 100% { transform: translate(-30%, 0); } 50% { transform: translate(-30%, -8px); } }
 .rm-pet.p-hug img, .rm-pet.p-love img { animation: rmHug 0.6s ease-in-out 2; }
@@ -2876,32 +2897,88 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
 .rm-pet.p-eat img { animation: rmEat 0.22s linear 4; }
 @keyframes rmEat { 50% { scale: 1.04 0.96; } }
 .rm-toys { position: absolute; inset: 0; pointer-events: none; z-index: 150; }
-.rm-toy { position: absolute; pointer-events: auto; padding: 0; border: 0; background: none; font-size: 1.7rem; line-height: 1; cursor: pointer; }
+.rm-toy { position: absolute; pointer-events: auto; padding: 0; border: 0; background: none; font-size: 1.8rem; line-height: 1; cursor: pointer; }
 .rm-toy[hidden] { display: none; }
-.rm-toy.bub { width: 38px; height: 38px; border-radius: 50%; background: radial-gradient(circle at 32% 30%, rgba(255,255,255,0.95) 0 12%, rgba(190,230,255,0.35) 13% 60%, rgba(160,120,255,0.45) 100%); border: 1.5px solid rgba(255,255,255,0.85); }
+.rm-toy.bub { width: 42px; height: 42px; border-radius: 50%; background: radial-gradient(circle at 32% 30%, rgba(255,255,255,0.95) 0 12%, rgba(190,230,255,0.35) 13% 60%, rgba(160,120,255,0.45) 100%); border: 1.5px solid rgba(255,255,255,0.85); }
 .rm-toy.got { animation: rmGot 0.3s ease-out forwards; pointer-events: none; }
 @keyframes rmGot { to { opacity: 0; scale: 1.8; } }
-.rm-actmenu { position: absolute; top: 10px; transform: translateX(-50%); width: 230px; padding: 10px; border-radius: 16px; background: #fff; box-shadow: 0 8px 24px rgba(0,0,0,0.2); z-index: 200; text-align: center; }
+.rm-actmenu { position: absolute; top: 12px; transform: translateX(-50%); width: 240px; padding: 12px; border-radius: 18px; background: #fff; box-shadow: 0 10px 28px rgba(0,0,0,0.22); z-index: 200; text-align: center; animation: rmPop 0.18s ease-out; }
+@keyframes rmPop { from { opacity: 0; transform: translateX(-50%) scale(0.92); } }
 .rm-actmenu[hidden] { display: none; }
-.rm-actmenu > b { display: block; margin-bottom: 6px; color: #14232b; font-size: 0.9rem; }
-.rm-acts { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-.rm-acts button, .rm-who { min-height: 40px; border: 0; border-radius: 12px; background: #fff1e6; color: #4a1b0c; font: inherit; font-size: 0.8rem; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 4px; }
-.rm-acts i { font-style: normal; font-size: 1.1rem; }
+.rm-actmenu > b { display: block; color: #14232b; font-size: 0.95rem; }
+.rm-role { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 2px; color: #55666e; font-size: 0.74rem; font-weight: 700; }
+.rm-acts { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px; }
+.rm-acts button, .rm-who { min-height: 42px; border: 0; border-radius: 12px; background: #fff1e6; color: #4a1b0c; font: inherit; font-size: 0.8rem; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 5px; }
+.rm-acts i { font-style: normal; font-size: 1.15rem; }
 .rm-who { width: 100%; margin-top: 6px; background: #f1efe8; color: #444441; font-weight: 700; }
-.rm-tip { position: absolute; left: 50%; bottom: 4px; transform: translateX(-50%); margin: 0; padding: 2px 10px; border-radius: 999px; background: rgba(255,255,255,0.75); color: #5c3d22; font-size: 0.68rem; font-weight: 700; white-space: nowrap; pointer-events: none; z-index: 140; transition: opacity 0.4s; }
+.rm-tip { position: absolute; left: 50%; top: 31%; transform: translateX(-50%); margin: 0; padding: 3px 12px; border-radius: 999px; background: rgba(255,255,255,0.82); color: #5c3d22; font-size: 0.7rem; font-weight: 700; white-space: nowrap; pointer-events: none; z-index: 140; transition: opacity 0.4s; }
 .rm-tip.gone { opacity: 0; }
-.rm-tabs { flex: none; margin: 8px 10px 0; }
+/* the host's Start button, over the room */
+.rm-go { position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); max-width: calc(100% - 28px); padding: 13px 26px; border: 0; border-radius: 999px; background: linear-gradient(#25b47d, #128a5f); color: #fff; font: inherit; font-size: 0.98rem; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; box-shadow: 0 4px 0 #0b6644, 0 10px 20px rgba(11,102,68,0.3); z-index: 160; }
+.rm-go[hidden] { display: none; }
+.rm-go:disabled { background: #e3eaed; color: #6d7a82; box-shadow: 0 3px 0 #c7d1d6; }
+.rm-go:not(:disabled):active { transform: translateX(-50%) translateY(3px); box-shadow: 0 1px 0 #0b6644; }
+/* the sheet over the bottom of the room, and the bar under it */
+.rm-sheet { position: relative; flex: none; max-height: 52%; display: flex; flex-direction: column; background: #fff; border-radius: 24px 24px 0 0; box-shadow: 0 -10px 28px rgba(20,35,43,0.18); z-index: 20; animation: rmSheet 0.22s cubic-bezier(.2,.9,.3,1); }
+@keyframes rmSheet { from { transform: translateY(40px); opacity: 0; } }
+.rm-sheet[hidden] { display: none; }
+.rm-sheethead { position: relative; flex: none; display: flex; align-items: center; justify-content: space-between; padding: 12px 14px 6px; }
+.rm-sheethead::before { content: ""; position: absolute; left: 50%; top: 6px; width: 40px; height: 4px; margin-left: -20px; border-radius: 4px; background: #d6e0e4; }
+.rm-sheethead b { font-size: 1rem; color: #14232b; }
 .rm-panel { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; }
 .rm-panel[hidden] { display: none; }
-.rm-chatpanel { overflow: hidden; }
-.rm-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; padding: 10px; align-content: start; }
-.rm-grid button { min-height: 64px; border: 0; border-radius: 16px; background: #fff; color: #14232b; font: inherit; font-size: 0.74rem; font-weight: 800; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; box-shadow: 0 2px 0 #d6e0e4; }
-.rm-grid button i { font-style: normal; font-size: 1.5rem; }
-.rm-grid button.wide { grid-column: 1 / -1; flex-direction: row; justify-content: flex-start; gap: 12px; padding: 8px 14px; text-align: left; }
+.rm-chatpanel { height: 36vh; overflow: hidden; }
+.rm-chatpanel .pg-chatlist { background: #f4f6f8; margin: 0 10px; border-radius: 16px; }
+.rm-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; padding: 6px 12px 14px; align-content: start; }
+.rm-grid button { min-height: 68px; border: 1.5px solid #e6ecef; border-radius: 16px; background: #fafbfc; color: #14232b; font: inherit; font-size: 0.74rem; font-weight: 800; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; }
+.rm-grid button i { font-style: normal; font-size: 1.6rem; }
+#g-roomtoys { grid-template-columns: repeat(3, 1fr); }
+.rm-grid button.toy { min-height: 104px; padding: 8px 6px; text-align: center; }
+.rm-grid button.toy small { color: #55666e; font-weight: 600; font-size: 0.66rem; line-height: 1.2; }
+.rm-grid button.wide { grid-column: 1 / -1; flex-direction: row; justify-content: flex-start; gap: 14px; padding: 10px 14px; text-align: left; }
 .rm-grid button.wide span { display: flex; flex-direction: column; }
-.rm-grid button.wide small { color: #55666e; font-weight: 600; font-size: 0.72rem; }
+.rm-grid button.wide small { color: #55666e; font-weight: 600; font-size: 0.74rem; }
 .rm-grid button:active, .rm-acts button:active { transform: scale(0.96); }
-.pg-roompage .pg-roomgame { padding-top: 4px; }
+.rm-gamepanel { padding: 2px 12px 14px; gap: 8px; }
+.rm-gamepanel .pg-roomgame { padding: 0; gap: 10px; }
+.rm-gamepanel .pg-roompicks { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; overflow: visible; }
+.rm-gamepanel .pg-roompicks button { width: auto; min-height: 74px; padding: 8px 4px; border: 2px solid #e6ecef; border-radius: 16px; background: #fafbfc; gap: 4px; }
+.rm-gamepanel .pg-roompicks button[aria-pressed="true"] { background: #fff1e6; border-color: var(--brand); box-shadow: 0 0 0 3px rgba(255,138,76,0.18); }
+.rm-gamepanel .pg-roompicks i { font-size: 1.7rem; }
+.rm-gamepanel .pg-roompicks span { font-size: 0.74rem; }
+.rm-gamepanel .pg-roomopp { padding: 8px 10px; border-radius: 14px; background: #f4f6f8; }
+.rm-gamepanel .pg-roomopp small { width: 100%; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em; }
+.rm-gamepanel .pg-roomstart { min-height: 52px; font-size: 1rem; }
+.rm-subhead { margin: 6px 2px 0; color: #55666e; font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; }
+.rm-gamepanel .pg-roommembers { padding: 0; }
+.rm-gamepanel .pg-roommembers button { background: #f4f6f8; }
+.rm-legend { display: flex; align-items: center; gap: 6px; margin: 2px; color: #55666e; font-size: 0.72rem; font-weight: 600; }
+.rm-legend .rl.cop { margin-left: 10px; }
+.rm-dock { flex: none; display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; padding: 6px 10px calc(6px + env(safe-area-inset-bottom, 0px)); height: calc(68px + env(safe-area-inset-bottom, 0px)); box-sizing: border-box; background: #fff; box-shadow: 0 -2px 12px rgba(20,35,43,0.08); position: relative; z-index: 21; }
+.rm-dock button { position: relative; border: 0; border-radius: 16px; background: none; color: #55666e; font: inherit; font-size: 0.72rem; font-weight: 800; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; }
+.rm-dock button i { font-style: normal; font-size: 1.4rem; }
+.rm-dock button[aria-pressed="true"] { background: #fff1e6; color: #c2531c; }
+.rm-dot { position: absolute; top: 6px; left: calc(50% + 10px); width: 10px; height: 10px; border-radius: 50%; background: #ff4d5e; box-shadow: 0 0 0 2px #fff; }
+.rm-dot[hidden] { display: none; }
+
+/* the Playground's news line */
+.pg-playnews { width: 100%; margin-top: 8px; display: flex; align-items: center; gap: 10px; padding: 9px 14px; border: 0; border-radius: 14px; background: rgba(255,255,255,0.7); color: #14232b; font: inherit; font-size: 0.82rem; text-align: left; box-shadow: 0 1px 4px rgba(20,35,43,0.05); }
+.pg-playnews[hidden] { display: none; }
+.pg-playnews i { font-style: normal; }
+.pg-playnews span { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pg-playnews small { color: #8a9aa1; }
+.pg-playnews span.in { animation: pgNewsIn 0.4s ease-out; }
+@keyframes pgNewsIn { from { opacity: 0; transform: translateY(6px); } }
+/* History: this week's ranking, with the prizes by the top 3 */
+.pg-weekinfo { list-style: none; padding: 10px 12px; border-radius: 14px; background: #fff8e6; color: #4a3a10; font-size: 0.85rem; line-height: 1.4; }
+.pg-weekinfo small { display: block; color: #6b5a24; font-size: 0.74rem; }
+.pg-prize { display: inline-block; margin-right: 6px; padding: 1px 8px; border-radius: 999px; background: linear-gradient(#ffd66b, #ffc23d); color: #4a2c00; font-size: 0.72rem; font-weight: 800; vertical-align: middle; box-shadow: 0 1px 0 #c98a10; }
+.pg-weeklist .pt small { font-size: 0.7rem; font-weight: 600; color: #8a9aa1; }
+.pg-playnews span.pg-grow { display: block; flex: 1; }
+.pg-playnews b, .pg-playnews small { display: inline; }
+.pg-weeklist > li.pg-weekinfo { display: block; }
+.pg-weekinfo b { white-space: nowrap; }
+.pg-prize { margin: 0 0 0 6px; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -3083,6 +3160,8 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
           <button type="button" class="pg-gamecard penalty" data-game="penalty"><span class="art" aria-hidden="true">🥅</span><b>Penalty kicks</b><small data-stat>Shoot, save, win</small></button>
         </div>
         <div class="pg-gamedots" id="g-gamedots"></div>
+        <!-- the news: who beat whom lately (one line at a time) -->
+        <button type="button" class="pg-playnews" id="g-playnews" hidden><i aria-hidden="true">📰</i><span class="pg-grow" id="g-playnewstext"></span></button>
         <!-- your last few games -->
         <div class="pg-recent">
           <div class="pg-recenthead"><b>Recent games</b><button type="button" class="pg-pillbtn" id="g-recentall">See all ›</button></div>
@@ -3297,48 +3376,55 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     <div class="pg pg-chatpage pg-roompage" id="g-roompage" hidden>
       <header class="pg-playhead">
         <button type="button" class="pg-playback" id="g-roomback" aria-label="Leave the room">←</button>
-        <h2 id="g-roomtitle">Room</h2>
+        <div class="rm-headtxt"><h2 id="g-roomtitle">Room</h2><div class="pg-roommeta" id="g-roommeta"></div></div>
         <button type="button" class="pg-playback" id="g-roommin" aria-label="Go home while I wait">🏠</button>
         <button type="button" class="pg-btn pg-primary pg-roominvite" id="g-roominvite">Invite</button>
       </header>
-      <div class="pg-roommeta" id="g-roommeta"></div>
-      <!-- the room itself: everyone's pet walks about, plays with the toys, and steps onto the mat when ready -->
+      <!-- the room itself: everyone's pet walks about, plays with the toys, and steps onto the rug when ready -->
       <div class="rm-scene" id="g-roomscene">
         <div class="rm-wall">
           <button type="button" class="rm-arcade" id="g-roomarcade"><i aria-hidden="true">🕹️</i><span><b id="g-roomarcadegame">Pick a game</b><small id="g-roomarcadesub"></small></span></button>
           <span class="rm-window" aria-hidden="true"></span>
+          <span class="rm-shelf" aria-hidden="true">🪴</span>
           <button type="button" class="rm-toybox" id="g-roomtoybox" aria-label="Toys">🧸</button>
         </div>
         <div class="rm-floor" id="g-roomfloor">
-          <div class="rm-mat" id="g-roommat"><span id="g-roommatlbl">Ready mat</span></div>
+          <div class="rm-mat" id="g-roommat"><i class="rm-matring" aria-hidden="true"></i><span class="rm-matpaws" id="g-roommatpaws" aria-hidden="true"></span><span class="rm-matsign" id="g-roommatlbl">Stand here when ready</span></div>
           <button type="button" class="rm-seat" id="g-roomseat" hidden>＋ Invite</button>
           <span class="rm-ball" id="g-roomball" aria-label="Ball" role="button">⚽</span>
         </div>
         <div class="rm-toys" id="g-roomtoylayer"></div>
         <div class="rm-actmenu" id="g-roomact" hidden></div>
         <p class="rm-tip" id="g-roomtip">Tap the floor to walk · tap a pet to say hi</p>
+        <button type="button" class="rm-go" id="g-roomgo" hidden></button>
       </div>
-      <div class="pg-tabs rm-tabs" id="g-roomtabs" role="tablist" aria-label="Room">
-        <button type="button" role="tab" data-rp="chat" aria-selected="true">💬 Chat</button>
-        <button type="button" role="tab" data-rp="emo" aria-selected="false">😄 Emotes</button>
-        <button type="button" role="tab" data-rp="toys" aria-selected="false">🧸 Toys</button>
-        <button type="button" role="tab" data-rp="game" aria-selected="false">🕹️ Game</button>
+      <!-- one sheet over the bottom of the room: chat, emotes, toys or the game. Tap outside it to close -->
+      <div class="rm-sheet" id="g-roomsheet" hidden>
+        <div class="rm-sheethead"><b id="g-roomsheettitle"></b><button type="button" class="pg-x" id="g-roomsheetx" aria-label="Close">✕</button></div>
+        <div class="rm-panel rm-chatpanel" data-rp="chat">
+          <ol class="pg-chatlist" id="g-roomchat" aria-live="polite"></ol>
+          <div class="pg-chatbar" id="g-roomreply" hidden><span class="pg-grow"><b id="g-roomreplytitle"></b><small id="g-roomreplytext"></small></span><button type="button" class="pg-x" id="g-roomreplyx" aria-label="Cancel">✕</button></div>
+          <div class="pg-roomsays" id="g-roomsays"></div>
+          <form class="pg-chatform" id="g-roomform" hidden>
+            <input id="g-roomin" maxlength="200" autocomplete="off" placeholder="Only your friends see this…" aria-label="Message to your friends">
+            <button type="submit" class="pg-btn pg-primary" aria-label="Send">➤</button>
+          </form>
+        </div>
+        <div class="rm-panel rm-grid" data-rp="emo" id="g-roomemos" hidden></div>
+        <div class="rm-panel rm-grid" data-rp="toys" id="g-roomtoys" hidden></div>
+        <div class="rm-panel rm-gamepanel" data-rp="game" hidden>
+          <div class="pg-roomgame" id="g-roomgame"></div>
+          <h3 class="rm-subhead">Players</h3>
+          <ul class="pg-roommembers" id="g-roommembers"></ul>
+          <p class="rm-legend"><i class="rl owner"></i> Owner of the pet <i class="rl cop"></i> Co-parent</p>
+        </div>
       </div>
-      <div class="rm-panel rm-chatpanel" data-rp="chat">
-        <ol class="pg-chatlist" id="g-roomchat" aria-live="polite"></ol>
-        <div class="pg-chatbar" id="g-roomreply" hidden><span class="pg-grow"><b id="g-roomreplytitle"></b><small id="g-roomreplytext"></small></span><button type="button" class="pg-x" id="g-roomreplyx" aria-label="Cancel">✕</button></div>
-        <div class="pg-roomsays" id="g-roomsays"></div>
-        <form class="pg-chatform" id="g-roomform" hidden>
-          <input id="g-roomin" maxlength="200" autocomplete="off" placeholder="Only your friends see this…" aria-label="Message to your friends">
-          <button type="submit" class="pg-btn pg-primary" aria-label="Send">➤</button>
-        </form>
-      </div>
-      <div class="rm-panel rm-grid" data-rp="emo" id="g-roomemos" hidden></div>
-      <div class="rm-panel rm-grid" data-rp="toys" id="g-roomtoys" hidden></div>
-      <div class="rm-panel" data-rp="game" hidden>
-        <ul class="pg-roommembers" id="g-roommembers"></ul>
-        <div class="pg-roomgame" id="g-roomgame"></div>
-      </div>
+      <nav class="rm-dock" id="g-roomtabs" aria-label="Room">
+        <button type="button" data-rp="chat" aria-pressed="false"><i aria-hidden="true">💬</i><span>Chat</span><b class="rm-dot" id="g-roomchatdot" hidden></b></button>
+        <button type="button" data-rp="emo" aria-pressed="false"><i aria-hidden="true">😄</i><span>Emotes</span></button>
+        <button type="button" data-rp="toys" aria-pressed="false"><i aria-hidden="true">🧸</i><span>Toys</span></button>
+        <button type="button" data-rp="game" aria-pressed="false"><i aria-hidden="true">🕹️</i><span>Game</span></button>
+      </nav>
     </div>
     <!-- deleting the account: it can't be undone, so the player types DELETE -->
     <div class="pg pg-adopt" id="g-delcard" hidden>
@@ -3489,11 +3575,18 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     </div>
     <!-- your games in the last 7 days (tap your wins in the Playground) -->
     <div class="pg pg-card pg-sheet pg-histsheet" id="g-history" hidden>
-      <h2><span>🏁 Your games <small>last 7 days</small></span> <button type="button" class="pg-x" id="g-historyclose" aria-label="Close your games">✕</button></h2>
-      <p class="pg-hint" id="g-histsum"></p>
-      <div class="pg-histbests" id="g-histbests"></div>
-      <div class="pg-chips pg-histchips" id="g-histchips" role="tablist" aria-label="Filter by game"></div>
-      <ol class="pg-histlist" id="g-histlist"></ol>
+      <h2><span>🏁 History</span> <button type="button" class="pg-x" id="g-historyclose" aria-label="Close history">✕</button></h2>
+      <div class="pg-tabs pg-histmode" id="g-histmode" role="tablist" aria-label="History">
+        <button type="button" role="tab" data-hm="games" aria-selected="true">🎮 Your games</button>
+        <button type="button" role="tab" data-hm="weeks" aria-selected="false">🏆 This week</button>
+      </div>
+      <div id="g-histgames">
+        <p class="pg-hint" id="g-histsum"></p>
+        <div class="pg-histbests" id="g-histbests"></div>
+        <div class="pg-chips pg-histchips" id="g-histchips" role="tablist" aria-label="Filter by game"></div>
+        <ol class="pg-histlist" id="g-histlist"></ol>
+      </div>
+      <ol class="pg-weeklist pg-weekhist" id="g-histweeks" hidden></ol>
     </div>
     <!-- in a room, but looking after the pet: the way back -->
     <button type="button" class="pg pg-roombar" id="g-roombar" hidden></button>
@@ -7794,7 +7887,8 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       r++; shotNow = null; phase = "aim";
       var shoot = iShoot(r);
       wrap.classList.toggle("shooting", shoot); wrap.classList.toggle("keeping", !shoot);
-      keeperImg.src = shoot ? opts.them.pic : opts.me.pic; shooterImg.src = shoot ? opts.me.pic : opts.them.pic;
+      var themPic = opts.them.picNow ? opts.them.picNow() : opts.them.pic;   // (their outfit picture may be ready by now)
+      keeperImg.src = shoot ? themPic : opts.me.pic; shooterImg.src = shoot ? opts.me.pic : themPic;
       resetKeeper(); ball.className = "pk-ball"; ball.style.transition = "none"; ball.style.transform = ""; mark.hidden = true;
       say.className = "pk-say"; say.textContent = shoot ? (r === 0 || STREAK && streakGoals === 0 ? "Swipe from the ball to the goal. 🎯 Top corners are worth 2!" : "Your kick! Swipe for the gap.") : "You're in goal! Tap where the ball is going.";
       timerBar.style.transition = "none"; timerBar.style.transform = "scaleX(0)";
@@ -7984,7 +8078,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261113070037";   // replaced by build_real.ps1
+    var APP_BUILD = "20261113080026";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -8613,7 +8707,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     }
     function myPresence() {
       var p = pet();
-      return { uid: me.id, pet_id: p.id, pet: p.name, variant: p.variant, level: p.level, wins: p.race_wins || 0, ach: achCount(), busy: !!raceNow };
+      return { uid: me.id, pet_id: p.id, pet: p.name, variant: p.variant, level: p.level, wins: p.race_wins || 0, ach: achCount(), busy: !!raceNow, hat: p.hat || null, glasses: p.glasses || null };
     }
     function joinLobby() {
       lobby = sb.channel("playground", { config: { presence: { key: me.id }, broadcast: { self: false } } });
@@ -9055,7 +9149,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       if (!inv || !inv.pet || blocked.indexOf(inv.pet.pet_id) >= 0 || invSeen(m.room)) return;
       if (raceNow || inviteOpen || document.querySelector(".pg-game")) { sendLive("reply", { to: m.from, from: me.id, room: m.room, ok: false, busy: true }); return; }
       markInv(inv.id);
-      showInvite({ from: m.from, room: m.room, game: gameOf(inv.game), pic: petPic(inv.pet.variant), html: petTagHTML(inv.pet), canBlock: !friendOf(m.from), pet: inv.pet, vs: !!m.vs, fast: !!m.fast });
+      showInvite({ from: m.from, room: m.room, game: gameOf(inv.game), pic: otherPic(inv.pet), html: petTagHTML(inv.pet), canBlock: !friendOf(m.from), pet: inv.pet, vs: !!m.vs, fast: !!m.fast });
     }
     // invites friends saved for me: a fresh one (with its room) joins the game; an older one offers to invite back
     async function checkPlayInvites() {
@@ -9067,7 +9161,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       markInv(inv.id);
       var f = friendOf(inv.from), fresh = inv.room && (inv.secs || 0) < 90;
       if (!f && inv.game !== "room") {   // not a friend: only ever their pet, and only while the game is waiting
-        if (fresh && inv.pet) showInvite({ from: inv.from, room: inv.room, game: gameOf(inv.game), pic: petPic(inv.pet.variant), html: petTagHTML(inv.pet), canBlock: true, pet: inv.pet, old: 0 });
+        if (fresh && inv.pet) showInvite({ from: inv.from, room: inv.room, game: gameOf(inv.game), pic: otherPic(inv.pet), html: petTagHTML(inv.pet), canBlock: true, pet: inv.pet, old: 0 });
         return;
       }
       if (inv.game === "room") {
@@ -9146,8 +9240,8 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       if (!tab) weekSub(b);
       $("g-weekhint").textContent = "Resets in " + weekLeft(b.ends) + ". " + (tab ? "This game's wins this week." : "The top 3 win 🐾 50, 25 and 15.");
       box.innerHTML = "";
-      (b.rows || []).forEach(function (r) { box.appendChild(weekRow(r)); });
-      if (b.me && b.me.place > 20) box.appendChild(weekRow({ place: b.me.place, wins: b.me.wins, me: true, uid: me.id, pet: pet() && pet().name, variant: pet() && pet().variant, level: pet() && pet().level }));
+      (b.rows || []).forEach(function (r) { box.appendChild(weekRow(r, !tab)); });
+      if (b.me && b.me.place > 20) box.appendChild(weekRow({ place: b.me.place, wins: b.me.wins, me: true, uid: me.id, pet: pet() && pet().name, variant: pet() && pet().variant, level: pet() && pet().level }, !tab));
       if (!(b.rows || []).length) box.innerHTML = '<li class="pg-logempty">Nobody has won yet this week. Play someone in a room and be first! 🏆</li>';
       if (!tab && (b.last || []).length) {
         var head = document.createElement("li"); head.className = "pg-weekhead"; head.textContent = "🏅 Last week's winners"; box.appendChild(head);
@@ -9158,10 +9252,12 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         });
       }
     }
-    function weekRow(r) {
+    var WEEK_PRIZES = [50, 25, 15];   // (weekly_settle in the database pays these)
+    function weekRow(r, prize) {
       var f = friendOf(r.uid), li = document.createElement("li"); li.className = r.me ? "me" : "";
       li.innerHTML = '<span class="rk">' + (r.place <= 3 ? MEDALS[r.place - 1] : r.place) + '</span><img alt="" src="' + esc(petPic(r.variant)) + '"><span class="pg-grow"><span class="ttl">' +
-        tagHTML(r.level || 1, r.me ? "You" : f ? f.name : shownPetName(r.pet)) + '</span></span><b class="pt">' + r.wins + "</b>";
+        tagHTML(r.level || 1, r.me ? "You" : f ? f.name : shownPetName(r.pet)) +
+        (prize && r.place <= 3 ? '<span class="pg-prize">🐾 ' + WEEK_PRIZES[r.place - 1] + "</span>" : "") + '</span></span><b class="pt">' + r.wins + '<small> ' + (r.wins === 1 ? "win" : "wins") + "</small></b>";
       return li;
     }
     $("g-openweek").addEventListener("click", function () { weekTab = ""; $("g-week").hidden = false; drawWeek(); });
@@ -9259,7 +9355,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       try { localStorage.setItem(ROOM_KEY, r.id); } catch (e) {}
       keepAwake();
       roomOpp = null; $("g-roomchat").innerHTML = ""; $("g-roomin").value = ""; roomReplyBar(null);
-      $("g-rooms").hidden = true; $("g-play").hidden = true; rmStart(); roomTab("chat"); roomNow.tab = null; roomShow();
+      $("g-rooms").hidden = true; $("g-play").hidden = true; rmStart(); roomTab(null); roomShow();
       try {
         roomCh = sb.channel("pg-hub-" + r.id, { config: { broadcast: { self: false } } });
         roomCh.on("broadcast", { event: "poke" }, function () { roomPoll(); });
@@ -9362,7 +9458,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       messageGestures(li, m, roomMsgSheet, function (x) { roomReplyBar("reply", x); });
       if (old) box.replaceChild(li, old); else { box.appendChild(li); box.scrollTop = box.scrollHeight; }
       // new words show over the pet that said them
-      if (!old && !m.deleted && m.body && (!m.at || Date.now() - Date.parse(m.at) < 20000)) rmSay(m.uid, m.body);
+      if (!old && !m.deleted && m.body && (!m.at || Date.now() - Date.parse(m.at) < 20000)) { rmSay(m.uid, m.body); if (m.uid !== me.id && (!roomNow || roomNow.tab !== "chat")) $("g-roomchatdot").hidden = false; }
     }
     async function roomReact(m, e) {
       try { await rpc("room_msg_react", { p_id: m.id, p_emoji: e }); roomPoke(); roomPoll(); } catch (err) { say(friendly(err.message)); }
@@ -9480,6 +9576,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         : R.played === roomPickGame ? "🔁 Play again" + (roomStake ? " for 🐾 " + roomStake : "")
         : roomStake ? "Offer 🐾 " + roomStake + " to " + roomName(rival.uid) : "▶ Start " + GAMES[roomPickGame].name + (readyOthers.length && !two ? " (" + (readyOthers.length + 1) + " ready)" : "");
       go.disabled = !ready;
+      setTimeout(rmGoButton, 0);
       go.addEventListener("click", function () {
         if (!roomStake) { roomStartGame(); return; }
         rpc("stake_offer", { p_room: R.id, p_to: rival.uid, p_amount: roomStake, p_game: roomPickGame }).then(function () { roomPoke(); roomPoll(); }, function (e) { say(e.message); });
@@ -9683,7 +9780,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     // somewhere), "emo" (an emote), "act" (waving at, hugging… another pet), "ball" (a kick), "toy" (bubbles or snacks
     // start, with a seed so every phone shows the same ones) and "pop" (someone got one). Nothing here is typed text,
     // so Safe mode has nothing to hide; chat shows as speech bubbles over the pet that said it.
-    var RM_SPEED = 0.42, RM_MAT = { x0: 0.3, x1: 0.7, y0: 0.62, y1: 1 }, RM_ST_EVERY = 4000;
+    var RM_SPEED = 0.42, RM_MAT = { x: 0.5, y: 0.8, rx: 0.2, ry: 0.17 }, RM_ST_EVERY = 4000;
     var RM_EMOTES = [["wave", "👋", "Wave"], ["dance", "💃", "Dance"], ["spin", "🌀", "Spin"], ["jump", "🦘", "Jump"], ["sit", "🪑", "Sit"], ["sleep", "😴", "Nap"], ["love", "❤️", "Love"], ["laugh", "😂", "Laugh"]];
     var RM_ACTS = [["wave", "👋", "Wave"], ["five", "🙌", "High five"], ["hug", "🤗", "Hug"], ["dance", "💃", "Dance together"]];
     var RM_TOYS = [["bub", "🫧", "Bubbles", "Pop them before they float away"], ["snk", "🍎", "Snack toss", "Catch the falling snacks"], ["ball", "⚽", "Kick the ball", "Walk into it to kick it"]];
@@ -9691,7 +9788,13 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     function rmClamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
     function rmRnd(seed) { return function () { seed = (seed + 0x6D2B79F5) | 0; var t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
     function rmSend(p) { p.u = me.id; try { if (roomCh) roomCh.send({ type: "broadcast", event: "rm", payload: p }); } catch (e) {} }
-    function rmOnMat(q) { return q.x >= RM_MAT.x0 && q.x <= RM_MAT.x1 && q.y >= RM_MAT.y0 && q.y <= RM_MAT.y1; }
+    // where the rug is, from 0 to 1 across the floor (it keeps its shape, so it's measured rather than fixed)
+    function rmMatBox() {
+      var f = $("g-roomfloor").getBoundingClientRect(), m = $("g-roommat").getBoundingClientRect();
+      if (!f.width || !m.width) return RM_MAT;
+      return { x: (m.left + m.width / 2 - f.left) / f.width, y: (m.top + m.height / 2 - f.top) / f.height, rx: m.width / 2 / f.width, ry: m.height / 2 / f.height };
+    }
+    function rmOnMat(q) { var b = rmMatBox(), dx = (q.x - b.x) / b.rx, dy = (q.y - b.y) / b.ry; return dx * dx + dy * dy <= 1; }
     function rmReady(uid) { var q = rmS && rmS.pets[uid]; return !!(q && q.ready); }
     function rmStart() {
       rmStop();
@@ -9724,12 +9827,12 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
           if (!mine) rmSend({ k: "st", x: rmMe().x, y: rmMe().y, tx: rmMe().tx, ty: rmMe().ty, r: rmMe().ready, g: rmHostGame() });   // say where I am to the newcomer
         }
         q.m = m;
-        var src = m.uid === me.id ? gamePic(pet()) : petPic(m.variant);
+        var src = m.uid === me.id ? gamePic(pet()) : otherPic(m);
         var img = q.el.querySelector("img"); if (img.getAttribute("src") !== src) img.src = src;
-        var tag = (m.uid === R.host ? "👑 " : "") + (m.uid === me.id ? shownPetName(m.pet) + " (you)" : roomName(m.uid));
-        var tg = q.el.querySelector(".rm-tag"); if (tg.textContent !== tag) tg.textContent = tag;
+        var tag = (m.role ? '<i class="rl ' + (m.role === "owner" ? "owner" : "cop") + '"></i>' : "") + (m.uid === R.host ? "👑 " : "") + esc(m.uid === me.id ? shownPetName(m.pet) + " (you)" : roomName(m.uid));
+        var tg = q.el.querySelector(".rm-tag"); if (tg.innerHTML !== tag) tg.innerHTML = tag;
         q.el.classList.toggle("busy", !!m.busy);
-        q.el.setAttribute("aria-label", roomName(m.uid) + (m.busy ? ", in a game" : ""));
+        q.el.setAttribute("aria-label", roomName(m.uid) + (m.role === "owner" ? ", owner of " + shownPetName(m.pet) : m.role ? ", co-parent of " + shownPetName(m.pet) : "") + (m.busy ? ", in a game" : ""));
       });
       Object.keys(rmS.pets).forEach(function (u) { if (!here[u]) { rmS.pets[u].el.remove(); delete rmS.pets[u]; } });
       // an empty spot by the door: invite someone
@@ -9740,9 +9843,14 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     function rmHostGame() { return roomNow && roomNow.host === me.id ? roomPickGame || null : undefined; }
     function rmMatLabel() {
       var R = roomNow; if (!rmS || !R) return;
-      var n = R.members.filter(function (m) { return rmReady(m.uid); }).length;
-      $("g-roommatlbl").textContent = n ? "Ready · " + n + " of " + R.members.length : "Ready mat";
-      $("g-roommat").classList.toggle("on", rmReady(me.id));
+      var n = R.members.filter(function (m) { return rmReady(m.uid); }).length, mine = rmReady(me.id);
+      var sign = mine ? "You're ready! " + n + " of " + R.members.length : n ? n + " of " + R.members.length + " ready" : "Stand here when ready";
+      if ($("g-roommatlbl").textContent !== sign) $("g-roommatlbl").textContent = sign;
+      $("g-roommatlbl").classList.toggle("on", mine);
+      if ($("g-roommat").classList.contains("on") !== mine) { $("g-roommat").classList.toggle("on", mine); if (mine) { var mc = fxCentre($("g-roomscene"), $("g-roommat")); fxBurst($("g-roomscene"), mc.x, mc.y, { n: 12, spread: 50, colors: ["#5dcaa5", "#ffc23d", "#ffffff"] }); } }
+      var paws = R.members.map(function (m) { return '<i class="' + (rmReady(m.uid) ? "on" : "") + '"></i>'; }).join("");
+      if ($("g-roommatpaws").innerHTML !== paws) $("g-roommatpaws").innerHTML = paws;
+      rmGoButton();
       // the arcade board on the wall: the next game
       var g = R.host === me.id ? roomPickGame : rmS.hostGame, G = g && GAMES[g], live = roomLive();
       $("g-roomarcadegame").textContent = live ? "👀 Watch " + GAMES[R.game].name : G ? G.art + " " + G.name : R.host === me.id ? "Pick a game" : "No game yet";
@@ -9890,7 +9998,8 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       var box = $("g-roomact");
       if (uid === me.id) { roomTab("emo"); return; }
       var q = rmS.pets[uid]; if (!q) return;
-      box.innerHTML = '<b>' + esc(roomName(uid)) + '</b><div class="rm-acts"></div>';
+      var who = q.m && q.m.role ? (q.m.role === "owner" ? "Owner of " : "Co-parent of ") + shownPetName(q.m.pet) : "";
+      box.innerHTML = '<b>' + esc(roomName(uid)) + "</b>" + (who ? '<small class="rm-role"><i class="rl ' + (q.m.role === "owner" ? "owner" : "cop") + '"></i>' + esc(who) + "</small>" : "") + '<div class="rm-acts"></div>';
       RM_ACTS.forEach(function (A) {
         var b = document.createElement("button"); b.type = "button"; b.innerHTML = "<i>" + A[1] + "</i>" + esc(A[2]);
         b.addEventListener("click", function (e) {
@@ -9922,25 +10031,49 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       rmToyGo(kind, seed, me.id); rmSend({ k: "toy", t: kind, s: seed });
     }
     // the panel under the room: chat, emotes, toys or the game
+    var rmSwallowAt = 0;   // (the tap that closes a sheet doesn't also walk the pet)
+    var RM_SHEET_TITLES = { chat: "💬 Chat", emo: "😄 Emotes", toys: "🧸 Toys", game: "🕹️ Game" };
     function roomTab(which) {
-      Array.prototype.forEach.call(document.querySelectorAll("#g-roomtabs [data-rp]"), function (b) { b.setAttribute("aria-selected", b.dataset.rp === which ? "true" : "false"); });
-      Array.prototype.forEach.call(document.querySelectorAll("#g-roompage .rm-panel"), function (p) { p.hidden = p.dataset.rp !== which; });
-      if (which === "chat") { var c = $("g-roomchat"); c.scrollTop = c.scrollHeight; }
-      if (roomNow) roomNow.tab = which;
+      var open = which || null;
+      Array.prototype.forEach.call(document.querySelectorAll("#g-roomtabs [data-rp]"), function (b) { b.setAttribute("aria-pressed", b.dataset.rp === open ? "true" : "false"); });
+      Array.prototype.forEach.call(document.querySelectorAll("#g-roompage .rm-panel"), function (p) { p.hidden = p.dataset.rp !== open; });
+      $("g-roomsheet").hidden = !open; $("g-roompage").classList.toggle("sheet", !!open);
+      if (open) $("g-roomsheettitle").textContent = RM_SHEET_TITLES[open] || "";
+      if (open === "chat") { var c = $("g-roomchat"); c.scrollTop = c.scrollHeight; $("g-roomchatdot").hidden = true; }
+      $("g-roomact").hidden = true;
+      if (roomNow) roomNow.tab = open;
     }
-    Array.prototype.forEach.call(document.querySelectorAll("#g-roomtabs [data-rp]"), function (b) { b.addEventListener("click", function () { roomTab(b.dataset.rp); }); });
+    Array.prototype.forEach.call(document.querySelectorAll("#g-roomtabs [data-rp]"), function (b) {
+      b.addEventListener("click", function () { var on = !$("g-roomsheet").hidden && roomNow && roomNow.tab === b.dataset.rp; roomTab(on ? null : b.dataset.rp); });
+    });
+    $("g-roomsheetx").addEventListener("click", function () { roomTab(null); });
+    // a tap anywhere outside the sheet (or the menu over a pet) closes it
+    document.addEventListener("pointerdown", function (e) {
+      if ($("g-roompage").hidden) return;
+      if (!$("g-roomact").hidden && !e.target.closest(".rm-actmenu, .rm-pet")) { $("g-roomact").hidden = true; rmSwallowAt = Date.now(); }
+      if (!$("g-roomsheet").hidden && !e.target.closest(".rm-sheet, .rm-dock, #g-msgsheet, .pg-sheet")) { roomTab(null); rmSwallowAt = Date.now(); }
+    }, true);
+    // the host's big Start button over the room, once a game is picked and someone is here to play
+    function rmGoButton() {
+      var R = roomNow, go = $("g-roomgo"); if (!R) return;
+      var inner = document.querySelector("#g-roomgame .pg-roomstart"), show = R.host === me.id && !!roomPickGame && R.members.length >= 2 && !!inner && !R.stake && !roomLive();
+      go.hidden = !show; if (!show) return;
+      var txt = inner.textContent; if (go.textContent !== txt) go.textContent = txt;
+      go.disabled = inner.disabled;
+    }
+    $("g-roomgo").addEventListener("click", function () { var inner = document.querySelector("#g-roomgame .pg-roomstart"); if (inner && !inner.disabled) inner.click(); });
     RM_EMOTES.forEach(function (E) {
       var b = document.createElement("button"); b.type = "button"; b.innerHTML = "<i>" + E[1] + "</i><span>" + esc(E[2]) + "</span>";
       b.addEventListener("click", function () { rmEmote(E[0]); });
       $("g-roomemos").appendChild(b);
     });
     RM_TOYS.forEach(function (T) {
-      var b = document.createElement("button"); b.type = "button"; b.className = "wide"; b.innerHTML = "<i>" + T[1] + "</i><span><b>" + esc(T[2]) + "</b><small>" + esc(T[3]) + "</small></span>";
+      var b = document.createElement("button"); b.type = "button"; b.className = "toy"; b.innerHTML = "<i>" + T[1] + "</i><b>" + esc(T[2]) + "</b><small>" + esc(T[3]) + "</small>";
       b.addEventListener("click", function () { rmToy(T[0]); });
       $("g-roomtoys").appendChild(b);
     });
     $("g-roomfloor").addEventListener("click", function (e) {
-      if (!rmS || e.target.closest(".rm-pet, .rm-seat, .rm-toy")) return;
+      if (!rmS || e.target.closest(".rm-pet, .rm-seat, .rm-toy") || Date.now() - rmSwallowAt < 500) return;
       $("g-roomact").hidden = true; rmS.lastInput = Date.now();
       if (e.target.closest(".rm-ball")) { rmToy("ball"); return; }
       var at = rmFloorAt(e); rmWalk(at.x, at.y);
@@ -10232,7 +10365,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       function goRace(m) {
         var prog = {}, latest = 0, sentN = 0, gone = {}, steps = raceSteps(!!m.long);
         var race = startTapRace({ steps: steps,
-          players: m.players.map(function (x) { return { uid: x.uid, pic: x.uid === me.id && x.variant === p.variant ? gamePic(p) : petPic(x.variant), html: x.uid === me.id ? tagHTML(p.level, p.name) : petTagHTML(x), me: x.uid === me.id }; }),
+          players: m.players.map(function (x) { return { uid: x.uid, pic: x.uid === me.id && x.variant === p.variant ? gamePic(p) : otherPic(x), html: x.uid === me.id ? tagHTML(p.level, p.name) : petTagHTML(x), me: x.uid === me.id }; }),
           onTap: function (n) { latest = n; prog[me.id] = n; },
           onFinish: function () { if (host) referee(me.id); else { R.send("fin", { uid: me.id }); race.status("🏁 Waiting for the result…"); } },
           onQuick: qcSend,
@@ -10284,7 +10417,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         var other = others()[0], latest = 0, sentN = -1, finals = {}, gone = false, judgeT = null, theirs = 0;
         var endlessDuel = game === "bamboo";
         var bam = (game === "beat" ? startBeatDash : startBambooGame)({
-          pic: gamePic(p), seed: seedOf(room), live: true, endless: endlessDuel, them: { pic: petPic(other.variant), html: petTagHTML(other) },
+          pic: gamePic(p), seed: seedOf(room), live: true, endless: endlessDuel, them: { pic: otherPic(other), html: petTagHTML(other) },
           onScore: function (n) { latest = n; },
           onQuick: qcSend,
           onQuit: function () { leave(); openPlay(); },
@@ -10359,7 +10492,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       function goBall(m) {
         var other = others()[0], vs = !!m.vs;
         var bp = startBallPass({
-          me: { pic: gamePic(p), html: tagHTML(p.level, p.name) }, them: { pic: petPic(other.variant), html: petTagHTML(other) },
+          me: { pic: gamePic(p), html: tagHTML(p.level, p.name) }, them: { pic: otherPic(other), html: petTagHTML(other) },
           iServe: m.first === me.id, live: true, versus: vs, fast: !!m.fast,
           onHit: function (n, fast, lane) { R.send("hit", { n: n, fast: !!fast, lane: lane | 0 }); },
           onDrop: function (n) { R.send("drop", { n: n }); },
@@ -10403,7 +10536,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       function goPenalty(m) {
         var other = others()[0];
         var pk = startPenalty({
-          me: { pic: gamePic(p), html: tagHTML(p.level, p.name) }, them: { pic: petPic(other.variant), html: petTagHTML(other) },
+          me: { pic: gamePic(p), html: tagHTML(p.level, p.name) }, them: { pic: otherPic(other), picNow: function () { return otherPic(other); }, html: petTagHTML(other) },
           iFirst: m.first === me.id, live: true, seed: seedOf(room),
           onShot: function (k, shot) { R.send("shot", { k: k, shot: shot }); },
           onResult: function (k, res) { R.send("pres", { k: k, res: res.res, dive: res.dive }); },
@@ -10924,27 +11057,106 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         if (!p || p.status !== "home" || !modelRoot || !renderer || !scene || !camera || bathing) return;
         if (!$("g-sheet").hidden || !$("g-store").hidden || tryOn) return;   // (a try-on or a zoomed camera isn't the real look)
         var key = gamePicKey(p); if (gamePicMemo[key]) return;
-        var keep = { b: blinkAmount.value, l: [BLINK_EYES.L.droop.value, BLINK_EYES.L.tilt.value], r: [BLINK_EYES.R.droop.value, BLINK_EYES.R.tilt.value] };
-        blinkAmount.value = 0; BLINK_EYES.L.droop.value = BLINK_EYES.R.droop.value = 0; BLINK_EYES.L.tilt.value = BLINK_EYES.R.tilt.value = 0;
-        var oc = renderer.getClearColor(new THREE.Color()), oa = renderer.getClearAlpha();
+        gamePicMemo = {}; gamePicMemo[key] = snapPet(!!p.hat);
+      } catch (e) { /* the plain picture still works */ }
+    }
+    // a picture of the 3D pet as it is now: eyes open, clear background, framed from its feet to the top of its head (or hat)
+    function snapPet(hasHat) {
+      var keep = { b: blinkAmount.value, l: [BLINK_EYES.L.droop.value, BLINK_EYES.L.tilt.value], r: [BLINK_EYES.R.droop.value, BLINK_EYES.R.tilt.value] };
+      blinkAmount.value = 0; BLINK_EYES.L.droop.value = BLINK_EYES.R.droop.value = 0; BLINK_EYES.L.tilt.value = BLINK_EYES.R.tilt.value = 0;
+      var oc = renderer.getClearColor(new THREE.Color()), oa = renderer.getClearAlpha();
+      try {
         renderer.setClearColor(oc, 0); renderer.render(scene, camera);
         var src = renderer.domElement;
         var proj = function (y) { var v = modelRoot.localToWorld(new THREE.Vector3(0, y, 0)).project(camera); return { x: (v.x + 1) / 2 * src.width, y: (1 - v.y) / 2 * src.height }; };
-        var foot = proj(0), top = proj(p.hat ? 1.24 : 1.0), side = Math.max(8, (foot.y - top.y) * 1.08);
+        var foot = proj(0), top = proj(hasHat ? 1.24 : 1.0), side = Math.max(8, (foot.y - top.y) * 1.08);
         var out = document.createElement("canvas"); out.width = out.height = 256;
         out.getContext("2d").drawImage(src, foot.x - side / 2, top.y - side * 0.05, side, side, 0, 0, 256, 256);
+        return out.toDataURL("image/png");
+      } finally {
         renderer.setClearColor(oc, oa);
         blinkAmount.value = keep.b; BLINK_EYES.L.droop.value = keep.l[0]; BLINK_EYES.L.tilt.value = keep.l[1]; BLINK_EYES.R.droop.value = keep.r[0]; BLINK_EYES.R.tilt.value = keep.r[1];
-        gamePicMemo = {}; gamePicMemo[key] = out.toDataURL("image/png");
-      } catch (e) { /* the plain picture still works */ }
+      }
+    }
+    // ---------- Other players' pets in their outfits ----------
+    // Only what a pet wears travels between phones (its colour, hat and glasses), and each is checked against the
+    // store's own list, so nothing else can be shown. This phone draws that pet with its own 3D model while a page
+    // covers the home screen, takes a picture, then puts its own pet back. Until then the plain picture shows.
+    var otherPicMemo = {}, otherPicQueue = [], otherPicBusy = false;
+    function lookOf(x) {
+      var h = x && x.hat ? item(x.hat) : null, g = x && x.glasses ? item(x.glasses) : null;
+      return { variant: x && PET_LOOKS[x.variant] ? x.variant : "panda_classic", hat: h && h.type === "hat" ? h.id : null, glasses: g && g.type === "glasses" ? g.id : null };
+    }
+    function lookKey(l) { return [l.variant, l.hat || "", l.glasses || ""].join("|"); }
+    function otherPic(x) {
+      var l = lookOf(x), k = lookKey(l);
+      if (!l.hat && !l.glasses) return petPic(l.variant);   // (nothing worn: the plain picture is the same pet)
+      if (otherPicMemo[k]) return otherPicMemo[k];
+      if (otherPicQueue.indexOf(k) < 0) otherPicQueue.push(k);
+      setTimeout(otherPicNext, 60);
+      return petPic(l.variant) + "#look=" + encodeURIComponent(k);   // (swapped for the outfit picture when it's ready)
+    }
+    function otherPicNext() {
+      if (otherPicBusy || !otherPicQueue.length) return;
+      // only while something covers the home screen (no one sees the swap), and never mid Dress up or bath
+      if (!window.__petHidden || !modelRoot || !renderer || !moodRig || bathing || tryOn) { clearTimeout(otherPicNext.t); otherPicNext.t = setTimeout(otherPicNext, 1500); return; }
+      var k = otherPicQueue.shift(), part = k.split("|"), l = { variant: part[0], hat: part[1] || null, glasses: part[2] || null };
+      otherPicBusy = true;
+      var done = function () { otherPicBusy = false; setTimeout(otherPicNext, 30); };
+      // hats and glasses from the food pack come with it; the fur picture may need fetching too
+      Promise.resolve(loadFoodPack()).then(function () {
+        var look = PET_LOOKS[l.variant];
+        if (look && look.tex) furTexture(look.tex, shoot); else shoot();
+      }, shoot);
+      function shoot() {
+        if (!window.__petHidden || bathing || tryOn) { otherPicQueue.unshift(k); done(); return; }
+        var p = pet(), vis = modelRoot.visible, fake = { status: "home", hat: l.hat, glasses: l.glasses };
+        try {
+          modelRoot.visible = true;
+          setVariantLook(l.variant); updateHat(fake); updateGlasses(fake); setMud(0, true);
+          otherPicMemo[k] = snapPet(!!l.hat);
+        } catch (e) { otherPicMemo[k] = petPic(l.variant); }
+        // my own pet back as it was
+        try { modelRoot.visible = vis; applyLook(); updateHat(dressView(p)); updateGlasses(dressView(p)); setMud(p ? dirtOf(p) : 0, true); } catch (e) {}
+        var tail = "#look=" + encodeURIComponent(k);
+        Array.prototype.forEach.call(document.querySelectorAll("img"), function (im) { var s = im.getAttribute("src") || ""; if (s.slice(-tail.length) === tail) im.src = otherPicMemo[k]; });
+        if (typeof rmSync === "function") rmSync();
+        done();
+      }
     }
     // the picture for my pet in a game: its outfit if we have it, else the plain one
     function gamePic(p) { p = p || pet(); return (p && p === pet() && gamePicMemo[gamePicKey(p)]) || petPic(p && p.variant); }
+    // The Playground's news: one quiet line at a time ("Bo beat Pip at Penalty kicks · 5m"). Each item has a kind,
+    // so tournaments and the like can join in later.
+    var newsItems = [], newsAt = 0, newsT = null, newsLoaded = 0;
+    async function loadPlayNews() {
+      if (Date.now() - newsLoaded < 60000) { showPlayNews(); return; }
+      newsLoaded = Date.now();
+      try { newsItems = (await rpc("game_news", { p_limit: 10 })) || []; } catch (e) { newsItems = []; }
+      newsAt = 0; showPlayNews();
+    }
+    function newsText(n) {
+      var who = function (x) { return x && x.me ? "You" : x && (x.name || shownPetName(x.pet)) || "A player"; }, G = GAMES[n.game];
+      if (n.kind === "win") return "<b>" + esc(who(n.winner)) + "</b> " + (n.winner && n.winner.me ? "beat" : "beat") + " <b>" + esc(n.loser && n.loser.me ? "you" : who(n.loser)) + "</b>" + (G ? " at " + G.art + " " + esc(G.name) : "") + ' <small>· ' + esc(ago(n.at)) + "</small>";
+      return "";
+    }
+    function showPlayNews() {
+      var box = $("g-playnews"), list = newsItems.filter(function (n) { return newsText(n); });
+      clearInterval(newsT);
+      box.hidden = !list.length; if (!list.length) return;
+      var step = function () {
+        if ($("g-play").hidden) { clearInterval(newsT); return; }
+        var t = $("g-playnewstext"); t.classList.remove("in"); void t.offsetWidth;
+        t.innerHTML = newsText(list[newsAt % list.length]); t.classList.add("in"); newsAt++;
+      };
+      step(); if (list.length > 1) newsT = setInterval(step, 6000);
+    }
+    $("g-playnews").addEventListener("click", function () { if (newsItems.length > 1) { clearInterval(newsT); showPlayNews(); } });
     function openPlay() {
       if (!pet()) { say("Get a pet first, then you can play with it 🎮"); return; }
       snapGamePic();
       if (roomNow) { roomShow(); return; }   // (back from a room's game: back to the room)
-      $("g-play").hidden = false; $("g-menu").hidden = true;
+      $("g-play").hidden = false; $("g-menu").hidden = true; loadPlayNews();
       $("g-showonline").checked = showOnline();
       syncLobby();
       renderPlay(); loadFriends(); loadWeekSub();
@@ -11120,6 +11332,17 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         map.forEach(function (x) { if ($(x[0]) && !$(x[0]).hidden) on = x[1]; });
         ["g-tabgames", "g-openweek", "g-openrooms", "g-openhist"].forEach(function (id) { $(id).setAttribute("aria-selected", id === on ? "true" : "false"); });
       }
+      // picking a tab closes whatever the other tabs had open
+      var opens = { "g-openweek": "g-week", "g-openhist": "g-history", "g-openrooms": "g-rooms" };
+      ["g-tabgames", "g-openweek", "g-openrooms", "g-openhist"].forEach(function (id) {
+        $(id).addEventListener("click", function () { ["g-week", "g-history", "g-rooms"].forEach(function (x) { if (opens[id] !== x) $(x).hidden = true; }); }, true);
+      });
+      // and a tap outside Ranking or History closes it
+      document.addEventListener("pointerdown", function (e) {
+        ["g-week", "g-history"].forEach(function (x) {
+          if (!$(x).hidden && !e.target.closest("#" + x + ", #g-msgsheet, #g-petopts, .pg-tabs#g-playtabs")) $(x).hidden = true;
+        });
+      }, true);
       var mo = new MutationObserver(sync);
       map.forEach(function (x) { if ($(x[0])) mo.observe($(x[0]), { attributes: true, attributeFilter: ["hidden"] }); });
     })();
@@ -11385,7 +11608,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     }
     var histAll = [], histStakes = [], histGame = "";
     async function openHistory() {
-      $("g-history").hidden = false; histGame = "";
+      $("g-history").hidden = false; histGame = ""; histMode("games");
       var box = $("g-histlist"); box.innerHTML = '<li class="pg-logempty">Loading…</li>'; $("g-histsum").textContent = ""; $("g-histbests").innerHTML = ""; $("g-histchips").innerHTML = "";
       try { histAll = (await rpc("my_game_history")) || []; }
       catch (e) { box.innerHTML = '<li class="pg-logempty">' + esc(/my_game_history/.test(e.message) ? "Game history isn't switched on yet." : e.message) + "</li>"; return; }
@@ -11403,6 +11626,23 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       $("g-histchips").innerHTML = used.length > 1 ? [["", "All"]].concat(used.map(function (k) { return [k, GAMES[k].art + " " + GAMES[k].name]; }))
         .map(function (c) { return '<button type="button" class="pg-chip' + (c[0] === histGame ? " on" : "") + '" data-hg="' + c[0] + '">' + esc(c[1]) + "</button>"; }).join("") : "";
       drawHistory();
+    }
+    // History: your games, or this week's ranking with the prizes by the top 3 (to spur everyone on)
+    function histMode(m) {
+      Array.prototype.forEach.call(document.querySelectorAll("#g-histmode [data-hm]"), function (b) { b.setAttribute("aria-selected", b.dataset.hm === m ? "true" : "false"); });
+      $("g-histgames").hidden = m !== "games"; $("g-histweeks").hidden = m !== "weeks";
+      if (m === "weeks") drawWeekHistory();
+    }
+    Array.prototype.forEach.call(document.querySelectorAll("#g-histmode [data-hm]"), function (b) { b.addEventListener("click", function () { histMode(b.dataset.hm); }); });
+    async function drawWeekHistory() {
+      var box = $("g-histweeks"), b;
+      box.innerHTML = '<li class="pg-logempty">Loading…</li>';
+      try { b = await rpc("weekly_board", { p_game: null }); }
+      catch (e) { box.innerHTML = '<li class="pg-logempty">' + esc(/weekly_board/.test(e.message) ? "The ranking isn't switched on yet." : e.message) + "</li>"; return; }
+      box.innerHTML = '<li class="pg-weekinfo">🏆 This week\'s top 3 win <b>🐾 ' + WEEK_PRIZES.join("</b>, <b>🐾 ") + "</b><small>Wins against other players count (at least 3 to win a prize). Resets in " + esc(weekLeft(b.ends)) + ".</small></li>";
+      (b.rows || []).forEach(function (r) { box.appendChild(weekRow(r, true)); });
+      if (b.me && b.me.place > 20) box.appendChild(weekRow({ place: b.me.place, wins: b.me.wins, me: true, uid: me.id, pet: pet() && pet().name, variant: pet() && pet().variant, level: pet() && pet().level }, true));
+      if (!(b.rows || []).length) box.insertAdjacentHTML("beforeend", '<li class="pg-logempty">Nobody has won yet this week. Win a game against someone and take the top spot! 🏆</li>');
     }
     $("g-histchips").addEventListener("click", function (e) {
       var b = e.target.closest("[data-hg]"); if (!b) return;
@@ -14533,7 +14773,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     }, true);
     // The phone's back button (Android's back swipe): close whatever is on top instead of leaving the app. A game
     // asks first. On the main screen, a second back within 2 seconds closes the app.
-    var BACK = [["g-tour", "g-tourskip"], ["g-choose", "g-chooseno"], ["g-lboard", "g-lbclose"], ["g-apd", "g-apdclose"], ["g-admin", "g-adminclose"], ["g-celebrate", "g-cbok"], ["g-stconfirm", "g-sccancel"], ["g-achpop", "g-achok"], ["g-invite", "g-inviteno"], ["g-ask", "g-askcancel"], ["g-join", "g-joincancel"],
+    var BACK = [["g-roomsheet", "g-roomsheetx"], ["g-tour", "g-tourskip"], ["g-choose", "g-chooseno"], ["g-lboard", "g-lbclose"], ["g-apd", "g-apdclose"], ["g-admin", "g-adminclose"], ["g-celebrate", "g-cbok"], ["g-stconfirm", "g-sccancel"], ["g-achpop", "g-achok"], ["g-invite", "g-inviteno"], ["g-ask", "g-askcancel"], ["g-join", "g-joincancel"],
                 ["g-giftsend", "g-gsdone"], ["g-petopts", "g-poclose"], ["g-gamepick", "g-pickno"], ["g-gamehelp", "g-ghclose"], ["g-mode", "g-modeclose"],
                 ["g-pick", "g-pickclose"], ["g-history", "g-historyclose"], ".pg-game", ["g-msgsheet", "g-msgclose"], ["g-chatbar", "g-chatbarx"], ["g-chat", "g-chatback"], ["g-watch", "g-watchclose"], ["g-roomreply", "g-roomreplyx"], ["g-roomnew", "g-roomnewcancel"], ["g-roompage", "g-roommin"], ["g-rooms", "g-roomsclose"], ["g-seek", "g-seekclose"], ["g-daily", "g-dailyclose"], ["g-nudge", "g-nudgeno"], ["g-news", "g-newsok"], ["g-delcard", "g-delcancel"], ["g-safecard", "g-safecancel"], ["g-roomnew", "g-roomnewcancel"], ["g-roompage", "g-roomback"], ["g-rooms", "g-roomsclose"],
                 ["g-social", "g-socialclose"], ["g-play", "g-playclose"], ["g-bath", "g-bathcancel"], ["g-howto", "g-howskip"],
