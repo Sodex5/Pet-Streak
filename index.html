@@ -2708,6 +2708,15 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
 @media (max-width: 430px) { #g-play .pg-playhead .pg-playicon { display: none; } #g-play .pg-playhead h2 { font-size: 1.25rem; } }
 
 .pg-gpbody > * { flex-shrink: 0; }
+
+.pg-gamehud .pw { background: #d4537e !important; color: #fff !important; }
+.pg-gamehud .pw[hidden] { display: none; }
+
+.pk-trail { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 4; overflow: visible; }
+.pk-trail path { fill: none; stroke: rgba(255,255,255,0.85); stroke-width: 8; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 0 6px rgba(255,207,92,0.8)); }
+.pg-pen.shooting .pk-ball { cursor: grab; animation: pk-ballhint 1.4s ease-in-out infinite; }
+@keyframes pk-ballhint { 50% { translate: 0 -6px; } }
+@media (prefers-reduced-motion: reduce) { .pg-pen.shooting .pk-ball { animation: none; } }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -6226,6 +6235,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
   // ---------- Mini-games: Bamboo catch ----------
   // 30 seconds, full screen. Drag (or use the arrow keys) to move your pet along the bottom and catch the falling
   // food: +1 each, golden bamboo +3, and dodge the rocks (-2). Things fall faster as time runs out.
+  // Power-ups now and then: 🧲 a magnet pulls food to your pet for 5 seconds, ⏳ slow-mo slows everything for 4.
   // startBambooGame({ pic, name, onEnd(score) }) builds its own screen; real.js saves the score and shows the board.
   // As a live duel: { seed, live: true, them: {html}, onScore(n), onQuick(i) } -> both phones get the same falling
   // things (from the shared seed), the game waits for start() so both begin together, and opp(n) / quick(i) show the
@@ -6257,7 +6267,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     var wrap = document.createElement("div"); wrap.className = "pg-game";
     wrap.innerHTML =
       '<canvas aria-label="Bamboo catch: move your pet to catch the falling food"></canvas>' +
-      '<div class="pg-gamehud"><span class="sc">0</span><span class="cb" hidden></span>' + (opts.live ? '<span class="op"><span class="nm"></span> <b class="opn">0</b></span>' : "") +
+      '<div class="pg-gamehud"><span class="sc">0</span><span class="cb" hidden></span><span class="pw" hidden></span>' + (opts.live ? '<span class="op"><span class="nm"></span> <b class="opn">0</b></span>' : "") +
       '<span class="tm">' + BAMBOO_TIME + 's</span>' +
       (opts.onQuick ? '<button type="button" class="pg-qcbtn" aria-label="Send an emoji">💬</button>' : "") +
       '<button type="button" class="pg-gamex" aria-label="Stop the game">✕</button></div>' +
@@ -6285,7 +6295,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     var rival = null, OP = 68, ox = 0, oHop = 0, oLast = 0;
     if (opts.live && opts.them && opts.them.pic) { rival = new Image(); rival.src = opts.them.pic; }
     var px = W / 2, tx = W / 2, score = 0, items = [], pops = [], shake = 0, sparks = [], squash = 0, hurt = 0, inRow = 0, lean = 0;
-    var hudCombo = wrap.querySelector(".cb");
+    var hudCombo = wrap.querySelector(".cb"), hudPower = wrap.querySelector(".pw"), magnetUntil = 0, slowUntil = 0;
     function combo(n) { inRow = n; hudCombo.hidden = n < 3; hudCombo.textContent = "🔥 x" + n; if (n >= 3) { hudCombo.classList.remove("bump"); void hudCombo.offsetWidth; hudCombo.classList.add("bump"); } }
     function sparkle(x, y, gold) { for (var k = 0; k < (gold ? 14 : 8); k++) { var a = Math.random() * 6.28, v = 60 + Math.random() * 120; sparks.push({ x: x, y: y, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 60, t: 0, c: gold ? "#ffc23d" : ["#7bd389", "#ffffff", "#ffd36b"][k % 3] }); } }
     var state = opts.live ? "wait" : "count", t0 = performance.now(), last = t0, spawnIn = 0, ended = false, running = true, keys = {};
@@ -6313,9 +6323,9 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     document.addEventListener("visibilitychange", onVis);
 
     function spawn(elapsed) {
-      var r = rnd(), kind = r < 0.1 ? "gold" : r < 0.1 + Math.min(0.28, 0.12 + elapsed / 120) ? "rock" : "food";
+      var r = rnd(), kind = r < 0.1 ? "gold" : r < 0.1 + Math.min(0.28, 0.12 + elapsed / 120) ? "rock" : elapsed > 5 && r > 0.955 ? "magnet" : elapsed > 5 && r > 0.93 ? "slow" : "food";
       items.push({ x: 24 + rnd() * (W - 48), y: -30, kind: kind,
-        icon: kind === "gold" ? "🎋" : kind === "rock" ? "🪨" : BAMBOO_FOODS[Math.floor(rnd() * BAMBOO_FOODS.length)],
+        icon: kind === "gold" ? "🎋" : kind === "rock" ? "🪨" : kind === "magnet" ? "🧲" : kind === "slow" ? "⏳" : BAMBOO_FOODS[Math.floor(rnd() * BAMBOO_FOODS.length)],
         v: (H / 3.2) * (1 + elapsed / 22) * (0.85 + rnd() * 0.3), spin: (rnd() - 0.5) * 2 });
     }
     function pop(x, y, text, color) { pops.push({ x: x, y: y, text: text, color: color, t: 0 }); }
@@ -6386,10 +6396,22 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
 
       // falling things
       var catchY = H - 28 - P * 0.62;
+      // power-ups: the magnet pulls food (not rocks) toward your pet, slow-mo slows everything down
+      var magnet = magnetUntil > now, slow = slowUntil > now;
+      hudPower.hidden = !magnet && !slow;
+      if (magnet || slow) hudPower.textContent = (magnet ? "🧲 " + Math.ceil((magnetUntil - now) / 1000) + "s" : "") + (magnet && slow ? " " : "") + (slow ? "⏳ " + Math.ceil((slowUntil - now) / 1000) + "s" : "");
+      if (slow) { g.fillStyle = "rgba(120,180,255,0.12)"; g.fillRect(0, 0, W, H); }
+      if (magnet) { g.strokeStyle = "rgba(226,69,111," + (0.35 + Math.sin(now / 120) * 0.15) + ")"; g.lineWidth = 3; g.beginPath(); g.arc(px, H - 28 - P * 0.45, P * 0.85, 0, 7); g.stroke(); }
       items = items.filter(function (it) {
-        it.y += it.v * dt;
+        it.y += it.v * dt * (slow ? 0.45 : 1);
+        if (magnet && (it.kind === "food" || it.kind === "gold") && it.y > H * 0.25) it.x += (px - it.x) * Math.min(1, dt * 2.6);
         if (state === "play" && it.y > catchY && it.y < catchY + P * 0.55 && Math.abs(it.x - px) < P * 0.55) {
-          if (it.kind === "rock") { score = Math.max(0, score - 2); pop(it.x, catchY, "-2", "#b3261e"); shake = 0.3; hurt = 0.35; combo(0); if (typeof sfx === "function") sfx("splat"); }
+          if (it.kind === "magnet" || it.kind === "slow") {
+            if (it.kind === "magnet") magnetUntil = now + 5000; else slowUntil = now + 4000;
+            pop(it.x, catchY, it.kind === "magnet" ? "Magnet!" : "Slow-mo!", "#d4537e"); sparkle(it.x, catchY, true); squash = 0.22;
+            if (typeof sfx === "function") sfx("sparkle");
+          }
+          else if (it.kind === "rock") { score = Math.max(0, score - 2); pop(it.x, catchY, "-2", "#b3261e"); shake = 0.3; hurt = 0.35; combo(0); if (typeof sfx === "function") sfx("splat"); }
           else {
             var add = it.kind === "gold" ? 3 : 1; score += add; pop(it.x, catchY, "+" + add, it.kind === "gold" ? "#c98a00" : "#2b8a3e");
             sparkle(it.x, catchY, it.kind === "gold"); squash = 0.22; combo(inRow + 1);
@@ -6400,7 +6422,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
           if (opts.onScore) opts.onScore(score);
           return false;
         }
-        if (it.y > H + 40) { if (state === "play" && it.kind !== "rock" && inRow) combo(0); return false; }
+        if (it.y > H + 40) { if (state === "play" && (it.kind === "food" || it.kind === "gold") && inRow) combo(0); return false; }
         g.save(); g.translate(it.x, it.y); g.rotate(it.spin * it.y / 300);
         g.font = (it.kind === "gold" ? 40 : 34) + "px system-ui, 'Apple Color Emoji', 'Segoe UI Emoji'"; g.textAlign = "center"; g.textBaseline = "middle";
         g.fillText(it.icon, 0, 0); g.restore();
@@ -7298,6 +7320,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       '<div class="pk-timer" aria-hidden="true"><i></i></div>' +
       '<div class="pk-goal"><div class="pk-net"></div><div class="pk-spots"></div><img class="pk-keeper" alt=""></div>' +
       '<div class="pk-pitch"><img class="pk-shooter" alt=""><span class="pk-ball" aria-hidden="true">⚽</span></div>' +
+      '<svg class="pk-trail" aria-hidden="true"><path d=""/></svg>' +
       '<p class="pk-say" aria-live="polite"></p>' +
       '<div class="pk-controls"></div>' +
       '<div class="pg-gamemsg big">Get ready…</div>';
@@ -7341,7 +7364,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       wrap.classList.toggle("shooting", shoot); wrap.classList.toggle("keeping", !shoot);
       keeperImg.src = shoot ? opts.them.pic : opts.me.pic; shooterImg.src = shoot ? opts.me.pic : opts.them.pic;
       keeperImg.className = "pk-keeper"; ball.className = "pk-ball"; ball.style.transform = "";
-      say.className = "pk-say"; say.textContent = shoot ? "Your kick! Tap where to shoot." : "You're in goal! Which way will you dive?";
+      say.className = "pk-say"; say.textContent = shoot ? "Your kick! Swipe from the ball to the goal, or tap a spot." : "You're in goal! Which way will you dive?";
       controls.innerHTML = ""; spotsEl.innerHTML = "";
       if (shoot) {
         for (var row = 1; row >= 0; row--) for (var col = 0; col < 3; col++) (function (col, row) {
@@ -7393,6 +7416,44 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         })(meterStart);
       }
     }
+    // ---- swipe to shoot: from the ball toward the goal. Where it points is the spot (high or low, left, middle or
+    // right); how fast is the power, judged like the power bar (the same green zone, tighter against a better bot).
+    var swipe = null, trail = wrap.querySelector(".pk-trail path");
+    function swipeOk() { return live && !over && iShoot(r) && !myKick; }
+    wrap.addEventListener("pointerdown", function (e) {
+      if (!swipeOk() || e.target.closest("button, .pg-qcpal")) return;
+      var b = ball.getBoundingClientRect(), cx = b.left + b.width / 2, cy = b.top + b.height / 2;
+      if (Math.hypot(e.clientX - cx, e.clientY - cy) > 110) return;   // start on (or near) the ball
+      swipe = { x: e.clientX, y: e.clientY, t: performance.now(), pts: [[e.clientX, e.clientY]] };
+      try { wrap.setPointerCapture(e.pointerId); } catch (er) {}
+    });
+    wrap.addEventListener("pointermove", function (e) {
+      if (!swipe) return;
+      swipe.pts.push([e.clientX, e.clientY]);
+      var w0 = wrap.getBoundingClientRect();
+      trail.setAttribute("d", "M" + swipe.pts.map(function (p) { return Math.round(p[0] - w0.left) + " " + Math.round(p[1] - w0.top); }).join(" L"));
+    });
+    function swipeEnd(e) {
+      if (!swipe) return;
+      var s = swipe; swipe = null; trail.setAttribute("d", "");
+      if (!swipeOk()) return;
+      var dx = e.clientX - s.x, dy = e.clientY - s.y, dist = Math.hypot(dx, dy), ms = Math.max(1, performance.now() - s.t);
+      if (dist < 50 || dy > -30) return;                                // a tap, or not toward the goal
+      var gr = goal.getBoundingClientRect(), midY = gr.top + gr.height / 2;
+      var k = (midY - s.y) / dy, xAt = s.x + dx * k;                    // where the swipe line crosses the goal
+      var rel = (xAt - gr.left) / gr.width, col = Math.max(0, Math.min(2, Math.floor(rel * 3)));
+      var row = e.clientY < midY ? 1 : 0;                              // past the middle of the goal: high
+      var wide = rel < -0.15 || rel > 1.15;
+      var v = dist / ms, x = Math.max(0, Math.min(1, (v - 0.4) / 2.6)), d = x - 0.5;   // ~1.7 px a millisecond is spot on
+      var q = wide ? "bad" : Math.abs(d) < W / 2 ? "perfect" : Math.abs(d) < W ? "good" : "bad";
+      aim = { col: col, row: row };
+      var spot = spotsEl.children[(1 - row) * 3 + col];
+      Array.prototype.forEach.call(spotsEl.children, function (sp) { sp.classList.toggle("on", sp === spot); });
+      say.textContent = q === "perfect" ? "What a strike! 🔥" : q === "good" ? "Good kick!" : d > 0 || wide ? "Too hard!" : "Too soft…";
+      lock({ col: col, row: row, q: q, miss: q === "bad" && (d > 0 || wide) });
+    }
+    wrap.addEventListener("pointerup", swipeEnd);
+    wrap.addEventListener("pointercancel", function () { swipe = null; trail.setAttribute("d", ""); });
     function kick() {
       if (myKick || over || !aim) return;
       cancelAnimationFrame(meterRaf);
@@ -7523,7 +7584,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261113041631";   // replaced by build_real.ps1
+    var APP_BUILD = "20261113042538";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -8213,6 +8274,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
           ["Move your pet", "Drag your finger left and right. Your pet follows along the bottom of the screen.", '<div class="ht-ground"><span class="ht-slide">' + me + "</span></div>" + '<span class="ht-arrows">⬅️ ➡️</span>'],
           ["Catch the food", "Every food you catch is +1. Golden bamboo is worth +3, so go for it!", '<span class="ht-drop d1">🍎</span><span class="ht-drop d2">🎋</span><span class="ht-drop d3">🍌</span><div class="ht-ground"><span class="ht-slide">' + me + "</span></div>"],
           ["Dodge the rocks", "A rock takes 2 points off your score. Move out of the way!", '<span class="ht-drop d2">🪨</span><span class="ht-minus">-2</span><div class="ht-ground"><span class="ht-slide fast">' + me + "</span></div>"],
+          ["Grab power-ups", "🧲 A magnet pulls the food to your pet for 5 seconds. ⏳ Slow-mo slows everything down for 4 seconds.", '<div class="ht-big ht-pulse">🧲 ⏳</div>'],
           ["Beat the clock", "You have 30 seconds, and things fall faster near the end. In a Bamboo duel the same food falls for both of you, and the highest score wins.", '<div class="ht-big ht-pulse">⏱️ 30</div>']
         ],
         race: [
@@ -8239,8 +8301,8 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
           ["Solo or duel", "Solo: 3 hearts, and every trip costs one. How far can you go? Duel: 45 seconds on the same beat, highest score wins.", '<div class="ht-big">❤️❤️❤️</div>']
         ],
         penalty: [
-          ["Pick your spot", "When you shoot, tap one of the 6 spots in the goal: left, middle or right, high or low.", goal("aim", "⚽") + finger],
-          ["Hit the green", "A power bar slides along. Tap while it's in the green and the ball goes where you aimed. Too hard goes over or wide; too soft is an easy save.", '<div class="ht-bar"><i></i><b></b></div>'],
+          ["Swipe to shoot", "Swipe from the ball toward the goal. Where you swipe is where it goes: left, middle or right, high or low. A firm, quick swipe is a perfect strike; too hard flies over, too soft is an easy save.", goal("aim", "⚽") + finger],
+          ["Or tap and time it", "You can also tap a spot, then tap while the power bar is in the green. Too hard goes over or wide; too soft is an easy save.", '<div class="ht-bar"><i></i><b></b></div>'],
           ["Now you're the keeper", "When they shoot, tap one of the same 6 spots to dive there. You can't see their choice, so guess well! The right spot saves most shots.", goal("dive", "🧤")],
           ["Most goals wins", "You each take 5 kicks. If it's a draw, you each take extra kicks to decide it.", '<div class="ht-big">🥅 ⚽⚽⚽</div>']
         ]
