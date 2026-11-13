@@ -2423,6 +2423,9 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
 #g-menubtn { position: relative; }
 .pg-adminprizedot { margin-left: auto; margin-right: 6px; padding: 3px 9px; border-radius: 999px; background: #e2456f; color: #fff; font-size: 0.75rem; font-weight: 800; white-space: nowrap; }
 .pg-adminprizedot[hidden] { display: none; }
+
+.pg-adkpi.wide { grid-column: span 2; }
+.pg-adkpi.wide i { display: block; margin-top: 2px; font-style: normal; font-size: 0.62rem; color: #8a979e; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -6873,7 +6876,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261113004826";   // replaced by build_real.ps1
+    var APP_BUILD = "20261113020212";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -7066,8 +7069,11 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       if (pet() && (pet().best > 0 || pet().level > 1)) setTimeout(maybeBonusIntro, 2500);
       render();
       if (!(opts && opts.quiet)) dailyCheck();   // (a feed may have finished a quest)
-      prizeCheck();
+      prizeCheck(); noteVisit();
     }
+    // note that the player opened the app today (for the admin's "came back next day"); at most once an hour
+    var visitNotedAt = 0;
+    function noteVisit() { if (!me || Date.now() - visitNotedAt < 3600000) return; visitNotedAt = Date.now(); rpc("note_visit").catch(function () {}); }
     // admin: a badge on ☰ (and on Admin tools) while weekly prizes wait to be paid; checked at most every 10 minutes
     var prizeCheckedAt = 0;
     function prizeBadge(n) {
@@ -9914,6 +9920,14 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         [["Players", st.players], ["Active today", st.active_today], ["New this week", st.new_week], ["Pets", st.pets],
          ["Reminders on", st.reminders == null ? "–" : st.reminders], ["Rooms", st.rooms], ["Reports", st.reports], ["Suspended", st.suspended]].forEach(function (x) {
           var d = adminRow("pg-adkpi"); d.innerHTML = "<b>" + esc(String(x[1])) + "</b><small>" + esc(x[0]) + "</small>"; box.appendChild(d);
+        });
+        // update_059: are new players coming back, and do pets have a co-parent? (a wide tile each, as a %)
+        var pct = function (a, b) { return b ? Math.round(a / b * 100) + "%" : "–"; };
+        if (st.next_day) [["Came back next day", st.next_day.back, st.next_day.joined, "new players, last 30 days"],
+                          ["Pets with a co-parent", st.coparent.shared, st.coparent.pets, "pets at home"]].forEach(function (x) {
+          var d = adminRow("pg-adkpi wide");
+          d.innerHTML = "<b>" + esc(pct(x[1], x[2])) + "</b><small>" + esc(x[0]) + "</small><i>" + esc(x[1] + " of " + x[2] + " " + x[3]) + "</i>";
+          box.appendChild(d);
         });
         var rb = $("g-adrepcount"); rb.hidden = !st.reports; rb.textContent = st.reports || "";
       } catch (e) {}
