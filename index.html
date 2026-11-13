@@ -2426,6 +2426,31 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
 
 .pg-adkpi.wide { grid-column: span 2; }
 .pg-adkpi.wide i { display: block; margin-top: 2px; font-style: normal; font-size: 0.62rem; color: #8a979e; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* store sale */
+.pg-sitem .dpic { position: relative; }
+.pg-sitem .dsale { position: absolute; left: 4px; top: 4px; padding: 2px 6px; border-radius: 999px; background: #e2456f; color: #fff; font-style: normal; font-size: 0.66rem; font-weight: 800; box-shadow: 0 2px 6px rgba(226,69,111,0.35); }
+#g-storehint.sale { color: #b02a55; font-weight: 700; }
+
+/* admin: paws flow, drifting players, sale, notification checkbox */
+.pg-adchart .bars i.g { background: #4cc38a; }
+.pg-adchart .bars i.s { background: #e2456f; }
+.pg-adlegend .l3, .pg-adlegend .l4 { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin: 0 4px 0 8px; vertical-align: -1px; }
+.pg-adlegend .l3 { background: #4cc38a; } .pg-adlegend .l4 { background: #e2456f; }
+.pg-adflow { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px; }
+.pg-adflow h4 { margin: 0 0 4px; font-size: 0.78rem; color: #6b7a82; }
+.pg-adflow ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 3px; }
+.pg-adflow li { display: flex; justify-content: space-between; gap: 6px; font-size: 0.8rem; min-width: 0; }
+.pg-adflow li span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pg-adflow li b { flex: none; }
+.pg-addrift { border-color: #f6c9d6; background: #fff7f9; }
+.pg-addrift .pg-adplayers { margin: 0; }
+.pg-adflags em.away { font-style: normal; font-size: 0.72rem; font-weight: 800; color: #b02a55; background: #fde3ea; border-radius: 999px; padding: 2px 7px; white-space: nowrap; }
+.pg-adcheck { display: flex; gap: 10px; align-items: flex-start; margin: 8px 0 2px; font-weight: 700; font-size: 0.88rem; cursor: pointer; }
+.pg-adcheck input { width: 20px; height: 20px; margin: 1px 0 0; flex: none; }
+.pg-adcheck small { display: block; font-weight: 500; color: #6b7a82; font-size: 0.76rem; }
+.pg-adsalepick { flex-wrap: wrap; }
+.pg-adsalepick select { flex: 1 1 30%; min-width: 0; min-height: 40px; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -3157,6 +3182,9 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
           <div class="pg-adcard"><h3>Last 7 days</h3><div class="pg-adchart" id="g-adweek"></div>
             <p class="pg-adlegend"><i class="l1" aria-hidden="true"></i>Fed their pet <i class="l2" aria-hidden="true"></i>Did a quest</p></div>
           <div class="pg-adcard"><h3>Most-done quests <small>last 7 days</small></h3><ol class="pg-adquests" id="g-adquests"></ol></div>
+          <div class="pg-adcard" id="g-adpawscard" hidden><h3>🐾 Paws this week <small id="g-adpawsheld"></small></h3><div class="pg-adchart" id="g-adpaws"></div>
+            <p class="pg-adlegend"><i class="l3" aria-hidden="true"></i>Given out <i class="l4" aria-hidden="true"></i>Spent</p>
+            <div class="pg-adflow"><div><h4>Came from</h4><ol id="g-adpawsfrom"></ol></div><div><h4>Went on</h4><ol id="g-adpawsto"></ol></div></div></div>
         </section>
         <section data-apane="players" hidden>
           <form class="pg-adsearch" id="g-adminfindform">
@@ -3167,6 +3195,8 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
             <div class="pg-adlisthead"><b>Search results</b><button type="button" class="pg-linkbtn" id="g-adminfoundclear">Clear</button></div>
             <ul class="pg-adplayers" id="g-adminfound"></ul>
           </div>
+          <div class="pg-adcard pg-addrift" id="g-addriftcard" hidden><h3>⚠️ Drifting away <small>a streak going, not seen for 2+ days</small></h3>
+            <ul class="pg-adplayers" id="g-addrift"></ul></div>
           <div class="pg-adlisthead"><b>All players <span id="g-adminptotal"></span></b><small>🔔 reminders · quests today</small></div>
           <ul class="pg-adplayers" id="g-adminplist"></ul>
           <button type="button" class="pg-btn pg-admore" id="g-adminpmore" hidden>Show more</button>
@@ -3182,11 +3212,26 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
           <div class="pg-adcard"><h3>📢 Announcement</h3>
             <p class="pg-note">Shown once to every player when they open the app, for 14 days.</p>
             <textarea id="g-adminnews" class="pg-adminnews" maxlength="200" rows="2" placeholder="Your message to all players" aria-label="Announcement"></textarea>
+            <label class="pg-adcheck" id="g-adminnewspushrow"><input type="checkbox" id="g-adminnewspush"><span>Also send it as a phone notification<small>To everyone with reminders on, between 9am and 9pm their time, once.</small></span></label>
             <div class="pg-row">
               <button type="button" class="pg-btn" id="g-adminnewsoff">Remove</button>
               <button type="button" class="pg-btn pg-primary" id="g-adminnewsgo">Send to everyone</button>
             </div>
           </div>
+          <div class="pg-adcard" id="g-adsalecard"><h3>🏷️ Store sale</h3>
+            <p class="pg-note" id="g-adsalenow">No sale on.</p>
+            <div class="pg-row pg-adsalepick">
+              <select id="g-adsaletype" aria-label="What's on sale"><option value="all">All items</option><option value="hat">Hats</option><option value="glasses">Glasses</option><option value="backdrop">Backgrounds</option></select>
+              <select id="g-adsalepct" aria-label="How much off"><option value="10">10% off</option><option value="20" selected>20% off</option><option value="30">30% off</option><option value="50">50% off</option></select>
+              <select id="g-adsaledays" aria-label="For how long"><option value="1">1 day</option><option value="2">2 days</option><option value="3" selected>3 days</option><option value="7">1 week</option></select>
+            </div>
+            <div class="pg-row">
+              <button type="button" class="pg-btn" id="g-adsaleoff" hidden>End sale</button>
+              <button type="button" class="pg-btn pg-primary" id="g-adsalego">Start sale</button>
+            </div>
+          </div>
+          <div class="pg-adcard pg-adtoggle"><span class="pg-grow"><b>📄 Players spreadsheet</b><small>Everyone in one file: opens in Excel or Google Sheets</small></span>
+            <button type="button" class="pg-btn" id="g-adexport">Download</button></div>
           <div class="pg-adcard pg-adtoggle"><span class="pg-grow"><b>🎄 Christmas preview</b><small>On this phone only, before December 1st</small></span>
             <button type="button" class="pg-btn" id="g-adminxmas">Turn preview on</button></div>
           <div class="pg-adcard"><h3>🏠 Rooms open now</h3><div id="g-adminrooms"></div></div>
@@ -6876,7 +6921,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261113020212";   // replaced by build_real.ps1
+    var APP_BUILD = "20261113022838";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -7069,7 +7114,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       if (pet() && (pet().best > 0 || pet().level > 1)) setTimeout(maybeBonusIntro, 2500);
       render();
       if (!(opts && opts.quiet)) dailyCheck();   // (a feed may have finished a quest)
-      prizeCheck(); noteVisit();
+      prizeCheck(); noteVisit(); loadSale();
     }
     // note that the player opened the app today (for the admin's "came back next day"); at most once an hour
     var visitNotedAt = 0;
@@ -9931,8 +9976,70 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         });
         var rb = $("g-adrepcount"); rb.hidden = !st.reports; rb.textContent = st.reports || "";
       } catch (e) {}
-      adminDaily(); adminRooms(); adminLog(); adminPrizes();
+      adminDaily(); adminRooms(); adminLog(); adminPrizes(); adminPaws(); adminDrift(); adminSaleDraw();
     }
+    // ---------- update_060: paws flow, drifting players, store sale, spreadsheet ----------
+    async function adminPaws() {
+      var d; try { d = await rpc("admin_paws_flow"); } catch (e) { $("g-adpawscard").hidden = true; return; }
+      $("g-adpawscard").hidden = false;
+      $("g-adpawsheld").textContent = d.held.toLocaleString() + " held by players";
+      var days = d.days || [], top = Math.max(1, Math.max.apply(null, days.map(function (x) { return Math.max(x.given, x.spent); })));
+      $("g-adpaws").innerHTML = days.map(function (x) {
+        var wd = new Date(x.day + "T12:00:00").toLocaleDateString(undefined, { weekday: "narrow" });
+        return '<div class="col" title="' + esc(x.day + ": +" + x.given + " / −" + x.spent) + '"><div class="bars"><i class="g" style="height:' + Math.round(x.given / top * 100) + '%"></i><i class="s" style="height:' + Math.round(x.spent / top * 100) + '%"></i></div><small>' + esc(wd) + "</small></div>";
+      }).join("");
+      function list(id, rows, sign) {
+        $(id).innerHTML = rows.length ? rows.slice(0, 5).map(function (r) { return "<li><span>" + esc(r.what) + "</span><b>" + sign + r.paws.toLocaleString() + "</b></li>"; }).join("") : '<li class="pg-note">Nothing yet</li>';
+      }
+      list("g-adpawsfrom", d.from || [], "+"); list("g-adpawsto", d.to || [], "−");
+    }
+    async function adminDrift() {
+      var list; try { list = (await rpc("admin_drifting")) || []; } catch (e) { $("g-addriftcard").hidden = true; return; }
+      $("g-addriftcard").hidden = false;
+      var box = $("g-addrift"); box.innerHTML = list.length ? "" : '<li class="pg-note">Nobody right now 🎉 Everyone with a streak has been in lately.</li>';
+      list.forEach(function (x) {
+        var li = document.createElement("li"), b = document.createElement("button"); b.type = "button"; b.className = "pg-adrow";
+        b.innerHTML = '<span class="pg-adav">' + adminInitial(x.name) + '</span><span class="pg-grow"><b>' + esc(x.name) + "</b><small>" + esc(x.pet) + " · 🔥 " + x.streak + " day streak</small></span>" +
+          '<span class="pg-adflags"><i class="' + (x.reminders ? "on" : "off") + '" aria-label="' + (x.reminders ? "Reminders on" : "Reminders off") + '">' + (x.reminders ? "🔔" : "🔕") + '</i><em class="away">' + x.away + (x.away === 1 ? " day" : " days") + "</em></span>";
+        b.addEventListener("click", function () { if (x.card) adminPlayer(x.card); });
+        li.appendChild(b); box.appendChild(li);
+      });
+    }
+    async function adminSaleDraw() {
+      try { storeSale = (await rpc("current_sale")) || null; saleLoadedAt = Date.now(); } catch (e) { $("g-adsalecard").hidden = true; return; }
+      $("g-adsalecard").hidden = false;
+      $("g-adsalenow").textContent = storeSale ? saleText().replace("🏷️ Sale: ", "On now: ") + "." : "No sale on. Pick what's on sale, how much off and for how long.";
+      $("g-adsaleoff").hidden = !storeSale;
+      $("g-adsalego").textContent = storeSale ? "Change sale" : "Start sale";
+    }
+    $("g-adsalego").addEventListener("click", async function () {
+      var t = $("g-adsaletype").value, pc = +$("g-adsalepct").value, dy = +$("g-adsaledays").value;
+      if (!confirm("Start " + pc + "% off " + SALE_KIND[t] + " for " + (dy === 7 ? "a week" : dy + (dy === 1 ? " day" : " days")) + "? Players see it in the Store straight away.")) return;
+      try { storeSale = await rpc("admin_set_sale", { p_type: t, p_percent: pc, p_days: dy }); say("🏷️ Sale started."); } catch (e) { say(friendly(e.message)); }
+      adminSaleDraw(); adminLog();
+    });
+    $("g-adsaleoff").addEventListener("click", async function () {
+      if (!confirm("End the sale now?")) return;
+      try { await rpc("admin_set_sale", { p_type: "all", p_percent: 0, p_days: 1 }); storeSale = null; say("Sale ended."); } catch (e) { say(friendly(e.message)); }
+      adminSaleDraw(); adminLog();
+    });
+    // everyone as a CSV file (Excel and Google Sheets open it)
+    $("g-adexport").addEventListener("click", async function () {
+      var b = this, rows; b.disabled = true;
+      try { rows = (await rpc("admin_export")) || []; } catch (e) { say(friendly(e.message)); b.disabled = false; return; }
+      function cell(v) {
+        var t = v == null ? "" : String(v);
+        if (/^[=+\-@]/.test(t)) t = "'" + t;   // so a spreadsheet never runs a name as a formula
+        return /[",\n\r]/.test(t) ? '"' + t.replace(/"/g, '""') + '"' : t;
+      }
+      function day(v) { return v ? new Date(v).toISOString().slice(0, 10) : ""; }
+      var out = [["Name", "Email", "Joined", "Last seen", "Pets", "Best streak", "Paws", "Reminders", "Suspended"].join(",")];
+      rows.forEach(function (r) { out.push([r.name, r.email, day(r.joined), day(r.last_seen), r.pets, r.streak, r.paws, r.reminders ? "on" : "off", r.suspended ? "yes" : ""].map(cell).join(",")); });
+      var blob = new Blob(["\ufeff" + out.join("\r\n")], { type: "text/csv;charset=utf-8" }), a = document.createElement("a");
+      a.href = URL.createObjectURL(blob); a.download = "pet-streak-players-" + new Date().toISOString().slice(0, 10) + ".csv";
+      document.body.appendChild(a); a.click(); a.remove(); setTimeout(function () { URL.revokeObjectURL(a.href); }, 5000);
+      say("📄 " + rows.length + (rows.length === 1 ? " player" : " players") + " saved."); b.disabled = false;
+    });
     // weekly prizes: the top 3 of each finished week wait here for Pay or Skip
     var MEDAL = { 1: "🥇", 2: "🥈", 3: "🥉" };
     async function adminPrizes() {
@@ -10160,8 +10267,12 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     $("g-adminfoundclear").addEventListener("click", function () { $("g-adminfound").innerHTML = ""; $("g-adminfind").value = ""; $("g-adminfoundwrap").hidden = true; });
     $("g-adminnewsgo").addEventListener("click", async function () {
       var t = $("g-adminnews").value.trim(); if (!t) { say("Type your message first."); return; }
-      if (!confirm("Send this to every player?\n\n" + t)) return;
-      try { await rpc("admin_announce", { p_body: t }); say("📢 Sent."); $("g-adminnews").value = ""; adminLog(); } catch (e) { say(friendly(e.message)); }
+      var push = $("g-adminnewspush").checked;
+      if (!confirm((push ? "Send this to every player, and as a notification to their phones?" : "Send this to every player?") + "\n\n" + t)) return;
+      try {
+        await rpc(push ? "admin_announce_push" : "admin_announce", { p_body: t });
+        say(push ? "📢 Sent. Phones get it within the hour (9am to 9pm their time)." : "📢 Sent."); $("g-adminnews").value = ""; $("g-adminnewspush").checked = false; adminLog();
+      } catch (e) { say(friendly(e.message)); }
     });
     $("g-adminnewsoff").addEventListener("click", async function () {
       try { await rpc("admin_announce", { p_body: "" }); say("Announcement removed."); adminLog(); } catch (e) { say(friendly(e.message)); }
@@ -10990,7 +11101,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     // Get it: for me, or as a gift
     async function getPet(s) {
       var coins = profile ? profile.coins : 0;
-      var a = await storeAsk({ pic: pic(s), title: s.name, text: "🐾 " + s.price + " · you'll have " + (coins - s.price) + " left. Keep it, or give it to a friend.", ok: "For me", alt: "🎁 As a gift" });
+      var a = await storeAsk({ pic: pic(s), title: s.name, text: "🐾 " + cost(s) + " · you'll have " + (coins - cost(s)) + " left. Keep it, or give it to a friend.", ok: "For me", alt: "🎁 As a gift" });
       if (a === "ok") buyPet(s); else if (a === "alt") buyGift(s, true);
     }
     // tap an item: the pet tries it on (any item, even locked ones), and the bar shows what you can do
@@ -11006,7 +11117,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       var isPet = s.kind === "pet";
       f.style.setProperty("--tint", s.color || "#b9a7ff");
       f.classList.toggle("xmas", s.season === "xmas");
-      f.innerHTML = '<span class="pg-grow"><em>' + (s.season === "xmas" ? "🎄 Christmas special" : "⭐ Pick of the week") + '</em><b>' + esc(s.name) + "</b><small>🐾 " + s.price + (isPet ? " · " + rarity(s.price)[0] : "") +
+      f.innerHTML = '<span class="pg-grow"><em>' + (s.season === "xmas" ? "🎄 Christmas special" : "⭐ Pick of the week") + '</em><b>' + esc(s.name) + "</b><small>🐾 " + cost(s) + (isPet ? " · " + rarity(s.price)[0] : "") +
         '</small><span class="pg-stfeatgo">' + (isPet ? "Take a look" : "Try it on") + " →</span></span>" + pic(s);
       f.onclick = function () { if (isPet) previewPet(petsForSale().indexOf(s)); else { stItemsKind = "all"; storeSelect(s); } };
     }
@@ -11023,14 +11134,14 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       bar.hidden = false;
       $("g-sbname").textContent = u.name;
       $("g-sbsub").textContent = on ? "✓ " + p.name + " is wearing this" : have ? "Yours · works on all your pets"
-        : !lvOk ? "🔒 Unlocks when a pet reaches level " + u.level_req : coins < u.price ? "🐾 " + u.price + " · " + (u.price - coins) + " more to go" : "🐾 " + u.price;
+        : !lvOk ? "🔒 Unlocks when a pet reaches level " + u.level_req : coins < cost(u) ? "🐾 " + cost(u) + " · " + (cost(u) - coins) + " more to go" : "🐾 " + cost(u);
       var sw = $("g-sbswatch"); sw.innerHTML = "";
       if (cols.length > 1) sw.appendChild(colourDots(cols, u, function (c) { storeSelect(c); }));
       sw.hidden = cols.length < 2;
       var btn = $("g-sbbtn");
       btn.hidden = on || (!have && !lvOk);
-      btn.className = "pg-stbtn" + (!have && coins < u.price ? " ghost" : "");
-      btn.textContent = have ? "Put it on" : coins < u.price ? "How to earn" : "Buy · 🐾 " + u.price;
+      btn.className = "pg-stbtn" + (!have && coins < cost(u) ? " ghost" : "");
+      btn.textContent = have ? "Put it on" : coins < cost(u) ? "How to earn" : "Buy · 🐾 " + cost(u);
       $("g-ststagelabel").textContent = (on ? "Wearing: " : "Trying on: ") + u.name;
     }
     async function renderStore() {
@@ -11116,7 +11227,8 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
           card(box, a.name, v && v.color, (v ? v.name.replace(" red panda", "") + " · " : "") + "comes home at Lv " + a.level + " · 🐾 " + ADOPT_FEE, "Adopt", function () { showAdoptInfo(a); }, { id: a.variant });
         });
       } else {
-        $("g-storehint").textContent = p ? "Tap anything to try it on " + p.name + ". What you buy works on all your pets." : "Get a pet first, then you can try things on.";
+        $("g-storehint").textContent = (saleText() ? saleText() + " · " : "") + (p ? "Tap anything to try it on " + p.name + ". What you buy works on all your pets." : "Get a pet first, then you can try things on.");
+        $("g-storehint").classList.toggle("sale", !!saleText());
         var order = { hat: 0, glasses: 1, backdrop: 2 };
         var xchip = document.querySelector('#g-stchips [data-kind="xmas"]'); xchip.hidden = !xmasOn();
         if (stItemsKind === "xmas" && !xmasOn()) stItemsKind = "all";
@@ -11131,8 +11243,8 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
           b.className = "pg-sitem t-" + u0.type + (sel ? " sel" : "") + (!lvOk ? " locked" : "") + (have ? " have" : "");
           b.innerHTML = '<span class="dpic">' + (pic(shown) || (shown.color ? '<i class="swbig" style="background:' + shown.color + '"></i>' : "")) +
               (have ? '<em class="dtick" aria-label="Owned">✓</em>' : !lvOk ? '<em class="dlock" aria-hidden="true">🔒</em>' : "") +
-              (cols.length > 1 ? '<em class="dcols">🎨 ' + cols.length + "</em>" : "") + "</span>" +
-            "<b>" + esc(u0.name) + "</b><small>" + esc(sel ? "Trying on" : have ? "Owned" : !lvOk ? "Level " + u0.level_req : "🐾 " + u0.price) + "</small>";
+              (cols.length > 1 ? '<em class="dcols">🎨 ' + cols.length + "</em>" : "") + (!have && saleOn(u0) ? '<em class="dsale">−' + storeSale.percent + "%</em>" : "") + "</span>" +
+            "<b>" + esc(u0.name) + "</b><small>" + esc(sel ? "Trying on" : have ? "Owned" : !lvOk ? "Level " + u0.level_req : "🐾 " + cost(u0)) + "</small>";
           b.addEventListener("click", function () { storeSelect(shown); });
           box.appendChild(b);
         });
@@ -11249,7 +11361,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         var on = cols.some(function (c) { return (p[c.type] || null) === c.id; }) || (!u0.id && !p[u0.type]);
         var trying = !!tryOn && cols.some(function (c) { return tryOn.slot === c.type && tryOn.id === c.id; }) && !on;
         var levelOk = p.max_level >= u.level_req, have = cols.some(function (c) { return !c.price || owned[c.id]; });
-        var sub = on ? "Wearing" : trying ? "Trying on" : !levelOk ? "Level " + u.level_req : !have ? "🐾 " + u.price : "Yours";
+        var sub = on ? "Wearing" : trying ? "Trying on" : !levelOk ? "Level " + u.level_req : !have ? "🐾 " + cost(u) : "Yours";
         if (u.type === "backdrop" && u.id && !SCENE_DRAW[u.id] && !on && !trying && levelOk && have) sub = "Plain colour";
         if (!u0.id && !on) sub = "Tap to remove";
         var b = document.createElement("button");
@@ -11335,7 +11447,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       panel.hidden = false;
       $("g-tryontext").textContent = u.name;
       $("g-tryonsub").textContent = on ? "✓ " + p.name + " is wearing this" : !levelOk ? "🔒 Unlocks when " + p.name + " reaches level " + u.level_req
-        : have ? "Yours · tap Wear it" : "👀 Trying on · 🐾 " + u.price + (cols.length > 1 ? " · or pick a colour" : "");
+        : have ? "Yours · tap Wear it" : "👀 Trying on · 🐾 " + cost(u) + (cols.length > 1 ? " · or pick a colour" : "");
       var sw = $("g-swatches"); sw.innerHTML = "";
       if (cols.length > 1) sw.appendChild(colourDots(cols, u, function (c) { pickDress(c); }));
       sw.hidden = cols.length < 2;
@@ -11343,17 +11455,17 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       $("g-tryonoff").hidden = !on || u.type === "backdrop";
       btn.hidden = on || !levelOk;
       btn.disabled = false;
-      btn.className = "pg-stbtn" + (!have && coins < u.price ? " ghost" : "");
-      btn.textContent = have ? "Wear it" : coins < u.price ? "How to earn" : "Buy · 🐾 " + u.price;
+      btn.className = "pg-stbtn" + (!have && coins < cost(u) ? " ghost" : "");
+      btn.textContent = have ? "Wear it" : coins < cost(u) ? "How to earn" : "Buy · 🐾 " + cost(u);
       lbl.textContent = (on ? "Wearing: " : have ? "Yours: " : "Trying on: ") + u.name;
       $("g-tryonoff").textContent = "Take off";
     }
     $("g-tryonbtn").addEventListener("click", async function () {
       var p = pet(), base = dressSel && item(dressSel); if (!p || !base) return;
       var u = shownColour(base, colourList(base), p), have = !u.price || owned[u.id], coins = profile ? profile.coins : 0;
-      if (!have && coins < u.price) { closeDress(); openStore("coins"); return; }
+      if (!have && coins < cost(u)) { closeDress(); openStore("coins"); return; }
       if (!have) {
-        var a = await storeAsk({ pic: pic(u), title: "Buy the " + u.name + "?", text: "🐾 " + u.price + " · you'll have " + (coins - u.price) + " left. " + p.name + " puts it on straight away, and it works on all your pets.", ok: "Buy · 🐾 " + u.price });
+        var a = await storeAsk({ pic: pic(u), title: "Buy the " + u.name + "?", text: "🐾 " + cost(u) + " · you'll have " + (coins - cost(u)) + " left. " + p.name + " puts it on straight away, and it works on all your pets.", ok: "Buy · 🐾 " + cost(u) });
         if (a !== "ok") return;
       }
       $("g-tryonbtn").disabled = true;
@@ -12209,7 +12321,26 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     $("g-pvbuy").addEventListener("click", function () { if (pvItem) buyPet(pvItem); });
     $("g-pvgift").addEventListener("click", function () { var s = pvItem; if (!s) return; closePreview(); buyGift(s); });
     var xmasChipSet = false;
-    function openStore(tab) { if (xmasOn() && !xmasChipSet) { xmasChipSet = true; stItemsKind = "xmas"; } storeTab = tab || storeTab; stSel = null; tryOn = null; $("g-store").hidden = false; render(); renderStore(); applyLook(); $("g-storebody").scrollTop = 0; }
+    // ---------- Store sale (update_060): x% off one kind of item for a few days ----------
+    var storeSale = null, saleLoadedAt = 0;
+    function saleOn(s) {
+      return !!(storeSale && s && s.kind === "wardrobe" && s.price > 0 && (storeSale.type === "all" || storeSale.type === s.type) && new Date(storeSale.ends) > new Date());
+    }
+    // what an item costs right now (the server charges the same)
+    function cost(s) { return saleOn(s) ? Math.max(1, Math.round(s.price * (100 - storeSale.percent) / 100)) : s.price; }
+    var SALE_KIND = { all: "everything", hat: "hats", glasses: "glasses", backdrop: "backgrounds" };
+    function saleText() {
+      if (!storeSale || new Date(storeSale.ends) <= new Date()) return "";
+      var d = new Date(storeSale.ends), left = (d - new Date()) / 3600000;
+      return "🏷️ Sale: " + storeSale.percent + "% off " + SALE_KIND[storeSale.type] + " · " + (left < 24 ? "ends in " + Math.max(1, Math.round(left)) + (Math.round(left) === 1 ? " hour" : " hours") : "until " + d.toLocaleDateString(undefined, { weekday: "long" }));
+    }
+    async function loadSale(force) {
+      if (!me || (!force && Date.now() - saleLoadedAt < 300000)) return;
+      saleLoadedAt = Date.now();
+      try { storeSale = (await rpc("current_sale")) || null; } catch (e) { storeSale = null; }
+      if (!$("g-store").hidden) renderStore();
+    }
+    function openStore(tab) { if (xmasOn() && !xmasChipSet) { xmasChipSet = true; stItemsKind = "xmas"; } storeTab = tab || storeTab; stSel = null; tryOn = null; $("g-store").hidden = false; render(); renderStore(); applyLook(); $("g-storebody").scrollTop = 0; loadSale(true); }
     function closeStore() { $("g-store").hidden = true; tryOn = null; stSel = null; applyLook(); render(); }
     $("g-stpaws").addEventListener("click", function () { storeTo("coins"); });
     Array.prototype.forEach.call(document.querySelectorAll("#g-stchips [data-kind]"), function (b) {
@@ -12219,8 +12350,8 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       var u = stSel, p = pet(); if (!u || !p) return;
       var coins = profile ? profile.coins : 0;
       if (owned[u.id]) { tryOn = null; if (await wear(p, u)) say(p.name + " is wearing the " + u.name + " ✨"); renderStore(); applyLook(); return; }
-      if (coins < u.price) { storeTo("coins"); return; }
-      var a = await storeAsk({ pic: pic(u), title: "Buy the " + u.name + "?", text: "🐾 " + u.price + " · you'll have " + (coins - u.price) + " left. It works on all your pets.", ok: "Buy · 🐾 " + u.price });
+      if (coins < cost(u)) { storeTo("coins"); return; }
+      var a = await storeAsk({ pic: pic(u), title: "Buy the " + u.name + "?", text: "🐾 " + cost(u) + " · you'll have " + (coins - cost(u)) + " left. It works on all your pets.", ok: "Buy · 🐾 " + cost(u) });
       if (a !== "ok") return;
       try { await rpc("buy_item", { p_item: u.id }); } catch (e) { say(e.message); return; }
       owned[u.id] = true; await loadAll(); renderStore();
