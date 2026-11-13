@@ -2406,6 +2406,16 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
 .pg-gamedots button i { width: 7px; height: 7px; border-radius: 4px; background: rgba(20,35,43,0.22); transition: width 0.2s, background 0.2s; }
 .pg-gamedots button.on i { width: 18px; background: #26215c; }
 .pg-gamedots button:focus-visible { outline: 2px solid #26215c; outline-offset: -4px; border-radius: 8px; }
+
+.pg-sanctempty { grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 26px 20px 22px; margin: 4px 0; border-radius: 24px; background: linear-gradient(160deg, #fff6e9, #fde7ee); box-shadow: 0 6px 18px rgba(20,35,43,0.08); }
+.pg-sanctempty .pic { position: relative; width: 112px; height: 112px; border-radius: 50%; background: radial-gradient(circle at 50% 40%, #fff, #ffe3c9); display: grid; place-items: center; margin-bottom: 12px; box-shadow: inset 0 -6px 14px rgba(196,110,60,0.12); }
+.pg-sanctempty .pic img { width: 88px; height: 88px; object-fit: contain; filter: saturate(0.9); }
+.pg-sanctempty .pic span { position: absolute; top: 4px; right: -2px; font-size: 1.5rem; animation: pg-zz 2.4s ease-in-out infinite; }
+@keyframes pg-zz { 0%, 100% { transform: translateY(0); opacity: 0.8; } 50% { transform: translateY(-6px); opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .pg-sanctempty .pic span { animation: none; } }
+.pg-sanctempty b { font-size: 1.15rem; color: #14232b; }
+.pg-sanctempty p { margin: 6px 0 16px; color: #5b6870; line-height: 1.4; max-width: 280px; }
+.pg-sanctempty .pg-sanctgo { min-height: 44px; padding: 0 20px; border: 0; border-radius: 999px; background: #26215c; color: #fff; font: inherit; font-weight: 700; cursor: pointer; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -6856,7 +6866,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261113001418";   // replaced by build_real.ps1
+    var APP_BUILD = "20261113002218";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -9226,8 +9236,9 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       $("g-playpaws").textContent = "🐾 " + (profile ? profile.coins : 0);
       drawGameDots();
       if (!boardOnly) { renderOnlineCount(); drawChallenge(); rpc("my_game_history").then(function (h) {
-        var start = new Date(); start.setHours(0, 0, 0, 0);
-        $("g-todaycount").textContent = (h || []).filter(function (g) { return new Date(g.at) >= start; }).length;
+        // the pet's day (midnight where the pet lives), the same day the challenge and quests use
+        var day = function (d) { try { return new Intl.DateTimeFormat("en-CA", { timeZone: (pets[0] && pets[0].tz) || "UTC" }).format(d); } catch (e) { return d.toDateString(); } }, today = day(new Date());
+        $("g-todaycount").textContent = (h || []).filter(function (g) { return day(new Date(g.at)) === today; }).length;
       }, function () {}); }
       // games without a daily score show this week's wins for that game instead
       if (!BOARD_NAMES[boardGame]) { drawWeekBoard(boardGame); return; }
@@ -11055,7 +11066,14 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         try { list = await rpc("adoptable_pets"); } catch (e) { say(e.message); list = []; }
         if (storeTab !== "sanctuary") return;
         box.innerHTML = "";
-        if (!list.length) { box.innerHTML = '<div class="pg-empty-note">No pets are waiting at the sanctuary right now. When a pet needs a new home, it shows up here.</div>'; return; }
+        if (!list.length) {
+          // nobody waiting: a happy, quiet empty screen with a way on
+          box.innerHTML = '<div class="pg-sanctempty"><div class="pic"><img alt="" src="' + esc(petPic("panda_classic")) + '"><span aria-hidden="true">💤</span></div>' +
+            "<b>Every pet has a home 💛</b><p>No pets are waiting right now. When one needs a new family, it shows up here. Check back later!</p>" +
+            '<button type="button" class="pg-sanctgo">See pets in the store</button></div>';
+          box.querySelector(".pg-sanctgo").addEventListener("click", function () { var t = document.querySelector('#g-store [data-tab=pets]'); if (t) t.click(); });
+          return;
+        }
         list.forEach(function (a) {
           var v = item(a.variant);
           // tapping a pet shows its details first; adopting is a button there
