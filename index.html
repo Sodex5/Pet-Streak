@@ -2979,6 +2979,82 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
 .pg-weeklist > li.pg-weekinfo { display: block; }
 .pg-weekinfo b { white-space: nowrap; }
 .pg-prize { margin: 0 0 0 6px; }
+
+/* ===== Quick play: find a game, and who's online ===== */
+.pg-qp { margin-top: 10px; padding: 14px; border-radius: 20px; background: linear-gradient(140deg, #2d2670, #1f1a52); color: #fff; box-shadow: 0 8px 20px rgba(38,33,92,0.25); }
+.pg-qptop { display: flex; align-items: center; gap: 12px; }
+.pg-qptop .pg-grow { display: flex; flex-direction: column; min-width: 0; }
+.pg-qptop b { font-size: 1.08rem; }
+.pg-qptop small { color: #cecbf6; font-size: 0.76rem; }
+.pg-qptop em { font-style: normal; font-weight: 800; color: #ffd66b; }
+.pg-qpfind { flex: none; padding: 11px 18px; border: 0; border-radius: 999px; background: #fff; color: #26215c; font: inherit; font-weight: 800; font-size: 0.92rem; box-shadow: 0 3px 0 rgba(0,0,0,0.25); }
+.pg-qpfind:active { transform: translateY(2px); box-shadow: 0 1px 0 rgba(0,0,0,0.25); }
+.pg-qpon { width: 100%; margin-top: 12px; display: flex; align-items: center; gap: 8px; padding: 9px 12px; border: 0; border-radius: 14px; background: rgba(255,255,255,0.1); color: #eceaff; font: inherit; font-size: 0.82rem; text-align: left; }
+.pg-qpon .pg-grow { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pg-qpon b { color: #fff; }
+.pg-qpon .pg-qdot { width: 8px; height: 8px; border-radius: 50%; background: #2fbf63; flex: none; box-shadow: 0 0 0 3px rgba(47,191,99,0.25); }
+.pg-qpon .pg-onfaces { display: inline-flex; flex: none; }
+.pg-qpon .pg-onfaces img { width: 22px; height: 22px; border-radius: 50%; margin-left: -7px; border: 2px solid #2a245f; background: #fff; object-fit: cover; }
+.pg-qpon .chev { flex: none; opacity: 0.7; font-weight: 800; }
+/* ===== Find a game ===== */
+.pg-findcard { text-align: center; padding: 26px 22px 20px; }
+.pg-findring { position: relative; width: 132px; height: 132px; margin: 0 auto 6px; }
+.pg-findring svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
+.pg-findring circle { fill: none; stroke-width: 8; stroke-linecap: round; }
+.pg-findring .bg { stroke: #ecebfb; }
+.pg-findring .fg { stroke: #7f77dd; transition: stroke-dashoffset 0.25s linear; }
+.pg-findring img { position: absolute; left: 50%; top: 50%; width: 82px; height: 82px; object-fit: contain; transform: translate(-50%, -50%); animation: pgFindBob 1.2s ease-in-out infinite; }
+@keyframes pgFindBob { 50% { transform: translate(-50%, -56%); } }
+.pg-findsecs { display: block; font-family: var(--display); font-size: 1.5rem; color: #3c3489; }
+.pg-findcard h2 { margin: 2px 0 4px; }
+.pg-findcard .pg-btn { margin-top: 10px; min-width: 140px; }
+/* ===== A challenge ===== */
+.pg-chalcard { text-align: center; padding: 22px 20px 18px; }
+.pg-chalvs { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 8px; }
+.pg-chalvs img { width: 76px; height: 76px; object-fit: contain; border-radius: 50%; background: radial-gradient(#fff, #f1efe8); }
+.pg-chalvs b { font-family: var(--display); font-size: 1.3rem; color: #d85a30; }
+.pg-chalcard h2 { margin: 4px 0 4px; font-size: 1.2rem; }
+.pg-chalsub { margin: 0 0 10px; color: #55666e; font-size: 0.88rem; line-height: 1.4; }
+.pg-chalpts { display: flex; justify-content: center; gap: 8px; margin-bottom: 12px; }
+.pg-chalpts span { padding: 6px 12px; border-radius: 12px; font-size: 0.82rem; font-weight: 700; }
+.pg-chalpts .win { background: #eaf3de; color: #27500a; }
+.pg-chalpts .lose { background: #fcebeb; color: #791f1f; }
+.pg-chaltimer { height: 6px; border-radius: 6px; background: #ecebfb; overflow: hidden; margin-bottom: 14px; }
+.pg-chaltimer i { display: block; height: 100%; background: #7f77dd; transform-origin: left; }
+.pg-chalcard .pg-row { gap: 8px; }
+/* ===== The ranking ===== */
+.pg-weeklist li.pg-ranktabsrow { display: block; padding: 0; background: none; }
+.pg-ranktabs { margin: 0 0 2px; }
+.pg-weeklist li.pg-rankinfo { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 16px; background: linear-gradient(135deg, #fff6df, #ffeccc); color: #4a3a10; }
+.pg-rankinfo .pg-grow { display: flex; flex-direction: column; gap: 2px; }
+.pg-rankinfo b { font-size: 0.9rem; }
+.pg-rankinfo small { font-size: 0.74rem; color: #6b5a24; line-height: 1.35; }
+.pg-rankclock { flex: none; display: flex; flex-direction: column; align-items: flex-end; font-weight: 800; font-size: 0.88rem; color: #854f0b; }
+.pg-rankclock small { font-weight: 600; font-size: 0.66rem; }
+.pg-weeklist li.pg-rankrow { gap: 10px; padding: 8px 10px 8px 8px; }
+.pg-weeklist li.pg-rankrow.top { background: #fffaf0; box-shadow: inset 0 0 0 1px #f3dca2; }
+.pg-weeklist li.pg-rankrow.me { background: #fff1e6; box-shadow: inset 0 0 0 2px var(--brand); }
+.pg-rankrow .pg-grow { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; }
+.pg-rankrow .pg-prize { margin: 0; }
+.pg-rankrow .pts { flex: none; display: flex; flex-direction: column; align-items: flex-end; line-height: 1; }
+.pg-rankrow .pts b { font-family: var(--display); font-size: 1.15rem; color: #14232b; }
+.pg-rankrow .pts small { font-size: 0.64rem; color: #8a9aa1; font-weight: 700; }
+.pg-chalbtn { flex: none; padding: 7px 10px; border: 0; border-radius: 12px; background: #fcebeb; color: #a32d2d; font: inherit; font-size: 0.78rem; font-weight: 800; box-shadow: 0 2px 0 #f0b5b5; }
+.pg-chalbtn:active { transform: translateY(2px); box-shadow: none; }
+.pg-chaldone { flex: none; padding: 7px 8px; color: #8a9aa1; font-size: 0.74rem; font-weight: 700; }
+.pg-weeklist li.pg-rankme { display: block; padding: 10px 12px; border-radius: 14px; background: #f3f6f7; color: #55666e; font-size: 0.82rem; text-align: center; }
+.pg-weeklist li.pg-rankrules { display: flex; flex-direction: column; align-items: stretch; gap: 4px; margin-top: 4px; padding: 12px 14px; border-radius: 16px; background: #f6f8fa; color: #3a4a52; font-size: 0.8rem; }
+.pg-rankrules b { color: #14232b; font-size: 0.86rem; margin-bottom: 2px; }
+.pg-rankrules span { display: flex; justify-content: space-between; gap: 8px; }
+.pg-rankrules em { font-style: normal; font-weight: 800; color: #14232b; white-space: nowrap; }
+.pg-rankrules small { margin-top: 4px; color: #8a9aa1; font-size: 0.72rem; }
+/* results: ranking points, and who the bot was */
+.pg-rankline { margin: 6px auto 0; padding: 6px 14px; width: max-content; max-width: 100%; border-radius: 999px; background: #eaf3de; color: #27500a; font-weight: 800; font-size: 0.9rem; }
+.pg-rankline.down { background: #fcebeb; color: #791f1f; }
+.pg-rankline[hidden] { display: none; }
+.pg-botnote { margin: 6px 0 0; color: #8a9aa1; font-size: 0.76rem; }
+#g-find, #g-chal { z-index: 34; }
+.pg-rankrules span .cap { margin: 0 0 0 auto; padding-right: 4px; font-size: 0.7rem; color: #8a9aa1; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -3130,13 +3206,19 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         <div class="pg-botwelcome" id="g-playwelcome" hidden></div>
         <!-- your numbers: wins, rank this week, games today -->
         <div class="pg-pstats">
-          <button type="button" class="pg-pstat" id="g-mywins" aria-label="Your wins"><b id="g-statwins">0</b><small>wins this week</small></button>
-          <button type="button" class="pg-pstat" id="g-statrank" aria-label="Your rank this week"><b id="g-weekrank">–</b><small id="g-weeksub">rank this week</small></button>
+          <button type="button" class="pg-pstat" id="g-mywins" aria-label="Your wins"><b id="g-statwins">0</b><small>points today</small></button>
+          <button type="button" class="pg-pstat" id="g-statrank" aria-label="Your rank this week"><b id="g-weekrank">–</b><small id="g-weeksub">rank today</small></button>
           <button type="button" class="pg-pstat" id="g-stattoday" aria-label="Games played today"><b id="g-todaycount">0</b><small>played today</small></button>
         </div>
         <span class="pg-mepet" id="g-mepet" hidden></span>
         <!-- quick play: who's online, and find a game -->
-        <button type="button" class="pg-quickplay" id="g-onlinecount" aria-label="Quick play: see who's online"></button>
+        <div class="pg-qp" id="g-quickplay">
+          <div class="pg-qptop">
+            <span class="pg-grow"><b>Quick play</b><small>Beat a player <em>+5</em> · a bot <em>+2</em></small></span>
+            <button type="button" class="pg-qpfind" id="g-findgame">Find a game</button>
+          </div>
+          <button type="button" class="pg-qpon" id="g-onlinecount" aria-label="See who's online"></button>
+        </div>
         <!-- today's challenge -->
         <div class="pg-challenge" id="g-challenge" hidden>
           <span class="lbl">Today's challenge</span>
@@ -3578,7 +3660,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       <h2><span>🏁 History</span> <button type="button" class="pg-x" id="g-historyclose" aria-label="Close history">✕</button></h2>
       <div class="pg-tabs pg-histmode" id="g-histmode" role="tablist" aria-label="History">
         <button type="button" role="tab" data-hm="games" aria-selected="true">🎮 Your games</button>
-        <button type="button" role="tab" data-hm="weeks" aria-selected="false">🏆 This week</button>
+        <button type="button" role="tab" data-hm="weeks" aria-selected="false">🏆 Ranking</button>
       </div>
       <div id="g-histgames">
         <p class="pg-hint" id="g-histsum"></p>
@@ -3587,6 +3669,27 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         <ol class="pg-histlist" id="g-histlist"></ol>
       </div>
       <ol class="pg-weeklist pg-weekhist" id="g-histweeks" hidden></ol>
+    </div>
+    <!-- Find a game: looking for a player for up to 60 seconds, then a challenge bot -->
+    <div class="pg pg-adopt pg-findwrap" id="g-find" hidden>
+      <div class="pg-card pg-findcard">
+        <div class="pg-findring" aria-hidden="true"><svg viewBox="0 0 120 120"><circle class="bg" cx="60" cy="60" r="52"/><circle class="fg" id="g-findarc" cx="60" cy="60" r="52"/></svg><img id="g-findpet" alt=""></div>
+        <b class="pg-findsecs" id="g-findsecs">60</b>
+        <h2 id="g-findtitle">Finding a player…</h2>
+        <p class="pg-hint" id="g-findsub">If nobody's free in 60 seconds, you'll play a challenge bot.</p>
+        <button type="button" class="pg-btn" id="g-findcancel">Cancel</button>
+      </div>
+    </div>
+    <!-- a challenge: waiting for them to accept, or someone challenging me -->
+    <div class="pg pg-adopt pg-chalwrap" id="g-chal" hidden>
+      <div class="pg-card pg-chalcard">
+        <div class="pg-chalvs"><img id="g-chalme" alt=""><b>VS</b><img id="g-chalthem" alt=""></div>
+        <h2 id="g-chaltitle"></h2>
+        <p class="pg-chalsub" id="g-chalsub"></p>
+        <div class="pg-chalpts" id="g-chalpts"></div>
+        <div class="pg-chaltimer" aria-hidden="true"><i id="g-chalbar"></i></div>
+        <div class="pg-row"><button type="button" class="pg-btn pg-grow" id="g-chalno"></button><button type="button" class="pg-feed pg-grow" id="g-chalyes"></button></div>
+      </div>
     </div>
     <!-- in a room, but looking after the pet: the way back -->
     <button type="button" class="pg pg-roombar" id="g-roombar" hidden></button>
@@ -3598,7 +3701,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     </div>
     <!-- the weekly ranking: wins against other players, all games or one game -->
     <div class="pg pg-card pg-sheet pg-histsheet" id="g-week" hidden>
-      <h2><span>🏆 Weekly ranking</span> <button type="button" class="pg-x" id="g-weekclose" aria-label="Close the ranking">✕</button></h2>
+      <h2><span>🏆 Ranking</span> <button type="button" class="pg-x" id="g-weekclose" aria-label="Close the ranking">✕</button></h2>
       <p class="pg-hint" id="g-weekhint"></p>
       <div class="pg-weektabs" id="g-weektabs" role="tablist"></div>
       <ol class="pg-weeklist" id="g-weeklist"></ol>
@@ -8078,7 +8181,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261113080026";   // replaced by build_real.ps1
+    var APP_BUILD = "20261113084056";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -8287,7 +8390,10 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       if (!(profile && profile.is_admin)) { prizeBadge(0); return; }
       if (!force && Date.now() - prizeCheckedAt < 600000) return;
       prizeCheckedAt = Date.now();
-      try { var d = await rpc("admin_prizes"); prizeBadge((d && d.waiting || []).length); } catch (e) {}
+      var n = 0;
+      try { var d = await rpc("admin_prizes"); n += (d && d.waiting || []).length; } catch (e) {}
+      try { var r = await rpc("admin_rank_prizes"); n += (r && r.waiting || []).length; } catch (e) {}
+      prizeBadge(n);
     }
     // what each pet looked like at the last load, to notice co-parents' feeds while the app is open
     function remember() {
@@ -8717,6 +8823,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         .on("broadcast", { event: "chat" }, function (m) { if (m.payload && m.payload.to === me.id) { sfx("pat"); refreshUnread(); } })
         .on("broadcast", { event: "chatup" }, function (m) { gotChatUpdate(m.payload); })
         .on("broadcast", { event: "roominv" }, function (m) { gotRoomInvite(m.payload); })
+        .on("broadcast", { event: "chal" }, function (m) { if (m.payload && m.payload.to === me.id) chalCheck(true); })
         .on("broadcast", { event: "typing" }, function (m) { gotTyping(m.payload); })
         .subscribe(function (status) { if (status === "SUBSCRIBED") { lobbyReady = true; lastTracked = ""; trackMe(); } });
     }
@@ -9220,12 +9327,75 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       return d > 0 ? d + "d " + h + "h" : h + "h";
     }
     function weekSub(b) {
-      $("g-weekrank").textContent = b.me ? "#" + b.me.place : "–";
-      $("g-statwins").textContent = b.me ? b.me.wins : 0;
       if (b.prize) { say("🏆 You came #" + b.prize.place + " last week! +" + b.prize.paws + " paws 🐾"); sfx("levelUp"); loadAll({ quiet: true }); }
     }
-    function loadWeekSub() { rpc("weekly_board").then(weekSub, function () {}); }
+    function rankSub(b) {
+      if (!b || b.range !== "today") return;
+      $("g-weekrank").textContent = b.me ? "#" + b.me.place : "–";
+      $("g-statwins").textContent = b.me ? b.me.pts : 0;
+      if (b.prize) {
+        say("🏆 You came #" + b.prize.place + (b.prize.kind === "week" ? " this week" : " today") + "! +" + b.prize.xp + " XP" + (b.prize.paws ? " and " + b.prize.paws + " paws 🐾" : ""));
+        sfx("levelUp"); loadAll({ quiet: true });
+      }
+    }
+    function loadWeekSub() { rpc("rank_board", { p_range: "today" }).then(rankSub, function () { rpc("weekly_board").then(function (b) { $("g-weekrank").textContent = b.me ? "#" + b.me.place : "–"; $("g-statwins").textContent = b.me ? b.me.wins : 0; weekSub(b); }, function () {}); }); }
+    // ---------- The ranking: points today (resets at 6 pm Nigeria time) and this week ----------
+    var RANK_TABS = [["today", "Today"], ["week", "This week"]];
+    function rankTabsHTML(range) {
+      return '<div class="pg-tabs pg-ranktabs" role="tablist">' + RANK_TABS.map(function (t) { return '<button type="button" role="tab" data-rr="' + t[0] + '" aria-selected="' + (t[0] === range) + '">' + t[1] + "</button>"; }).join("") + "</div>";
+    }
+    function rankLeft(ends) {
+      var ms = Date.parse(ends) - Date.now(); if (!(ms > 0)) return "soon";
+      var h = Math.floor(ms / 3600000), m = Math.floor(ms % 3600000 / 60000), d = Math.floor(h / 24);
+      return d ? d + "d " + (h % 24) + "h" : h ? h + "h " + m + "m" : m + "m";
+    }
+    function rankPrize(b, place) {
+      var xp = (b.xp || [])[place - 1], paws = (b.paws || [])[place - 1];
+      return place <= 3 && xp ? '<span class="pg-prize">+' + xp + " XP" + (paws ? " · 🐾 " + paws : "") + "</span>" : "";
+    }
+    function rankRow(r, b) {
+      var f = friendOf(r.uid), li = document.createElement("li"), name = r.me ? "You" : r.name || (f && f.name) || shownPetName(r.pet);
+      li.className = "pg-rankrow" + (r.me ? " me" : "") + (r.place <= 3 ? " top" : "");
+      var mine = b.me && b.me.place, can = b.range === "today" && r.place <= 3 && !r.me && !r.challenged && b.left > 0 && (!mine || mine > r.place);
+      li.innerHTML = '<span class="rk">' + (r.place <= 3 ? MEDALS[r.place - 1] : r.place) + '</span><img alt="" src="' + esc(petPic(r.variant)) + '">' +
+        '<span class="pg-grow"><span class="ttl">' + tagHTML(r.level || 1, name) + "</span>" + rankPrize(b, r.place) + "</span>" +
+        '<span class="pts"><b>' + r.pts + "</b><small>pts</small></span>" +
+        (can ? '<button type="button" class="pg-chalbtn" aria-label="Challenge ' + esc(name) + " for " + b.beat[r.place - 1] + ' points">⚔️ +' + b.beat[r.place - 1] + "</button>"
+             : r.challenged && !r.me && r.place <= 3 && b.range === "today" ? '<span class="pg-chaldone" title="Challenged today">⚔️ ✓</span>' : "");
+      var cb = li.querySelector(".pg-chalbtn"); if (cb) cb.addEventListener("click", function () { challengeAsk(r, b, name); });
+      return li;
+    }
+    // draws a board into a list: what's at stake, the places, my place, and how points work
+    async function drawRankBoard(box, range, redraw) {
+      var b;
+      box.innerHTML = rankTabsHTML(range).replace(/^/, '<li class="pg-ranktabsrow">') + '</li><li class="pg-logempty">Loading…</li>';
+      Array.prototype.forEach.call(box.querySelectorAll("[data-rr]"), function (x) { x.addEventListener("click", function () { redraw(x.dataset.rr); }); });
+      try { b = await rpc("rank_board", { p_range: range }); }
+      catch (e) { box.lastChild.textContent = /rank_board/.test(e.message) ? "The new ranking isn't switched on yet." : e.message; return null; }
+      if (range === "today") rankSub(b);
+      while (box.children.length > 1) box.removeChild(box.lastChild);
+      var info = document.createElement("li"); info.className = "pg-rankinfo";
+      info.innerHTML = '<span class="pg-grow"><b>' + (range === "week" ? "This week's top 3 win" : "Today's top 3 win") + "</b><small>" +
+        [0, 1, 2].map(function (i) { return MEDALS[i] + " " + b.xp[i] + " XP" + (b.paws[i] ? " + " + b.paws[i] + " 🐾" : ""); }).join(" · ") + '</small></span><span class="pg-rankclock">⏱ ' +
+        esc(rankLeft(b.ends)) + "<small>" + (range === "week" ? "resets Monday" : "resets 6 pm") + "</small></span>";
+      box.appendChild(info);
+      (b.rows || []).forEach(function (r) { box.appendChild(rankRow(r, b)); });
+      if (!(b.rows || []).length) box.insertAdjacentHTML("beforeend", '<li class="pg-logempty">No points yet ' + (range === "week" ? "this week" : "today") + ". Win a game against someone and take the top spot! 🏆</li>");
+      if (b.me && b.me.place > 50) box.appendChild(rankRow({ place: b.me.place, pts: b.me.pts, me: true, uid: me.id, pet: pet() && pet().name, variant: pet() && pet().variant, level: pet() && pet().level }, b));
+      if (!b.me && (b.rows || []).length) box.insertAdjacentHTML("beforeend", '<li class="pg-rankme">You have no points ' + (range === "week" ? "this week" : "today") + " yet. Tap Find a game to get on the board!</li>");
+      var rules = document.createElement("li"); rules.className = "pg-rankrules";
+      rules.innerHTML = "<b>How points work</b><span>🎮 Beat a player <em>+5</em></span><span>🤖 Beat a challenge bot <small class='cap'>10 a day</small><em>+2</em></span>" +
+        "<span>⚔️ Beat today's top 3 <em>+25 · +15 · +10</em></span><span>💔 Lose a challenge <em>−5</em></span>" +
+        (range === "today" ? "<small>You have " + b.left + (b.left === 1 ? " challenge" : " challenges") + " left today. Prizes are given by the Pet Streak team.</small>" : "<small>Prizes are given by the Pet Streak team.</small>");
+      box.appendChild(rules);
+      return b;
+    }
+    var rankView = "today";
     async function drawWeek() {
+      $("g-weektabs").innerHTML = ""; $("g-weekhint").textContent = "";
+      await drawRankBoard($("g-weeklist"), rankView, function (r) { rankView = r; drawWeek(); });
+    }
+    async function drawWeekOld() {
       var box = $("g-weeklist"), tab = weekTab, b;
       $("g-weektabs").innerHTML = "";
       WEEK_TABS.forEach(function (t) {
@@ -9260,7 +9430,127 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         (prize && r.place <= 3 ? '<span class="pg-prize">🐾 ' + WEEK_PRIZES[r.place - 1] + "</span>" : "") + '</span></span><b class="pt">' + r.wins + '<small> ' + (r.wins === 1 ? "win" : "wins") + "</small></b>";
       return li;
     }
-    $("g-openweek").addEventListener("click", function () { weekTab = ""; $("g-week").hidden = false; drawWeek(); });
+    $("g-openweek").addEventListener("click", function () { weekTab = ""; rankView = "today"; $("g-week").hidden = false; drawWeek(); });
+    // ---------- Challenges: knock today's top 3 off their spot ----------
+    var chalNow = null, chalSeen = {};
+    async function challengeAsk(r, b, name) {
+      var prize = b.beat[r.place - 1];
+      var ok = await storeAsk({ pic: '<img alt="" src="' + esc(petPic(r.variant)) + '">', title: "⚔️ Challenge " + name + "?",
+        text: "Beat the #" + r.place + " for +" + prize + " points. Lose and you drop 5. They have 2 minutes to accept, and the game is picked at random. You have " + b.left + (b.left === 1 ? " challenge" : " challenges") + " left today.",
+        ok: "⚔️ Send challenge" });
+      if (ok !== "ok") return;
+      var c; try { c = await rpc("challenge_send", { p_to: r.uid, p_game: null }); } catch (e) { say(friendly(e.message)); return; }
+      sendLive("chal", { to: r.uid, from: me.id, id: c.id });
+      try { sb.functions.invoke("send-friend-push", { body: { kind: "challenge" } }).catch(function () {}); } catch (e) {}
+      c.mine = true; c.to = r.uid; c.ends = new Date(Date.now() + 120000).toISOString();
+      chalShow(c);
+    }
+    // the challenge card: mine (waiting for them) or theirs (accept?)
+    function chalShow(c) {
+      if (chalNow && chalNow.id === c.id) return;
+      chalClose();
+      var C = chalNow = { id: c.id, c: c, t: null }, who = c.who || {}, nm = who.name || shownPetName(who.pet), G = GAMES[c.game] || { art: "🎮", name: "A game" };
+      $("g-chalme").src = gamePic(pet()); $("g-chalthem").src = petPic(who.variant);
+      $("g-chaltitle").textContent = c.mine ? "Waiting for " + nm + "…" : "⚔️ " + nm + " challenges you!";
+      $("g-chalsub").textContent = c.mine ? "They're #" + c.place + " today. " + G.art + " " + G.name + " if they accept." : "They want your #" + c.place + " spot today. Win to keep it! " + G.art + " " + G.name;
+      $("g-chalpts").innerHTML = c.mine ? '<span class="win">Win <b>+' + c.prize + "</b></span><span class=\"lose\">Lose <b>−5</b></span>" : '<span class="win">Win <b>+5</b></span><span class="lose">Lose: they take <b>' + c.prize + "</b></span>";
+      $("g-chalno").textContent = c.mine ? "Cancel challenge" : "Not now";
+      $("g-chalyes").hidden = !!c.mine; $("g-chalyes").textContent = "⚔️ Accept";
+      $("g-chal").hidden = false; sfx(c.mine ? "pat" : "happy");
+      var ends = Date.parse(c.ends) || Date.now() + 120000, total = Math.max(1000, ends - Date.now());
+      C.t = setInterval(function () {
+        if (chalNow !== C) return;
+        var left = ends - Date.now();
+        $("g-chalbar").style.transform = "scaleX(" + Math.max(0, left / total).toFixed(3) + ")";
+        if (left <= -3000) { chalClose(); say(c.mine ? nm + " didn't answer in time. Your challenge wasn't used up for nothing: try someone else!" : "That challenge has ended."); return; }
+        if (c.mine && Date.now() - (C.last || 0) > 2000) {
+          C.last = Date.now();
+          rpc("challenge_state", { p_id: c.id }).then(function (st) {
+            if (chalNow !== C || !st) return;
+            if (st.status === "accepted") { chalClose(); chalPlay(st, true); }
+            else if (st.status === "declined") { chalClose(); say(nm + " said not now. Try again tomorrow, or challenge someone else!"); }
+            else if (st.status === "expired") { chalClose(); say(nm + " didn't answer in time."); }
+          }, function () {});
+        }
+      }, 250);
+    }
+    function chalClose() { if (chalNow) clearInterval(chalNow.t); chalNow = null; $("g-chal").hidden = true; }
+    function chalPlay(st, host) {
+      var who = st.who || {}, html = tagHTML(who.level || 1, who.name || shownPetName(who.pet));
+      lastGame = st.game; hidePlayPages(); $("g-week").hidden = true; $("g-history").hidden = true;
+      if (host) liveGame(st.game, st.room, true, { guests: [{ uid: st.to, html: html, state: "wait" }], vs: st.game === "ball" });
+      else liveGame(st.game, st.room, false, { from: st.from });
+    }
+    $("g-chalno").addEventListener("click", function () {
+      var C = chalNow; if (!C) return; chalClose();
+      if (C.c.mine) rpc("challenge_cancel", { p_id: C.id }).catch(function () {});
+      else rpc("challenge_answer", { p_id: C.id, p_ok: false }).catch(function () {});
+    });
+    $("g-chalyes").addEventListener("click", async function () {
+      var C = chalNow; if (!C || C.c.mine) return;
+      $("g-chalyes").disabled = true;
+      try { var st = await rpc("challenge_answer", { p_id: C.id, p_ok: true }); chalClose(); chalPlay(st, false); }
+      catch (e) { chalClose(); say(friendly(e.message)); }
+      $("g-chalyes").disabled = false;
+    });
+    // challenges waiting for me: on a ping, when the app comes back, and every so often while it's open
+    async function chalCheck(force) {
+      if (!me || !pet() || raceNow || chalNow || (!force && document.hidden)) return;
+      var list; try { list = (await rpc("my_challenges")) || []; } catch (e) { return; }
+      var c = list.filter(function (x) { return x && !chalSeen[x.id]; })[0];
+      if (c && !raceNow && !chalNow) { chalSeen[c.id] = 1; chalShow(c); }
+    }
+    setInterval(function () { chalCheck(false); }, 20000);
+    document.addEventListener("visibilitychange", function () { if (!document.hidden) setTimeout(function () { chalCheck(true); }, 1500); });
+
+    // ---------- Find a game: a real player within 60 seconds, or a challenge bot ----------
+    var findNow = null, FIND_SECS = 60;
+    var RANK_BOT_NAMES = ["Kiko", "Momo", "Nori", "Suki", "Taro", "Mika", "Yuzu", "Coco", "Miso", "Tofu", "Ziggy", "Pebble", "Juno", "Biscuit", "Maple", "Sunny", "Olive", "Toffee"];
+    var RANK_BOT_LOOKS = ["panda_classic", "panda_snowy", "panda_moss", "panda_golden", "panda_sakura", "panda_ember"];
+    function startFind() {
+      if (!pet() || raceNow || findNow) return;
+      var F = findNow = { t0: Date.now(), timer: null, busy: false, last: 0 };
+      $("g-findpet").src = gamePic(pet()); $("g-findtitle").textContent = "Finding a player…";
+      $("g-findsub").textContent = "If nobody's free in " + FIND_SECS + " seconds, you'll play a challenge bot.";
+      $("g-find").hidden = false;
+      var arc = $("g-findarc"), len = 2 * Math.PI * 52; arc.style.strokeDasharray = len.toFixed(1);
+      function tick() {
+        if (findNow !== F) return;
+        var gone = (Date.now() - F.t0) / 1000, left = Math.max(0, Math.ceil(FIND_SECS - gone));
+        $("g-findsecs").textContent = left; arc.style.strokeDashoffset = (len * Math.min(1, gone / FIND_SECS)).toFixed(1);
+        if (left <= 0) { findStop(); rankBotGame(); return; }
+        if (!F.busy && Date.now() - F.last > 2000) {
+          F.busy = true; F.last = Date.now();
+          rpc("match_find").then(function (m) {
+            F.busy = false;
+            if (findNow !== F || !m || m.waiting) return;
+            findStop(); chalClose();
+            var who = m.who || {};
+            say("🎮 Matched with " + (who.name || shownPetName(who.pet)) + "!");
+            chalPlay({ game: m.game, room: m.room, to: m.other, from: m.host, who: who }, m.host === me.id);
+          }, function (e) { F.busy = false; if (/match_find/.test(e.message)) { findStop(); say("Find a game isn't switched on yet."); } });
+        }
+      }
+      F.timer = setInterval(tick, 250); tick();
+    }
+    function findStop() {
+      if (!findNow) return;
+      clearInterval(findNow.timer); findNow = null; $("g-find").hidden = true;
+      rpc("match_leave").catch(function () {});
+    }
+    $("g-findcancel").addEventListener("click", findStop);
+    $("g-findgame").addEventListener("click", startFind);
+    // nobody came: a challenge-level bot with a random name, in a random game (a win counts 2 points)
+    var rankBot = null;
+    function botPic() { return rankBot ? petPic(rankBot.variant) : petPic(botChallenge ? "panda_sakura" : "panda_golden"); }
+    async function rankBotGame() {
+      var games = ["race", "bamboo", "memory", "ball", "penalty", "beat"], g = games[Math.floor(Math.random() * games.length)], id = null;
+      try { id = await rpc("rank_bot_start", { p_game: g }); } catch (e) {}
+      rankBot = { id: id, game: g, name: RANK_BOT_NAMES[Math.floor(Math.random() * RANK_BOT_NAMES.length)], variant: RANK_BOT_LOOKS[Math.floor(Math.random() * RANK_BOT_LOOKS.length)] };
+      say("🎮 " + rankBot.name + " is ready to play " + GAMES[g].name + "!");
+      hidePlayPages();
+      if (g === "ball") { lastGame = g; botChallenge = true; ballBot(true); } else playBot(g, true);   // (Ball pass is always Versus here)
+    }
     $("g-weekclose").addEventListener("click", function () { $("g-week").hidden = true; });
 
     // ---------- Rooms ----------
@@ -9269,7 +9559,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     // started), and a "poke" on the room's channel makes the others check at once. When the host starts, the players go
     // into a normal live game, and openPlay() brings them back here afterwards.
     var roomNow = null, roomTimer = null, roomCh = null, roomPickGame = null, roomOpp = null, roomVs = true, roomNewPub = true, roomNewMax = 4, roomStake = 0;
-    var ROOM_LINK_KEY = "petstreak.roomlink", roomGames = ["race", "ball", "penalty", "bamboo", "beat", "memory"];
+    var ROOM_LINK_KEY = "petstreak.roomlink", roomGames = ["race", "ball", "penalty", "bamboo", "beat", "memory"], ROOM_RANDOM = { art: "🎲", name: "Random", max: 3 };
     function roomsOpen(game) {
       if (game) roomPickGame = game;
       if (roomNow) { roomShow(); return; }
@@ -9526,14 +9816,16 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       if (R.stakeAgain && !raceNow) { roomStake = R.stakeAgain; R.stakeAgain = 0; }   // Play again keeps the amount (they still have to agree)
       if (!iHost) { if (!live) g.innerHTML = '<p class="pg-roomwait">' + esc(n < 2 ? "Waiting for more players…" : "Waiting for " + roomName(R.host) + " to pick a game and start…") + "</p>"; return; }
       var row = document.createElement("div"); row.className = "pg-roompicks";
-      roomGames.forEach(function (k) {
+      ["random"].concat(roomGames).forEach(function (k) {
+        var RG = k === "random" ? ROOM_RANDOM : GAMES[k];
         var b = document.createElement("button"); b.type = "button"; b.setAttribute("aria-pressed", roomPickGame === k ? "true" : "false");
-        b.innerHTML = "<i>" + GAMES[k].art + "</i><span>" + esc(GAMES[k].name) + "</span>";
+        b.innerHTML = "<i>" + RG.art + "</i><span>" + esc(RG.name) + "</span>";
         b.addEventListener("click", function () { roomPickGame = k; roomOpp = null; roomDraw(); var q = rmS && rmS.pets[me.id]; if (q) rmSend({ k: "st", x: q.x, y: q.y, tx: q.tx, ty: q.ty, r: q.ready, g: k }); });
         row.appendChild(b);
       });
       g.appendChild(row);
-      var two = roomPickGame && GAMES[roomPickGame].max === 1, others = R.members.filter(function (m) { return m.uid !== me.id; });
+      var others = R.members.filter(function (m) { return m.uid !== me.id; }), PG = roomPickGame === "random" ? ROOM_RANDOM : roomPickGame && GAMES[roomPickGame];
+      var two = roomPickGame && roomPickGame !== "random" && PG.max === 1;
       if (roomOpp && !others.some(function (m) { return m.uid === roomOpp; })) roomOpp = null;
       // one other player on the ready mat: they're the one to play
       var readyOthers = others.filter(function (m) { return rmReady(m.uid); });
@@ -9556,7 +9848,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       }
       // friends can play a 2-player game for paws
       var rival = others.length === 1 ? others[0] : two ? others.filter(function (m) { return m.uid === roomOpp; })[0] : null;
-      var canStake = roomPickGame && rival && friendOf(rival.uid) && !safeOn() && !(profile && Date.now() - new Date(profile.created_at) < 3 * 86400000);
+      var canStake = roomPickGame && roomPickGame !== "random" && rival && friendOf(rival.uid) && !safeOn() && !(profile && Date.now() - new Date(profile.created_at) < 3 * 86400000);
       if (!canStake) roomStake = 0;
       if (canStake) {
         var pw = document.createElement("div"); pw.className = "pg-roomopp"; pw.innerHTML = "<small>Play for paws</small>";
@@ -9574,7 +9866,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       if (late) ready = false;
       go.textContent = n < 2 ? "Waiting for players…" : !roomPickGame ? "Pick a game" : two && others.length > 1 && !roomOpp ? "Pick who to play" : late ? "Waiting for " + roomName(late.uid) + " to finish…"
         : R.played === roomPickGame ? "🔁 Play again" + (roomStake ? " for 🐾 " + roomStake : "")
-        : roomStake ? "Offer 🐾 " + roomStake + " to " + roomName(rival.uid) : "▶ Start " + GAMES[roomPickGame].name + (readyOthers.length && !two ? " (" + (readyOthers.length + 1) + " ready)" : "");
+        : roomStake ? "Offer 🐾 " + roomStake + " to " + roomName(rival.uid) : "▶ Start " + (roomPickGame === "random" ? "a random game" : PG.name) + (readyOthers.length && !two ? " (" + (readyOthers.length + 1) + " ready)" : "");
       go.disabled = !ready;
       setTimeout(rmGoButton, 0);
       go.addEventListener("click", function () {
@@ -9585,6 +9877,13 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     }
     async function roomStartGame() {
       var R = roomNow, game = roomPickGame; if (!R || !game || raceNow || R.starting) return false;
+      // Random: any game for two, or one everyone can play when there are more
+      if (game === "random") {
+        var many = R.members.length > 2 && !roomOpp, pool = roomGames.filter(function (k) { return !many || GAMES[k].max !== 1; });
+        game = pool[Math.floor(Math.random() * pool.length)];
+        if (GAMES[game].max === 1 && !roomOpp) { var o1 = R.members.filter(function (m) { return m.uid !== me.id; }); roomOpp = o1[Math.floor(Math.random() * o1.length)].uid; R.randomOpp = true; }
+        say("🎲 " + GAMES[game].art + " " + GAMES[game].name + "!");
+      }
       var two = GAMES[game].max === 1, others = R.members.filter(function (m) { return m.uid !== me.id; });
       // more than 3 others: the ones on the ready mat go first
       var readyFirst = others.filter(function (m) { return rmReady(m.uid); }).concat(others.filter(function (m) { return !rmReady(m.uid); }));
@@ -9594,7 +9893,8 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       try { res = await rpc("room_start", { p_room: R.id, p_game: game, p_players: [me.id].concat(chosen.map(function (m) { return m.uid; })), p_extra: { vs: vs } }); }
       catch (e) { say(e.message); return false; }
       finally { R.starting = false; }
-      R.seq = (R.seq || 0) + 1; R.played = game; roomPoke();
+      R.seq = (R.seq || 0) + 1; R.played = roomPickGame; roomPoke();
+      if (R.randomOpp) { R.randomOpp = false; setTimeout(function () { roomOpp = null; }, 0); }
       $("g-roompage").hidden = true;
       liveGame(game, res.game_room, true, { vs: vs, fast: false, guests: chosen.map(function (m) { return { uid: m.uid, html: petTagHTML(m), state: "wait" }; }) });
       return true;
@@ -9852,7 +10152,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       if ($("g-roommatpaws").innerHTML !== paws) $("g-roommatpaws").innerHTML = paws;
       rmGoButton();
       // the arcade board on the wall: the next game
-      var g = R.host === me.id ? roomPickGame : rmS.hostGame, G = g && GAMES[g], live = roomLive();
+      var g = R.host === me.id ? roomPickGame : rmS.hostGame, G = g === "random" ? ROOM_RANDOM : g && GAMES[g], live = roomLive();
       $("g-roomarcadegame").textContent = live ? "👀 Watch " + GAMES[R.game].name : G ? G.art + " " + G.name : R.host === me.id ? "Pick a game" : "No game yet";
       $("g-roomarcadesub").textContent = live ? "A game is on" : R.host === me.id ? (!G ? "Tap to choose" : R.members.length < 2 ? "Waiting for players" : "Tap to start") : "The host picks";
     }
@@ -9983,7 +10283,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         q.tx = num(p.tx, q.tx); q.ty = num(p.ty, q.ty);
         if (Math.hypot(num(p.x, q.x) - q.x, num(p.y, q.y) - q.y) > 0.25) { q.x = num(p.x, q.x); q.y = num(p.y, q.y); }
         var was = q.ready; q.ready = !!p.r;
-        if (u === R.host && p.g !== undefined) rmS.hostGame = GAMES[p.g] ? p.g : null;
+        if (u === R.host && p.g !== undefined) rmS.hostGame = GAMES[p.g] || p.g === "random" ? p.g : null;
         rmMatLabel(); if (was !== q.ready && R.host === me.id) roomDraw();
       } else if (p.k === "mv") { q.tx = num(p.tx, q.tx); q.ty = num(p.ty, q.ty); q.pose = ""; q.poseUntil = 0; }
       else if (p.k === "emo") rmDoEmote(u, String(p.e));
@@ -10580,6 +10880,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         endHero(end, won === true ? "win" : won === "draw" ? "draw" : "lose");
         wrap.appendChild(end);
         stakeLine(end);
+        if (won === true || won === false) rankLine(end);
         sfx(won === true ? "levelUp" : "pat");
         end.querySelector('[data-a="done"]').addEventListener("click", function () { cleanup(); openPlay(); if (!roomNow) openMode(game); });
         var ag = end.querySelector('[data-a="again"]');
@@ -10588,6 +10889,21 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         if (fr) fr.addEventListener("click", async function () { if (await addFriendPet(stranger)) { fr.disabled = true; fr.textContent = "Request sent ✓"; } });
         var bl = end.querySelector('[data-a="block"]');
         if (bl) bl.addEventListener("click", function () { cleanup(); openPlay(); openPetOpts(stranger); });
+      }
+      // the ranking points this game gave (or a lost challenge took): both phones report first, so check a few times
+      function rankLine(end) {
+        var line = document.createElement("p"); line.className = "pg-rankline"; line.hidden = true;
+        end.insertBefore(line, end.querySelector(".pg-row"));
+        var tries = 0;
+        (function check() {
+          rpc("rank_for_room", { p_room: room }).then(function (x) {
+            if (!x) { if (++tries < 6) setTimeout(check, 2500); return; }
+            line.hidden = false;
+            line.textContent = x.pts > 0 ? "🏆 +" + x.pts + " ranking points" + (x.reason === "challenge" ? " · challenge won!" : "") : "💔 " + x.pts + " points · challenge lost";
+            line.classList.toggle("down", x.pts < 0);
+            loadWeekSub();
+          }, function () {});
+        })();
       }
       // if there were paws on this game: how they ended up (both phones have to report, so it can take a moment)
       function stakeLine(end, left) {
@@ -10647,9 +10963,10 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       try { n = +localStorage.getItem(BOT_KEY + botKey(game)) || n; } catch (e) {}
       return Math.max(r[0], Math.min(r[1], n));
     }
-    function botName(game) { return botChallenge ? "Bamboo the champion 🔥" : "Bamboo the bot 🤖"; }   // (its level stays hidden)
+    function botName(game) { return rankBot ? rankBot.name : botChallenge ? "Bamboo the champion 🔥" : "Bamboo the bot 🤖"; }   // (its level stays hidden)
     // after a game: the new level, and what to say about it
     function botResult(game, won, winText, loseText, drawText) {
+      if (rankBot) return won === true ? "🏆 You beat " + rankBot.name + "!" : won === false ? rankBot.name + " wins this time. Find another game!" : drawText;
       if (botChallenge) return won === true ? "🔥 You beat Bamboo the champion! That's a real win." : won === false ? "Bamboo the champion wins this time. It can be beaten 💪" : drawText;
       return won === true ? winText : won === false ? loseText : drawText;
     }
@@ -10685,10 +11002,22 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       end.classList.add("hero", mood);
     }
     function botEnd(view, big, text, again, mood) {
+      var rb = rankBot; rankBot = null;
       var end = document.createElement("div"); end.className = "pg-gameend";
-      end.innerHTML = '<div class="big">' + big + "</div><p>" + esc(text) + "</p>" + endButtons(true, "← Back to " + GAMES[lastGame].name);
+      end.innerHTML = '<div class="big">' + big + "</div><p>" + esc(text) + "</p>" + (rb ? '<p class="pg-rankline" hidden></p><p class="pg-botnote">🤖 ' + esc(rb.name) + " was a challenge bot · beating a player gives +5</p>" : "") +
+        endButtons(true, "← Back to " + GAMES[lastGame].name);
       endHero(end, mood || "solo");
       view.wrap.appendChild(end);
+      if (rb) {
+        // a Find-a-game match: Play again looks for a player again, and a win adds its points
+        again = function () { openPlay(); startFind(); };
+        var ag0 = end.querySelector('[data-a="again"]'); if (ag0) ag0.textContent = "🎮 Find another game";
+        if (mood === "win" && rb.id) rpc("rank_bot_win", { p_id: rb.id }).then(function (x) {
+          var line = end.querySelector(".pg-rankline"); if (!line || !x) return;
+          line.hidden = false; line.textContent = x.counted ? "🏆 +" + x.pts + " ranking points" : x.cap ? "Bot wins after 10 today don't add points. Play a real player for +5!" : "";
+          loadWeekSub();
+        }, function () {});
+      }
       end.querySelector('[data-a="done"]').addEventListener("click", function () { view.close(); raceNow = null; trackMe(); openPlay(); openMode(lastGame); });
       end.querySelector('[data-a="again"]').addEventListener("click", function () { view.close(); raceNow = null; again(); });
     }
@@ -10720,7 +11049,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       hidePlayPages();
       var bot = null, over = false, steps = raceSteps(raceMode() === "long");
       var race = startTapRace({ steps: steps,
-        players: [{ uid: "bot", pic: petPic(botChallenge ? "panda_sakura" : "panda_golden"), html: esc(botName("race")) }, { uid: me.id, pic: gamePic(p), html: tagHTML(p.level, p.name), me: true }],
+        players: [{ uid: "bot", pic: botPic(), html: esc(botName("race")) }, { uid: me.id, pic: gamePic(p), html: tagHTML(p.level, p.name), me: true }],
         onFinish: function () { finish([me.id, "bot"]); },
         onQuit: function () { if (bot) bot.stop(); raceNow = null; trackMe(); openPlay(); }
       });
@@ -10749,7 +11078,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         botRow++; botScore += (r < 0.12 ? 30 : 10) * Math.min(5, 1 + Math.floor(botRow / 10));
       }
       var game = startBambooGame({
-        pic: gamePic(p), seed: (Math.random() * 1e9) >>> 0, live: true, endless: true, them: { pic: petPic(botChallenge ? "panda_sakura" : "panda_golden"), html: esc(botChallenge ? "🔥 Bamboo" : "🤖 Bamboo") },
+        pic: gamePic(p), seed: (Math.random() * 1e9) >>> 0, live: true, endless: true, them: { pic: botPic(), html: esc(botChallenge ? "🔥 Bamboo" : "🤖 Bamboo") },
         onQuit: function () { clearTimeout(timer); raceNow = null; trackMe(); openPlay(); },
         onEnd: function (score) {
           clearTimeout(timer);
@@ -10814,7 +11143,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       hidePlayPages();
       var pk = startPenalty({
         me: { pic: gamePic(p), html: tagHTML(p.level, p.name) },
-        them: { pic: petPic(botChallenge ? "panda_sakura" : "panda_golden"), html: esc(botName("pen")), bot: true },
+        them: { pic: botPic(), html: esc(botName("pen")), bot: true },
         iFirst: true, level: botLv("pen"), seed: (Math.random() * 1e9) >>> 0,
         onQuit: function () { raceNow = null; trackMe(); openPlay(); },
         onEnd: function (res) {
@@ -10930,7 +11259,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       hidePlayPages();
       var seed = (Math.random() * 1e9) >>> 0, bot = null;
       var game = startBeatDash({
-        pic: gamePic(p), seed: seed, live: true, them: { pic: petPic(botChallenge ? "panda_sakura" : "panda_golden"), html: esc(botChallenge ? "🔥 Bamboo" : "🤖 Bamboo") },
+        pic: gamePic(p), seed: seed, live: true, them: { pic: botPic(), html: esc(botChallenge ? "🔥 Bamboo" : "🤖 Bamboo") },
         onGo: function () { bot = beatBot(game, botLv("beat"), seed); },
         onQuit: function () { if (bot) bot.stop(); raceNow = null; trackMe(); openPlay(); },
         onEnd: function (score) {
@@ -11154,6 +11483,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     $("g-playnews").addEventListener("click", function () { if (newsItems.length > 1) { clearInterval(newsT); showPlayNews(); } });
     function openPlay() {
       if (!pet()) { say("Get a pet first, then you can play with it 🎮"); return; }
+      rankBot = null; setTimeout(function () { chalCheck(true); }, 1200);
       snapGamePic();
       if (roomNow) { roomShow(); return; }   // (back from a room's game: back to the room)
       $("g-play").hidden = false; $("g-menu").hidden = true; loadPlayNews();
@@ -11194,7 +11524,11 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       var n = Object.keys(online).length;
       // a bold green button when people are here (with their pets' faces), a quiet line when nobody is
       var faces = Object.keys(online).slice(0, 3).map(function (k) { return '<img alt="" src="' + esc(petPic(online[k].variant)) + '">'; }).join("");
-      $("g-onlinecount").innerHTML = '<span class="pg-grow"><b>Quick play</b><small>' +
+      var fr = Object.keys(online).filter(function (k) { return friendOf(k); }).length;
+      $("g-onlinecount").innerHTML = !showOnline() ? '<span class="pg-grow">🙈 You\'re hidden · rooms and Find a game still work</span><span class="chev">›</span>'
+        : n ? '<i class="pg-qdot" aria-hidden="true"></i><span class="pg-grow"><b>' + n + (n === 1 ? " player" : " players") + " online</b>" + (fr ? " · " + fr + (fr === 1 ? " friend" : " friends") : "") + "</span>" + (faces ? '<span class="pg-onfaces">' + faces + "</span>" : "") + '<span class="chev">›</span>'
+        : '<span class="pg-grow">🌙 Nobody else is online · Find a game plays a bot</span><span class="chev">›</span>';
+      if (false) $("g-onlinecount").innerHTML = '<span class="pg-grow"><b>Quick play</b><small>' +
           (!showOnline() ? "🙈 You're hidden · rooms still work" : n ? '<i class="pg-qdot" aria-hidden="true"></i>' + n + (n === 1 ? " player" : " players") + " online" + (faces ? '<span class="pg-onfaces">' + faces + "</span>" : "") : "🌙 Nobody else online · play the bot") +
           '</small></span><span class="go">' + (n && showOnline() ? "Find a game" : "Play") + "</span>";
       $("g-onlinecount").classList.toggle("has", !!n && showOnline());
@@ -11634,7 +11968,11 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       if (m === "weeks") drawWeekHistory();
     }
     Array.prototype.forEach.call(document.querySelectorAll("#g-histmode [data-hm]"), function (b) { b.addEventListener("click", function () { histMode(b.dataset.hm); }); });
+    var histRange = "today";
     async function drawWeekHistory() {
+      return drawRankBoard($("g-histweeks"), histRange, function (r) { histRange = r; drawWeekHistory(); });
+    }
+    async function drawWeekHistoryOld() {
       var box = $("g-histweeks"), b;
       box.innerHTML = '<li class="pg-logempty">Loading…</li>';
       try { b = await rpc("weekly_board", { p_game: null }); }
@@ -12023,6 +12361,35 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       document.body.appendChild(a); a.click(); a.remove(); setTimeout(function () { URL.revokeObjectURL(a.href); }, 5000);
       say("📄 " + rows.length + (rows.length === 1 ? " player" : " players") + " saved."); b.disabled = false;
     });
+    // ranking prizes (today's and this week's top 3): XP to their first pet, and paws for the week
+    async function adminRankPrizes(box, oldN) {
+      var d; try { d = await rpc("admin_rank_prizes"); } catch (e) { return; }
+      var wait = d.waiting || [], n = wait.length + (oldN || 0);
+      prizeBadge(n);
+      $("g-adprizecount").hidden = !n; $("g-adprizecount").textContent = n || "";
+      var note = $("g-adprizenote"); note.hidden = !n;
+      note.innerHTML = "🏆 <b>" + n + (n === 1 ? " prize is" : " prizes are") + " waiting</b><span>Review →</span>";
+      if (!wait.length) return;
+      if (!oldN) box.innerHTML = "";
+      var h = document.createElement("h4"); h.className = "pg-adsub"; h.textContent = "Ranking prizes"; box.appendChild(h);
+      wait.forEach(function (w) {
+        var row = adminRow("pg-adprize"), day = new Date(w.period + "T12:00:00").toLocaleDateString([], { day: "numeric", month: "short" });
+        row.innerHTML = '<span class="medal" aria-hidden="true">' + (MEDAL[w.place] || "🏅") + '</span><span class="pg-grow"><b>' + esc(w.name || "A player") + "</b><small>" +
+          (w.pet ? "🐾 " + esc(w.pet) + " · " : "") + w.pts + " pts · " + (w.kind === "week" ? "week of " : "") + esc(day) + '</small></span><em class="paws">' + w.xp + " XP" + (w.paws ? "<br>" + w.paws + " 🐾" : "") + "</em>";
+        var acts = adminRow("pg-adprizeacts");
+        var pay = document.createElement("button"); pay.type = "button"; pay.className = "pg-btn pg-primary"; pay.textContent = "Pay";
+        var skip = document.createElement("button"); skip.type = "button"; skip.className = "pg-btn"; skip.textContent = "Skip";
+        async function decide(yes) {
+          if (!yes && !confirm("Skip this prize for " + (w.name || "this player") + "?")) return;
+          pay.disabled = skip.disabled = true;
+          try { await rpc("admin_pay_rank_prize", { p_kind: w.kind, p_period: w.period, p_user: w.uid, p_pay: yes }); say(yes ? "🏆 Paid " + w.xp + " XP" + (w.paws ? " and " + w.paws + " paws" : "") + " to " + (w.name || "the winner") + "." : "Prize skipped."); }
+          catch (e) { say(friendly(e.message)); }
+          adminPrizes(); adminLog();
+        }
+        pay.addEventListener("click", function () { decide(true); }); skip.addEventListener("click", function () { decide(false); });
+        acts.appendChild(skip); acts.appendChild(pay); row.appendChild(acts); box.appendChild(row);
+      });
+    }
     // weekly prizes: the top 3 of each finished week wait here for Pay or Skip
     var MEDAL = { 1: "🥇", 2: "🥈", 3: "🥉" };
     async function adminPrizes() {
@@ -12063,6 +12430,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         });
         box.appendChild(all);
       }
+      await adminRankPrizes(box, n);
       var rec = d.recent || [];
       if (rec.length) {
         var h = document.createElement("h4"); h.className = "pg-adsub"; h.textContent = "Recently decided"; box.appendChild(h);
@@ -14773,7 +15141,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     }, true);
     // The phone's back button (Android's back swipe): close whatever is on top instead of leaving the app. A game
     // asks first. On the main screen, a second back within 2 seconds closes the app.
-    var BACK = [["g-roomsheet", "g-roomsheetx"], ["g-tour", "g-tourskip"], ["g-choose", "g-chooseno"], ["g-lboard", "g-lbclose"], ["g-apd", "g-apdclose"], ["g-admin", "g-adminclose"], ["g-celebrate", "g-cbok"], ["g-stconfirm", "g-sccancel"], ["g-achpop", "g-achok"], ["g-invite", "g-inviteno"], ["g-ask", "g-askcancel"], ["g-join", "g-joincancel"],
+    var BACK = [["g-find", "g-findcancel"], ["g-chal", "g-chalno"], ["g-roomsheet", "g-roomsheetx"], ["g-tour", "g-tourskip"], ["g-choose", "g-chooseno"], ["g-lboard", "g-lbclose"], ["g-apd", "g-apdclose"], ["g-admin", "g-adminclose"], ["g-celebrate", "g-cbok"], ["g-stconfirm", "g-sccancel"], ["g-achpop", "g-achok"], ["g-invite", "g-inviteno"], ["g-ask", "g-askcancel"], ["g-join", "g-joincancel"],
                 ["g-giftsend", "g-gsdone"], ["g-petopts", "g-poclose"], ["g-gamepick", "g-pickno"], ["g-gamehelp", "g-ghclose"], ["g-mode", "g-modeclose"],
                 ["g-pick", "g-pickclose"], ["g-history", "g-historyclose"], ".pg-game", ["g-msgsheet", "g-msgclose"], ["g-chatbar", "g-chatbarx"], ["g-chat", "g-chatback"], ["g-watch", "g-watchclose"], ["g-roomreply", "g-roomreplyx"], ["g-roomnew", "g-roomnewcancel"], ["g-roompage", "g-roommin"], ["g-rooms", "g-roomsclose"], ["g-seek", "g-seekclose"], ["g-daily", "g-dailyclose"], ["g-nudge", "g-nudgeno"], ["g-news", "g-newsok"], ["g-delcard", "g-delcancel"], ["g-safecard", "g-safecancel"], ["g-roomnew", "g-roomnewcancel"], ["g-roompage", "g-roomback"], ["g-rooms", "g-roomsclose"],
                 ["g-social", "g-socialclose"], ["g-play", "g-playclose"], ["g-bath", "g-bathcancel"], ["g-howto", "g-howskip"],
