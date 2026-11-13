@@ -2742,6 +2742,26 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
 .pg-lbfoot small { font-size: 0.75rem; font-weight: 700; color: #6b7a82; }
 .pg-lbfoot b { font-family: var(--display); font-size: 1.1rem; color: #14232b; }
 .pg-gprow .pg-modebtn.chal b { color: #c2410c; }
+
+/* ===== Batch 1: end buttons, recent games, tidy game page links ===== */
+.pg-endbtns { flex-direction: column; gap: 8px; }
+.pg-endbtns .pg-feed { width: 100% !important; min-height: 54px; font-size: 1.1rem; }
+.pg-endback { width: 100%; min-height: 46px; border: 2px solid #e4dcef; border-radius: 16px; background: #fff; font: inherit; font-weight: 800; color: #3c3489; cursor: pointer; }
+.pg-endback:active { transform: scale(0.98); }
+.pg-recent { margin-top: 6px; padding: 12px 14px; border-radius: 18px; background: rgba(255,255,255,0.85); box-shadow: 0 2px 8px rgba(20,35,43,0.06); }
+.pg-recenthead { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+.pg-recenthead b { font-size: 1.02rem; color: #14232b; }
+.pg-recentlist { margin: 0; }
+.pg-pillbtn { border: 0; border-radius: 999px; padding: 6px 12px; background: #eef1f6; color: #2f4a8a; font: inherit; font-weight: 800; font-size: 0.85rem; cursor: pointer; }
+.pg-seeall.pg-pillbtn { display: block; margin: 10px auto 0; padding: 9px 16px; }
+.pg-gpscore { margin: 0 0 8px; color: #6b7a82; font-size: 0.85rem; font-weight: 600; }
+.pg-gpscore:empty { display: none; }
+.pg-howbtn { display: flex; align-items: center; gap: 10px; width: 100%; padding: 14px 16px; border: 0; border-radius: 16px; background: #fff; box-shadow: 0 2px 8px rgba(20,35,43,0.06); font: inherit; font-weight: 800; color: #14232b; text-align: left; cursor: pointer; }
+.pg-howbtn span:first-child { font-size: 1.2rem; }
+.pg-howbtn .chev { margin-left: auto; color: #8a979e; font-size: 1.3rem; }
+#g-moderace[hidden] { display: none; }
+.rc-lap { margin-left: auto; }
+.pg-lane.boosted img { filter: drop-shadow(0 0 10px rgba(255,194,61,0.95)); }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -2923,6 +2943,11 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
           <button type="button" class="pg-gamecard penalty" data-game="penalty"><span class="art" aria-hidden="true">🥅</span><b>Penalty kicks</b><small data-stat>Shoot, save, win</small></button>
         </div>
         <div class="pg-gamedots" id="g-gamedots"></div>
+        <!-- your last few games -->
+        <div class="pg-recent">
+          <div class="pg-recenthead"><b>Recent games</b><button type="button" class="pg-pillbtn" id="g-recentall">See all ›</button></div>
+          <ol class="pg-histlist pg-recentlist" id="g-recent"></ol>
+        </div>
         <!-- the best for the game in front of you -->
         <div class="pg-playboard">
           <h3 class="pg-playh" id="g-boardtitle">Today's best</h3>
@@ -3028,6 +3053,10 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         <h2 id="g-modename">Treat race</h2>
       </div>
       <div class="pg-gpbody" id="g-modebody">
+        <div class="pg-tabs pg-modevs" id="g-moderace" role="tablist" aria-label="Race length" hidden>
+          <button type="button" role="tab" data-rmode="classic" aria-selected="true">🏁 Classic</button>
+          <button type="button" role="tab" data-rmode="long" aria-selected="false">🏃 Marathon</button>
+        </div>
         <div class="pg-tabs pg-modevs" id="g-modebmode" role="tablist" aria-label="Game mode" hidden>
           <button type="button" role="tab" data-bmode="endless" aria-selected="true">♾️ Endless</button>
           <button type="button" role="tab" data-bmode="timed" aria-selected="false">⏱ 30 seconds</button>
@@ -3050,10 +3079,14 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
           <button type="button" class="pg-modebtn chal" id="g-modechal"></button>
         </div>
         <div class="pg-gpboard">
-          <div class="pg-gpboardhead"><b id="g-modeboardtitle">Today's best</b><button type="button" class="pg-linkbtn" id="g-modehow">How to play</button></div>
+          <div class="pg-gpboardhead"><b id="g-modeboardtitle">Today's best</b></div>
+          <p class="pg-gpscore" id="g-modescore"></p>
           <ol class="pg-board" id="g-modeboard"></ol>
-          <button type="button" class="pg-linkbtn pg-seeall" id="g-modeall" hidden>See all</button>
+          <button type="button" class="pg-pillbtn pg-seeall" id="g-modeall" hidden>🏆 Full leaderboard ›</button>
           <p class="pg-hint" id="g-modereward"></p>
+        </div>
+        <button type="button" class="pg-howbtn" id="g-modehow"><span aria-hidden="true">📖</span> How to play<span class="chev" aria-hidden="true">›</span></button>
+        <div hidden>
         </div>
       </div>
     </div>
@@ -6323,7 +6356,12 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
   // x5). Pick-ups: ❤️ a heart back (50 points if you're full), 🛡️ a shield for the next bad thing, 🧲 and ⏳.
   // A duel (live + endless), "last panda standing": the same things fall for both; when one runs out of hearts, the
   // other wins the moment they pass that score (oppDone(n)). After 2 minutes, sudden death: everything speeds up.
-  var BAMBOO_TIME = 30, BAMBOO_HEARTS = 3, BAMBOO_WAVE = 20, BAMBOO_SUDDEN = 120;
+  // Pace: speed and how often things fall rise quickly at first, then level off (a curve that flattens out), so a good
+  // player can keep going for minutes; the challenge after that comes from more bad things and new kinds, not speed.
+  // Each new wave opens with 3 calm seconds of food only. (Duels: sudden death after 3 minutes, so they always end.)
+  var BAMBOO_TIME = 30, BAMBOO_HEARTS = 3, BAMBOO_WAVE = 20, BAMBOO_SUDDEN = 180;
+  function endlessSpeed(t) { return 1 + 1.1 * (1 - Math.exp(-t / 100)); }   // x1 at the start, x1.7 at 2 min, at most x2.1
+  function endlessGap(t) { return 0.85 - 0.38 * (1 - Math.exp(-t / 90)); }    // seconds between drops: 0.85 down to 0.47
   var BAMBOO_FOODS = ["🍎", "🍌", "🥕", "🍓", "🍉", "🍇", "🍑"];
   function startBambooGame(opts) {
     var wrap = document.createElement("div"); wrap.className = "pg-game";
@@ -6395,13 +6433,13 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         v: (H / 3.2) * (1 + elapsed / 22) * (0.85 + rnd() * 0.3), spin: (rnd() - 0.5) * 2 });
     }
     function spawnEndless(elapsed) {
-      var r = rnd(), wv = 1 + Math.floor(elapsed / BAMBOO_WAVE), kind, c = 0;
-      var odds = [["gold", 0.08], ["rock", 0.13 + Math.min(0.1, elapsed / 400)], ["bee", wv >= 2 ? 0.07 : 0], ["shroom", wv >= 3 ? 0.07 : 0],
+      var r = rnd(), wv = 1 + Math.floor(elapsed / BAMBOO_WAVE), kind, c = 0, calm = wv >= 2 && elapsed % BAMBOO_WAVE < 3;
+      var odds = calm ? [["gold", 0.2]] : [["gold", 0.08], ["rock", 0.12 + Math.min(0.08, elapsed / 600)], ["bee", wv >= 2 ? 0.06 : 0], ["shroom", wv >= 3 ? 0.06 : 0],
                   ["heart", 0.012], ["shield", 0.016], ["magnet", elapsed > 5 ? 0.02 : 0], ["slow", elapsed > 5 ? 0.016 : 0]];
       kind = "food";
       for (var i = 0; i < odds.length; i++) { c += odds[i][1]; if (r < c) { kind = odds[i][0]; break; } }
       var icon = { gold: "🎋", rock: "🪨", bee: "🐝", shroom: "🍄", heart: "❤️", shield: "🛡️", magnet: "🧲", slow: "⏳" }[kind];
-      var fast = (1 + Math.min(elapsed, 150) / 40) * (sudden ? 1.6 : 1);
+      var fast = endlessSpeed(elapsed) * (sudden ? 1.35 : 1);
       items.push({ x: 24 + rnd() * (W - 48), y: -30, kind: kind, icon: icon || BAMBOO_FOODS[Math.floor(rnd() * BAMBOO_FOODS.length)],
         v: (H / 3.2) * fast * (0.85 + rnd() * 0.3), spin: (rnd() - 0.5) * 2, ph: rnd() * 6 });
     }
@@ -6468,7 +6506,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         if (wv > wave) { wave = wv; banner(wave === 2 ? "Wave 2 · watch out for bees! 🐝" : wave === 3 ? "Wave 3 · poison mushrooms! 🍄" : wave === 4 ? "Wave 4 · here comes the wind! 💨" : "Wave " + wave + " · faster!"); if (typeof sfx === "function") sfx("sparkle"); }
         if (opts.live && !sudden && since >= BAMBOO_SUDDEN) { sudden = true; banner("Sudden death! ⚡"); }
         spawnIn -= dt;
-        if (spawnIn <= 0) { spawnEndless(since); spawnIn = Math.max(0.22, 0.85 - since / 70) * (sudden ? 0.6 : 1) * (0.7 + rnd() * 0.6); }
+        if (spawnIn <= 0) { spawnEndless(since); spawnIn = endlessGap(since) * (sudden ? 0.75 : 1) * (0.7 + rnd() * 0.6); }
         if (theirOut !== null && score > theirOut) finish();   // passed the player who's out: a win
       } else if (state === "play") {
         var left = Math.max(0, BAMBOO_TIME - since);
@@ -6490,7 +6528,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       items = items.filter(function (it) {
         it.y += it.v * dt * (slow ? 0.45 : 1);
         if (it.kind === "bee") it.x += Math.cos(it.y / 38 + it.ph) * 120 * dt;
-        if (E && wave >= 4) it.x += Math.sin((now - t0) / 1700) * 70 * dt;
+        if (E && wave >= 4) it.x += Math.sin((now - t0) / 1700) * 45 * dt;
         it.x = Math.max(16, Math.min(W - 16, it.x));
         if (magnet && (it.kind === "food" || it.kind === "gold") && it.y > H * 0.25) it.x += (px - it.x) * Math.min(1, dt * 2.6);
         if (state === "play" && it.y > catchY && it.y < catchY + P * 0.55 && Math.abs(it.x - px) < P * 0.55) {
@@ -6653,12 +6691,14 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
   // so two phones can never both say "You win".
   // startTapRace({ players: [{ uid, pic, html, me }], steps, onTap(n), onFinish(), onQuick(i), onQuit() })
   //   -> { wrap, start(), progress(uid, n), quick(uid, i), left(uid), result(order), status(text), close() }
-  var RACE_STEPS = 120;   // (about 15 seconds of tapping)
+  var RACE_STEPS = 90;    // Classic: about 12 seconds of tapping (a Marathon is 360)
   function startTapRace(opts) {
     var steps = opts.steps || RACE_STEPS, me = null;
+    // a Marathon (a long race): 3 laps, and a boost pad every 60 steps: the next 12 taps count double
+    var long = steps > RACE_STEPS, boost = 0, lapEl = null;
     var wrap = document.createElement("div"); wrap.className = "pg-game pg-race";
     wrap.innerHTML =
-      '<div class="pg-gamehud"><span class="lbl">🏁 Treat race</span>' +
+      '<div class="pg-gamehud"><span class="lbl">🏁 Treat race' + ((opts.steps || RACE_STEPS) > RACE_STEPS ? " · Marathon" : "") + '</span>' + ((opts.steps || RACE_STEPS) > RACE_STEPS ? '<span class="rc-lap">Lap 1 / 3</span>' : "") +
         (opts.onQuick ? '<button type="button" class="pg-qcbtn" aria-label="Send an emoji">💬</button>' : "") +
         '<button type="button" class="pg-gamex" aria-label="Leave the race">✕</button></div>' +
       '<div class="pg-qcpal" hidden></div>' +
@@ -6667,6 +6707,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       '<button type="button" class="pg-tapbtn" disabled>TAP!</button>';
     document.body.appendChild(wrap);
     var box = wrap.querySelector(".pg-lanes"), msg = wrap.querySelector(".pg-gamemsg"), btn = wrap.querySelector(".pg-tapbtn");
+    lapEl = wrap.querySelector(".rc-lap");
     var lanes = {};
     // others on top, you at the bottom (next to the button)
     opts.players.filter(function (pl) { return !pl.me; }).concat(opts.players.filter(function (pl) { return pl.me; })).forEach(function (pl) {
@@ -6690,7 +6731,10 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     function tap(e) {
       if (e) e.preventDefault();
       if (!live || over || finished) return;
-      var l = lanes[me]; l.n++; place(me);
+      var l = lanes[me], was = l.n; l.n = Math.min(steps, l.n + (boost > 0 ? 2 : 1)); if (boost > 0 && --boost === 0) l.el.classList.remove("boosted");
+      if (long && Math.floor(l.n / 60) > Math.floor(was / 60) && l.n < steps) { boost = 12; l.el.classList.add("boosted"); msg.textContent = "⚡ Boost!"; setTimeout(function () { if (msg.textContent === "⚡ Boost!") msg.textContent = ""; }, 900); if (typeof sfx === "function") sfx("sparkle"); }
+      if (lapEl) lapEl.textContent = "Lap " + Math.min(3, 1 + Math.floor(l.n / (steps / 3))) + " / 3";
+      place(me);
       var img = l.el.querySelector("img"); img.classList.remove("hop"); void img.offsetWidth; img.classList.add("hop");
       if (l.n % 3 === 0) { var dr = img.getBoundingClientRect(), wr0 = wrap.getBoundingClientRect(); fxBurst(wrap, dr.left - wr0.left + 8, dr.bottom - wr0.top - 10, { n: 4, spread: 14, colors: ["#e9c9a8", "#f3dcc4", "#d9b28c"] }); }
       if (typeof sfx === "function" && l.n % 4 === 0) sfx("click");
@@ -6724,14 +6768,16 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     };
   }
   // Bamboo the bot: taps 6 to 10 times a second depending on its level (1-5), with the odd short pause
-  function botRacer(race, uid, onFinish, level) {
-    // (levels 6-8 are the Challenge: you need about 10 to 11 taps a second)
+  function botRacer(race, uid, onFinish, level, steps) {
+    // (levels 6-8 are the Challenge: you need about 10 to 11 taps a second). In a Marathon it gets the boost pads too.
     var L = Math.max(1, Math.min(8, level || 2)), base = [140, 122, 108, 96, 86, 80, 74, 69][L - 1], pause = [0.06, 0.05, 0.04, 0.03, 0.02, 0.015, 0.01, 0.008][L - 1];
-    var n = 0, alive = true;
+    var n = 0, alive = true, total = steps || RACE_STEPS, boost = 0;
     function step() {
       if (!alive) return;
-      n++; race.progress(uid, n);
-      if (n >= RACE_STEPS) { onFinish(); return; }
+      var was = n; n = Math.min(total, n + (boost > 0 ? 2 : 1)); if (boost > 0) boost--;
+      if (total > RACE_STEPS && Math.floor(n / 60) > Math.floor(was / 60)) boost = 12;
+      race.progress(uid, n);
+      if (n >= total) { onFinish(); return; }
       setTimeout(step, base + Math.random() * 40 + (Math.random() < pause ? 220 : 0));
     }
     setTimeout(step, 3000 + 250);   // (after the bot race's 3-2-1)
@@ -7189,7 +7235,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
   //   -> { wrap, start(), hit(n, fast), drop(), quick(i), left(), close() }
   var BALL_POINTS = 5;
   // ms for pass n (versus speeds up faster and gets quicker at the top)
-  function ballTravel(n, vs) { return vs ? Math.max(470, 1400 * Math.pow(0.94, n)) : Math.max(520, 1500 * Math.pow(0.955, n)); }
+  function ballTravel(n, vs) { return vs ? Math.max(560, 1400 * Math.pow(0.958, n)) : Math.max(560, 1500 * Math.pow(0.962, n)); }
   function startBallPass(opts) {
     var VS = !!opts.versus;
     // 🔥 Challenge (the bot at levels 6-8, in versus): the ball speeds up faster, the timing window is tighter and power
@@ -7281,7 +7327,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     // how close to the ball's arrival a tap must be (tighter in versus as the rally goes on)
     function windowMs(n) {
       if (CHL >= 0) return Math.max([95, 86, 82][CHL], [190, 178, 170][CHL] - n * 8);
-      return VS ? Math.max(100, 200 - n * 7) : Math.max(110, 220 - n * 5);
+      return VS ? Math.max(120, 210 - n * 5) : Math.max(125, 225 - n * 4);
     }
     function ballFrame(now) {
       raf = requestAnimationFrame(ballFrame);
@@ -7701,7 +7747,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261113051145";   // replaced by build_real.ps1
+    var APP_BUILD = "20261113060939";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -8462,12 +8508,13 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       $("g-modeall").hidden = !scoreGame;
       if (scoreGame) {
         var key = scoreKey(game), endless = key === "bamboo_endless";
-        $("g-modeboardtitle").textContent = "Today's best" + (game === "bamboo" ? (endless ? " · Endless" : " · 30 seconds") : "");
+        $("g-modeboardtitle").textContent = "Today's best" + (game === "bamboo" ? (endless ? " · Endless" : " · 30 seconds") : game === "memory" ? " · " + { 8: "Quick", 12: "Classic", 15: "Big" }[memSize()] : "");
         var sbd, plays = 0;
         try {
           var got = await Promise.all([rpc("score_board", { p_game: key, p_range: "today", p_scope: "all", p_tz: tz() }),
-            rpc("my_games_today", { p_game: game, p_tz: tz() }), game === "bamboo" ? rpc("my_games_today", { p_game: "bamboo_endless", p_tz: tz() }) : 0]);
-          sbd = got[0]; plays = (got[1] || 0) + (got[2] || 0);
+            rpc("my_games_today", { p_game: game, p_tz: tz() }), game === "bamboo" ? rpc("my_games_today", { p_game: "bamboo_endless", p_tz: tz() }) : 0,
+            game === "memory" ? rpc("my_games_today", { p_game: "memory8", p_tz: tz() }) : 0, game === "memory" ? rpc("my_games_today", { p_game: "memory15", p_tz: tz() }) : 0]);
+          sbd = got[0]; plays = (got[1] || 0) + (got[2] || 0) + (got[3] || 0) + (got[4] || 0);
         } catch (e) { stats.innerHTML = ""; return; }
         if (modeGame !== game || scoreKey(game) !== key) return;
         var rows = sbd.rows || [], mine = sbd.me, paid = Math.max(0, GAME_PAID - plays);
@@ -8507,6 +8554,11 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       $("g-modehelp").onclick = $("g-modehow").onclick = function () { openGameHelp(game); };
       $("g-modevs").hidden = game !== "ball";
       Array.prototype.forEach.call(document.querySelectorAll("#g-modevs [data-vs]"), function (b) { b.setAttribute("aria-selected", (b.dataset.vs === "1") === ballVs ? "true" : "false"); });
+      // Treat race: Classic or Marathon
+      $("g-moderace").hidden = game !== "race";
+      Array.prototype.forEach.call(document.querySelectorAll("#g-moderace [data-rmode]"), function (b) { b.setAttribute("aria-selected", b.dataset.rmode === raceMode() ? "true" : "false"); });
+      if (game === "race") solo = raceMode() === "long" ? ["▶ Race the bot", "Marathon: 3 laps, boost pads every 60 steps. About a minute of racing!"] : ["▶ Race the bot", "Classic: tap as fast as you can to the treat."];
+      $("g-modescore").textContent = SCORE_RULES[game === "bamboo" ? bambooKey() : game === "memory" ? scoreKey("memory") : game] || "";
       // Bamboo catch: Endless or 30 seconds (the tiles, the big button and the board all follow it)
       $("g-modebmode").hidden = game !== "bamboo";
       Array.prototype.forEach.call(document.querySelectorAll("#g-modebmode [data-bmode]"), function (b) { b.setAttribute("aria-selected", b.dataset.bmode === bambooMode() ? "true" : "false"); });
@@ -8550,6 +8602,13 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     Array.prototype.forEach.call(document.querySelectorAll("#g-modebmode [data-bmode]"), function (b) {
       b.addEventListener("click", function () { try { localStorage.setItem(BAMBOO_MODE_KEY, b.dataset.bmode); } catch (e) {} openMode("bamboo"); drawCardStats(); });
     });
+    Array.prototype.forEach.call(document.querySelectorAll("#g-moderace [data-rmode]"), function (b) {
+      b.addEventListener("click", function () { try { localStorage.setItem(RACE_MODE_KEY, b.dataset.rmode); } catch (e) {} openMode("race"); });
+    });
+    // how each game's points work, under its board
+    var SCORE_RULES = { bamboo_endless: "Points: food 10, golden bamboo 30, times your combo (up to x5).", bamboo: "Points: 1 for each food, 3 for golden bamboo. Rocks take 2 off.",
+      memory: "Points: fewer tries and a faster finish score more. A perfect game is 150.", memory8: "Quick board: fewer tries and a faster finish score more. A perfect game is 100.",
+      memory15: "Big board: fewer tries and a faster finish score more. A perfect game is 150.", beat: "Points: Perfect 10, Good 5, times your combo (up to x4). Coins +20." };
     // a little sheet with two choices
     function choose(title, a, b) {
       $("g-choosetitle").textContent = title;
@@ -8581,7 +8640,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     }
     function openLeaderboard(game) {
       lbGame = game; lbTab = "today";
-      $("g-lbtitle").textContent = GAMES[game].art + " " + GAMES[game].name + (game === "bamboo" ? (bambooMode() === "endless" ? " · Endless" : " · 30 seconds") : "");
+      $("g-lbtitle").textContent = GAMES[game].art + " " + GAMES[game].name + (game === "bamboo" ? (bambooMode() === "endless" ? " · Endless" : " · 30 seconds") : game === "memory" ? " · " + { 8: "Quick", 12: "Classic", 15: "Big" }[memSize()] : "");
       $("g-lbplay").textContent = "▶ Play " + (game === "bamboo" ? (bambooMode() === "endless" ? "Endless" : "30 seconds") : GAMES[game].name);
       $("g-lboard").hidden = false; drawLeaderboard();
     }
@@ -8600,8 +8659,9 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     Array.prototype.forEach.call(document.querySelectorAll(".pg-gamecard[data-game]"), function (b) {
       b.addEventListener("click", function () { openMode(b.dataset.game); });
     });
-    function playSolo(game) { botChallenge = false; if (game === "beat") startBeat(); else if (game === "bamboo") startGame(); else if (game === "memory") startMemory(); else if (game === "ball") ballBot(ballVs); else if (game === "penalty") penBot(); else raceBot(); }
-    function playBot(game, challenge) { botChallenge = !!challenge; if (game === "beat") beatDuelBot(); else if (game === "bamboo") duelBot(); else if (game === "memory") memoryBot(); else if (game === "ball") ballBot(ballVs); else if (game === "penalty") penBot(); else raceBot(); }
+    var lastGame = "bamboo";
+    function playSolo(game) { lastGame = game; botChallenge = false; if (game === "beat") startBeat(); else if (game === "bamboo") startGame(); else if (game === "memory") startMemory(); else if (game === "ball") ballBot(ballVs); else if (game === "penalty") penBot(); else raceBot(); }
+    function playBot(game, challenge) { lastGame = game; botChallenge = !!challenge; if (game === "beat") beatDuelBot(); else if (game === "bamboo") duelBot(); else if (game === "memory") memoryBot(); else if (game === "ball") ballBot(ballVs); else if (game === "penalty") penBot(); else raceBot(); }
 
     // --- with others: pick who (online players, and friends who are away: they get a notification) ---
     var pick = null;
@@ -9379,7 +9439,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     }
     function hidePlayPages() { ["g-play", "g-social", "g-pick", "g-mode", "g-gamepick", "g-petopts", "g-chat", "g-rooms", "g-roompage"].forEach(function (id) { $(id).hidden = true; }); chatWith = null; }
     // Change this when games stop working between old and new versions: players on different numbers aren't put together.
-    var GAME_PROTO = 1;
+    var GAME_PROTO = 2;   // 2: Bamboo duels are Endless, races have Classic/Marathon lengths, Beat dash
     function liveGame(game, room, host, info) {
       var p = pet(); if (!p || raceNow) return;
       if (!GAMES[game]) { say("Please update the app to play this game."); return; }
@@ -9620,7 +9680,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       }
       function startNow() {
         if (!host || started || players.length < 2) return;
-        var m = { players: players.slice(), first: players[Math.floor(Math.random() * players.length)].uid, vs: !!info.vs, fast: !!info.fast, v: GAME_PROTO };
+        var m = { players: players.slice(), first: players[Math.floor(Math.random() * players.length)].uid, vs: !!info.vs, fast: !!info.fast, long: game === "race" && raceMode() === "long", v: GAME_PROTO };
         R.send("go", m);
         go(m);
         // (said three times: a player who misses it would wait forever)
@@ -9639,8 +9699,8 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
 
       // the Treat race: the host referees (the first to reach the treat wins; the others by how far they got)
       function goRace(m) {
-        var prog = {}, latest = 0, sentN = 0, gone = {};
-        var race = startTapRace({
+        var prog = {}, latest = 0, sentN = 0, gone = {}, steps = raceSteps(!!m.long);
+        var race = startTapRace({ steps: steps,
           players: m.players.map(function (x) { return { uid: x.uid, pic: x.uid === me.id && x.variant === p.variant ? gamePic(p) : petPic(x.variant), html: x.uid === me.id ? tagHTML(p.level, p.name) : petTagHTML(x), me: x.uid === me.id }; }),
           onTap: function (n) { latest = n; prog[me.id] = n; },
           onFinish: function () { if (host) referee(me.id); else { R.send("fin", { uid: me.id }); race.status("🏁 Waiting for the result…"); } },
@@ -9649,11 +9709,11 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         });
         view = race;
         var pump = setInterval(function () { if (latest !== sentN) { sentN = latest; R.send("p", { uid: me.id, n: sentN }); } }, 100);
-        R.on("p", function (x) { prog[x.uid] = x.n | 0; race.progress(x.uid, x.n | 0); if (host && (x.n | 0) >= RACE_STEPS) referee(x.uid); });
+        R.on("p", function (x) { prog[x.uid] = x.n | 0; race.progress(x.uid, x.n | 0); if (host && (x.n | 0) >= steps) referee(x.uid); });
         R.on("fin", function (x) { if (host) referee(x.uid); });
         R.on("result", function (x) { if (!host) show(x.order || []); });
         S.quick = function (uid, i) { race.quick(uid, i); };
-        S.ws = function () { return { s: prog, max: RACE_STEPS }; };
+        S.ws = function () { return { s: prog, max: steps }; };
         function referee(first) {
           if (done) return;
           var order = [first].concat(m.players.map(function (x) { return x.uid; })
@@ -9850,15 +9910,14 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         var end = document.createElement("div"); end.className = "pg-gameend";
         end.innerHTML = '<div class="big">' + o.big + "</div>" + (o.lbl ? '<p class="lbl">' + o.lbl + "</p>" : "") +
           "<p>" + esc(won === true ? "🏆 You win! " + p.name + " has " + wins + (wins === 1 ? " win" : " wins") + " 🏁" : won === "draw" ? "🤝 It's a draw!" : o.lost) + "</p>" +
-          '<div class="pg-row"><button type="button" class="pg-btn pg-grow" data-a="done">' + (roomNow ? "Back to the room" : "Done") + "</button>" +
-          (again.length ? '<button type="button" class="pg-feed pg-grow" data-a="again">' + o.again + "</button>" : "") + "</div>" +
+          endButtons(false, roomNow ? "← Back to the room" : "← Back to " + GAMES[game].name) +
           (stranger ? '<div class="pg-row pg-endextra"><button type="button" class="pg-linkbtn pg-small" data-a="friend">➕ Add friend</button>' +
                       '<button type="button" class="pg-linkbtn pg-small" data-a="block">🚫 Block or report</button></div>' : "");
         endHero(end, won === true ? "win" : won === "draw" ? "draw" : "lose");
         wrap.appendChild(end);
         stakeLine(end);
         sfx(won === true ? "levelUp" : "pat");
-        end.querySelector('[data-a="done"]').addEventListener("click", function () { cleanup(); openPlay(); });
+        end.querySelector('[data-a="done"]').addEventListener("click", function () { cleanup(); openPlay(); if (!roomNow) openMode(game); });
         var ag = end.querySelector('[data-a="again"]');
         if (ag) ag.addEventListener("click", function () { cleanup(); openPlay(); hostGame(game, again, { vs: S.vs, fast: S.fast }); });
         var fr = end.querySelector('[data-a="friend"]');
@@ -9888,7 +9947,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         R.send("bye", { uid: me.id }); clearInterval(S.hbT);   // (a phone coming back mustn't play on against nobody)
         logGame(game, "live", others().map(label).join(", "), "left", null, null);
         var end = document.createElement("div"); end.className = "pg-gameend";
-        end.innerHTML = '<p>' + esc(text) + '</p><div class="pg-row"><button type="button" class="pg-feed pg-grow" data-a="done">Done</button></div>';
+        end.innerHTML = '<p>' + esc(text) + "</p>" + endButtons(false, roomNow ? "← Back to the room" : "← Back to " + GAMES[game].name);
         endHero(end, "left");
         wrap.appendChild(end); stakeLine(end, true);
         end.querySelector('[data-a="done"]').addEventListener("click", function () { cleanup(); openPlay(); });
@@ -9914,7 +9973,12 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     var BOT_KEY = "petstreak.botlevel.", BOT_LOSS_KEY = "petstreak.botlosses.", BOT_EASIER_AFTER = 3, botChallenge = false;
     function botKey(game) { return (botChallenge ? "ch_" : "") + game; }
     function botRange() { return botChallenge ? [6, 8] : [1, 5]; }
-    function botLv(game) {
+    // Standard difficulty (2026-11): every game has one normal bot, set so an average player wins about half the
+    // time, and one Challenge that's hard but beatable. (The old bot levels that went up and down are gone.)
+    var BOT_NORMAL = { race: 1, bamboo: 3, memory: 2, ball: 2, pen: 3, beat: 4 }, BOT_CHAL = { race: 6, bamboo: 6, memory: 6, ball: 6, pen: 7, beat: 7 };
+    try { Object.keys(localStorage).forEach(function (k) { if (k.indexOf(BOT_KEY) === 0 || k.indexOf(BOT_LOSS_KEY) === 0) localStorage.removeItem(k); }); } catch (e) {}
+    function botLv(game) { return (botChallenge ? BOT_CHAL : BOT_NORMAL)[game] || 3; }
+    function oldBotLv(game) {
       var r = botRange(), n = botChallenge ? 6 : 3;
       try { n = +localStorage.getItem(BOT_KEY + botKey(game)) || n; } catch (e) {}
       return Math.max(r[0], Math.min(r[1], n));
@@ -9922,6 +9986,10 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     function botName(game) { return botChallenge ? "Bamboo the champion 🔥" : "Bamboo the bot 🤖"; }   // (its level stays hidden)
     // after a game: the new level, and what to say about it
     function botResult(game, won, winText, loseText, drawText) {
+      if (botChallenge) return won === true ? "🔥 You beat Bamboo the champion! That's a real win." : won === false ? "Bamboo the champion wins this time. It can be beaten 💪" : drawText;
+      return won === true ? winText : won === false ? loseText : drawText;
+    }
+    function oldBotResult(game, won, winText, loseText, drawText) {
       var r = botRange(), lv = botLv(game), next = lv, losses = 0;
       try { losses = +localStorage.getItem(BOT_LOSS_KEY + botKey(game)) || 0; } catch (e) {}
       if (won === true) { next = Math.min(r[1], lv + 1); losses = 0; }
@@ -9954,18 +10022,21 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     }
     function botEnd(view, big, text, again, mood) {
       var end = document.createElement("div"); end.className = "pg-gameend";
-      end.innerHTML = '<div class="big">' + big + "</div><p>" + esc(text) + "</p>" +
-        '<div class="pg-row"><button type="button" class="pg-btn pg-grow" data-a="done">Done</button><button type="button" class="pg-feed pg-grow" data-a="again">▶ Play again</button></div>';
+      end.innerHTML = '<div class="big">' + big + "</div><p>" + esc(text) + "</p>" + endButtons(true, "← Back to " + GAMES[lastGame].name);
       endHero(end, mood || "solo");
       view.wrap.appendChild(end);
-      end.querySelector('[data-a="done"]').addEventListener("click", function () { view.close(); raceNow = null; trackMe(); openPlay(); });
+      end.querySelector('[data-a="done"]').addEventListener("click", function () { view.close(); raceNow = null; trackMe(); openPlay(); openMode(lastGame); });
       end.querySelector('[data-a="again"]').addEventListener("click", function () { view.close(); raceNow = null; again(); });
     }
+    // Treat race: Classic (90 taps) or Marathon (360 taps, 3 laps with boost pads), remembered on this phone
+    var RACE_MODE_KEY = "petstreak.racemode", RACE_LONG = 360;
+    function raceMode() { try { return localStorage.getItem(RACE_MODE_KEY) === "long" ? "long" : "classic"; } catch (e) { return "classic"; } }
+    function raceSteps(long) { return long ? RACE_LONG : RACE_STEPS; }
     function raceBot() {
       var p = pet(); if (!p || raceNow) return;
       hidePlayPages();
-      var bot = null, over = false;
-      var race = startTapRace({
+      var bot = null, over = false, steps = raceSteps(raceMode() === "long");
+      var race = startTapRace({ steps: steps,
         players: [{ uid: "bot", pic: petPic(botChallenge ? "panda_sakura" : "panda_golden"), html: esc(botName("race")) }, { uid: me.id, pic: gamePic(p), html: tagHTML(p.level, p.name), me: true }],
         onFinish: function () { finish([me.id, "bot"]); },
         onQuit: function () { if (bot) bot.stop(); raceNow = null; trackMe(); openPlay(); }
@@ -9978,7 +10049,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         botEnd(race, won ? "1st" : "2nd", botResult("race", won, "You beat Bamboo the bot!", "Bamboo the bot wins! Tap faster next time."), raceBot, won ? "win" : "lose");
       }
       raceNow = { race: race }; trackMe();
-      race.start(); bot = botRacer(race, "bot", function () { finish(["bot", me.id]); }, botLv("race"));
+      race.start(); bot = botRacer(race, "bot", function () { finish(["bot", me.id]); }, botLv("race"), steps);
     }
     // Bamboo the bot catches something every second or so; higher levels catch more often and hit fewer rocks
     function duelBot() {
@@ -10095,19 +10166,23 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     }
 
     // --- solo games: scores and paws ---
+    // the buttons under a result: a big Play again (only for games on your own or against the bot) and a way back
+    function endButtons(again, back) {
+      return '<div class="pg-row pg-endbtns">' + (again ? '<button type="button" class="pg-feed" data-a="again">▶ Play again</button>' : "") +
+        '<button type="button" class="' + (again ? "pg-endback" : "pg-feed") + '" data-a="done">' + esc(back) + "</button></div>";
+    }
     function soloEnd(wrap, game, res, err, lead, html, again, close) {
       var end = document.createElement("div"); end.className = "pg-gameend";
       end.innerHTML = html +
         (res ? (html.indexOf("pg-endever") >= 0 ? "" : "<p>" + (res.new_best ? "🏆 Your best today!" : "Your best today: " + res.best) + "</p>") +
                (res.paws ? '<p class="paws">+' + res.paws + " 🐾</p>" : "") + (lead ? "<p>" + esc(lead) + "</p>" : "")
              : "<p>" + esc(err || "") + "</p>") +
-        '<div class="pg-row"><button type="button" class="pg-btn pg-grow" data-a="done">Done</button>' +
-        '<button type="button" class="pg-feed pg-grow" data-a="again">▶ Play again</button></div>';
+        endButtons(true, "← Back to " + GAMES[game].name);
       endHero(end, res && res.new_best ? "best" : "solo");
       wrap.appendChild(end);
       if (res && res.paws) { sfx("coin"); loadAll({ quiet: true }); }
       end.querySelector('[data-a="again"]').addEventListener("click", function () { close(); again(); });
-      end.querySelector('[data-a="done"]').addEventListener("click", function () { close(); boardGame = game; openPlay(); });
+      end.querySelector('[data-a="done"]').addEventListener("click", function () { close(); boardGame = game; openPlay(); openMode(game); });
     }
     async function saveSolo(game, score, logAs) {
       var res = null, err = null, lead = "";
@@ -10127,7 +10202,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     function bambooKey() { return bambooMode() === "endless" ? "bamboo_endless" : "bamboo"; }
     function endlessBest() { try { return +localStorage.getItem(BAMBOO_EBEST_KEY) || 0; } catch (e) { return 0; } }
     // the score board's key for a game (Bamboo catch has two)
-    function scoreKey(game) { return game === "bamboo" ? bambooKey() : game; }
+    function scoreKey(game) { return game === "bamboo" ? bambooKey() : game === "memory" ? { 8: "memory8", 15: "memory15" }[memSize()] || "memory" : game; }
     function startGame() {
       var p = pet(); if (!p) return;
       hidePlayPages();
@@ -10193,7 +10268,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         pic: gamePic(p), pairs: memSize(),
         onQuit: function () { openPlay(); },
         onEnd: async function (r) {
-          var s = await saveSolo("memory", r.score);
+          var s = await saveSolo(scoreKey("memory"), r.score, { game: "memory", mode: "solo" });
           soloEnd(game.wrap, "memory", s.res, s.err, s.lead, '<div class="big">' + r.score + '</div><p class="lbl">points · ' + r.moves + " tries · " + r.secs + " s</p>", startMemory, game.close);
         }
       });
@@ -10348,6 +10423,11 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         } catch (e) {}
       });
     }
+    function drawRecent(list) {
+      var box = $("g-recent"); box.innerHTML = "";
+      list.slice(0, 4).forEach(function (g) { box.appendChild(histRow(g)); });
+      if (!list.length) box.innerHTML = '<li class="pg-logempty">Your games show up here. Pick one above and play! 🎮</li>';
+    }
     function renderOnlineCount() {
       var n = Object.keys(online).length;
       // a bold green button when people are here (with their pets' faces), a quiet line when nobody is
@@ -10376,6 +10456,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         // the pet's day (midnight where the pet lives), the same day the challenge and quests use
         var day = function (d) { try { return new Intl.DateTimeFormat("en-CA", { timeZone: (pets[0] && pets[0].tz) || "UTC" }).format(d); } catch (e) { return d.toDateString(); } }, today = day(new Date());
         $("g-todaycount").textContent = (h || []).filter(function (g) { return day(new Date(g.at)) === today; }).length;
+        drawRecent(h || []);
       }, function () {}); drawCardStats(); }
       return;   // (each game's scores are on its own page now: the board below isn't shown)
       // games without a daily score show this week's wins for that game instead
@@ -10482,6 +10563,17 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     $("g-stattoday").addEventListener("click", openHistory);
     $("g-statrank").addEventListener("click", function () { $("g-openweek").click(); });
     $("g-openhist").addEventListener("click", openHistory);
+    (function () {
+      var map = [["g-week", "g-openweek"], ["g-rooms", "g-openrooms"], ["g-history", "g-openhist"]];
+      function sync() {
+        var on = "g-tabgames";
+        map.forEach(function (x) { if ($(x[0]) && !$(x[0]).hidden) on = x[1]; });
+        ["g-tabgames", "g-openweek", "g-openrooms", "g-openhist"].forEach(function (id) { $(id).setAttribute("aria-selected", id === on ? "true" : "false"); });
+      }
+      var mo = new MutationObserver(sync);
+      map.forEach(function (x) { if ($(x[0])) mo.observe($(x[0]), { attributes: true, attributeFilter: ["hidden"] }); });
+    })();
+    $("g-recentall").addEventListener("click", openHistory);
     $("g-onlinecount").addEventListener("click", openOnlineList);
     Array.prototype.forEach.call(document.querySelectorAll(".pg-boardtabs [data-board]"), function (b) {
       b.addEventListener("click", function () { boardGame = b.dataset.board; renderPlay(true); });
@@ -10778,7 +10870,12 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       list.forEach(function (g) {
         var d = new Date(g.at), day = dayName(d);
         if (day !== lastDay) { lastDay = day; var h = document.createElement("li"); h.className = "pg-histday"; h.textContent = day; box.appendChild(h); }
-        var G = GAMES[g.game] || GAMES.race, res, cls = "";
+        box.appendChild(histRow(g));
+      });
+      drawStakes();
+    }
+    function histRow(g) {
+        var d = new Date(g.at), G = GAMES[g.game] || GAMES.race, res, cls = "";
         if (g.game === "ball" && g.result !== "won" && g.result !== "lost") { res = (g.score || 0) + " passes"; cls = g.result === "left" ? "left" : ""; }
         else if (g.mode === "solo" || g.mode === "endless") res = Number(g.score || 0).toLocaleString() + " pts";
         else if (g.result === "left") { res = "Left"; cls = "left"; }
@@ -10788,8 +10885,10 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         li.innerHTML = '<span class="gi" aria-hidden="true">' + G.art + '</span><span class="pg-grow"><b>' + esc(G.name) + (g.mode === "bot" ? " · practice" : g.mode === "solo" ? " · solo" : g.mode === "endless" ? " · endless" : "") + "</b>" +
           "<small>" + esc((g.against ? "with " + g.against + " · " : "") + d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })) + "</small></span>" +
           '<span class="res ' + cls + '">' + esc(res) + "</span>";
-        box.appendChild(li);
-      });
+        return li;
+    }
+    function drawStakes() {
+      var box = $("g-histlist"), list = histAll.filter(function (g) { return !histGame || g.game === histGame; });
       var stakes = histStakes.filter(function (x) { return !histGame || x.game === histGame; });
       if (stakes.length) { if (!list.length) box.innerHTML = ""; var sh = document.createElement("li"); sh.className = "pg-histday"; sh.textContent = "🐾 Paw games"; box.appendChild(sh); }
       stakes.forEach(function (x) {
