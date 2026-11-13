@@ -2539,6 +2539,46 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
 .pg-lane img { z-index: 1; filter: drop-shadow(0 4px 3px rgba(0,0,0,0.25)); }
 
 .pg-gameend .pg-row button { white-space: nowrap; padding-left: 10px; padding-right: 10px; }
+
+/* ===================== Treat race: on the beat ===================== */
+.pg-race.rhythm .pg-lanes { padding-bottom: 8px; }
+.pg-race.rhythm .pg-tapbtn { height: 96px; margin-top: 0; transition: background 0.15s; }
+.pg-race.rhythm .pg-tapbtn.jump { background: linear-gradient(150deg, #ffc23d, #f08a1c); box-shadow: 0 10px 0 #b8650e; color: #4a2a00; }
+.rc-helpbtn[hidden] { display: none; }
+.rc-beat { position: relative; flex: none; height: 64px; margin: 0 16px 12px; border-radius: 999px; background: rgba(255,255,255,0.85); box-shadow: inset 0 2px 6px rgba(0,0,0,0.08); overflow: hidden; }
+.rc-zone { position: absolute; left: 18%; top: 50%; width: 46px; height: 46px; margin: -23px 0 0 -23px; border-radius: 50%; border: 4px solid #e2456f; box-sizing: border-box; background: rgba(226,69,111,0.08); }
+.rc-zone.pulse { animation: rc-pulse 0.25s ease-out; }
+@keyframes rc-pulse { 0% { transform: scale(1.18); background: rgba(226,69,111,0.3); } 100% { transform: none; } }
+.rc-dots { position: absolute; inset: 0; pointer-events: none; }
+.rc-dots i { position: absolute; left: 0; top: 50%; width: 18px; height: 18px; margin-top: -9px; border-radius: 50%; background: #ff8a5c; box-shadow: 0 2px 0 #c4502c; will-change: transform; }
+.rc-dots i.used { background: #4cc38a; box-shadow: 0 2px 0 #2b8a5e; opacity: 0.5; }
+.rc-dots i.gone { opacity: 0; }
+.rc-judge { position: absolute; right: 16px; top: 50%; transform: translateY(-50%) scale(0.8); font-family: var(--display); font-size: 1.15rem; font-weight: 800; opacity: 0; transition: opacity 0.12s, transform 0.12s; white-space: nowrap; pointer-events: none; }
+.rc-judge.show { opacity: 1; transform: translateY(-50%); }
+.rc-judge.good { color: #1f8a5b; } .rc-judge.ok { color: #2f7fe0; } .rc-judge.bad { color: #b3261e; }
+/* the logs across each lane */
+.rc-log { position: absolute; top: 50%; width: 14px; height: 46px; margin-top: -23px; border-radius: 7px; z-index: 0;
+  background: repeating-linear-gradient(180deg, #8a5a2b 0 6px, #a0703c 6px 12px); box-shadow: inset 0 0 0 2px rgba(0,0,0,0.15); }
+.rc-log::before { content: ""; position: absolute; left: 50%; top: -5px; width: 12px; height: 12px; margin-left: -6px; border-radius: 50%; background: #d9b07a; box-shadow: inset 0 0 0 2px #a0703c; }
+.rc-log.over { opacity: 0.35; }
+/* your pet: a bob on every beat, a hop over a log, a wobble when it trips */
+.pg-lane.me.beat img { scale: 1.07 0.93; }
+.pg-lane img { transition: left 0.12s ease-out, scale 0.12s ease-out; }
+.pg-lane img.jump { animation: rc-jump 0.42s ease-out; }
+@keyframes rc-jump { 0% { transform: none; } 45% { transform: translateY(-30px) rotate(-10deg); } 100% { transform: none; } }
+.pg-lane img.trip { animation: rc-trip 0.45s ease-out; }
+@keyframes rc-trip { 0%,100% { transform: none; } 25% { transform: rotate(18deg) translateY(4px); } 60% { transform: rotate(-8deg); } }
+@media (max-height: 700px) { .pg-race.rhythm .pg-tapbtn { height: 78px; } .rc-beat { height: 54px; } .pg-race.rhythm .pg-lane .track { height: 58px; } .pg-race.rhythm .pg-lane img { width: 54px; height: 54px; } }
+
+.rc-info { flex: none; display: flex; flex-direction: column; align-items: center; padding-top: calc(88px + env(safe-area-inset-top, 0px)); color: #2b1d3a; pointer-events: none; }
+.rc-info .rc-left { font-family: var(--display); font-size: 3.6rem; font-weight: 800; line-height: 1; color: #e2456f; text-shadow: 0 3px 0 #fff; }
+.rc-info small { font-weight: 800; font-size: 0.95rem; color: #6b4a5a; }
+.rc-streak { margin-top: 8px; min-height: 30px; padding: 4px 12px; border-radius: 999px; font-weight: 800; color: #fff; background: #ff8a4c; opacity: 0; transition: opacity 0.2s; }
+.rc-streak.on { opacity: 1; }
+.pg-race.rhythm .pg-lanes { padding-top: 12px !important; }
+.pg-race.rhythm .pg-gamemsg { top: calc(64px + env(safe-area-inset-top, 0px)); }
+.pg-lane .track::after { right: 44px; }
+@media (max-height: 700px) { .rc-info { padding-top: calc(70px + env(safe-area-inset-top, 0px)); } .rc-info .rc-left { font-size: 2.6rem; } }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -2712,7 +2752,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         <!-- the games: swipe for more -->
         <div class="pg-gamestrip pg-gamegrid" id="g-gamestrip">
           <button type="button" class="pg-gamecard bamboo" data-game="bamboo"><span class="art" aria-hidden="true">🎋</span><b>Bamboo catch</b><small data-stat>Catch the falling food</small></button>
-          <button type="button" class="pg-gamecard race" data-game="race"><span class="art" aria-hidden="true">🏁</span><b>Treat race</b><small data-stat>Tap fastest · up to 4</small></button>
+          <button type="button" class="pg-gamecard race" data-game="race"><span class="art" aria-hidden="true">🏁</span><b>Treat race</b><small data-stat>Tap on the beat · up to 4</small></button>
           <button type="button" class="pg-gamecard memory" data-game="memory"><span class="art" aria-hidden="true">🃏</span><b>Memory match</b><small data-stat>Find the pairs</small></button>
           <button type="button" class="pg-gamecard ball" data-game="ball"><span class="art" aria-hidden="true">⚽</span><b>Ball pass</b><small data-stat>Keep it going · or versus</small></button>
           <button type="button" class="pg-gamecard penalty" data-game="penalty"><span class="art" aria-hidden="true">🥅</span><b>Penalty kicks</b><small data-stat>Shoot, save, win</small></button>
@@ -3006,7 +3046,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       <div class="pg-card">
         <h2>Which game?</h2>
         <div class="pg-pickgames">
-          <button type="button" class="pg-gametile race" id="g-pickrace"><span class="art" aria-hidden="true">🏁</span><b>Treat race</b><small>Tap fastest to the treat</small></button>
+          <button type="button" class="pg-gametile race" id="g-pickrace"><span class="art" aria-hidden="true">🏁</span><b>Treat race</b><small>Tap on the beat to the treat</small></button>
           <button type="button" class="pg-gametile duel" id="g-pickduel"><span class="art" aria-hidden="true">🎋</span><b>Bamboo duel</b><small>Highest score in 30 s</small></button>
           <button type="button" class="pg-gametile memory" id="g-pickmem"><span class="art" aria-hidden="true">🃏</span><b>Memory match</b><small>Take turns finding pairs</small></button>
           <button type="button" class="pg-gametile ball" id="g-pickball"><span class="art" aria-hidden="true">⚽</span><b>Ball pass</b><small>Keep it going together</small></button>
@@ -5666,6 +5706,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
 
   var SFX = {
     click:   function () { tone(1250, 0, 0.04, "sine", 0.05); },
+    beat:    function () { tone(760, 0, 0.05, "triangle", 0.035); },
     happy:   function () { tone(880, 0, 0.13, "sine", 0.16, 1320); tone(1100, 0.15, 0.18, "sine", 0.16, 1700); },
     // a contented "mm-hmm" coo with a tiny chime
     pat:     function () { tone(640, 0.05, 0.3, "sine", 0.1, 560, [6, 7]); tone(590, 0.38, 0.4, "sine", 0.09, 480, [5, 7]); pluck(1568, 0.1, 0.035); },
@@ -6326,37 +6367,69 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
   }
 
   // ---------- Treat race (2 to 4 players) ----------
-  // A lane each and a treat at the end. Every tap on the big button moves your pet a step. Who won is decided by one
-  // referee (the player who sent the invites, or this phone against the bot) and given to everyone with result(),
-  // so two phones can never both say "You win".
+  // A lane each and a treat at the end. Tap ON THE BEAT: dots slide into the circle, and a tap as one arrives moves
+  // your pet (perfect: 2 steps, good: 1). A tap off the beat trips your pet and it sits out the next beat, so tapping
+  // as fast as you can doesn't work. Four logs lie across each lane: you stop at a log until you tap on the beat to
+  // jump it. The beat gets a little quicker as you get closer to the treat.
+  // Who won is decided by one referee (the player who sent the invites, or this phone against the bot) and given to
+  // everyone with result(), so two phones can never both say "You win". Phones only share how far they've got (steps).
   // startTapRace({ players: [{ uid, pic, html, me }], steps, onTap(n), onFinish(), onQuick(i), onQuit() })
   //   -> { wrap, start(), progress(uid, n), quick(uid, i), left(uid), result(order), status(text), close() }
-  var RACE_STEPS = 56;
+  var RACE_STEPS = 120, RACE_PERFECT = 70, RACE_GOOD = 140;   // (about 45 seconds of racing)
+  function raceBeat(n, steps) { return 560 - Math.min(1, n / (steps || RACE_STEPS)) * 140; }   // ms between beats
+  function raceLogs(steps) { return [0.18, 0.38, 0.57, 0.75].map(function (f) { return Math.round(steps * f); }); }
+  // a step forward from n by add, stopping at a log that hasn't been jumped yet; at the log, an on-beat tap jumps it
+  function raceStep(n, add, logs, jumped) {
+    for (var i = 0; i < logs.length; i++) {
+      var lg = logs[i];
+      if (jumped[lg]) continue;
+      if (n === lg) { jumped[lg] = true; return { n: n + 1, jump: true }; }
+      if (n < lg) return { n: Math.min(n + add, lg), jump: false };
+    }
+    return { n: n + add, jump: false };
+  }
+  var RACE_HOW_KEY = "petstreak.racehow2";
   function startTapRace(opts) {
-    var steps = opts.steps || RACE_STEPS, me = null;
-    var wrap = document.createElement("div"); wrap.className = "pg-game pg-race";
+    var steps = opts.steps || RACE_STEPS, me = null, logs = raceLogs(steps), jumped = {};
+    var wrap = document.createElement("div"); wrap.className = "pg-game pg-race rhythm";
     wrap.innerHTML =
       '<div class="pg-gamehud"><span class="lbl">🏁 Treat race</span>' +
+        '<button type="button" class="pg-qcbtn rc-helpbtn" aria-label="How to play">?</button>' +
         (opts.onQuick ? '<button type="button" class="pg-qcbtn" aria-label="Send an emoji">💬</button>' : "") +
         '<button type="button" class="pg-gamex" aria-label="Leave the race">✕</button></div>' +
       '<div class="pg-qcpal" hidden></div>' +
+      '<div class="rc-info"><b class="rc-left">' + steps + '</b><small>steps to the treat 🍰</small><span class="rc-streak"></span></div>' +
       '<div class="pg-lanes"></div>' +
       '<div class="pg-gamemsg big">Get ready…</div>' +
+      '<div class="rc-beat" aria-hidden="true"><i class="rc-zone"></i><div class="rc-dots"></div><b class="rc-judge"></b></div>' +
       '<button type="button" class="pg-tapbtn" disabled>TAP!</button>';
     document.body.appendChild(wrap);
     var box = wrap.querySelector(".pg-lanes"), msg = wrap.querySelector(".pg-gamemsg"), btn = wrap.querySelector(".pg-tapbtn");
-    var lanes = {};
+    var beatEl = wrap.querySelector(".rc-beat"), dotsEl = wrap.querySelector(".rc-dots"), judgeEl = wrap.querySelector(".rc-judge"), zoneEl = wrap.querySelector(".rc-zone");
+    var lanes = {}, leftEl = wrap.querySelector(".rc-left"), streakEl = wrap.querySelector(".rc-streak"), streak = 0;
+    function info() {
+      leftEl.textContent = Math.max(0, steps - lanes[me].n);
+      streakEl.textContent = streak >= 3 ? "🔥 " + streak + " perfect in a row" : "";
+      streakEl.classList.toggle("on", streak >= 3);
+    }
     // others on top, you at the bottom (next to the button)
     opts.players.filter(function (pl) { return !pl.me; }).concat(opts.players.filter(function (pl) { return pl.me; })).forEach(function (pl) {
       var lane = document.createElement("div"); lane.className = "pg-lane" + (pl.me ? " me" : "");
-      lane.innerHTML = '<span class="who"></span><div class="track"><img alt=""><i class="treat">🍰</i><b class="place"></b></div>';
+      lane.innerHTML = '<span class="who"></span><div class="track">' +
+        logs.map(function (lg) { return '<i class="rc-log" data-log="' + lg + '" style="left:calc(' + (lg / steps * 100) + '% * 0.82 + 52px)"></i>'; }).join("") +
+        '<img alt=""><i class="treat">🍰</i><b class="place"></b></div>';
       lane.querySelector(".who").innerHTML = (pl.html || "") + (pl.me ? " <small>(you)</small>" : "");
       lane.querySelector("img").src = pl.pic;
       box.appendChild(lane);
       lanes[pl.uid] = { el: lane, n: 0 };
       if (pl.me) me = pl.uid;
     });
-    function place(uid) { var l = lanes[uid]; if (l) l.el.querySelector("img").style.left = "calc(" + (Math.min(1, l.n / steps) * 100) + "% * 0.82)"; }
+    function place(uid) {
+      var l = lanes[uid]; if (!l) return;
+      l.el.querySelector("img").style.left = "calc(" + (Math.min(1, l.n / steps) * 100) + "% * 0.82)";
+      // logs behind a pet are jumped (theirs too, from how far they've got)
+      Array.prototype.forEach.call(l.el.querySelectorAll(".rc-log"), function (lg) { lg.classList.toggle("over", l.n > +lg.dataset.log); });
+    }
     Object.keys(lanes).forEach(place);
     function bubble(uid, text) {
       var l = lanes[uid]; if (!l) return;
@@ -6364,28 +6437,111 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       l.el.appendChild(b); setTimeout(function () { b.remove(); }, 2600);
     }
     quickPalette(wrap, function (i, t) { bubble(me, t); opts.onQuick(i); });
-    var live = false, over = false, finished = false, timers = [];
+    var live = false, over = false, finished = false, timers = [], raf = 0;
+    // the beat: each one has a time; a tap scores on the nearest beat it hasn't used yet
+    var beats = [], stumbleUntil = 0, jdT = null;
+    function lastBeat() { return beats[beats.length - 1]; }
+    function addBeats(now) { while (!beats.length || lastBeat().t < now + 3000) { var prev = beats.length ? lastBeat().t : now + 600; beats.push({ t: beats.length ? prev + raceBeat(lanes[me].n, steps) : prev, used: false, ticked: false }); } }
+    function judge(text, cls) {
+      judgeEl.textContent = text; judgeEl.className = "rc-judge show " + cls;
+      clearTimeout(jdT); jdT = setTimeout(function () { judgeEl.className = "rc-judge"; }, 520);
+    }
+    function atLog() { var n = lanes[me].n; return logs.some(function (lg) { return n === lg && !jumped[lg]; }); }
+    function showBtn() { var lg = atLog(); btn.textContent = lg ? "JUMP! ⤴" : "TAP!"; btn.classList.toggle("jump", lg); }
+    function trip(why) {
+      stumbleUntil = performance.now() + raceBeat(lanes[me].n, steps) * 1.05; streak = 0; info();
+      var img = lanes[me].el.querySelector("img"); img.classList.remove("hop", "trip", "jump"); void img.offsetWidth; img.classList.add("trip");
+      judge(why, "bad"); fxShake(btn);
+      if (typeof sfx === "function") sfx("splat");
+    }
     function tap(e) {
       if (e) e.preventDefault();
       if (!live || over || finished) return;
-      var l = lanes[me]; l.n++; place(me);
-      var img = l.el.querySelector("img"); img.classList.remove("hop"); void img.offsetWidth; img.classList.add("hop");
-      if (l.n % 3 === 0) { var dr = img.getBoundingClientRect(), wr0 = wrap.getBoundingClientRect(); fxBurst(wrap, dr.left - wr0.left + 8, dr.bottom - wr0.top - 10, { n: 4, spread: 14, colors: ["#e9c9a8", "#f3dcc4", "#d9b28c"] }); }
-      if (typeof sfx === "function" && l.n % 4 === 0) sfx("click");
+      var now = performance.now();
+      if (now < stumbleUntil) { judge("Wait for it…", "bad"); return; }
+      // the nearest beat that isn't used up
+      var best = null;
+      beats.forEach(function (b) { if (!b.used && (!best || Math.abs(b.t - now) < Math.abs(best.t - now))) best = b; });
+      var d = best ? now - best.t : 1e9;
+      if (!best || Math.abs(d) > RACE_GOOD) { trip(d < 0 ? "Too soon!" : "Off the beat!"); return; }
+      best.used = true;
+      var perfect = Math.abs(d) <= RACE_PERFECT, l = lanes[me], r = raceStep(l.n, perfect ? 2 : 1, logs, jumped);
+      l.n = r.n; place(me); showBtn(); streak = perfect ? streak + 1 : 0; info();
+      var img = l.el.querySelector("img"); img.classList.remove("hop", "trip", "jump"); void img.offsetWidth; img.classList.add(r.jump ? "jump" : "hop");
+      judge(r.jump ? "Jump! 🪵" : perfect ? "Perfect! +2" : "Good +1", perfect || r.jump ? "good" : "ok");
+      var zc = fxCentre(wrap, zoneEl);
+      if (perfect) fxBurst(wrap, zc.x, zc.y, { n: 6, spread: 18, colors: ["#ffc23d", "#ffffff", "#4cc38a"] });
+      if (r.jump) { var dr = fxCentre(wrap, img); fxBurst(wrap, dr.x, dr.y, { n: 8, spread: 26, colors: ["#a0703c", "#c79a63", "#7bd389"] }); }
+      if (typeof sfx === "function") sfx(perfect ? "coin" : "click");
+      if (navigator.vibrate) try { navigator.vibrate(perfect ? 18 : 8); } catch (er) {}
       if (opts.onTap) opts.onTap(l.n);
       if (l.n >= steps) { finished = true; btn.disabled = true; msg.textContent = "🏁"; if (opts.onFinish) opts.onFinish(); }
     }
     btn.addEventListener("pointerdown", tap);
     function onKey(e) { if (e.target.tagName === "INPUT") return; if (e.key === " " || e.key === "Enter") tap(e); }
     window.addEventListener("keydown", onKey);
-    function close() { over = true; live = false; timers.forEach(clearTimeout); window.removeEventListener("keydown", onKey); wrap.remove(); }
+    // the dots: the next few beats slide left into the circle; the pet bobs and a soft tick plays on each beat
+    var DOTS = 7, dotEls = [];
+    for (var i = 0; i < DOTS; i++) { var dEl = document.createElement("i"); dEl.className = "gone"; dotsEl.appendChild(dEl); dotEls.push(dEl); }
+    function frame() {
+      raf = requestAnimationFrame(frame);
+      if (!live) return;
+      var now = performance.now(); addBeats(now);
+      beats = beats.filter(function (b) { return b.t > now - 400; });
+      var zx = zoneEl.offsetLeft + zoneEl.offsetWidth / 2, gap = Math.max(56, (beatEl.clientWidth - zx) / 4.2), k = 0;
+      beats.forEach(function (b) {
+        if (!b.ticked && now >= b.t) {
+          b.ticked = true;
+          var ln = lanes[me].el; if (!finished) { ln.classList.add("beat"); setTimeout(function () { ln.classList.remove("beat"); }, 140); }
+          zoneEl.classList.remove("pulse"); void zoneEl.offsetWidth; zoneEl.classList.add("pulse");
+          if (typeof sfx === "function" && !finished) sfx("beat");
+        }
+        if (k >= DOTS) return;
+        var x = zx + (b.t - now) / raceBeat(lanes[me].n, steps) * gap, el = dotEls[k++];
+        el.style.transform = "translateX(" + Math.round(x - 9) + "px)";
+        el.className = b.used ? "used" : now > b.t + RACE_GOOD ? "gone" : "";
+      });
+      for (; k < DOTS; k++) dotEls[k].className = "gone";
+    }
+    raf = requestAnimationFrame(frame);
+    function close() { over = true; live = false; cancelAnimationFrame(raf); timers.forEach(clearTimeout); window.removeEventListener("keydown", onKey); wrap.remove(); }
     wrap.querySelector(".pg-gamex").addEventListener("click", function () {
       if (live && !over && !confirm("Leave the race?")) return;
       close(); if (opts.onQuit) opts.onQuit();
     });
+    // how to play: the first race on this phone, and any time before the start from the ? button
+    var howEl = null;
+    function closeHow() { if (howEl) { howEl.remove(); howEl = null; } }
+    function showHow(then) {
+      closeHow();
+      howEl = document.createElement("div"); howEl.className = "pb-how";
+      howEl.innerHTML = '<div class="pb-howcard"><h3>🏁 How to race</h3><ol>' +
+        "<li>Dots slide into the circle above the button. <b>Tap as a dot reaches the circle.</b></li>" +
+        "<li>Right on the beat: <b>Perfect, 2 steps</b>. A little off: Good, 1 step.</li>" +
+        "<li>Tap off the beat and your pet trips and misses the next beat, so don't just tap fast!</li>" +
+        "<li>At a log 🪵 the button says <b>JUMP</b>: tap on the beat to hop over it.</li>" +
+        "<li>First to the treat 🍰 wins. The beat speeds up near the end!</li>" +
+        '</ol><button type="button" class="pg-feed">' + (then ? "Got it, let's race!" : "Got it") + "</button></div>";
+      howEl.querySelector("button").addEventListener("click", function () { closeHow(); if (then) then(); });
+      wrap.appendChild(howEl);
+      try { localStorage.setItem(RACE_HOW_KEY, "1"); } catch (e) {}
+    }
+    function go() { live = true; btn.disabled = false; closeHow(); wrap.querySelector(".rc-helpbtn").hidden = true; beats = []; addBeats(performance.now()); showBtn(); if (opts.onGo) opts.onGo(); }
     return {
       wrap: wrap, close: close,
-      start: function () { countdownFrom(msg, opts.onQuick ? LIVE_COUNTDOWN : 3, "Tap!", timers, function () { return over; }, function () { live = true; btn.disabled = false; }); },
+      start: function () {
+        var seen = false;
+        try { seen = !!localStorage.getItem(RACE_HOW_KEY); } catch (e) {}
+        function count() { countdownFrom(msg, opts.onQuick ? LIVE_COUNTDOWN : 3, "Go!", timers, function () { return over; }, go); }
+        wrap.querySelector(".rc-helpbtn").addEventListener("click", function () {
+          if (opts.onQuick) { showHow(null); return; }     // a live race keeps its shared countdown
+          timers.forEach(clearTimeout); timers.length = 0; msg.textContent = "";
+          showHow(count);
+        });
+        if (opts.onQuick) { count(); if (!seen) showHow(null); }
+        else if (!seen) showHow(count);
+        else count();
+      },
       progress: function (uid, n) { var l = lanes[uid]; if (!l || over || uid === me) return; l.n = Math.max(l.n, n); place(uid); },
       quick: function (uid, i) { var t = quickText(i); if (t) bubble(uid, t); },
       left: function (uid) { var l = lanes[uid]; if (l) { l.el.classList.add("gone"); l.el.querySelector(".place").textContent = "left"; } },
@@ -6401,18 +6557,22 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       }
     };
   }
-  // Bamboo the bot: taps 6 to 10 times a second depending on its level (1-5), with the odd short pause
-  function botRacer(race, uid, onFinish, level) {
-    // (levels 6-8 are the Challenge: you need about 10 to 11 taps a second)
-    var L = Math.max(1, Math.min(8, level || 2)), base = [140, 122, 108, 96, 86, 80, 74, 69][L - 1], pause = [0.06, 0.05, 0.04, 0.03, 0.02, 0.015, 0.01, 0.008][L - 1];
-    var n = 0, alive = true;
-    function step() {
+  // Bamboo the bot keeps to the same beat. Its level (1-8) is how often it's right on it: a perfect beat is 2 steps,
+  // a good one 1, a miss nothing (and sometimes a trip that costs the next beat too). It jumps logs the same way.
+  var BOT_RACE_P = [0.2, 0.3, 0.4, 0.5, 0.6, 0.72, 0.8, 0.88], BOT_RACE_G = [0.45, 0.45, 0.42, 0.38, 0.32, 0.24, 0.18, 0.1];
+  function botRacer(race, uid, onFinish, level, delay) {
+    var L = Math.max(1, Math.min(8, level || 2)) - 1, n = 0, alive = true, skip = 0, logs = raceLogs(RACE_STEPS), jumped = {};
+    function beat() {
       if (!alive) return;
-      n++; race.progress(uid, n);
-      if (n >= RACE_STEPS) { onFinish(); return; }
-      setTimeout(step, base + Math.random() * 40 + (Math.random() < pause ? 220 : 0));
+      if (skip > 0) skip--;
+      else {
+        var r = Math.random(), add = r < BOT_RACE_P[L] ? 2 : r < BOT_RACE_P[L] + BOT_RACE_G[L] ? 1 : 0;
+        if (add) { n = raceStep(n, add, logs, jumped).n; race.progress(uid, n); if (n >= RACE_STEPS) { onFinish(); return; } }
+        else if (Math.random() < 0.5) skip = 1;
+      }
+      setTimeout(beat, raceBeat(n));
     }
-    setTimeout(step, 3000 + 250);   // (after the bot race's 3-2-1)
+    setTimeout(beat, delay == null ? 3000 + 600 : delay);   // (in step with the first beat)
     return { stop: function () { alive = false; }, n: function () { return n; } };
   }
 
@@ -7105,7 +7265,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261113032300";   // replaced by build_real.ps1
+    var APP_BUILD = "20261113034047";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -7708,8 +7868,8 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         solo: ["🙋 Play solo", "30 seconds. Catch the food, dodge the rocks, beat today's best."],
         others: ["👫 Bamboo duel", "The same food falls for you both. Highest score wins."] },
       race: { name: "Treat race", art: "🏁", max: 3, invite: "wants to race you!",
-        solo: ["🤖 Race the bot", "Tap as fast as you can to beat Bamboo the bot."],
-        others: ["👫 Race other players", "Up to 4 racers. Tap fastest to the treat!"] },
+        solo: ["🤖 Race the bot", "Tap on the beat and jump the logs to beat Bamboo the bot."],
+        others: ["👫 Race other players", "Up to 4 racers. Tap on the beat to the treat!"] },
       memory: { name: "Memory match", art: "🃏", max: 1, invite: "wants to play Memory match!",
         solo: ["🙋 Play solo", "Find the 12 pairs in as few tries as you can."],
         others: ["👫 Take turns", "Find a pair and go again. Most pairs wins."] },
@@ -7795,9 +7955,10 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
           ["Beat the clock", "You have 30 seconds, and things fall faster near the end. In a Bamboo duel the same food falls for both of you, and the highest score wins.", '<div class="ht-big ht-pulse">⏱️ 30</div>']
         ],
         race: [
-          ["Tap, tap, tap!", "Every tap on the big button moves your pet one step along its lane.", '<div class="ht-tapbtn ht-pulse">TAP!</div>' + finger],
-          ["First to the treat wins", "Keep tapping as fast as you can. The first pet to reach the treat wins the race.", '<div class="ht-lane"><span class="ht-run">' + me + '</span><em>🍎</em></div><div class="ht-lane"><span class="ht-run slow">' + bot + "</span><em>🍎</em></div>"],
-          ["Race your friends", "Up to 4 racers can play at once. Against the 🔥 Challenge bot you'll need two thumbs!", '<div class="ht-big">🏁 👫 👫</div>']
+          ["Tap on the beat", "Dots slide into a circle. Tap as each one arrives: right on the beat is 2 steps, a little off is 1. Off the beat and your pet trips!", '<div class="ht-tapbtn ht-pulse">TAP!</div>' + finger],
+          ["Jump the logs", "Each lane has four logs. At a log the button says JUMP: tap on the beat to hop over.", '<div class="ht-big">🪵 ⤴</div>'],
+          ["First to the treat wins", "Keep to the beat as it speeds up. The first pet to reach the treat wins the race.", '<div class="ht-lane"><span class="ht-run">' + me + '</span><em>🍎</em></div><div class="ht-lane"><span class="ht-run slow">' + bot + "</span><em>🍎</em></div>"],
+          ["Race your friends", "Up to 4 racers can play at once. The 🔥 Challenge bot hardly ever misses a beat!", '<div class="ht-big">🏁 👫 👫</div>']
         ],
         memory: [
           ["Flip two cards", "Tap two cards to turn them over and see what's on them.", cards(["🍩", "flip"], ["🎩", "flip two"], ["❓"], ["❓"])],
@@ -9228,17 +9389,18 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       var race = startTapRace({
         players: [{ uid: "bot", pic: petPic(botChallenge ? "panda_sakura" : "panda_golden"), html: esc(botName("race")) }, { uid: me.id, pic: gamePic(p), html: tagHTML(p.level, p.name), me: true }],
         onFinish: function () { finish([me.id, "bot"]); },
+        onGo: function () { bot = botRacer(race, "bot", function () { finish(["bot", me.id]); }, botLv("race"), 600); },   // (it starts with the first beat)
         onQuit: function () { if (bot) bot.stop(); raceNow = null; trackMe(); openPlay(); }
       });
       function finish(order) {
-        if (over) return; over = true; bot.stop();
+        if (over) return; over = true; if (bot) bot.stop();
         race.result(order);
         var won = order[0] === me.id;
         logGame("race", "bot", "Bamboo the bot", won ? "won" : "lost", won ? 1 : 2, null);
-        botEnd(race, won ? "1st" : "2nd", botResult("race", won, "You beat Bamboo the bot!", "Bamboo the bot wins! Tap faster next time."), raceBot, won ? "win" : "lose");
+        botEnd(race, won ? "1st" : "2nd", botResult("race", won, "You beat Bamboo the bot!", "Bamboo the bot wins! Keep to the beat next time."), raceBot, won ? "win" : "lose");
       }
       raceNow = { race: race }; trackMe();
-      race.start(); bot = botRacer(race, "bot", function () { finish(["bot", me.id]); }, botLv("race"));
+      race.start();
     }
     // Bamboo the bot catches something every second or so; higher levels catch more often and hit fewer rocks
     function duelBot() {
