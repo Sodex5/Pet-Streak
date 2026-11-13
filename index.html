@@ -2393,6 +2393,13 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
 .pg-gamestrip .pg-gamecard small[data-stat] { line-height: 1.25; }
 
 .pg-gamestrip .pg-gamecard .art { margin-left: 0 !important; margin-right: 0 !important; }
+
+.pg-gamestrip { scroll-snap-type: none !important; padding-top: 7px !important; padding-bottom: 10px !important; }
+.pg-gamestrip .pg-gamecard { transition: box-shadow 0.2s ease, transform 0.2s ease; }
+.pg-gamestrip .pg-gamecard.pick { box-shadow: 0 0 0 3px #fff, 0 0 0 5px var(--brand, #2b2560), 0 8px 18px rgba(20,35,43,0.18); }
+
+.pg-playhead h2 { white-space: nowrap; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+@media (max-width: 380px) { .pg-playhead .pg-playicon { display: none; } }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -2535,7 +2542,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     <div class="pg pg-playpage" id="g-play" hidden>
       <header class="pg-playhead">
         <button type="button" class="pg-playback" id="g-playclose" aria-label="Back to your pet">←</button>
-        <h2>🎮 Playground</h2>
+        <h2><span class="pg-playicon" aria-hidden="true">🎮 </span>Playground</h2>
         <span class="pg-playpaws" id="g-playpaws">🐾 0</span>
         <button type="button" class="pg-headicon" id="g-playsocial" aria-label="Friends and chats">💬<span class="pg-dotcount" id="g-playsocialdot" hidden></span></button>
       </header>
@@ -6843,7 +6850,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261112234014";   // replaced by build_real.ps1
+    var APP_BUILD = "20261113000711";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -9205,21 +9212,22 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       var r = await Promise.all([rpc("my_games_today", { p_game: game, p_tz: tz() }), rpc("game_board", { p_game: game, p_tz: tz() })]);
       return { plays: r[0] || 0, board: r[1] || [] };
     }
-    async function renderPlay() {
+    async function renderPlay(boardOnly) {
       var p = pet(); if (!p) return;
+      var game = boardGame;
       var w = p.race_wins || 0;
       $("g-mepet").innerHTML = '<img alt="" src="' + esc(petPic(p.variant)) + '">' + tagHTML(p.level, p.name);
       $("g-playpaws").textContent = "🐾 " + (profile ? profile.coins : 0);
-      renderOnlineCount(); drawChallenge(); drawGameDots();
-      rpc("my_game_history").then(function (h) {
+      drawGameDots();
+      if (!boardOnly) { renderOnlineCount(); drawChallenge(); rpc("my_game_history").then(function (h) {
         var start = new Date(); start.setHours(0, 0, 0, 0);
         $("g-todaycount").textContent = (h || []).filter(function (g) { return new Date(g.at) >= start; }).length;
-      }, function () {});
+      }, function () {}); }
       // games without a daily score show this week's wins for that game instead
       if (!BOARD_NAMES[boardGame]) { drawWeekBoard(boardGame); return; }
       $("g-boardtitle").textContent = "Today's best · " + BOARD_NAMES[boardGame];
       var d;
-      try { d = await playData(); }
+      try { d = await playData(game); if (game !== boardGame) return; }
       catch (e) {
         $("g-gamereward").textContent = "";
         $("g-board").innerHTML = '<li class="pg-logempty">' + esc(/my_games_today|game_board/.test(e.message) ? "The Playground isn't switched on yet." : e.message) + "</li>";
@@ -9264,8 +9272,10 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     function drawGameDots() {
       var strip = $("g-gamestrip"), cards = strip.querySelectorAll(".pg-gamecard"), dots = $("g-gamedots");
       if (dots.children.length !== cards.length) { dots.innerHTML = ""; for (var i = 0; i < cards.length; i++) dots.appendChild(document.createElement("i")); }
-      var at = 0, best = 1e9, mid = strip.getBoundingClientRect().left + 16;
-      Array.prototype.forEach.call(cards, function (c, i) { var d = Math.abs(c.getBoundingClientRect().left - mid); if (d < best) { best = d; at = i; } });
+      // how far along the row you've swiped picks the game (so every game gets a turn, even the last ones); that card gets a ring
+      var max = strip.scrollWidth - strip.clientWidth, at = max > 4 ? Math.round(strip.scrollLeft / max * (cards.length - 1)) : 0;
+      at = Math.max(0, Math.min(cards.length - 1, at));
+      Array.prototype.forEach.call(cards, function (c, i) { c.classList.toggle("pick", i === at); });
       Array.prototype.forEach.call(dots.children, function (d, i) { d.className = i === at ? "on" : ""; });
       return cards[at] ? cards[at].dataset.game : boardGame;
     }
@@ -9273,7 +9283,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     $("g-gamestrip").addEventListener("scroll", function () {
       drawGameDots();
       clearTimeout(stripTimer);
-      stripTimer = setTimeout(function () { var g = drawGameDots(); if (g && g !== boardGame) { boardGame = g; renderPlay(); } }, 180);
+      stripTimer = setTimeout(function () { var g = drawGameDots(); if (g && g !== boardGame) { boardGame = g; renderPlay(true); } }, 180);
     }, { passive: true });
     // today's challenge: one goal, 15 paws
     var challenge = null;
@@ -9293,7 +9303,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       e.stopPropagation(); var b = this; b.disabled = true;
       try { await rpc("claim_challenge"); sfx("levelUp"); floatText("+15 🐾"); say("🏆 Challenge done! +15 paws"); await loadAll({ quiet: true }); }
       catch (err) { say(friendly(err.message)); }
-      b.disabled = false; drawChallenge(); renderPlay();
+      b.disabled = false; renderPlay();
     });
     $("g-challenge").addEventListener("click", function () {
       if (!challenge || challenge.claimed || challenge.done) return;
@@ -9308,7 +9318,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     $("g-openhist").addEventListener("click", openHistory);
     $("g-onlinecount").addEventListener("click", openOnlineList);
     Array.prototype.forEach.call(document.querySelectorAll(".pg-boardtabs [data-board]"), function (b) {
-      b.addEventListener("click", function () { boardGame = b.dataset.board; renderPlay(); });
+      b.addEventListener("click", function () { boardGame = b.dataset.board; renderPlay(true); });
     });
     $("g-showonline").addEventListener("change", function () {
       try { localStorage.setItem(SHOW_ONLINE_KEY, $("g-showonline").checked ? "on" : "off"); } catch (e) {}
@@ -11649,7 +11659,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       var el = $("g-petsay"); el.textContent = text; el.hidden = false; sayUntil = Date.now() + (ms || 4500);
       var r = renderer.domElement.getBoundingClientRect(); thinkHead.set(-0.32, 0.95, 0.1).project(camera);
       var x = r.left + (thinkHead.x + 1) / 2 * r.width, y = r.top + (1 - thinkHead.y) / 2 * r.height;
-      el.style.left = Math.max(8, Math.min(window.innerWidth - 220, x - 170)) + "px"; el.style.top = Math.max(165, y - 40) + "px";
+      el.style.left = Math.max(8, Math.min(window.innerWidth - 220, x - 170)) + "px"; el.style.top = Math.max($("g-roombar").hidden ? 165 : 218, y - 40) + "px";
     }
     setInterval(function () {
       var el = $("g-petsay"), now = Date.now(), p = pet();
