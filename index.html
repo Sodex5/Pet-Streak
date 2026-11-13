@@ -2416,6 +2416,13 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
 .pg-sanctempty b { font-size: 1.15rem; color: #14232b; }
 .pg-sanctempty p { margin: 6px 0 16px; color: #5b6870; line-height: 1.4; max-width: 280px; }
 .pg-sanctempty .pg-sanctgo { min-height: 44px; padding: 0 20px; border: 0; border-radius: 999px; background: #26215c; color: #fff; font: inherit; font-weight: 700; cursor: pointer; }
+
+/* the celebration pop-up sits above any sheet it was opened from (the advent door opens it from the Daily sheet) */
+#g-celebrate { z-index: 32; }
+
+#g-menubtn { position: relative; }
+.pg-adminprizedot { margin-left: auto; margin-right: 6px; padding: 3px 9px; border-radius: 999px; background: #e2456f; color: #fff; font-size: 0.75rem; font-weight: 800; white-space: nowrap; }
+.pg-adminprizedot[hidden] { display: none; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -2464,7 +2471,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       <span class="pg-grow2"></span>
       <button type="button" class="pg-chip pg-dailychip" id="g-dailybtn" aria-label="Daily gift and quests">🎁<span class="pg-dotcount" id="g-dailydot" hidden></span></button>
       <button type="button" class="pg-chip" id="g-coins" aria-label="Paws">🐾 <span id="g-coinnum">0</span></button>
-      <button type="button" class="pg-chip" id="g-menubtn" aria-label="Menu">☰</button>
+      <button type="button" class="pg-chip" id="g-menubtn" aria-label="Menu">☰<span class="pg-dotcount" id="g-menudot" hidden></span></button>
     </div>
     <nav class="pg pg-tabbar" id="g-tabs" hidden aria-label="Main">
       <button type="button" class="pg-tab on" id="g-tabhome" aria-label="Home" aria-current="page"><i aria-hidden="true">🏠</i><small>Home</small></button>
@@ -3308,7 +3315,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
 
         <!-- admin tools (only the admin sees this row): they open on a page of their own -->
         <div class="pg-list" id="g-adminwrap" hidden>
-          <button type="button" class="pg-li" id="g-adminopen"><span class="ic" aria-hidden="true">🛠</span><span class="lbl">Admin tools</span><span class="chev" aria-hidden="true">›</span></button>
+          <button type="button" class="pg-li" id="g-adminopen"><span class="ic" aria-hidden="true">🛠</span><span class="lbl">Admin tools</span><span class="pg-adminprizedot" id="g-adminprizedot" hidden></span><span class="chev" aria-hidden="true">›</span></button>
         </div>
 
         <h3 class="pg-menuhead pg-accounthead">Account</h3>
@@ -6866,7 +6873,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261113002218";   // replaced by build_real.ps1
+    var APP_BUILD = "20261113004826";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -7059,6 +7066,20 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       if (pet() && (pet().best > 0 || pet().level > 1)) setTimeout(maybeBonusIntro, 2500);
       render();
       if (!(opts && opts.quiet)) dailyCheck();   // (a feed may have finished a quest)
+      prizeCheck();
+    }
+    // admin: a badge on ☰ (and on Admin tools) while weekly prizes wait to be paid; checked at most every 10 minutes
+    var prizeCheckedAt = 0;
+    function prizeBadge(n) {
+      var dot = $("g-menudot"); if (dot) { dot.hidden = !n; dot.textContent = n || ""; }
+      var row = $("g-adminprizedot"); if (row) { row.hidden = !n; row.textContent = n ? n + (n === 1 ? " prize waiting" : " prizes waiting") : ""; }
+      $("g-menubtn").setAttribute("aria-label", n ? "Menu, " + n + (n === 1 ? " prize" : " prizes") + " waiting" : "Menu");
+    }
+    async function prizeCheck(force) {
+      if (!(profile && profile.is_admin)) { prizeBadge(0); return; }
+      if (!force && Date.now() - prizeCheckedAt < 600000) return;
+      prizeCheckedAt = Date.now();
+      try { var d = await rpc("admin_prizes"); prizeBadge((d && d.waiting || []).length); } catch (e) {}
     }
     // what each pet looked like at the last load, to notice co-parents' feeds while the app is open
     function remember() {
@@ -9904,6 +9925,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       var box = $("g-adprizes"), d;
       try { d = await rpc("admin_prizes"); } catch (e) { box.innerHTML = '<p class="pg-note">Run update_057 to decide weekly prizes.</p>'; return; }
       var wait = d.waiting || [], n = wait.length;
+      prizeBadge(n); prizeCheckedAt = Date.now();
       $("g-adprizecount").hidden = !n; $("g-adprizecount").textContent = n || "";
       var note = $("g-adprizenote"); note.hidden = !n;
       note.innerHTML = "🏆 <b>" + n + (n === 1 ? " weekly prize is" : " weekly prizes are") + " waiting</b><span>Review →</span>";
