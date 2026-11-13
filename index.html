@@ -2451,6 +2451,94 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
 .pg-adcheck small { display: block; font-weight: 500; color: #6b7a82; font-size: 0.76rem; }
 .pg-adsalepick { flex-wrap: wrap; }
 .pg-adsalepick select { flex: 1 1 30%; min-width: 0; min-height: 40px; }
+
+/* ===================== Game feel pass ===================== */
+/* bursts and shakes (every game) */
+.fx-bit { position: absolute; z-index: 8; width: 9px; height: 9px; margin: -4px 0 0 -4px; border-radius: 3px; pointer-events: none; animation: fx-bit 0.7s cubic-bezier(.2,.8,.3,1) forwards; }
+.fx-bit.star { border-radius: 50%; width: 7px; height: 7px; }
+@keyframes fx-bit { 0% { transform: translate(0,0) scale(1) rotate(0); opacity: 1; } 100% { transform: translate(var(--tx), var(--ty)) scale(0.3) rotate(220deg); opacity: 0; } }
+.fx-shake { animation: fx-shake 0.32s; }
+@keyframes fx-shake { 0%,100% { transform: none; } 20% { transform: translateX(-7px); } 40% { transform: translateX(6px); } 60% { transform: translateX(-4px); } 80% { transform: translateX(3px); } }
+@media (prefers-reduced-motion: reduce) { .fx-bit, .fx-shake { animation: none; display: none; } .fx-shake { display: block; } }
+
+/* the results card: your pet, a title, stars, confetti */
+.pg-gameend.hero { padding-top: 0; overflow: visible; width: min(88vw, 350px); z-index: 10; }
+.pg-gameend { z-index: 10; }
+.pg-endhero { position: relative; margin: -64px -22px 4px; padding: 0 22px; display: flex; flex-direction: column; align-items: center; }
+.pg-endpet { width: 128px; height: 128px; object-fit: contain; filter: drop-shadow(0 8px 10px rgba(0,0,0,0.18)); animation: pg-endpet 0.7s cubic-bezier(.3,1.4,.5,1) both; }
+.pg-endhero.win .pg-endpet, .pg-endhero.best .pg-endpet { animation: pg-endpet 0.7s cubic-bezier(.3,1.4,.5,1) both, pg-endcheer 1.1s 0.7s ease-in-out infinite; }
+.pg-endhero.lose .pg-endpet, .pg-endhero.left .pg-endpet { filter: drop-shadow(0 8px 10px rgba(0,0,0,0.18)) saturate(0.85); transform: rotate(-6deg); }
+@keyframes pg-endpet { from { transform: translateY(30px) scale(0.6); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes pg-endcheer { 0%,100% { transform: translateY(0); } 40% { transform: translateY(-12px) rotate(-4deg); } 60% { transform: translateY(-12px) rotate(4deg); } }
+.pg-endstars { display: flex; align-items: flex-end; gap: 6px; margin: -4px 0 0; position: relative; z-index: 1; }
+.pg-endstars b { font-size: 1.7rem; line-height: 1; color: #d9dee2; text-shadow: 0 2px 0 rgba(0,0,0,0.08); }
+.pg-endstars b:nth-child(2) { font-size: 2.2rem; }
+.pg-endstars b.on { color: #ffc23d; text-shadow: 0 2px 0 #c98a00; animation: pg-endstar 0.5s cubic-bezier(.3,1.6,.5,1) both; }
+.pg-endstars b.on:nth-child(2) { animation-delay: 0.15s; } .pg-endstars b.on:nth-child(3) { animation-delay: 0.3s; }
+@keyframes pg-endstar { from { transform: scale(0); } }
+.pg-endtitle { margin: 2px 0 2px; font-family: var(--display); font-size: 1.7rem; font-weight: 800; color: #14232b; }
+.pg-endhero.win .pg-endtitle, .pg-endhero.best .pg-endtitle { color: #1f8a5b; }
+.pg-endhero.lose .pg-endtitle { color: #8a5a2b; }
+.pg-gameend.hero .big { font-size: 2.6rem; }
+.pg-endconf { position: absolute; left: -10px; right: -10px; top: 40px; height: 0; pointer-events: none; }
+.pg-endconf i { position: absolute; top: 0; width: 8px; height: 12px; border-radius: 2px; opacity: 0; animation: pg-endconf 1.6s ease-out forwards; }
+@keyframes pg-endconf { 0% { transform: translate(0, 0) rotate(0); opacity: 1; } 100% { transform: translate(var(--dx), 260px) rotate(var(--rot)); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .pg-endpet, .pg-endstars b.on, .pg-endconf i { animation: none !important; opacity: 1; } .pg-endconf { display: none; } }
+
+/* Bamboo catch: the combo pill */
+.pg-gamehud .cb { background: #ff8a4c !important; color: #fff !important; }
+.pg-gamehud .cb[hidden] { display: none; }
+.pg-gamehud .cb.bump { animation: pb-bump 0.3s; }
+
+/* Memory match: designed card backs, a pop on a pair, your pet at the bottom */
+.pg-mcard .back { background: #6b4fd1 radial-gradient(circle at 25% 25%, rgba(255,255,255,0.16) 0 6px, transparent 7px) 0 0 / 22px 22px; box-shadow: inset 0 0 0 3px rgba(255,255,255,0.35), 0 4px 0 #4a34a8; }
+.pg-mcard .back span { display: grid; place-items: center; width: 52%; aspect-ratio: 1; border-radius: 50%; background: #fff; font-size: 0.9em; box-shadow: 0 2px 0 rgba(0,0,0,0.12); }
+.pg-mcard .front { box-shadow: 0 4px 0 #d9cff3; }
+.pg-mcard.done .front { animation: pg-mpop 0.45s cubic-bezier(.3,1.5,.5,1); }
+@keyframes pg-mpop { 40% { transform: rotateY(360deg) scale(1.12); } }
+.pg-memory .pg-cards { width: min(92vw, 380px, calc((100dvh - 190px - env(safe-area-inset-top, 0px)) / 1.55)); }
+.pg-mempet { position: relative; display: flex; justify-content: center; margin-top: auto; padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px)); pointer-events: none; }
+.pg-mempet img { width: 84px; height: 84px; object-fit: contain; filter: drop-shadow(0 6px 6px rgba(0,0,0,0.15)); }
+.pg-mempet img.hop { animation: pg-hop 0.45s ease-out; }
+.pg-mempet .say { position: absolute; bottom: calc(88px + env(safe-area-inset-bottom, 0px)); padding: 6px 12px; border-radius: 14px; background: #fff; font-weight: 800; color: #3c3489; box-shadow: 0 4px 12px rgba(0,0,0,0.12); opacity: 0; transform: translateY(6px); transition: opacity 0.2s, transform 0.2s; white-space: nowrap; }
+.pg-mempet.talk .say { opacity: 1; transform: none; }
+.pg-memcombo { position: absolute; left: 0; right: 0; top: 46%; text-align: center; font-family: var(--display); font-size: 1.8rem; font-weight: 800; color: #d4537e; text-shadow: 0 2px 0 #fff; opacity: 0; pointer-events: none; }
+.pg-memcombo.show { animation: pg-memcombo 1.2s ease-out; }
+@keyframes pg-memcombo { 0% { opacity: 0; transform: scale(0.6); } 20% { opacity: 1; transform: scale(1.1); } 70% { opacity: 1; transform: none; } 100% { opacity: 0; transform: translateY(-20px); } }
+
+/* Ball pass: a pitch, a shadow under the ball, a rally count */
+.pg-game.pg-ball { background: repeating-linear-gradient(180deg, #7cc35c 0 54px, #6db650 54px 108px); }
+.pg-ball::before { content: ""; position: absolute; left: 16px; right: 16px; top: calc(66px + env(safe-area-inset-top, 0px)); bottom: calc(10px + env(safe-area-inset-bottom, 0px)); border: 3px solid rgba(255,255,255,0.75); border-radius: 8px; pointer-events: none; }
+.pg-ball .pb-score { color: rgba(255,255,255,0.55); text-shadow: 0 2px 0 rgba(0,0,0,0.06); z-index: 1; }
+.pg-ball.vs .pb-score, .pg-ball.vs .pb-score .m { color: rgba(255,255,255,0.8); }
+.pg-ball .pb-pet .who { color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.35); }
+.pg-ball .pb-say, .pg-ball .pg-gamemsg { color: #fff; text-shadow: 0 2px 6px rgba(0,0,0,0.3); }
+.pg-ball .pb-say.good { color: #fff7c2; } .pg-ball .pb-say.bad { color: #ffe1e1; }
+.pg-ball .pb-hint { color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.35); }
+.pb-ring { width: 128px; height: 128px; border-width: 6px; }
+.pb-shadow { position: absolute; left: 0; top: 0; width: 40px; height: 14px; border-radius: 50%; background: rgba(20,40,10,0.9); opacity: 0; pointer-events: none; will-change: transform; }
+.pb-shadow:not(.on) { opacity: 0 !important; }
+.pb-rally { position: absolute; right: 14px; top: calc(66px + env(safe-area-inset-top, 0px)); padding: 6px 12px; border-radius: 999px; background: #ffc23d; color: #5a3a00; font-weight: 800; box-shadow: 0 3px 8px rgba(0,0,0,0.15); pointer-events: none; z-index: 2; }
+.pb-rally[hidden] { display: none; }
+
+/* Penalty kicks: a mown pitch and a net that ripples on a goal */
+.pg-game.pg-pen { background:
+  linear-gradient(180deg, #a8dcff 0%, #d9f1ff 30%, transparent 30.2%),
+  repeating-linear-gradient(90deg, #6ec457 0 44px, #63b84d 44px 88px); }
+.pk-goal.rip .pk-net { animation: pk-rip 0.6s ease-out; }
+@keyframes pk-rip { 30% { transform: scale(1.05, 1.08); background-color: rgba(255,255,255,0.45); } }
+
+/* Treat race: lanes that look like a running track, a chequered finish */
+.pg-lane .track { background:
+  repeating-linear-gradient(90deg, rgba(255,255,255,0.0) 0 30px, rgba(255,255,255,0.35) 30px 34px),
+  #e8795a; box-shadow: inset 0 3px 0 rgba(255,255,255,0.25), inset 0 -4px 0 rgba(0,0,0,0.12); }
+.pg-lane .track::after { content: ""; position: absolute; right: 52px; top: 0; bottom: 0; width: 14px;
+  background: repeating-conic-gradient(#fff 0 25%, #14232b 0 50%) 0 0 / 14px 14px; opacity: 0.9; }
+.pg-lane.me .track { box-shadow: inset 0 0 0 3px #fff, 0 0 0 3px var(--brand); }
+.pg-lane .treat { z-index: 1; }
+.pg-lane img { z-index: 1; filter: drop-shadow(0 4px 3px rgba(0,0,0,0.25)); }
+
+.pg-gameend .pg-row button { white-space: nowrap; padding-left: 10px; padding-right: 10px; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -5956,13 +6044,29 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     var a = seed >>> 0;
     return function () { a = (a + 0x6D2B79F5) >>> 0; var t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
   }
+  // ---------- Game feel: little bursts of colour and a shake, shared by every game ----------
+  function fxBurst(wrap, x, y, opts) {
+    if (!wrap || !wrap.isConnected) return;
+    var n = (opts && opts.n) || 10, cols = (opts && opts.colors) || ["#ffc23d", "#ff5d8f", "#4cc38a", "#5aa7ff", "#a07bff"];
+    for (var i = 0; i < n; i++) {
+      var s = document.createElement("i"), a = (i / n) * Math.PI * 2 + Math.random() * 0.6, d = 34 + Math.random() * ((opts && opts.spread) || 46);
+      s.className = "fx-bit" + (i % 3 === 0 ? " star" : "");
+      s.style.left = x + "px"; s.style.top = y + "px"; s.style.background = cols[i % cols.length];
+      s.style.setProperty("--tx", Math.round(Math.cos(a) * d) + "px"); s.style.setProperty("--ty", Math.round(Math.sin(a) * d) + "px");
+      wrap.appendChild(s);
+      setTimeout(function (el) { return function () { el.remove(); }; }(s), 750);
+    }
+  }
+  function fxShake(wrap) { wrap.classList.remove("fx-shake"); void wrap.offsetWidth; wrap.classList.add("fx-shake"); }
+  function fxCentre(wrap, el) { var r = el.getBoundingClientRect(), w = wrap.getBoundingClientRect(); return { x: r.left - w.left + r.width / 2, y: r.top - w.top + r.height / 2 }; }
+
   var BAMBOO_TIME = 30;
   var BAMBOO_FOODS = ["🍎", "🍌", "🥕", "🍓", "🍉", "🍇", "🍑"];
   function startBambooGame(opts) {
     var wrap = document.createElement("div"); wrap.className = "pg-game";
     wrap.innerHTML =
       '<canvas aria-label="Bamboo catch: move your pet to catch the falling food"></canvas>' +
-      '<div class="pg-gamehud"><span class="sc">0</span>' + (opts.live ? '<span class="op"><span class="nm"></span> <b class="opn">0</b></span>' : "") +
+      '<div class="pg-gamehud"><span class="sc">0</span><span class="cb" hidden></span>' + (opts.live ? '<span class="op"><span class="nm"></span> <b class="opn">0</b></span>' : "") +
       '<span class="tm">' + BAMBOO_TIME + 's</span>' +
       (opts.onQuick ? '<button type="button" class="pg-qcbtn" aria-label="Send an emoji">💬</button>' : "") +
       '<button type="button" class="pg-gamex" aria-label="Stop the game">✕</button></div>' +
@@ -5972,7 +6076,16 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     var cv = wrap.querySelector("canvas"), g = cv.getContext("2d"), msg = wrap.querySelector(".pg-gamemsg");
     var hudScore = wrap.querySelector(".sc"), hudTime = wrap.querySelector(".tm");
     var W = 0, H = 0, dpr = Math.min(2, window.devicePixelRatio || 1);
-    function size() { W = wrap.clientWidth; H = wrap.clientHeight; cv.width = W * dpr; cv.height = H * dpr; g.setTransform(dpr, 0, 0, dpr, 0, 0); }
+    // the forest: made once for the screen size (far and near bamboo, hills, a few drifting leaves)
+    var forest = null;
+    function makeForest() {
+      var r = seeded(7), f = { far: [], near: [], leaves: [] };
+      for (var i = 0; i < 9; i++) f.far.push({ x: (i + r()) * W / 9, w: 5 + r() * 3, top: H * (0.05 + r() * 0.2), ph: r() * 6 });
+      for (i = 0; i < 4; i++) f.near.push({ x: (i === 0 ? -6 : i === 3 ? W + 6 : (i + 0.2 + r() * 0.6) * W / 4), w: 11 + r() * 4, top: -20, ph: r() * 6 });
+      for (i = 0; i < 7; i++) f.leaves.push({ x: r() * W, y: r() * H, s: 0.6 + r() * 0.6, v: 14 + r() * 20, ph: r() * 6 });
+      return f;
+    }
+    function size() { W = wrap.clientWidth; H = wrap.clientHeight; cv.width = W * dpr; cv.height = H * dpr; g.setTransform(dpr, 0, 0, dpr, 0, 0); forest = makeForest(); }
     size(); window.addEventListener("resize", size);
 
     var pet = new Image(); pet.src = opts.pic;
@@ -5980,7 +6093,10 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     // the other player's pet runs around behind yours. It's only for show: the score comes from their game.
     var rival = null, OP = 68, ox = 0, oHop = 0, oLast = 0;
     if (opts.live && opts.them && opts.them.pic) { rival = new Image(); rival.src = opts.them.pic; }
-    var px = W / 2, tx = W / 2, score = 0, items = [], pops = [], shake = 0;
+    var px = W / 2, tx = W / 2, score = 0, items = [], pops = [], shake = 0, sparks = [], squash = 0, hurt = 0, inRow = 0, lean = 0;
+    var hudCombo = wrap.querySelector(".cb");
+    function combo(n) { inRow = n; hudCombo.hidden = n < 3; hudCombo.textContent = "🔥 x" + n; if (n >= 3) { hudCombo.classList.remove("bump"); void hudCombo.offsetWidth; hudCombo.classList.add("bump"); } }
+    function sparkle(x, y, gold) { for (var k = 0; k < (gold ? 14 : 8); k++) { var a = Math.random() * 6.28, v = 60 + Math.random() * 120; sparks.push({ x: x, y: y, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 60, t: 0, c: gold ? "#ffc23d" : ["#7bd389", "#ffffff", "#ffd36b"][k % 3] }); } }
     var state = opts.live ? "wait" : "count", t0 = performance.now(), last = t0, spawnIn = 0, ended = false, running = true, keys = {};
     var rnd = opts.seed ? seeded(opts.seed) : Math.random;
     var opEl = wrap.querySelector(".op .opn");   // (not just "b": the name with its badge has a <b> too)
@@ -5996,7 +6112,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
 
     // moving: drag anywhere, or the arrow keys
     function aim(e) { var r = cv.getBoundingClientRect(); tx = Math.max(P / 2, Math.min(W - P / 2, e.clientX - r.left)); }
-    cv.addEventListener("pointerdown", function (e) { aim(e); cv.setPointerCapture && cv.setPointerCapture(e.pointerId); });
+    cv.addEventListener("pointerdown", function (e) { aim(e); try { cv.setPointerCapture && cv.setPointerCapture(e.pointerId); } catch (er) {} });
     cv.addEventListener("pointermove", function (e) { if (e.buttons || e.pointerType === "touch") aim(e); });
     function onKey(e) { if (e.target.tagName === "INPUT") return; if (e.key === "ArrowLeft" || e.key === "ArrowRight") { keys[e.key] = e.type === "keydown"; e.preventDefault(); } }
     window.addEventListener("keydown", onKey); window.addEventListener("keyup", onKey);
@@ -6013,19 +6129,44 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     }
     function pop(x, y, text, color) { pops.push({ x: x, y: y, text: text, color: color, t: 0 }); }
 
-    function drawScene(now) {
-      // sky, sun and bamboo stalks
-      var sky = g.createLinearGradient(0, 0, 0, H);
-      sky.addColorStop(0, "#bfe8ff"); sky.addColorStop(0.7, "#e9f8e6"); sky.addColorStop(1, "#cfe8b8");
-      g.fillStyle = sky; g.fillRect(0, 0, W, H);
-      g.fillStyle = "rgba(255,240,170,0.8)"; g.beginPath(); g.arc(W * 0.82, H * 0.12, 34, 0, 7); g.fill();
-      for (var i = 0; i < 6; i++) {
-        var bx = (i + 0.5) * W / 6 + Math.sin(i * 3.1) * 18, sway = Math.sin(now / 1400 + i) * 4;
-        g.strokeStyle = "rgba(95,150,80," + (0.18 + (i % 2) * 0.1) + ")"; g.lineWidth = 9;
-        g.beginPath(); g.moveTo(bx, H); g.quadraticCurveTo(bx + sway, H * 0.5, bx + sway * 2, H * 0.08); g.stroke();
-        for (var k = 1; k < 6; k++) { g.fillStyle = "rgba(70,120,60,0.18)"; g.fillRect(bx + sway * k / 3 - 6, H - k * H / 6, 12, 3); }
+    function stalk(s, now, col, node, leaf) {
+      var sway = Math.sin(now / 1600 + s.ph) * (s.w * 0.5), seg = (H - s.top) / 6;
+      g.fillStyle = col;
+      for (var k = 0; k < 6; k++) {
+        var y0 = H - (k + 1) * seg, x0 = s.x + sway * (k / 6);
+        g.fillRect(x0 - s.w / 2, y0 + 2, s.w, seg - 2);
+        g.fillStyle = node; g.fillRect(x0 - s.w / 2 - 1, y0, s.w + 2, 3); g.fillStyle = col;
+        if (leaf && k > 1 && k % 2 === 0) {   // a little spray of leaves
+          g.fillStyle = leaf;
+          for (var q = -1; q <= 1; q += 2) { g.beginPath(); g.ellipse(x0 + q * s.w * 1.6, y0 + 4, s.w * 1.6, s.w * 0.45, q * 0.5, 0, 7); g.fill(); }
+          g.fillStyle = col;
+        }
       }
-      g.fillStyle = "#9fcf7f"; g.fillRect(0, H - 28, W, 28);
+    }
+    function drawScene(now) {
+      if (!forest) forest = makeForest();
+      var sky = g.createLinearGradient(0, 0, 0, H);
+      sky.addColorStop(0, "#bfe6ff"); sky.addColorStop(0.55, "#e4f6ec"); sky.addColorStop(1, "#d6efc5");
+      g.fillStyle = sky; g.fillRect(0, 0, W, H);
+      g.fillStyle = "rgba(255,236,160,0.9)"; g.beginPath(); g.arc(W * 0.8, H * 0.11, 30, 0, 7); g.fill();
+      g.fillStyle = "rgba(255,236,160,0.25)"; g.beginPath(); g.arc(W * 0.8, H * 0.11, 48, 0, 7); g.fill();
+      // misty hills
+      g.fillStyle = "#cfe9cf"; g.beginPath(); g.moveTo(0, H * 0.62); g.quadraticCurveTo(W * 0.3, H * 0.5, W * 0.6, H * 0.6); g.quadraticCurveTo(W * 0.85, H * 0.67, W, H * 0.56); g.lineTo(W, H); g.lineTo(0, H); g.fill();
+      g.fillStyle = "#b9dfb2"; g.beginPath(); g.moveTo(0, H * 0.74); g.quadraticCurveTo(W * 0.45, H * 0.64, W, H * 0.76); g.lineTo(W, H); g.lineTo(0, H); g.fill();
+      forest.far.forEach(function (s) { stalk(s, now, "rgba(132,186,120,0.55)", "rgba(96,150,86,0.6)", null); });
+      forest.near.forEach(function (s) { stalk(s, now, "#6fae58", "#4f8c3c", "#7fbf63"); });
+      // drifting leaves
+      forest.leaves.forEach(function (l) {
+        l.y += l.v * 0.016; if (l.y > H) { l.y = -10; l.x = Math.random() * W; }
+        var lx = l.x + Math.sin(now / 900 + l.ph) * 14;
+        g.save(); g.translate(lx, l.y); g.rotate(Math.sin(now / 700 + l.ph)); g.fillStyle = "rgba(120,180,90,0.7)";
+        g.beginPath(); g.ellipse(0, 0, 7 * l.s, 3 * l.s, 0, 0, 7); g.fill(); g.restore();
+      });
+      // the ground, with tufts of grass
+      g.fillStyle = "#86c463"; g.fillRect(0, H - 28, W, 28);
+      g.fillStyle = "#6eae4c"; g.fillRect(0, H - 28, W, 4);
+      g.fillStyle = "#9bd277";
+      for (var x = 8; x < W; x += 26) { g.beginPath(); g.moveTo(x, H - 26); g.lineTo(x + 4, H - 36); g.lineTo(x + 8, H - 26); g.fill(); }
     }
     function gameFrame(now) {
       if (!running) return;
@@ -6057,13 +6198,18 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       items = items.filter(function (it) {
         it.y += it.v * dt;
         if (state === "play" && it.y > catchY && it.y < catchY + P * 0.55 && Math.abs(it.x - px) < P * 0.55) {
-          if (it.kind === "rock") { score = Math.max(0, score - 2); pop(it.x, catchY, "-2", "#b3261e"); shake = 0.3; if (typeof sfx === "function") sfx("splat"); }
-          else { var add = it.kind === "gold" ? 3 : 1; score += add; pop(it.x, catchY, "+" + add, it.kind === "gold" ? "#c98a00" : "#2b8a3e"); if (typeof sfx === "function") sfx(it.kind === "gold" ? "coin" : "click"); }
+          if (it.kind === "rock") { score = Math.max(0, score - 2); pop(it.x, catchY, "-2", "#b3261e"); shake = 0.3; hurt = 0.35; combo(0); if (typeof sfx === "function") sfx("splat"); }
+          else {
+            var add = it.kind === "gold" ? 3 : 1; score += add; pop(it.x, catchY, "+" + add, it.kind === "gold" ? "#c98a00" : "#2b8a3e");
+            sparkle(it.x, catchY, it.kind === "gold"); squash = 0.22; combo(inRow + 1);
+            if (inRow > 0 && inRow % 5 === 0) pop(px, catchY - 46, inRow + " in a row!", "#d4537e");
+            if (typeof sfx === "function") sfx(it.kind === "gold" ? "coin" : "click");
+          }
           hudScore.textContent = score;
           if (opts.onScore) opts.onScore(score);
           return false;
         }
-        if (it.y > H + 40) return false;
+        if (it.y > H + 40) { if (state === "play" && it.kind !== "rock" && inRow) combo(0); return false; }
         g.save(); g.translate(it.x, it.y); g.rotate(it.spin * it.y / 300);
         g.font = (it.kind === "gold" ? 40 : 34) + "px system-ui, 'Apple Color Emoji', 'Segoe UI Emoji'"; g.textAlign = "center"; g.textBaseline = "middle";
         g.fillText(it.icon, 0, 0); g.restore();
@@ -6081,11 +6227,24 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         g.fillStyle = "rgba(0,0,0,0.12)"; g.beginPath(); g.ellipse(ox, H - 26, OP * 0.42, 6, 0, 0, 7); g.fill();
         if (rival.complete && rival.naturalWidth) g.drawImage(rival, ox - OP / 2, oy, OP, OP);
       }
-      // the pet
+      // the pet: leans the way it's going, squashes a little when it catches something
       var sx = shake > 0 ? Math.sin(now / 20) * 6 : 0; shake = Math.max(0, shake - dt);
+      lean += (Math.max(-0.22, Math.min(0.22, (tx - px) / 160)) - lean) * Math.min(1, dt * 10);
+      squash = Math.max(0, squash - dt); var sq = Math.sin((squash / 0.22) * Math.PI) * 0.12;
       g.fillStyle = "rgba(0,0,0,0.15)"; g.beginPath(); g.ellipse(px, H - 26, P * 0.42, 8, 0, 0, 7); g.fill();
-      if (pet.complete && pet.naturalWidth) g.drawImage(pet, px - P / 2 + sx, H - 28 - P + 6, P, P);
-      else { g.font = P * 0.8 + "px system-ui"; g.textAlign = "center"; g.fillText("🐾", px, H - 28 - P / 2); }
+      g.save(); g.translate(px + sx, H - 22); g.rotate(lean); g.scale(1 + sq, 1 - sq);
+      if (pet.complete && pet.naturalWidth) g.drawImage(pet, -P / 2, -P, P, P);
+      else { g.font = P * 0.8 + "px system-ui"; g.textAlign = "center"; g.fillText("🐾", 0, -P / 2); }
+      g.restore();
+      // sparkles from a catch
+      sparks = sparks.filter(function (s) {
+        s.t += dt; if (s.t > 0.6) return false;
+        s.x += s.vx * dt; s.y += s.vy * dt; s.vy += 260 * dt;
+        g.globalAlpha = 1 - s.t / 0.6; g.fillStyle = s.c; g.beginPath(); g.arc(s.x, s.y, 3.2 * (1 - s.t), 0, 7); g.fill(); g.globalAlpha = 1;
+        return true;
+      });
+      // a red flash at the edges when a rock hits
+      if (hurt > 0) { hurt = Math.max(0, hurt - dt); g.strokeStyle = "rgba(226,72,77," + (hurt * 1.6) + ")"; g.lineWidth = 26; g.strokeRect(0, 0, W, H); }
       // +1 / -2 pops
       pops = pops.filter(function (q) {
         q.t += dt; if (q.t > 0.8) return false;
@@ -6211,6 +6370,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       if (!live || over || finished) return;
       var l = lanes[me]; l.n++; place(me);
       var img = l.el.querySelector("img"); img.classList.remove("hop"); void img.offsetWidth; img.classList.add("hop");
+      if (l.n % 3 === 0) { var dr = img.getBoundingClientRect(), wr0 = wrap.getBoundingClientRect(); fxBurst(wrap, dr.left - wr0.left + 8, dr.bottom - wr0.top - 10, { n: 4, spread: 14, colors: ["#e9c9a8", "#f3dcc4", "#d9b28c"] }); }
       if (typeof sfx === "function" && l.n % 4 === 0) sfx("click");
       if (opts.onTap) opts.onTap(l.n);
       if (l.n >= steps) { finished = true; btn.disabled = true; msg.textContent = "🏁"; if (opts.onFinish) opts.onFinish(); }
@@ -6236,6 +6396,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         order.forEach(function (uid, k) { var l = lanes[uid]; if (l) l.el.querySelector(".place").textContent = ["🥇", "🥈", "🥉", "4th"][k] || ""; });
         var mine = order.indexOf(me);
         msg.textContent = mine === 0 ? "🏆 You win!" : mine > 0 ? ["", "🥈 2nd place!", "🥉 3rd place", "4th place"][mine] : "";
+        if (mine === 0) { var wc = fxCentre(wrap, lanes[me].el.querySelector("img")); fxBurst(wrap, wc.x, wc.y, { n: 16, spread: 60 }); }
         if (typeof sfx === "function") sfx(mine === 0 ? "levelUp" : "pat");
       }
     };
@@ -6288,6 +6449,8 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       '<div class="pg-qcpal" hidden></div><div class="pg-duelbubbles"></div>' +
       (T ? '<p class="pg-turn" aria-live="polite"></p>' : "") +
       '<div class="pg-cards"></div>' + (T ? "" : '<p class="pg-memhint">Tries: <b class="mv">0</b></p>') +
+      (!T && opts.pic ? '<div class="pg-mempet"><span class="say" aria-live="polite"></span><img alt=""></div>' : "") +
+      '<div class="pg-memcombo" aria-hidden="true"></div>' +
       '<div class="pg-gamemsg big"></div>';
     document.body.appendChild(wrap);
     var grid = wrap.querySelector(".pg-cards"), msg = wrap.querySelector(".pg-gamemsg"), turnEl = wrap.querySelector(".pg-turn");
@@ -6295,11 +6458,20 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       var c = document.createElement("button"); c.type = "button"; c.className = "pg-mcard"; c.disabled = true;
       c.setAttribute("aria-label", "Card " + (k + 1));
       var face = f.indexOf("img:") === 0 ? '<img alt="" src="icons/' + f.slice(4) + '.png">' : "<span>" + f + "</span>";
-      c.innerHTML = '<i class="back">🐾</i><i class="front">' + face + "</i>";
+      c.innerHTML = '<i class="back"><span>🐾</span></i><i class="front">' + face + "</i>";
       c.addEventListener("click", function () { tapCard(k); });
       grid.appendChild(c);
     });
     var cards = grid.querySelectorAll(".pg-mcard");
+    var petBox = wrap.querySelector(".pg-mempet"), comboEl = wrap.querySelector(".pg-memcombo"), inRow = 0;
+    if (petBox) petBox.querySelector("img").src = opts.pic;
+    function petSays(text, happy) {
+      if (!petBox) return;
+      petBox.querySelector(".say").textContent = text; petBox.classList.add("talk");
+      var img = petBox.querySelector("img"); img.classList.remove("hop", "sad"); void img.offsetWidth; img.classList.add(happy ? "hop" : "sad");
+      clearTimeout(petSays.t); petSays.t = setTimeout(function () { petBox.classList.remove("talk"); }, 1400);
+    }
+    function comboShow(text) { comboEl.textContent = text; comboEl.classList.remove("show"); void comboEl.offsetWidth; comboEl.classList.add("show"); }
     var open = [], found = 0, moves = 0, t0 = 0, ticking = null, live = false, over = false, lockUntil = 0, timers = [], pending = {};
     var turn = T ? T.first : null, pairsBy = {}, turnLeft = MEMORY_TURN, botSeen = {}, botBusy = false;
     var byId = {};
@@ -6335,6 +6507,9 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       var a = open[0], b = open[1]; open = [];
       if (deck[a] === deck[b]) {
         cards[a].classList.add("done"); cards[b].classList.add("done"); found++;
+        [a, b].forEach(function (x) { var c = fxCentre(wrap, cards[x]); fxBurst(wrap, c.x, c.y, { n: 8, spread: 30 }); });
+        inRow++; if (!T && inRow >= 2) comboShow(inRow + " in a row! ✨");
+        petSays(["Nice pair!", "Yay!", "You found it!", "Great memory!"][found % 4], true);
         delete botSeen[a]; delete botSeen[b];
         if (T) pairsBy[turn]++; else wrap.querySelector(".pr").textContent = found + "/" + MEMORY_PAIRS;
         if (typeof sfx === "function") sfx("coin");
@@ -6342,7 +6517,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         if (found >= MEMORY_PAIRS) finish(true);
         else botMaybe();
       } else {
-        lockUntil = Date.now() + 900;
+        lockUntil = Date.now() + 900; inRow = 0;
         [a, b].forEach(function (x) { pending[x] = setTimeout(function () { cards[x].classList.remove("up"); }, 900); });
         if (T) { turn = nextTurn(); showTurn(); botMaybe(); }
       }
@@ -6474,12 +6649,13 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       '<div class="pb-pet them"><span class="who"></span><img alt=""></div>' +
       '<div class="pb-score" aria-live="polite">' + (VS ? '<b class="t">0</b><i>–</i><b class="m">0</b>' : "0") + "</div>" +
       '<div class="pb-pet me"><i class="pb-ring" aria-hidden="true"></i><img alt=""><span class="who"></span></div>' +
-      '<span class="pb-ball" aria-hidden="true">⚽</span>' +
+      '<span class="pb-shadow" aria-hidden="true"></span><span class="pb-ball" aria-hidden="true">⚽</span><span class="pb-rally" hidden></span>' +
       '<div class="pb-cue" aria-live="polite"></div><div class="pb-say"></div><p class="pb-hint">' + (VS ? "Tap when the ring turns green 🟢 Make them miss! A perfect tap sends a faster shot." : "Tap anywhere when the ring around your pet turns green 🟢") + "</p>" +
       '<div class="pg-gamemsg big">Get ready…</div>';
     document.body.appendChild(wrap);
     var themEl = wrap.querySelector(".pb-pet.them"), meEl = wrap.querySelector(".pb-pet.me"), ring = wrap.querySelector(".pb-ring");
     var ball = wrap.querySelector(".pb-ball"), scoreEl = wrap.querySelector(".pb-score"), sayEl = wrap.querySelector(".pb-say"), msg = wrap.querySelector(".pg-gamemsg");
+    var shadowEl = wrap.querySelector(".pb-shadow"), rallyEl = wrap.querySelector(".pb-rally");
     themEl.querySelector("img").src = opts.them.pic; meEl.querySelector("img").src = opts.me.pic;
     themEl.querySelector(".who").innerHTML = opts.them.html || ""; meEl.querySelector(".who").innerHTML = (opts.me.html || "") + " <small>(you)</small>";
     var live = false, over = false, timers = [], flight = null, score = 0, raf = 0, lateT = null, hits = 0;
@@ -6522,7 +6698,8 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     }
     // send the ball on its way: to "me" or to "them", as pass n (fast: a perfect hit's quicker, curvier shot)
     function launch(to, n, fast) {
-      ball.classList.remove("fall", "out"); ball.classList.add("on");
+      ball.classList.remove("fall", "out"); ball.classList.add("on"); shadowEl.classList.add("on");
+      if (VS) { rallyEl.hidden = n < 3; rallyEl.textContent = "Rally " + n; }
       flight = { to: to, n: n, t0: performance.now(), dur: (CHL >= 0 ? Math.max(430, 1400 * Math.pow([0.93, 0.922, 0.918][CHL], n)) : ballTravel(n, VS)) * (fast ? (CHL >= 0 ? [0.76, 0.72, 0.71][CHL] : 0.78) : 1), fast: !!fast,
                  sway: (Math.random() < 0.5 ? -1 : 1) * (fast ? 0.28 + Math.random() * 0.08 : 0.12 + Math.random() * 0.16) };
       clearTimeout(lateT);
@@ -6558,6 +6735,9 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       var y = a.y + (b.y - a.y) * s;
       var big = 1 + Math.sin(Math.PI * Math.min(1, s)) * 0.6;
       ball.style.transform = "translate(" + (x - 22) + "px," + (y - 22) + "px) scale(" + big + ") rotate(" + (s * (flight.fast ? 900 : 540)) + "deg)";
+      var lift = Math.sin(Math.PI * Math.min(1, s));   // the shadow stays on the grass and shrinks while the ball is high
+      shadowEl.style.transform = "translate(" + (x - 20) + "px," + (y + 14 + lift * 26) + "px) scale(" + (1 - lift * 0.45) + ")";
+      shadowEl.style.opacity = 0.35 - lift * 0.18;
       ball.classList.toggle("fast", flight.fast);
       if (flight.to === "me") {
         var left = flight.t0 + flight.dur - now, w = windowMs(flight.n);
@@ -6581,6 +6761,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       pop(meEl);
       if (hits >= 4) wrap.querySelector(".pb-hint").classList.add("gone");
       var perfect = Math.abs(left) < 60, fast = VS && perfect;
+      if (perfect) { var pc = fxCentre(wrap, meEl.querySelector("img")); fxBurst(wrap, pc.x, pc.y - 20, { n: 10, colors: ["#ffc23d", "#ffffff", "#ff8a4c"] }); }
       if (perfect) ballSay(fast ? "Power shot! 🔥" : "Perfect! ✨", "good"); else ballSay(["Nice!", "Good!", "Got it!"][hits % 3]);
       if (navigator.vibrate) try { navigator.vibrate(15); } catch (er) {}
       var n = flight.n + 1;
@@ -6599,8 +6780,9 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     function pointTo(who) {
       if (over) return;
       flight = null; clearTimeout(lateT);
-      ball.classList.add("out");
+      ball.classList.add("out"); shadowEl.classList.remove("on"); rallyEl.hidden = true;
       pts[who]++; showScore();
+      if (who === "me") { var sc = fxCentre(wrap, scoreEl); fxBurst(wrap, sc.x, sc.y, { n: 12 }); } else fxShake(wrap);
       scoreEl.classList.remove("bump"); void scoreEl.offsetWidth; scoreEl.classList.add("bump");
       if (typeof sfx === "function") sfx(who === "me" ? "coin" : "pat");
       if (pts[who] >= BALL_POINTS) { end(who === "me" ? "won" : "lost-match"); return; }
@@ -6618,7 +6800,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     }
     function end(why) {
       if (over) return; over = true; live = false; clearTimeout(lateT); flight = null;
-      ball.classList.add("fall");
+      ball.classList.add("fall"); shadowEl.classList.remove("on"); rallyEl.hidden = true;
       cue("", "");
       msg.textContent = why === "won" ? "🏆 You win!" : why === "lost-match" ? "" : why === "lost" || why === "left" ? "" : (whyLost || "Dropped!") + " 😮";
       if (typeof sfx === "function") sfx(why === "won" ? "levelUp" : "pat");
@@ -6863,6 +7045,8 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         if (over) return;
         var good = res === "goal" ? meShoot : !meShoot;
         say.className = "pk-say big " + (good ? "good" : "bad");
+        if (res === "goal") { goal.classList.remove("rip"); void goal.offsetWidth; goal.classList.add("rip"); }
+        if (good) { var gc = fxCentre(wrap, res === "saved" ? keeperImg : goal); fxBurst(wrap, gc.x, gc.y, { n: 14, spread: 60 }); } else fxShake(wrap);
         say.textContent = res === "goal" ? "GOAL! ⚽" : res === "saved" ? "SAVED! 🧤" : shot.row ? "Over the bar!" : "Wide!";
         if (typeof sfx === "function") sfx(good ? "coin" : "pat");
         (meShoot ? goals.me : goals.them).push(res === "goal");
@@ -6921,7 +7105,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261113022838";   // replaced by build_real.ps1
+    var APP_BUILD = "20261113032300";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -8720,7 +8904,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       function goRace(m) {
         var prog = {}, latest = 0, sentN = 0, gone = {};
         var race = startTapRace({
-          players: m.players.map(function (x) { return { uid: x.uid, pic: petPic(x.variant), html: x.uid === me.id ? tagHTML(p.level, p.name) : petTagHTML(x), me: x.uid === me.id }; }),
+          players: m.players.map(function (x) { return { uid: x.uid, pic: x.uid === me.id && x.variant === p.variant ? gamePic(p) : petPic(x.variant), html: x.uid === me.id ? tagHTML(p.level, p.name) : petTagHTML(x), me: x.uid === me.id }; }),
           onTap: function (n) { latest = n; prog[me.id] = n; },
           onFinish: function () { if (host) referee(me.id); else { R.send("fin", { uid: me.id }); race.status("🏁 Waiting for the result…"); } },
           onQuick: qcSend,
@@ -8771,7 +8955,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       function goBamboo(m) {
         var other = others()[0], latest = 0, sentN = -1, finals = {}, gone = false, judgeT = null, theirs = 0;
         var bam = startBambooGame({
-          pic: petPic(p.variant), seed: seedOf(room), live: true, them: { pic: petPic(other.variant), html: petTagHTML(other) },
+          pic: gamePic(p), seed: seedOf(room), live: true, them: { pic: petPic(other.variant), html: petTagHTML(other) },
           onScore: function (n) { latest = n; },
           onQuick: qcSend,
           onQuit: function () { leave(); openPlay(); },
@@ -8844,7 +9028,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       function goBall(m) {
         var other = others()[0], vs = !!m.vs;
         var bp = startBallPass({
-          me: { pic: petPic(p.variant), html: tagHTML(p.level, p.name) }, them: { pic: petPic(other.variant), html: petTagHTML(other) },
+          me: { pic: gamePic(p), html: tagHTML(p.level, p.name) }, them: { pic: petPic(other.variant), html: petTagHTML(other) },
           iServe: m.first === me.id, live: true, versus: vs, fast: !!m.fast,
           onHit: function (n, fast) { R.send("hit", { n: n, fast: !!fast }); },
           onDrop: function (n) { R.send("drop", { n: n }); },
@@ -8888,7 +9072,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       function goPenalty(m) {
         var other = others()[0];
         var pk = startPenalty({
-          me: { pic: petPic(p.variant), html: tagHTML(p.level, p.name) }, them: { pic: petPic(other.variant), html: petTagHTML(other) },
+          me: { pic: gamePic(p), html: tagHTML(p.level, p.name) }, them: { pic: petPic(other.variant), html: petTagHTML(other) },
           iFirst: m.first === me.id, live: true, seed: seedOf(room),
           onShot: function (k, shot) { R.send("shot", { k: k, shot: shot }); },
           onDive: function (k, col) { R.send("dive", { k: k, col: col }); },
@@ -8930,6 +9114,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
           (again.length ? '<button type="button" class="pg-feed pg-grow" data-a="again">' + o.again + "</button>" : "") + "</div>" +
           (stranger ? '<div class="pg-row pg-endextra"><button type="button" class="pg-linkbtn pg-small" data-a="friend">➕ Add friend</button>' +
                       '<button type="button" class="pg-linkbtn pg-small" data-a="block">🚫 Block or report</button></div>' : "");
+        endHero(end, won === true ? "win" : won === "draw" ? "draw" : "lose");
         wrap.appendChild(end);
         stakeLine(end);
         sfx(won === true ? "levelUp" : "pat");
@@ -8963,7 +9148,8 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         R.send("bye", { uid: me.id }); clearInterval(S.hbT);   // (a phone coming back mustn't play on against nobody)
         logGame(game, "live", others().map(label).join(", "), "left", null, null);
         var end = document.createElement("div"); end.className = "pg-gameend";
-        end.innerHTML = '<div class="big">👋</div><p>' + esc(text) + '</p><div class="pg-row"><button type="button" class="pg-feed pg-grow" data-a="done">Done</button></div>';
+        end.innerHTML = '<p>' + esc(text) + '</p><div class="pg-row"><button type="button" class="pg-feed pg-grow" data-a="done">Done</button></div>';
+        endHero(end, "left");
         wrap.appendChild(end); stakeLine(end, true);
         end.querySelector('[data-a="done"]').addEventListener("click", function () { cleanup(); openPlay(); });
       }
@@ -9010,10 +9196,27 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       if (won === false) return loseText + (next < lv ? " Bamboo will go a little easier on you." : "");
       return drawText;
     }
-    function botEnd(view, big, text, again, onDone) {
+    // every game's end card gets the same top: your pet (cheering or a bit glum), a title, stars and confetti for a win
+    var END_TITLE = { win: "You won!", lose: "So close!", draw: "It's a draw!", best: "New best!", solo: "Nice game!", left: "Game over" };
+    function endHero(end, mood) {
+      var p = pet(), hero = document.createElement("div"); hero.className = "pg-endhero " + mood;
+      var stars = mood === "win" || mood === "best" ? 3 : mood === "draw" || mood === "solo" ? 2 : 1;
+      var conf = "";
+      if (mood === "win" || mood === "best") for (var i = 0; i < 26; i++)
+        conf += '<i style="left:' + Math.round(Math.random() * 100) + "%;background:" + ["#ff5d8f", "#ffc23d", "#4cc38a", "#5aa7ff", "#a07bff", "#ff8a4c"][i % 6] +
+          ";animation-delay:" + (Math.random() * 0.5).toFixed(2) + "s;--dx:" + Math.round(Math.random() * 120 - 60) + "px;--rot:" + Math.round(Math.random() * 720 - 360) + 'deg"></i>';
+      hero.innerHTML = '<div class="pg-endconf" aria-hidden="true">' + conf + "</div>" +
+        (p ? '<img class="pg-endpet" alt="" src="' + esc(gamePic(p)) + '">' : "") +
+        '<div class="pg-endstars" aria-hidden="true">' + [0, 1, 2].map(function (k) { return '<b class="' + (k < stars ? "on" : "") + '">★</b>'; }).join("") + "</div>" +
+        '<h3 class="pg-endtitle">' + END_TITLE[mood] + "</h3>";
+      end.insertBefore(hero, end.firstChild);
+      end.classList.add("hero", mood);
+    }
+    function botEnd(view, big, text, again, mood) {
       var end = document.createElement("div"); end.className = "pg-gameend";
       end.innerHTML = '<div class="big">' + big + "</div><p>" + esc(text) + "</p>" +
-        '<div class="pg-row"><button type="button" class="pg-btn pg-grow" data-a="done">Done</button><button type="button" class="pg-feed pg-grow" data-a="again">Again</button></div>';
+        '<div class="pg-row"><button type="button" class="pg-btn pg-grow" data-a="done">Done</button><button type="button" class="pg-feed pg-grow" data-a="again">▶ Play again</button></div>';
+      endHero(end, mood || "solo");
       view.wrap.appendChild(end);
       end.querySelector('[data-a="done"]').addEventListener("click", function () { view.close(); raceNow = null; trackMe(); openPlay(); });
       end.querySelector('[data-a="again"]').addEventListener("click", function () { view.close(); raceNow = null; again(); });
@@ -9023,7 +9226,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       hidePlayPages();
       var bot = null, over = false;
       var race = startTapRace({
-        players: [{ uid: "bot", pic: petPic(botChallenge ? "panda_sakura" : "panda_golden"), html: esc(botName("race")) }, { uid: me.id, pic: petPic(p.variant), html: tagHTML(p.level, p.name), me: true }],
+        players: [{ uid: "bot", pic: petPic(botChallenge ? "panda_sakura" : "panda_golden"), html: esc(botName("race")) }, { uid: me.id, pic: gamePic(p), html: tagHTML(p.level, p.name), me: true }],
         onFinish: function () { finish([me.id, "bot"]); },
         onQuit: function () { if (bot) bot.stop(); raceNow = null; trackMe(); openPlay(); }
       });
@@ -9032,7 +9235,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         race.result(order);
         var won = order[0] === me.id;
         logGame("race", "bot", "Bamboo the bot", won ? "won" : "lost", won ? 1 : 2, null);
-        botEnd(race, won ? "🏆" : "🤖", botResult("race", won, "You beat Bamboo the bot!", "Bamboo the bot wins! Tap faster next time."), raceBot);
+        botEnd(race, won ? "1st" : "2nd", botResult("race", won, "You beat Bamboo the bot!", "Bamboo the bot wins! Tap faster next time."), raceBot, won ? "win" : "lose");
       }
       raceNow = { race: race }; trackMe();
       race.start(); bot = botRacer(race, "bot", function () { finish(["bot", me.id]); }, botLv("race"));
@@ -9044,14 +9247,14 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       var lv = botLv("bamboo"), every = [1250, 1050, 900, 780, 680, 650, 620, 590][lv - 1], rocks = [0.14, 0.11, 0.08, 0.06, 0.04, 0.035, 0.03, 0.025][lv - 1];
       var botScore = 0, timer = null;
       var game = startBambooGame({
-        pic: petPic(p.variant), seed: (Math.random() * 1e9) >>> 0, live: true, them: { pic: petPic(botChallenge ? "panda_sakura" : "panda_golden"), html: esc(botChallenge ? "🔥 Bamboo" : "🤖 Bamboo") },
+        pic: gamePic(p), seed: (Math.random() * 1e9) >>> 0, live: true, them: { pic: petPic(botChallenge ? "panda_sakura" : "panda_golden"), html: esc(botChallenge ? "🔥 Bamboo" : "🤖 Bamboo") },
         onQuit: function () { clearTimeout(timer); raceNow = null; trackMe(); openPlay(); },
         onEnd: function (score) {
           clearTimeout(timer);
           var won = score > botScore ? true : score < botScore ? false : "draw";
           logGame("bamboo", "bot", botChallenge ? "Bamboo the champion" : "Bamboo the bot", won === true ? "won" : won === false ? "lost" : "draw", null, score);
           botEnd(game, score + ' <small class="vs">vs ' + botScore + "</small>",
-            botResult("bamboo", won, "You beat Bamboo the bot!", "Bamboo the bot wins! Have another go.", "🤝 A draw with the bot!"), duelBot);
+            botResult("bamboo", won, "You beat Bamboo the bot!", "Bamboo the bot wins! Have another go.", "🤝 A draw with the bot!"), duelBot, won === true ? "win" : won === false ? "lose" : "draw");
         }
       });
       raceNow = { race: game }; trackMe();
@@ -9075,7 +9278,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       var p = pet(); if (!p || raceNow) return;
       hidePlayPages();
       var bp = startBallPass({
-        me: { pic: petPic(p.variant), html: tagHTML(p.level, p.name) },
+        me: { pic: gamePic(p), html: tagHTML(p.level, p.name) },
         them: { pic: petPic(botChallenge && vs ? "panda_sakura" : "panda_golden"), html: esc(vs ? botName("ball") : "Bamboo the bot 🤖"), bot: true, level: botLv("ball") },
         iServe: !!vs, versus: !!vs,
         onQuit: function () { raceNow = null; trackMe(); openPlay(); },
@@ -9083,12 +9286,12 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
           if (vs) {
             var won = why === "won";
             logGame("ball", "bot", "Bamboo the bot", won ? "won" : "lost", null, pts.me);
-            botEnd(bp, pts.me + ' <small class="vs">vs ' + pts.them + "</small>", botResult("ball", won, "You beat Bamboo the bot!", "Bamboo the bot wins! Have another go."), function () { ballBot(true); });
+            botEnd(bp, pts.me + ' <small class="vs">vs ' + pts.them + "</small>", botResult("ball", won, "You beat Bamboo the bot!", "Bamboo the bot wins! Have another go."), function () { ballBot(true); }, won ? "win" : "lose");
             return;
           }
           var b = bestBall("solo", score);
           logGame("ball", "bot", "Bamboo the bot", null, null, score);
-          botEnd(bp, score + ' <small class="vs">passes</small>', b.isNew ? "🏆 Your best ever! Now try it with a friend." : "Your best: " + b.best + " passes. Have another go!", function () { ballBot(false); });
+          botEnd(bp, score + ' <small class="vs">passes</small>', b.isNew ? "🏆 Your best ever! Now try it with a friend." : "Your best: " + b.best + " passes. Have another go!", function () { ballBot(false); }, b.isNew ? "best" : "solo");
         }
       });
       raceNow = { race: bp }; trackMe();
@@ -9099,7 +9302,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       var p = pet(); if (!p || raceNow) return;
       hidePlayPages();
       var pk = startPenalty({
-        me: { pic: petPic(p.variant), html: tagHTML(p.level, p.name) },
+        me: { pic: gamePic(p), html: tagHTML(p.level, p.name) },
         them: { pic: petPic(botChallenge ? "panda_sakura" : "panda_golden"), html: esc(botName("pen")), bot: true },
         iFirst: true, level: botLv("pen"), seed: (Math.random() * 1e9) >>> 0,
         onQuit: function () { raceNow = null; trackMe(); openPlay(); },
@@ -9107,7 +9310,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
           var won = res.won;
           logGame("penalty", "bot", botChallenge ? "Bamboo the champion" : "Bamboo the bot", won === true ? "won" : won === false ? "lost" : "draw", null, res.me);
           botEnd(pk, res.me + ' <small class="vs">vs ' + res.them + "</small>",
-            botResult("pen", won, "You beat Bamboo the bot!", "Bamboo the bot wins! Have another go.", "🤝 A draw with the bot!"), penBot);
+            botResult("pen", won, "You beat Bamboo the bot!", "Bamboo the bot wins! Have another go.", "🤝 A draw with the bot!"), penBot, won === true ? "win" : won === false ? "lose" : "draw");
         }
       });
       raceNow = { race: pk }; trackMe();
@@ -9127,7 +9330,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
           var a = r.pairs[me.id] || 0, b = r.pairs.bot || 0, won = r.winner === null ? "draw" : r.winner === me.id;
           logGame("memory", "bot", "Bamboo the bot", won === true ? "won" : won === "draw" ? "draw" : "lost", null, a);
           botEnd(mem, a + ' <small class="vs">vs ' + b + "</small>",
-            botResult("memory", won, "You beat Bamboo the bot!", "Bamboo the bot wins! Have another go.", "🤝 A draw with the bot!"), memoryBot);
+            botResult("memory", won, "You beat Bamboo the bot!", "Bamboo the bot wins! Have another go.", "🤝 A draw with the bot!"), memoryBot, won === true ? "win" : won === "draw" ? "draw" : "lose");
         }
       });
       raceNow = { race: mem }; trackMe();
@@ -9143,6 +9346,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
              : "<p>" + esc(err || "") + "</p>") +
         '<div class="pg-row"><button type="button" class="pg-btn pg-grow" data-a="done">Done</button>' +
         '<button type="button" class="pg-feed pg-grow" data-a="again">▶ Play again</button></div>';
+      endHero(end, res && res.new_best ? "best" : "solo");
       wrap.appendChild(end);
       if (res && res.paws) { sfx("coin"); loadAll({ quiet: true }); }
       end.querySelector('[data-a="again"]').addEventListener("click", function () { close(); again(); });
@@ -9164,7 +9368,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       var p = pet(); if (!p) return;
       hidePlayPages();
       startBambooGame({
-        pic: petPic(p.variant),
+        pic: gamePic(p),
         onQuit: function () { openPlay(); },
         onEnd: async function (score, close, wrap) {
           var s = await saveSolo("bamboo", score);
@@ -9176,6 +9380,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       var p = pet(); if (!p) return;
       hidePlayPages();
       var game = startMemoryGame({
+        pic: gamePic(p),
         onQuit: function () { openPlay(); },
         onEnd: async function (r) {
           var s = await saveSolo("memory", r.score);
@@ -9273,8 +9478,36 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     }
 
     // --- the Playground page ---
+    // ---------- Your pet in its outfit, for the games ----------
+    // The games used a fixed picture per pet colour. This takes a picture of the real 3D pet as it is now (hat,
+    // glasses and all), eyes open, on a clear background, when the Playground opens; kept until the outfit changes.
+    var gamePicMemo = {};
+    function gamePicKey(p) { return [p.id, p.variant, p.hat || "", p.glasses || ""].join("|"); }
+    function snapGamePic() {
+      var p = pet();
+      try {
+        if (!p || p.status !== "home" || !modelRoot || !renderer || !scene || !camera || bathing) return;
+        if (!$("g-sheet").hidden || !$("g-store").hidden || tryOn) return;   // (a try-on or a zoomed camera isn't the real look)
+        var key = gamePicKey(p); if (gamePicMemo[key]) return;
+        var keep = { b: blinkAmount.value, l: [BLINK_EYES.L.droop.value, BLINK_EYES.L.tilt.value], r: [BLINK_EYES.R.droop.value, BLINK_EYES.R.tilt.value] };
+        blinkAmount.value = 0; BLINK_EYES.L.droop.value = BLINK_EYES.R.droop.value = 0; BLINK_EYES.L.tilt.value = BLINK_EYES.R.tilt.value = 0;
+        var oc = renderer.getClearColor(new THREE.Color()), oa = renderer.getClearAlpha();
+        renderer.setClearColor(oc, 0); renderer.render(scene, camera);
+        var src = renderer.domElement;
+        var proj = function (y) { var v = modelRoot.localToWorld(new THREE.Vector3(0, y, 0)).project(camera); return { x: (v.x + 1) / 2 * src.width, y: (1 - v.y) / 2 * src.height }; };
+        var foot = proj(0), top = proj(p.hat ? 1.24 : 1.0), side = Math.max(8, (foot.y - top.y) * 1.08);
+        var out = document.createElement("canvas"); out.width = out.height = 256;
+        out.getContext("2d").drawImage(src, foot.x - side / 2, top.y - side * 0.05, side, side, 0, 0, 256, 256);
+        renderer.setClearColor(oc, oa);
+        blinkAmount.value = keep.b; BLINK_EYES.L.droop.value = keep.l[0]; BLINK_EYES.L.tilt.value = keep.l[1]; BLINK_EYES.R.droop.value = keep.r[0]; BLINK_EYES.R.tilt.value = keep.r[1];
+        gamePicMemo = {}; gamePicMemo[key] = out.toDataURL("image/png");
+      } catch (e) { /* the plain picture still works */ }
+    }
+    // the picture for my pet in a game: its outfit if we have it, else the plain one
+    function gamePic(p) { p = p || pet(); return (p && p === pet() && gamePicMemo[gamePicKey(p)]) || petPic(p && p.variant); }
     function openPlay() {
       if (!pet()) { say("Get a pet first, then you can play with it 🎮"); return; }
+      snapGamePic();
       if (roomNow) { roomShow(); return; }   // (back from a room's game: back to the room)
       $("g-play").hidden = false; $("g-menu").hidden = true;
       $("g-showonline").checked = showOnline();
@@ -9304,7 +9537,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       var p = pet(); if (!p) return;
       var game = boardGame;
       var w = p.race_wins || 0;
-      $("g-mepet").innerHTML = '<img alt="" src="' + esc(petPic(p.variant)) + '">' + tagHTML(p.level, p.name);
+      $("g-mepet").innerHTML = '<img alt="" src="' + esc(gamePic(p)) + '">' + tagHTML(p.level, p.name);
       $("g-playpaws").textContent = "🐾 " + (profile ? profile.coins : 0);
       drawGameDots();
       if (!boardOnly) { renderOnlineCount(); drawChallenge(); rpc("my_game_history").then(function (h) {
