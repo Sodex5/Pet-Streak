@@ -2717,6 +2717,9 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
 .pg-pen.shooting .pk-ball { cursor: grab; animation: pk-ballhint 1.4s ease-in-out infinite; }
 @keyframes pk-ballhint { 50% { translate: 0 -6px; } }
 @media (prefers-reduced-motion: reduce) { .pg-pen.shooting .pk-ball { animation: none; } }
+
+#g-modesize[hidden] { display: none; }
+#g-modesize button { font-size: 0.86rem; padding-left: 6px; padding-right: 6px; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -3007,6 +3010,11 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         <div class="pg-tabs pg-modevs" id="g-modevs" role="tablist" hidden>
           <button type="button" role="tab" data-vs="1" aria-selected="true">⚔️ Versus</button>
           <button type="button" role="tab" data-vs="0" aria-selected="false">🤝 Together</button>
+        </div>
+        <div class="pg-tabs pg-modevs" id="g-modesize" role="tablist" aria-label="Board size" hidden>
+          <button type="button" role="tab" data-size="8" aria-selected="false">⚡ Quick 4×4</button>
+          <button type="button" role="tab" data-size="12" aria-selected="true">🃏 Classic</button>
+          <button type="button" role="tab" data-size="15" aria-selected="false">🧠 Big 5×6</button>
         </div>
         <button type="button" class="pg-modebtn main" id="g-modesolo"></button>
         <div class="pg-gprow">
@@ -6870,20 +6878,24 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
   var MEMORY_FACES = ["🍎", "🍌", "🥕", "🍓", "🍉", "🍇", "🧁", "🍪", "🍩", "🍑",
     "img:Beanie", "img:Cowboy", "img:Witch", "img:Santa", "img:Frog", "img:TopHat", "img:Aviator", "img:Heart", "img:Pixel",
     "img:panda_snowy", "img:panda_sakura", "img:panda_golden", "img:panda_moss"];
-  function memoryScore(moves, secs) {
-    // 12 tries is perfect; each extra try costs 3, and up to 50 more for speed (finishing in 45 s or less)
-    return Math.max(10, Math.min(150, 100 - Math.max(0, moves - MEMORY_PAIRS) * 3 + Math.max(0, 50 - Math.max(0, secs - 45))));
+  function memoryScore(moves, secs, pairs) {
+    // one try a pair is perfect; each extra try costs 3, and up to 50 more for speed (about 3.75 s a pair)
+    // Solo boards come in 3 sizes (8, 12 or 15 pairs): the quick board scores up to 100, the others up to 150
+    pairs = pairs || MEMORY_PAIRS;
+    var raw = 100 - Math.max(0, moves - pairs) * 3 + Math.max(0, 50 - Math.max(0, secs - pairs * 3.75));
+    return Math.max(10, Math.min(pairs < MEMORY_PAIRS ? 100 : 150, Math.round(raw * (pairs < MEMORY_PAIRS ? 2 / 3 : 1))));
   }
   function startMemoryGame(opts) {
     var rnd = opts.seed ? seeded(opts.seed) : Math.random, T = opts.turns || null;
+    var PAIRS = (!T && opts.pairs) || MEMORY_PAIRS, COLS = PAIRS > 12 ? 5 : 4;   // (taking turns: always the classic board)
     var pool = MEMORY_FACES.slice(), faces = [];
-    while (faces.length < MEMORY_PAIRS) faces.push(pool.splice(Math.floor(rnd() * pool.length), 1)[0]);
+    while (faces.length < PAIRS) faces.push(pool.splice(Math.floor(rnd() * pool.length), 1)[0]);
     var deck = faces.concat(faces);
     for (var i = deck.length - 1; i > 0; i--) { var j = Math.floor(rnd() * (i + 1)), t = deck[i]; deck[i] = deck[j]; deck[j] = t; }
 
     var wrap = document.createElement("div"); wrap.className = "pg-game pg-memory" + (T ? " turns" : "");
     wrap.innerHTML =
-      '<div class="pg-gamehud">' + (T ? '<span class="pg-memscores"></span>' : '<span class="pr">0/' + MEMORY_PAIRS + '</span><span class="tm">0s</span>') +
+      '<div class="pg-gamehud">' + (T ? '<span class="pg-memscores"></span>' : '<span class="pr">0/' + PAIRS + '</span><span class="tm">0s</span>') +
         (opts.onQuick ? '<button type="button" class="pg-qcbtn" aria-label="Send an emoji">💬</button>' : "") +
         '<button type="button" class="pg-gamex" aria-label="Stop the game">✕</button></div>' +
       '<div class="pg-qcpal" hidden></div><div class="pg-duelbubbles"></div>' +
@@ -6894,6 +6906,10 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       '<div class="pg-gamemsg big"></div>';
     document.body.appendChild(wrap);
     var grid = wrap.querySelector(".pg-cards"), msg = wrap.querySelector(".pg-gamemsg"), turnEl = wrap.querySelector(".pg-turn");
+    // the board's shape: 4x4, 4x6 or 5x6, as big as fits the screen
+    var ROWS = PAIRS * 2 / COLS;
+    grid.style.gridTemplateColumns = "repeat(" + COLS + ", 1fr)";
+    grid.style.width = "min(92vw, " + (COLS > 4 ? 440 : 380) + "px, calc((100dvh - 200px - env(safe-area-inset-top, 0px)) * " + (COLS / ROWS).toFixed(3) + "))";
     deck.forEach(function (f, k) {
       var c = document.createElement("button"); c.type = "button"; c.className = "pg-mcard"; c.disabled = true;
       c.setAttribute("aria-label", "Card " + (k + 1));
@@ -6951,10 +6967,10 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         inRow++; if (!T && inRow >= 2) comboShow(inRow + " in a row! ✨");
         petSays(["Nice pair!", "Yay!", "You found it!", "Great memory!"][found % 4], true);
         delete botSeen[a]; delete botSeen[b];
-        if (T) pairsBy[turn]++; else wrap.querySelector(".pr").textContent = found + "/" + MEMORY_PAIRS;
+        if (T) pairsBy[turn]++; else wrap.querySelector(".pr").textContent = found + "/" + PAIRS;
         if (typeof sfx === "function") sfx("coin");
         showTurn();
-        if (found >= MEMORY_PAIRS) finish(true);
+        if (found >= PAIRS) finish(true);
         else botMaybe();
       } else {
         lockUntil = Date.now() + 900; inRow = 0;
@@ -7020,7 +7036,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         msg.textContent = !done ? "" : result.winner === null ? "🤝 A draw!" : byId[result.winner].me ? "🏆 You win!" : byId[result.winner].html.replace(/<[^>]+>/g, "") + " wins!";
         if (turnEl) turnEl.textContent = "";
       } else {
-        result = { score: done ? memoryScore(moves, s) : 0, pairs: found, moves: moves, secs: s, done: done };
+        result = { score: done ? memoryScore(moves, s, PAIRS) : 0, pairs: found, moves: moves, secs: s, done: done };
         msg.textContent = done ? "🎉 All pairs!" : "";
       }
       timers.push(setTimeout(function () { opts.onEnd(result); }, 900));
@@ -7584,7 +7600,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261113042538";   // replaced by build_real.ps1
+    var APP_BUILD = "20261113044030";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -8376,6 +8392,10 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       $("g-modehelp").onclick = $("g-modehow").onclick = function () { openGameHelp(game); };
       $("g-modevs").hidden = game !== "ball";
       Array.prototype.forEach.call(document.querySelectorAll("#g-modevs [data-vs]"), function (b) { b.setAttribute("aria-selected", (b.dataset.vs === "1") === ballVs ? "true" : "false"); });
+      // Memory match solo: a quick, classic or big board
+      $("g-modesize").hidden = game !== "memory";
+      Array.prototype.forEach.call(document.querySelectorAll("#g-modesize [data-size]"), function (b) { b.setAttribute("aria-selected", +b.dataset.size === memSize() ? "true" : "false"); });
+      if (game === "memory") solo = [solo[0], "Find the " + memSize() + " pairs in as few tries as you can." + (memSize() < 12 ? " A quick game: scores up to 100." : "")];
       $("g-modesolo").innerHTML = "<b>" + esc(solo[0].replace(/^\S+ /, "▶ ")) + "</b><small>" + esc(solo[1]) + "</small>";
       // against the bot: for the games where solo means on your own
       $("g-modebot").hidden = !BOT_TEXT[game];
@@ -8401,6 +8421,11 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       drawModeStats(game);
     }
     $("g-modeclose").addEventListener("click", function () { $("g-mode").hidden = true; });
+    var MEM_SIZE_KEY = "petstreak.memsize";
+    function memSize() { var n = 12; try { n = +localStorage.getItem(MEM_SIZE_KEY) || 12; } catch (e) {} return [8, 12, 15].indexOf(n) >= 0 ? n : 12; }
+    Array.prototype.forEach.call(document.querySelectorAll("#g-modesize [data-size]"), function (b) {
+      b.addEventListener("click", function () { try { localStorage.setItem(MEM_SIZE_KEY, b.dataset.size); } catch (e) {} openMode("memory"); });
+    });
     Array.prototype.forEach.call(document.querySelectorAll("#g-modevs [data-vs]"), function (b) {
       b.addEventListener("click", function () { ballVs = b.dataset.vs === "1"; openMode("ball"); });
     });
@@ -9803,11 +9828,16 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       });
       raceNow = { race: game }; trackMe();
       game.start();
+      // now and then the bot grabs a power-up too (more often at higher levels): for 4 seconds it catches faster
+      // and hits fewer rocks, like a magnet or slow-mo would for you
+      var boostUntil = 0, nextBoost = Date.now() + 9000 + Math.random() * 6000, boostChance = [0.2, 0.3, 0.4, 0.5, 0.55, 0.65, 0.75, 0.85][lv - 1];
       timer = setTimeout(function step() {
-        var r = Math.random();
-        botScore = Math.max(0, botScore + (r < 0.1 ? 3 : r < 0.1 + rocks ? -2 : 1));
+        var now = Date.now();
+        if (now > nextBoost) { nextBoost = now + 7000 + Math.random() * 6000; if (Math.random() < boostChance) boostUntil = now + 4000; }
+        var boosted = now < boostUntil, r = Math.random();
+        botScore = Math.max(0, botScore + (r < 0.1 ? 3 : r < 0.1 + rocks * (boosted ? 0.3 : 1) ? -2 : 1));
         game.opp(botScore);
-        timer = setTimeout(step, every - 250 + Math.random() * 500);
+        timer = setTimeout(step, (every - 250 + Math.random() * 500) * (boosted ? 0.65 : 1));
       }, 3800);   // (after the 3-2-1)
     }
     // Ball pass with Bamboo the bot: together it never drops it (the score is all yours); in versus its level
@@ -9962,7 +9992,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       var p = pet(); if (!p) return;
       hidePlayPages();
       var game = startMemoryGame({
-        pic: gamePic(p),
+        pic: gamePic(p), pairs: memSize(),
         onQuit: function () { openPlay(); },
         onEnd: async function (r) {
           var s = await saveSolo("memory", r.score);
