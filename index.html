@@ -2762,6 +2762,67 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
 #g-moderace[hidden] { display: none; }
 .rc-lap { margin-left: auto; }
 .pg-lane.boosted img { filter: drop-shadow(0 0 10px rgba(255,194,61,0.95)); }
+
+/* ===== Beat dash 2: two moves, fever, stages ===== */
+.bd-btns { flex: none; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 0 16px calc(22px + env(safe-area-inset-bottom, 0px)); }
+.bd-btns .pg-tapbtn { margin: 0 !important; height: 88px; font-size: 1.5rem; }
+.pg-beat .bd-btns .bd-jump { background: linear-gradient(150deg, #ffc23d, #f08a1c); box-shadow: 0 9px 0 #b8650e; color: #4a2a00; }
+.pg-beat .bd-btns .bd-duck { background: linear-gradient(150deg, #5dcaa5, #1d9e75); box-shadow: 0 9px 0 #0f6e56; color: #04342c; }
+.bd-btns .pg-tapbtn.hot { animation: bd-hot 0.45s ease-in-out infinite alternate; outline: 4px solid #fff; outline-offset: 2px; }
+@keyframes bd-hot { to { transform: translateY(-3px); filter: brightness(1.15); } }
+@media (prefers-reduced-motion: reduce) { .bd-btns .pg-tapbtn.hot { animation: none; } }
+.bd-btns .pg-tapbtn:active { transform: translateY(6px); }
+.bd-fever { position: absolute; left: 50%; top: calc(66px + env(safe-area-inset-top, 0px)); width: min(70vw, 260px); height: 10px; margin-left: min(-35vw, -130px); border-radius: 999px; background: rgba(255,255,255,0.15); overflow: visible; }
+.pg-beat.duel .bd-fever { top: calc(80px + env(safe-area-inset-top, 0px)); }
+.bd-fever i { display: block; height: 100%; width: 0; border-radius: 999px; background: linear-gradient(90deg, #ffc23d, #ff5d8f); transition: width 0.2s; }
+.bd-fever b { position: absolute; right: -2px; top: -18px; font-size: 0.7rem; letter-spacing: 0.08em; color: #ffc23d; }
+.pg-beat.fever .bd-fever i { background: linear-gradient(90deg, #ff5d8f, #a07bff, #5dcaa5, #ffc23d); animation: bd-feverbar 0.6s linear infinite; background-size: 200% 100%; }
+@keyframes bd-feverbar { to { background-position: -200% 0; } }
+.bd-combo .x.fever { color: #ff5d8f !important; }
+.bd-stage-name { margin-top: 6px; color: rgba(255,255,255,0.55); font-weight: 800; font-size: 0.8rem; letter-spacing: 0.06em; text-transform: uppercase; }
+.pg-beat.st1 { background-color: #4b1f4e; }
+.pg-beat.st1 .bd-ground { background-color: #d4537e; box-shadow: inset 0 6px 0 #f4c0d1; }
+.pg-beat.st1 .bd-hills.far { background-image: radial-gradient(ellipse 90px 70px at 90px 120px, #72243e 98%, transparent 100%); }
+.pg-beat.st1 .bd-hills.near { background-image: radial-gradient(ellipse 70px 50px at 60px 80px, #993556 98%, transparent 100%); }
+.pg-beat.st2 { background-color: #071d33; }
+.pg-beat.st2 .bd-ground { background-color: #0c447c; box-shadow: inset 0 6px 0 #5dcaa5; }
+.pg-beat.st2 .bd-hills.far { background-image: linear-gradient(#0c3a5e, #0c3a5e); background-size: 46px 110px; opacity: 0.8; }
+.pg-beat.st2 .bd-hills.near { background-image: linear-gradient(#105a8a, #105a8a); background-size: 64px 70px; }
+.pg-beat.fever .bd-stage::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(circle at 30% 70%, rgba(255,93,143,0.25), transparent 60%); animation: bd-feverglow 0.5s ease-in-out infinite alternate; }
+@keyframes bd-feverglow { to { opacity: 0.5; } }
+.bd-obj.branch { bottom: 132px; width: 70px; height: 18px; margin-left: 20px; border-radius: 10px; background: repeating-linear-gradient(90deg, #6b4220 0 10px, #8a5a2b 10px 20px); }
+.bd-obj.branch::before { content: "🌿"; position: absolute; left: 20px; top: 8px; font-size: 1.6rem; }
+.bd-obj.branch.passed, .bd-obj.log.passed { opacity: 0.4; }
+.bd-pet.duck { animation: bd-duck 0.4s ease-out; }
+@keyframes bd-duck { 40% { transform: scale(1.2, 0.6) translateY(22px); } }
+.rc-dots i.branch { background: #1d9e75; box-shadow: 0 2px 0 #0f6e56; border-radius: 3px 3px 9px 9px; }
+.bd-pop.fever { color: #ff9ac0; }
+@media (max-height: 700px) { .bd-btns .pg-tapbtn { height: 72px; font-size: 1.25rem; } }
+
+/* ===== Ball pass: three lanes ===== */
+.pb-pet { transition: left 0.18s cubic-bezier(.3,.9,.3,1.1); }
+.pg-ball > .pb-ring { position: absolute; z-index: 2; }
+.pb-lanes { position: absolute; left: 16px; right: 16px; bottom: calc(10px + env(safe-area-inset-bottom, 0px)); height: 36%; display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; pointer-events: none; }
+.pb-lanes b { border-radius: 18px 18px 8px 8px; background: rgba(255,255,255,0); transition: background 0.2s; }
+.pb-lanes b.on { background: rgba(255,255,255,0.16); box-shadow: inset 0 -4px 0 rgba(255,255,255,0.4); }
+.pb-star { position: absolute; top: 46%; transform: translate(-50%, -50%); font-size: 2rem; pointer-events: none; animation: pb-star 1.2s ease-in-out infinite; z-index: 1; }
+.pb-star[hidden] { display: none; }
+@keyframes pb-star { 50% { transform: translate(-50%, -58%) scale(1.15) rotate(12deg); } }
+
+/* ===== Penalty kicks 2 ===== */
+#g-modepen[hidden] { display: none; }
+.pen2 .pk-keeper { transition: transform 0.32s cubic-bezier(.2,.9,.3,1.1); }
+.pen2 .pk-target { position: absolute; top: 8%; width: 46px; height: 46px; border-radius: 50%; border: 3px dashed rgba(255,194,61,0.95); display: grid; place-items: center; font-style: normal; font-weight: 800; font-size: 0.85rem; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.4); pointer-events: none; z-index: 1; }
+.pen2 .pk-target.l { left: 4%; } .pen2 .pk-target.r { right: 4%; }
+.pen2.keeping .pk-target { opacity: 0.35; }
+.pen2 .pk-mark { position: absolute; width: 34px; height: 34px; margin: -17px 0 0 -17px; border-radius: 50%; border: 3px solid #4aa8ff; background: rgba(74,168,255,0.3); pointer-events: none; z-index: 3; }
+.pen2 .pk-mark[hidden] { display: none; }
+.pen2.keeping .pk-goal { cursor: pointer; }
+.pk-streak { margin-left: auto; background: #ff8a4c !important; color: #fff !important; }
+.pen2.streak .pk-timer { top: calc(66px + env(safe-area-inset-top, 0px)); }
+.pen2.streak .pk-goal { top: calc(90px + env(safe-area-inset-top, 0px)); }
+.pen2.streak .pk-pitch { top: calc(90px + env(safe-area-inset-top, 0px) + min(30vh, 190px) + 40px); }
+.pk-side .dots i { display: grid; place-items: center; font-size: 0.6rem; font-weight: 800; color: #fff; font-style: normal; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -3053,6 +3114,10 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         <h2 id="g-modename">Treat race</h2>
       </div>
       <div class="pg-gpbody" id="g-modebody">
+        <div class="pg-tabs pg-modevs" id="g-modepen" role="tablist" aria-label="Penalty mode" hidden>
+          <button type="button" role="tab" data-pmode="match" aria-selected="true">⚽ Match</button>
+          <button type="button" role="tab" data-pmode="streak" aria-selected="false">🔥 Streak</button>
+        </div>
         <div class="pg-tabs pg-modevs" id="g-moderace" role="tablist" aria-label="Race length" hidden>
           <button type="button" role="tab" data-rmode="classic" aria-selected="true">🏁 Classic</button>
           <button type="button" role="tab" data-rmode="long" aria-selected="false">🏃 Marathon</button>
@@ -5951,6 +6016,29 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     src.start(t, Math.random() * 0.5); src.stop(t + dur + 0.05);
   }
 
+  // ---------- Beat dash's song ----------
+  // One beat of music at a time, scheduled exactly on the beat (at = seconds from now): a kick on every beat, a snare
+  // on every other one, a hi-hat between, a bassline that follows the chords, and a little melody. Each stage has its
+  // own key and chords (Night forest: A minor, Candy town: C major, Neon city: D minor).
+  var BEAT_SONGS = [
+    { roots: [110, 87.31, 130.81, 98], scale: [440, 523.25, 587.33, 659.25, 783.99] },
+    { roots: [130.81, 110, 87.31, 98], scale: [523.25, 587.33, 659.25, 783.99, 880] },
+    { roots: [146.83, 116.54, 130.81, 110], scale: [587.33, 698.46, 783.99, 880, 1046.5] }
+  ];
+  var BEAT_TUNE = [0, 2, 4, 2, 3, 1, 2, 4, 4, 3, 2, 1, 0, 1, 2, 0];
+  function beatMusic(at, i, stage, gap) {
+    if (!audioReady()) return;
+    var song = BEAT_SONGS[stage % 3], root = song.roots[Math.floor(i / 4) % 4];
+    try {
+      tone(150, at, 0.16, "sine", 0.38, 45);                                          // kick
+      if (i % 2 === 1) noise(at, 0.13, 0.15, 1800, 0.7, "bandpass", 0.002);          // snare
+      noise(at + gap / 2, 0.035, 0.045, 8000, 0.8, "highpass", 0.002);              // hi-hat
+      tone(root, at, gap * 0.85, "triangle", 0.13);                                  // bass
+      if (stage === 2) tone(root * 2, at + gap / 2, gap * 0.4, "square", 0.025);     // (neon: a driving off-beat)
+      if (i % 16 >= 4) pluck(song.scale[BEAT_TUNE[i % 16]], at, 0.06, master, Math.min(0.5, gap * 0.9));   // melody (after an intro)
+    } catch (e) {}
+  }
+
   var SFX = {
     click:   function () { tone(1250, 0, 0.04, "sine", 0.05); },
     beat:    function () { tone(760, 0, 0.05, "triangle", 0.035); },
@@ -6785,27 +6873,29 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
   }
 
   // ---------- Beat dash ----------
-  // Your pet runs to the beat. Dots slide into the circle above the button: tap as one arrives. Right on the beat is
-  // Perfect (10 points), a little off is Good (5), times your combo (x2 after 8 hits in a row, x3 after 16, x4 after
-  // 24). Gold dots are coins (+20). Brown dots are logs: tap on the beat to jump, or your pet trips over it. A tap off
-  // the beat trips your pet too. The beat keeps getting quicker.
-  //  * Solo: 3 hearts; every trip costs one. How far can you go? (high scores, like Bamboo catch)
-  //  * Duel (opts.live): 45 seconds, the same beats for both phones (shared seed); a trip costs 15 points. Highest
-  //    score wins. opts.them is the other pet; opp(n) shows their score (the bot's, or the other phone's).
+  // Your pet runs to a song. Dots slide into the circles above the two buttons. On a plain beat, tap either button;
+  // a 🪵 log needs JUMP, a 🌿 low branch needs DUCK. Right on the beat is Perfect (10), a little off is Good (5),
+  // times your combo (x2 after 8 hits in a row, x3 after 16, x4 after 24). 🪙 Coins +20. The wrong move, a tap off the
+  // beat or an obstacle you didn't answer trips your pet. Perfects fill FEVER: 10 beats of double points. Every
+  // 30 seconds a new stage (Night forest, Candy town, Neon city), each with its own colours and song.
+  //  * Solo: 3 hearts; every trip costs one. (High scores.)
+  //  * Duel (opts.live): 45 seconds, the same beats for both phones (shared seed); a trip costs 15. Highest score wins.
   // startBeatDash({ pic, seed, live, them: { pic, html }, best, onScore(n), onQuick(i), onGo(), onEnd(score, close, wrap, stats), onQuit() })
   //   -> { wrap, start(), opp(n), quick(i), status(t), score(), close() }
-  var BEAT_PERFECT = 70, BEAT_GOOD = 140, BEAT_DUEL = 45, BEAT_HEARTS = 3, BEAT_GAP = 92;
-  function beatGap(i, duel) { return duel ? Math.max(410, 560 - i * 1.8) : Math.max(330, 560 - i * 1.6); }   // ms to the next beat
+  var BEAT_PERFECT = 70, BEAT_GOOD = 140, BEAT_DUEL = 45, BEAT_HEARTS = 3, BEAT_GAP = 92, BEAT_FEVER_AT = 12, BEAT_FEVER_LEN = 10;
+  var BEAT_STAGES = ["Night forest", "Candy town", "Neon city"];
+  function beatGap(i, duel) { return duel ? Math.max(410, 560 - i * 1.8) : Math.max(360, 560 - i * 1.4); }   // ms to the next beat
   function beatKind(rnd, i, prev) {
     if (i < 6) return "";
-    var r = rnd();
-    if (prev !== "log" && r < Math.min(0.28, 0.08 + i * 0.002)) return "log";
+    var r = rnd(), side = rnd();
+    if (prev !== "log" && prev !== "branch" && r < Math.min(0.32, 0.1 + i * 0.002)) return i < 14 || side < 0.5 ? "log" : "branch";
     return r > 0.86 ? "coin" : "";
   }
-  var BEAT_HOW_KEY = "petstreak.beathow";
+  function beatObstacle(k) { return k === "log" || k === "branch"; }
+  var BEAT_HOW_KEY = "petstreak.beathow2";
   function startBeatDash(opts) {
     var duel = !!opts.live, rnd = opts.seed ? seeded(opts.seed) : Math.random;
-    var wrap = document.createElement("div"); wrap.className = "pg-game pg-beat" + (duel ? " duel" : "");
+    var wrap = document.createElement("div"); wrap.className = "pg-game pg-beat st0" + (duel ? " duel" : "");
     wrap.innerHTML =
       '<div class="pg-gamehud"><span class="sc">0</span><span class="bd-mid"></span>' +
         (duel ? '<span class="op"><span class="nm"></span> <b class="opn">0</b></span>' : '<span class="bd-best">Best ' + (opts.best || 0) + "</span>") +
@@ -6814,18 +6904,19 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         '<button type="button" class="pg-gamex" aria-label="Stop the game">✕</button></div>' +
       '<div class="pg-qcpal" hidden></div><div class="pg-duelbubbles"></div>' +
       (duel ? '<div class="bd-tug" aria-hidden="true"><i></i></div>' : "") +
-      '<div class="bd-combo" aria-live="polite"><b class="x">x1</b><small class="pf">Tap on the beat!</small></div>' +
+      '<div class="bd-fever" aria-hidden="true"><i></i><b>FEVER</b></div>' +
+      '<div class="bd-combo" aria-live="polite"><b class="x">x1</b><small class="pf">Tap on the beat!</small><small class="bd-stage-name">' + BEAT_STAGES[0] + "</small></div>" +
       '<div class="bd-stage"><i class="bd-hills far"></i><i class="bd-hills near"></i><i class="bd-ground"></i>' +
         (duel ? '<img class="bd-rival" alt="">' : "") +
         '<div class="bd-objs"></div><img class="bd-pet" alt=""><b class="bd-pop"></b></div>' +
       '<div class="pg-gamemsg big">Get ready…</div>' +
-      '<div class="rc-beat" aria-hidden="true"><i class="rc-zone"></i><div class="rc-dots"></div><b class="rc-judge"></b></div>' +
-      '<button type="button" class="pg-tapbtn" disabled>TAP!</button>';
+      '<div class="rc-beat bd-track" aria-hidden="true"><i class="rc-zone"></i><div class="rc-dots"></div><b class="rc-judge"></b></div>' +
+      '<div class="bd-btns"><button type="button" class="pg-tapbtn bd-jump" disabled>⤴ JUMP</button><button type="button" class="pg-tapbtn bd-duck" disabled>⤵ DUCK</button></div>';
     document.body.appendChild(wrap);
     var q = function (s) { return wrap.querySelector(s); };
-    var msg = q(".pg-gamemsg"), btn = q(".pg-tapbtn"), petEl = q(".bd-pet"), objs = q(".bd-objs"), stage = q(".bd-stage");
-    var hudScore = q(".sc"), hudMid = q(".bd-mid"), comboX = q(".bd-combo .x"), comboPf = q(".bd-combo .pf"), popEl = q(".bd-pop");
-    var beatEl = q(".rc-beat"), dotsEl = q(".rc-dots"), judgeEl = q(".rc-judge"), zoneEl = q(".rc-zone");
+    var msg = q(".pg-gamemsg"), btnJ = q(".bd-jump"), btnD = q(".bd-duck"), petEl = q(".bd-pet"), objs = q(".bd-objs"), stage = q(".bd-stage");
+    var hudScore = q(".sc"), hudMid = q(".bd-mid"), comboX = q(".bd-combo .x"), comboPf = q(".bd-combo .pf"), stageName = q(".bd-stage-name"), popEl = q(".bd-pop");
+    var beatEl = q(".rc-beat"), dotsEl = q(".rc-dots"), judgeEl = q(".rc-judge"), zoneEl = q(".rc-zone"), feverBar = q(".bd-fever i");
     petEl.src = opts.pic;
     var rival = q(".bd-rival"), opEl = q(".op .opn");
     if (duel) { if (rival && opts.them && opts.them.pic) rival.src = opts.them.pic; q(".op .nm").innerHTML = (opts.them && opts.them.html) || ""; }
@@ -6835,13 +6926,14 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
 
     var live = false, over = false, timers = [], raf = 0, t0 = 0, endAt = 0;
     var score = 0, hearts = BEAT_HEARTS, combo = 0, bestCombo = 0, perfects = 0, theirs = 0, stumbleUntil = 0;
-    var beats = [], nextI = 0, prevKind = "", jdT = null;
+    var beats = [], nextI = 0, prevKind = "", jdT = null, feverMeter = 0, feverLeft = 0, stageAt = 0;
     function mult() { return Math.min(4, 1 + Math.floor(combo / 8)); }
     function showHud() {
-      hudScore.textContent = score;
-      if (!duel) hudMid.textContent = "❤️".repeat(hearts) + "🤍".repeat(BEAT_HEARTS - hearts);
-      comboX.textContent = "x" + mult(); comboX.className = "x m" + mult();
+      hudScore.textContent = score.toLocaleString();
+      if (!duel) hudMid.textContent = "❤️".repeat(Math.max(0, hearts)) + "🤍".repeat(Math.max(0, BEAT_HEARTS - hearts));
+      comboX.textContent = (feverLeft ? "🔥 " : "") + "x" + mult() * (feverLeft ? 2 : 1); comboX.className = "x m" + mult() + (feverLeft ? " fever" : "");
       comboPf.textContent = combo ? combo + " in a row · " + perfects + " perfect" : "Tap on the beat!";
+      feverBar.style.width = (feverLeft ? feverLeft / BEAT_FEVER_LEN * 100 : feverMeter / BEAT_FEVER_AT * 100) + "%";
       if (duel) { var all = score + theirs; q(".bd-tug i").style.width = (all ? Math.round(score / all * 100) : 50) + "%"; }
       if (opts.onScore) opts.onScore(score);
     }
@@ -6849,22 +6941,25 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       while (!beats.length || beats[beats.length - 1].t < now + 3200) {
         var t = beats.length ? beats[beats.length - 1].t + beatGap(nextI - 1, duel) : t0 + 900;
         var kind = beatKind(rnd, nextI, prevKind); prevKind = kind;
-        beats.push({ i: nextI++, t: t, kind: kind, used: false, done: false, ticked: false, el: null });
+        var b = { i: nextI++, t: t, kind: kind, used: false, done: false, ticked: false, el: null };
+        beats.push(b);
+        // the song: this beat's drums, bass and melody, scheduled right on its time
+        if (typeof beatMusic === "function") beatMusic(Math.max(0, (t - performance.now()) / 1000), b.i, Math.floor((t - t0) / 30000) % 3, beatGap(b.i, duel) / 1000);
       }
     }
     function judge(text, cls) { judgeEl.textContent = text; judgeEl.className = "rc-judge show " + cls; clearTimeout(jdT); jdT = setTimeout(function () { judgeEl.className = "rc-judge"; }, 520); }
     function pop(text, cls) { popEl.textContent = text; popEl.className = "bd-pop show " + (cls || ""); clearTimeout(pop.t); pop.t = setTimeout(function () { popEl.className = "bd-pop"; }, 600); }
-    function petAnim(cls) { petEl.classList.remove("hop", "trip", "jump"); void petEl.offsetWidth; petEl.classList.add(cls); }
+    function petAnim(cls) { petEl.classList.remove("hop", "trip", "jump", "duck"); void petEl.offsetWidth; petEl.classList.add(cls); }
     function trip(why) {
-      combo = 0; stumbleUntil = performance.now() + beatGap(nextI, duel) * 1.05;
-      petAnim("trip"); judge(why, "bad"); fxShake(btn);
+      combo = 0; feverMeter = Math.max(0, feverMeter - 4); stumbleUntil = performance.now() + beatGap(nextI, duel) * 1.05;
+      petAnim("trip"); judge(why, "bad"); fxShake(q(".bd-btns"));
       if (duel) { score = Math.max(0, score - 15); pop("-15", "bad"); }
       else { hearts--; pop("💔", "bad"); }
       if (typeof sfx === "function") sfx("splat");
       showHud();
       if (!duel && hearts <= 0) finish();
     }
-    function tap(e) {
+    function tap(e, move) {
       if (e) e.preventDefault();
       if (!live || over) return;
       var now = performance.now();
@@ -6873,25 +6968,39 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       beats.forEach(function (b) { if (!b.used && !b.done && (!best || Math.abs(b.t - now) < Math.abs(best.t - now))) best = b; });
       var d = best ? now - best.t : 1e9;
       if (!best || Math.abs(d) > BEAT_GOOD) { trip(d < 0 ? "Too soon!" : "Off the beat!"); return; }
+      if (best.kind === "log" && move !== "jump") { best.used = best.done = true; trip("Jump the logs! 🪵"); return; }
+      if (best.kind === "branch" && move !== "duck") { best.used = best.done = true; trip("Duck the branches! 🌿"); return; }
       best.used = true; best.done = true;
-      var perfect = Math.abs(d) <= BEAT_PERFECT, m = mult(), pts = (perfect ? 10 : 5) * m;
+      var perfect = Math.abs(d) <= BEAT_PERFECT, m = mult(), pts = (perfect ? 10 : 5) * m * (feverLeft ? 2 : 1);
       combo++; bestCombo = Math.max(bestCombo, combo); if (perfect) perfects++;
       if (best.kind === "coin") pts += 20;
       score += pts;
-      if (best.el) { best.el.classList.add(best.kind === "log" ? "jumped" : "got"); }
-      petAnim(best.kind === "log" ? "jump" : "hop");
-      judge(best.kind === "log" ? "Jump! 🪵" : perfect ? "Perfect!" : "Good", perfect || best.kind === "log" ? "good" : "ok");
-      pop("+" + pts, best.kind === "coin" ? "coin" : "");
+      if (best.el) best.el.classList.add(beatObstacle(best.kind) ? "passed" : "got");
+      petAnim(best.kind === "log" ? "jump" : best.kind === "branch" ? "duck" : move === "duck" ? "duck" : "hop");
+      judge(best.kind === "log" ? "Jump! 🪵" : best.kind === "branch" ? "Duck! 🌿" : perfect ? "Perfect!" : "Good", perfect || beatObstacle(best.kind) ? "good" : "ok");
+      pop("+" + pts, best.kind === "coin" ? "coin" : feverLeft ? "fever" : "");
+      // FEVER: perfects fill the meter; when it's full, 10 beats of double points
+      if (feverLeft) { if (--feverLeft === 0) { wrap.classList.remove("fever"); } }
+      else if (perfect && ++feverMeter >= BEAT_FEVER_AT) {
+        feverMeter = 0; feverLeft = BEAT_FEVER_LEN; wrap.classList.add("fever"); judge("FEVER! x2 🔥", "good");
+        var fc = fxCentre(wrap, comboX); fxBurst(wrap, fc.x, fc.y, { n: 16, spread: 60, colors: ["#ff5d8f", "#ffc23d", "#a07bff", "#5dcaa5"] });
+        if (typeof sfx === "function") sfx("levelUp");
+      }
       var zc = fxCentre(wrap, zoneEl);
       if (perfect) fxBurst(wrap, zc.x, zc.y, { n: 6, spread: 18, colors: ["#ffc23d", "#ffffff", "#5DCAA5"] });
       if (best.kind === "coin") { var pc = fxCentre(wrap, petEl); fxBurst(wrap, pc.x, pc.y - 20, { n: 8, spread: 26, colors: ["#ffc23d", "#fff2b0"] }); }
       if (mult() > m) { var cc = fxCentre(wrap, comboX); fxBurst(wrap, cc.x, cc.y, { n: 12, spread: 40 }); if (typeof sfx === "function") sfx("sparkle"); }
-      else if (typeof sfx === "function") sfx(best.kind === "coin" ? "coin" : perfect ? "click" : "click");
+      else if (best.kind === "coin" && typeof sfx === "function") sfx("coin");
       if (navigator.vibrate) try { navigator.vibrate(perfect ? 16 : 8); } catch (er) {}
       showHud();
     }
-    btn.addEventListener("pointerdown", tap);
-    function onKey(e) { if (e.target.tagName === "INPUT") return; if (e.key === " " || e.key === "Enter") tap(e); }
+    btnJ.addEventListener("pointerdown", function (e) { tap(e, "jump"); });
+    btnD.addEventListener("pointerdown", function (e) { tap(e, "duck"); });
+    function onKey(e) {
+      if (e.target.tagName === "INPUT") return;
+      if (e.key === " " || e.key === "ArrowUp" || e.key === "Enter") tap(e, "jump");
+      else if (e.key === "ArrowDown") tap(e, "duck");
+    }
     window.addEventListener("keydown", onKey);
 
     var DOTS = 7, dotEls = [];
@@ -6900,13 +7009,18 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       raf = requestAnimationFrame(frame);
       if (!live) return;
       var now = performance.now(); addBeats(now);
-      // beats that went by without a tap: a log trips you, anything else just ends the combo
       beats.forEach(function (b) {
-        if (!b.done && now > b.t + BEAT_GOOD) { b.done = true; if (b.kind === "log") trip("Trip! 🪵"); else if (combo) { combo = 0; showHud(); } }
+        if (!b.done && now > b.t + BEAT_GOOD) { b.done = true; if (beatObstacle(b.kind)) trip(b.kind === "log" ? "Trip! 🪵" : "Bonk! 🌿"); else if (combo) { combo = 0; showHud(); } }
       });
       if (over) return;
+      // a new stage every 30 seconds: colours, a name, and the song changes key
+      var st = Math.floor((now - t0) / 30000) % 3;
+      if (st !== stageAt) {
+        wrap.classList.remove("st0", "st1", "st2"); wrap.classList.add("st" + st); stageAt = st;
+        stageName.textContent = BEAT_STAGES[st]; msg.className = "pg-gamemsg wave"; msg.textContent = "Stage " + (Math.floor((now - t0) / 30000) + 1) + " · " + BEAT_STAGES[st];
+        timers.push(setTimeout(function () { if (!over) { msg.className = "pg-gamemsg"; msg.textContent = ""; } }, 1800));
+      }
       beats = beats.filter(function (b) { if (b.t < now - 900) { if (b.el) b.el.remove(); return false; } return true; });
-      // the world scrolls by; logs and coins sit where their beat will meet your pet
       var sw = stage.clientWidth, px = sw * 0.3, gapMs = beatGap(nextI, duel);
       var run = (now - t0) / gapMs * BEAT_GAP;
       q(".bd-hills.far").style.backgroundPositionX = -Math.round(run * 0.25) + "px";
@@ -6921,7 +7035,6 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
           b.ticked = true;
           stage.classList.add("beat"); setTimeout(function () { stage.classList.remove("beat"); }, 130);
           zoneEl.classList.remove("pulse"); void zoneEl.offsetWidth; zoneEl.classList.add("pulse");
-          if (typeof sfx === "function") sfx("beat");
         }
         if (k >= DOTS || b.t < now - BEAT_GOOD - 60) return;
         var dx = zx + (b.t - now) / gapMs * gap, el = dotEls[k++];
@@ -6929,16 +7042,16 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         el.className = (b.kind || "") + (b.used ? " used" : b.done ? " gone" : "");
       });
       for (; k < DOTS; k++) dotEls[k].className = "gone";
-      // the next beat is a log: the button says so
-      var nx = beats.filter(function (b) { return !b.done; })[0], lg = !!(nx && nx.kind === "log" && nx.t - now < gapMs * 1.2);
-      if (btn.classList.contains("jump") !== lg) { btn.classList.toggle("jump", lg); btn.textContent = lg ? "JUMP! ⤴" : "TAP!"; }
+      // the next obstacle lights up its button
+      var nx = beats.filter(function (b) { return !b.done; })[0], soon = nx && nx.t - now < gapMs * 1.2 ? nx.kind : "";
+      btnJ.classList.toggle("hot", soon === "log"); btnD.classList.toggle("hot", soon === "branch");
       if (duel) { var left = Math.max(0, Math.ceil((endAt - now) / 1000)); hudMid.textContent = "⏱ " + left + "s"; hudMid.classList.toggle("low", left <= 5); if (now >= endAt) finish(); }
     }
     raf = requestAnimationFrame(frame);
     function finish() {
-      if (over) return; over = true; live = false; btn.disabled = true;
+      if (over) return; over = true; live = false; btnJ.disabled = btnD.disabled = true; wrap.classList.remove("fever");
       msg.className = "pg-gamemsg big"; msg.textContent = duel ? "Time's up!" : "Out of hearts!";
-      timers.push(setTimeout(function () { opts.onEnd(score, close, wrap, { perfect: perfects, combo: bestCombo }); }, 900));
+      timers.push(setTimeout(function () { opts.onEnd(score, close, wrap, { perfect: perfects, combo: bestCombo, stage: Math.floor((performance.now() - t0) / 30000) + 1 }); }, 900));
     }
     function close() { over = true; live = false; cancelAnimationFrame(raf); timers.forEach(clearTimeout); window.removeEventListener("keydown", onKey); wrap.remove(); }
     q(".pg-gamex").addEventListener("click", function () {
@@ -6951,18 +7064,18 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       closeHow();
       howEl = document.createElement("div"); howEl.className = "pb-how";
       howEl.innerHTML = '<div class="pb-howcard"><h3>🎵 How to play Beat dash</h3><ol>' +
-        "<li>Dots slide into the circle above the button. <b>Tap as a dot reaches the circle.</b></li>" +
-        "<li>Right on the beat is <b>Perfect</b>. Keep it up for a combo: x2, x3, even x4 points!</li>" +
-        "<li>🟡 Gold dots are coins: +20. 🟤 Brown dots are logs: <b>tap on the beat to jump</b>, or your pet trips.</li>" +
-        (duel ? "<li>Tapping off the beat trips your pet too (-15). 45 seconds: highest score wins!</li>"
-              : "<li>Tapping off the beat trips your pet too. <b>3 trips and the run is over.</b> The beat keeps getting faster!</li>") +
+        "<li>Dots slide into the circle. <b>Tap as each one arrives</b>, right on the beat of the song.</li>" +
+        "<li>A plain dot: tap either button. <b>🟤 Log: JUMP.</b> <b>🌿 Branch: DUCK.</b> The button lights up when one's coming.</li>" +
+        "<li>Perfect taps build your combo (up to x4) and fill <b>FEVER</b>: double points for 10 beats! 🪙 Coins are +20.</li>" +
+        (duel ? "<li>The wrong move, or a tap off the beat, trips your pet (-15). 45 seconds: highest score wins!</li>"
+              : "<li>The wrong move, or a tap off the beat, trips your pet. <b>3 trips and the run is over.</b> A new stage every 30 seconds!</li>") +
         '</ol><button type="button" class="pg-feed">' + (then ? "Got it, let's go!" : "Got it") + "</button></div>";
       howEl.querySelector("button").addEventListener("click", function () { closeHow(); if (then) then(); });
       wrap.appendChild(howEl);
       try { localStorage.setItem(BEAT_HOW_KEY, "1"); } catch (e) {}
     }
     function go() {
-      live = true; btn.disabled = false; closeHow(); q(".bd-helpbtn").hidden = true;
+      live = true; btnJ.disabled = btnD.disabled = false; closeHow(); q(".bd-helpbtn").hidden = true;
       t0 = performance.now(); endAt = t0 + BEAT_DUEL * 1000 + 900; beats = []; addBeats(t0); showHud();
       if (opts.onGo) opts.onGo();
     }
@@ -6984,7 +7097,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       },
       opp: function (n) {
         if (n > theirs && rival) { rival.classList.remove("hop"); void rival.offsetWidth; rival.classList.add("hop"); }
-        theirs = n; if (opEl) opEl.textContent = n; if (duel) showHud();
+        theirs = n; if (opEl) opEl.textContent = n.toLocaleString(); if (duel) showHud();
       },
       quick: function (i) { var t = quickText(i); if (t) duelBubble(t, false); },
       status: function (t) { msg.className = "pg-gamemsg big"; msg.textContent = t; },
@@ -6994,15 +7107,18 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
   // Bamboo the bot in a Beat dash duel: the same beats, hit right as often as its level says (1-8)
   var BOT_BEAT_P = [0.25, 0.35, 0.45, 0.55, 0.65, 0.75, 0.83, 0.9], BOT_BEAT_G = [0.45, 0.42, 0.38, 0.33, 0.27, 0.2, 0.14, 0.08];
   function beatBot(game, level, seed) {
-    var L = Math.max(1, Math.min(8, level || 3)) - 1, rnd = seeded(seed), i = 0, prev = "", combo = 0, score = 0, alive = true, skip = 0;
+    var L = Math.max(1, Math.min(8, level || 3)) - 1, rnd = seeded(seed), i = 0, prev = "", combo = 0, score = 0, alive = true, skip = 0, fever = 0, meter = 0;
     function step() {
       if (!alive) return;
       var kind = beatKind(rnd, i, prev); prev = kind;
-      if (skip > 0) { skip--; combo = 0; if (kind === "log") score = Math.max(0, score - 15); }
+      if (skip > 0) { skip--; combo = 0; if (beatObstacle(kind)) score = Math.max(0, score - 15); }
       else {
         var r = Math.random(), hit = r < BOT_BEAT_P[L] ? 10 : r < BOT_BEAT_P[L] + BOT_BEAT_G[L] ? 5 : 0;
-        if (hit) { var m = Math.min(4, 1 + Math.floor(combo / 8)); combo++; score += hit * m + (kind === "coin" ? 20 : 0); }
-        else { combo = 0; if (kind === "log" || Math.random() < 0.3) { score = Math.max(0, score - 15); skip = 1; } }
+        if (hit) {
+          var m = Math.min(4, 1 + Math.floor(combo / 8)); combo++; score += hit * m * (fever ? 2 : 1) + (kind === "coin" ? 20 : 0);
+          if (fever) fever--; else if (hit === 10 && ++meter >= BEAT_FEVER_AT) { meter = 0; fever = BEAT_FEVER_LEN; }
+        }
+        else { combo = 0; meter = Math.max(0, meter - 4); if (beatObstacle(kind) || Math.random() < 0.3) { score = Math.max(0, score - 15); skip = 1; } }
       }
       game.opp(score);
       timers = setTimeout(step, beatGap(i++, true));
@@ -7224,6 +7340,10 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
   }
 
   // ---------- Ball pass (together, or versus) ----------
+  // Three lanes (2026-11): the ball flies to the left, middle or right. Tap that side of the screen as the ring turns
+  // green: your pet dashes over and hits it. A tap on the wrong side is a miss. (Tap a side early to get there first.)
+  // A good hit goes straight back; a perfect hit angles it to another side, which is harder for them.
+  // Together mode: ⭐ stars appear mid-court now and then; a pass through one is +3.
   // The ball flies between your pet (bottom) and the other pet (top). Tap anywhere as it reaches your pet: the ring
   // around your pet shrinks to show when. Each pass is a little faster. Miss (or tap too soon) and the ball drops.
   //  * Together: the team score is how many passes you made; one drop ends the game.
@@ -7236,8 +7356,9 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
   var BALL_POINTS = 5;
   // ms for pass n (versus speeds up faster and gets quicker at the top)
   function ballTravel(n, vs) { return vs ? Math.max(560, 1400 * Math.pow(0.958, n)) : Math.max(560, 1500 * Math.pow(0.962, n)); }
+  var BALL_LANES = [0.18, 0.5, 0.82];
   function startBallPass(opts) {
-    var VS = !!opts.versus;
+    var VS = !!opts.versus, meLane = 1, themLane = 1, star = null, starEl = null;
     // 🔥 Challenge (the bot at levels 6-8, in versus): the ball speeds up faster, the timing window is tighter and power
     // shots are quicker. (Tuned with a simulation: only very precise tappers beat level 8, about 1 time in 5.)
     // (⚡ Fast rallies with a real player use the middle Challenge speed)
@@ -7251,14 +7372,18 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       '<div class="pg-qcpal" hidden></div>' +
       '<div class="pb-pet them"><span class="who"></span><img alt=""></div>' +
       '<div class="pb-score" aria-live="polite">' + (VS ? '<b class="t">0</b><i>–</i><b class="m">0</b>' : "0") + "</div>" +
-      '<div class="pb-pet me"><i class="pb-ring" aria-hidden="true"></i><img alt=""><span class="who"></span></div>' +
+      '<div class="pb-pet me"><img alt=""><span class="who"></span></div><i class="pb-ring" aria-hidden="true"></i><i class="pb-lanes" aria-hidden="true"><b></b><b></b><b></b></i><span class="pb-star" hidden>⭐</span>' +
       '<span class="pb-shadow" aria-hidden="true"></span><span class="pb-ball" aria-hidden="true">⚽</span><span class="pb-rally" hidden></span>' +
-      '<div class="pb-cue" aria-live="polite"></div><div class="pb-say"></div><p class="pb-hint">' + (VS ? "Tap when the ring turns green 🟢 Make them miss! A perfect tap sends a faster shot." : "Tap anywhere when the ring around your pet turns green 🟢") + "</p>" +
+      '<div class="pb-cue" aria-live="polite"></div><div class="pb-say"></div><p class="pb-hint">' + (VS ? "Tap the side the ball is coming to, on the green 🟢 A perfect tap angles it away!" : "Tap the side the ball is coming to when the ring turns green 🟢") + "</p>" +
       '<div class="pg-gamemsg big">Get ready…</div>';
     document.body.appendChild(wrap);
     var themEl = wrap.querySelector(".pb-pet.them"), meEl = wrap.querySelector(".pb-pet.me"), ring = wrap.querySelector(".pb-ring");
     var ball = wrap.querySelector(".pb-ball"), scoreEl = wrap.querySelector(".pb-score"), sayEl = wrap.querySelector(".pb-say"), msg = wrap.querySelector(".pg-gamemsg");
     var shadowEl = wrap.querySelector(".pb-shadow"), rallyEl = wrap.querySelector(".pb-rally");
+    starEl = wrap.querySelector(".pb-star");
+    function laneX(l) { return wrap.clientWidth * BALL_LANES[l]; }
+    function moveTo(el, l) { el.style.left = (BALL_LANES[l] * 100) + "%"; }
+    var laneEls = wrap.querySelectorAll(".pb-lanes b");
     themEl.querySelector("img").src = opts.them.pic; meEl.querySelector("img").src = opts.me.pic;
     themEl.querySelector(".who").innerHTML = opts.them.html || ""; meEl.querySelector(".who").innerHTML = (opts.me.html || "") + " <small>(you)</small>";
     var live = false, over = false, timers = [], flight = null, score = 0, raf = 0, lateT = null, hits = 0;
@@ -7278,10 +7403,11 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       howEl.innerHTML = '<div class="pb-howcard"><h3>⚽ How to play</h3>' +
         '<div class="pb-demo" aria-hidden="true"><i></i><img alt=""><b>TAP!</b></div><ol>' +
         "<li>The ball flies between the two pets.</li>" +
-        "<li>When it comes to you, a ring shrinks around your pet.</li>" +
-        "<li><b>Tap anywhere on the screen when the ring turns green</b> to hit it back.</li>" +
+        "<li>It can come to the <b>left, middle or right</b>. A ring shrinks where it will land.</li>" +
+        "<li><b>Tap that side of the screen when the ring turns green.</b> Your pet dashes over and hits it back. The wrong side is a miss!</li>" +
+        "<li>A good hit goes straight back. A <b>perfect</b> hit angles it to another side, which is harder to reach.</li>" +
         (VS ? "<li>Too soon or too late and they get a point. <b>First to " + BALL_POINTS + " wins!</b></li><li>Tap at the very last moment for a faster Power shot 🔥</li>"
-            : "<li>Work together: every pass counts, and it gets faster. <b>One miss ends the game.</b></li>") +
+            : "<li>Work together: every pass counts, and it gets faster. ⭐ A pass through a star is +3. <b>One miss ends the game.</b></li>") +
         '</ol><button type="button" class="pg-feed">' + (then ? "Got it, let's play!" : "Got it") + "</button></div>";
       howEl.querySelector(".pb-demo img").src = opts.me.pic;
       howEl.querySelector("button").addEventListener("click", function () { closeHow(); if (then) then(); });
@@ -7300,10 +7426,15 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       scoreEl.querySelector(".t").textContent = pts.them; scoreEl.querySelector(".m").textContent = pts.me;
     }
     // send the ball on its way: to "me" or to "them", as pass n (fast: a perfect hit's quicker, curvier shot)
-    function launch(to, n, fast) {
+    function launch(to, n, fast, lane) {
       ball.classList.remove("fall", "out"); ball.classList.add("on"); shadowEl.classList.add("on");
       if (VS) { rallyEl.hidden = n < 3; rallyEl.textContent = "Rally " + n; }
-      flight = { to: to, n: n, t0: performance.now(), dur: (CHL >= 0 ? Math.max(430, 1400 * Math.pow([0.93, 0.922, 0.918][CHL], n)) : ballTravel(n, VS)) * (fast ? (CHL >= 0 ? [0.76, 0.72, 0.71][CHL] : 0.78) : 1), fast: !!fast,
+      lane = lane === undefined || lane === null ? 1 : Math.max(0, Math.min(2, lane | 0));
+      var from = to === "me" ? themLane : meLane;
+      if (to === "them") setTimeout(function () { themLane = lane; moveTo(themEl, lane); }, 250);   // (they run to it)
+      // Together: sometimes a star mid-court
+      if (!VS && !star && n >= 3 && Math.random() < 0.3) { star = { lane: Math.floor(Math.random() * 3) }; starEl.hidden = false; starEl.style.left = (BALL_LANES[star.lane] * 100) + "%"; }
+      flight = { to: to, n: n, lane: lane, from: from, t0: performance.now(), dur: (CHL >= 0 ? Math.max(430, 1400 * Math.pow([0.93, 0.922, 0.918][CHL], n)) : ballTravel(n, VS)) * (fast ? (CHL >= 0 ? [0.76, 0.72, 0.71][CHL] : 0.78) : 1), fast: !!fast,
                  sway: (Math.random() < 0.5 ? -1 : 1) * (fast ? 0.28 + Math.random() * 0.08 : 0.12 + Math.random() * 0.16) };
       clearTimeout(lateT);
       if (to === "them" && opts.them.bot) {
@@ -7316,13 +7447,15 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
           if (flight !== f || over) return;
           if (miss) { pointTo("me"); return; }
           if (!VS) { score++; showScore(); }
-          pop(themEl); launch("me", f.n + 1, VS && Math.random() < [0.15, 0.3, 0.4, 0.5, 0.55, 0.65, 0.74, 0.78][L]);
+          var pw = Math.random() < [0.15, 0.3, 0.4, 0.5, 0.55, 0.65, 0.74, 0.78][L];
+          pop(themEl); launch("me", f.n + 1, VS && pw, pw ? otherLane(f.lane) : f.lane);
         }, f.dur + (miss ? 180 : Math.random() * 80 - 40)));
       } else if (to === "them") {
         // no word from the other phone long after the ball got there: we've lost touch
         lateT = setTimeout(function () { if (!over && flight && flight.to === "them") end("lost"); }, flight.dur + 8000);
       }
     }
+    function otherLane(l) { var o = [0, 1, 2].filter(function (x) { return x !== l; }); return o[Math.floor(Math.random() * 2)]; }
     function pop(el) { var img = el.querySelector("img"); img.classList.remove("kick"); void img.offsetWidth; img.classList.add("kick"); if (typeof sfx === "function") sfx("click"); }
     // how close to the ball's arrival a tap must be (tighter in versus as the rally goes on)
     function windowMs(n) {
@@ -7333,8 +7466,9 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       raf = requestAnimationFrame(ballFrame);
       if (!flight) { ring.style.opacity = 0; cue("", ""); return; }
       var a = centre(flight.to === "me" ? themEl : meEl), b = centre(flight.to === "me" ? meEl : themEl);
+      a.x = laneX(flight.from); b.x = laneX(flight.lane);
       var s = Math.min(1.08, (now - flight.t0) / flight.dur), W = wrap.clientWidth;
-      var x = a.x + (b.x - a.x) * s + Math.sin(Math.PI * Math.min(1, s)) * flight.sway * W;
+      var x = a.x + (b.x - a.x) * s + Math.sin(Math.PI * Math.min(1, s)) * flight.sway * W * 0.35;
       var y = a.y + (b.y - a.y) * s;
       var big = 1 + Math.sin(Math.PI * Math.min(1, s)) * 0.6;
       ball.style.transform = "translate(" + (x - 22) + "px," + (y - 22) + "px) scale(" + big + ") rotate(" + (s * (flight.fast ? 900 : 540)) + "deg)";
@@ -7342,24 +7476,37 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       shadowEl.style.transform = "translate(" + (x - 20) + "px," + (y + 14 + lift * 26) + "px) scale(" + (1 - lift * 0.45) + ")";
       shadowEl.style.opacity = 0.35 - lift * 0.18;
       ball.classList.toggle("fast", flight.fast);
+      // a star caught mid-court (Together)
+      if (star && s > 0.42 && s < 0.6 && Math.abs(x - laneX(star.lane)) < 46) {
+        score += 3; showScore(); star = null; starEl.hidden = true;
+        var stc = { x: x, y: y }; fxBurst(wrap, stc.x, stc.y, { n: 14, spread: 50, colors: ["#ffc23d", "#fff2b0", "#ff8a4c"] });
+        ballSay("⭐ +3!", "good"); if (typeof sfx === "function") sfx("sparkle");
+      }
+      Array.prototype.forEach.call(laneEls, function (le, i) { le.className = flight.to === "me" && i === flight.lane ? "on" : ""; });
       if (flight.to === "me") {
         var left = flight.t0 + flight.dur - now, w = windowMs(flight.n);
         ring.style.opacity = 1;
+        ring.style.left = b.x + "px"; ring.style.top = b.y + "px";
         ring.style.transform = "translate(-50%,-50%) scale(" + Math.max(1, 1 + left / flight.dur * 1.6) + ")";
         ring.classList.toggle("now", Math.abs(left) <= w);
         if (Math.abs(left) <= w) cue("TAP!", "tap"); else cue("Get ready…", "ready");
         if (live && !over && left < -Math.min(170, w)) { whyLost = "Too late!"; drop(); }
-      } else { ring.style.opacity = 0; cue("Their turn", "wait"); }
+      } else { ring.style.opacity = 0; cue("Their turn", "wait"); Array.prototype.forEach.call(laneEls, function (le) { le.className = ""; }); }
     }
     raf = requestAnimationFrame(ballFrame);
     // my tap: only counts while the ball is coming to me
     function tap(e) {
       if (e && e.target && e.target.closest && e.target.closest("button, .pg-qcpal, .pb-how")) return;
       if (e) e.preventDefault();
-      if (!live || over || !flight || flight.to !== "me") return;
+      // which side: where you tapped (keyboard: the side the ball is coming to)
+      var wr = wrap.getBoundingClientRect(), side = e && e.clientX !== undefined && e.type !== "keydown" ? Math.max(0, Math.min(2, Math.floor((e.clientX - wr.left) / wr.width * 3))) : flight ? flight.lane : meLane;
+      if (!live || over) return;
+      if (!flight || flight.to !== "me") { meLane = side; moveTo(meEl, side); return; }   // (getting into place early)
       var left = flight.t0 + flight.dur - performance.now(), w = windowMs(flight.n);
-      if (left > w + 450) return;                   // way too soon: ignore (the ball is still far away)
+      if (left > w + 450) { meLane = side; moveTo(meEl, side); return; }               // way too soon: just move there
       if (left > w) { whyLost = "Too soon!"; ballSay(whyLost, "bad"); drop(); return; }
+      if (side !== flight.lane) { meLane = side; moveTo(meEl, side); whyLost = "Wrong side!"; ballSay(whyLost, "bad"); drop(); return; }
+      meLane = side; moveTo(meEl, side);
       hits++; if (!VS) { score++; showScore(); }
       pop(meEl);
       if (hits >= 4) wrap.querySelector(".pb-hint").classList.add("gone");
@@ -7367,9 +7514,9 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       if (perfect) { var pc = fxCentre(wrap, meEl.querySelector("img")); fxBurst(wrap, pc.x, pc.y - 20, { n: 10, colors: ["#ffc23d", "#ffffff", "#ff8a4c"] }); }
       if (perfect) ballSay(fast ? "Power shot! 🔥" : "Perfect! ✨", "good"); else ballSay(["Nice!", "Good!", "Got it!"][hits % 3]);
       if (navigator.vibrate) try { navigator.vibrate(15); } catch (er) {}
-      var n = flight.n + 1;
-      launch("them", n, fast);
-      if (opts.onHit) opts.onHit(n, fast);
+      var n = flight.n + 1, outLane = perfect ? otherLane(side) : side;   // a perfect hit angles it away
+      launch("them", n, fast, outLane);
+      if (opts.onHit) opts.onHit(n, fast, outLane);
     }
     wrap.addEventListener("pointerdown", tap);
     function onKey(e) { if (e.target.tagName === "INPUT") return; if (e.key === " " || e.key === "Enter") tap(e); }
@@ -7397,8 +7544,8 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     function serve() {
       if (over) return;
       var mine = (rally % 2 === 0) === !!opts.iServe;
-      if (mine) { pop(meEl); launch("them", 0, false); if (opts.onHit) opts.onHit(0, false); }
-      else if (opts.them.bot) { pop(themEl); launch("me", 0, false); }
+      if (mine) { pop(meEl); launch("them", 0, false, meLane); if (opts.onHit) opts.onHit(0, false, meLane); }
+      else if (opts.them.bot) { pop(themEl); launch("me", 0, false, Math.floor(Math.random() * 3)); }
       else ballSay("Their serve…");
     }
     function end(why) {
@@ -7443,7 +7590,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         else count();
       },
       // the other player hit pass n: it's coming to me
-      hit: function (n, fast) { if (over) return; if (!VS && n > 0) { score = Math.max(score, n); showScore(); } pop(themEl); launch("me", n, fast); },
+      hit: function (n, fast, lane) { if (over) return; if (!VS && n > 0) { score = Math.max(score, n); showScore(); } pop(themEl); launch("me", n, fast, lane); },
       // the other player dropped it
       drop: function () { if (over) return; if (VS) pointTo("me"); else { msg.textContent = ""; end("dropped-them"); } },
       left: function () { end("left"); },
@@ -7453,140 +7600,116 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
   }
 
   // ---------- Penalty kicks ----------
-  // Five kicks each, taking turns, then sudden death. Both players choose at the same time and can't see each
-  // other's choice:
-  //  * the shooter taps one of six spots in the goal (left / middle / right, high or low), then taps again while
-  //    the power bar is in the green. Green: it goes where aimed. Too hard: over the bar or wide. Too soft: easy save.
-  //  * the keeper taps one of the same six spots to dive there (high or low, left / middle / right).
-  // Then the kick plays out. The right spot saves most kicks (even a perfect top corner, 4 times in 5); the right
-  // side at the wrong height sometimes gets a fingertip to it; the wrong side is a goal. Every result comes from the two choices and a random number made from the shared seed and the
-  // kick number, so two phones always agree. Bamboo the bot (levels 1-8) reads where you like to shoot and, higher
-  // up, reaches shots one side away; its power bar for you also gets faster with its level.
-  // startPenalty({ me: { pic, html }, them: { pic, html, bot }, iFirst, live, level, seed, onShot(r, shot), onDive(r, col),
-  //   onQuick(i), onEnd({ me, them, won }), onQuit() })  -> { wrap, start(), theirShot(r, shot), theirDive(r, col), quick(i), left(), close() }
-  var PEN_KICKS = 5, PEN_MAX = 8, PEN_CHOOSE = 8;
-  var PEN_T = [1400, 1250, 1100, 1000, 900, 800, 720, 650], PEN_W = [0.34, 0.30, 0.28, 0.26, 0.24, 0.22, 0.20, 0.18];
-  var PEN_READ = [0, 0.15, 0.25, 0.35, 0.45, 0.5, 0.55, 0.6], PEN_REACT = [0, 0.12, 0.25, 0.38, 0.5, 0.62, 0.72, 0.8];
-  var PEN_REACHP = [0, 0, 0, 0.05, 0.1, 0.25, 0.33, 0.4], PEN_HI = [0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.65, 0.7];
-  var PEN_PF = [0.35, 0.45, 0.55, 0.65, 0.75, 0.85, 0.9, 0.94], PEN_BAD = [0.25, 0.18, 0.12, 0.08, 0.05, 0.03, 0.02, 0.01];
+  // Live and quick (2026-11). Five kicks each, taking turns, then sudden death.
+  //  * Shooting: swipe from the ball to where you want it in the goal; how fast you swipe is the power (a firm, quick
+  //    swipe is a perfect strike; too hard flies over, too soft is slow). Or tap a spot in the goal for a steady shot.
+  //    Against the bot the keeper sways side to side: shoot for the gap. 🎯 A goal in a top corner is worth 2.
+  //  * In goal: the ball flies at you; tap where it's going to dive there. You have to be quick and close.
+  //  * Streak (opts.streak, solo): shoot until the keeper saves one; it gets sharper after every goal. (High scores.)
+  // Live: the shooter sends the shot; the keeper's phone judges the save and sends the result back.
+  // startPenalty({ me: { pic, html }, them: { pic, html, bot }, iFirst, live, level, seed, streak, onShot(k, shot),
+  //   onResult(k, res), onQuick(i), onEnd({ me, them, won, why } or { streak, goals }), onQuit() })
+  //   -> { wrap, start(), theirShot(k, shot), theirResult(k, res), quick(i), left(), goals(), close() }
+  var PEN_KICKS = 5, PEN_MAX = 8, PEN_LIVE_WAIT = 10;
+  var PEN_REACT = [380, 340, 300, 270, 245, 220, 200, 180], PEN_SWAY = [0.0018, 0.002, 0.0022, 0.0024, 0.0026, 0.0029, 0.0032, 0.0035];
+  var PEN_PERFECT = [0.3, 0.4, 0.5, 0.58, 0.66, 0.74, 0.8, 0.86], PEN_CORNER = [0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5];
+  function penFlight(q) { return q === "perfect" ? 620 : q === "good" ? 780 : 1000; }
+  function penCorner(x, y) { return (x < 0.2 || x > 0.8) && y < 0.4; }
   function startPenalty(opts) {
-    var bot = !!opts.them.bot, L = Math.max(1, Math.min(8, opts.level || 3)) - 1;
-    var T = bot ? PEN_T[L] : 1000, W = bot ? PEN_W[L] : 0.26;   // (with a real player: the same bar for both)
-    var wrap = document.createElement("div"); wrap.className = "pg-game pg-pen";
+    var bot = !!opts.them.bot, STREAK = !!opts.streak, L = Math.max(1, Math.min(8, opts.level || 3)) - 1;
+    var wrap = document.createElement("div"); wrap.className = "pg-game pg-pen pen2" + (STREAK ? " streak" : "");
     wrap.innerHTML =
-      '<div class="pg-gamehud"><span class="lbl">🥅 Penalty kicks</span>' +
+      '<div class="pg-gamehud"><span class="lbl">🥅 Penalty kicks' + (STREAK ? " · Streak" : "") + "</span>" + (STREAK ? '<span class="pk-streak">🔥 0</span>' : "") +
         (opts.onQuick ? '<button type="button" class="pg-qcbtn" aria-label="Send an emoji">💬</button>' : "") +
         '<button type="button" class="pg-gamex" aria-label="Stop the game">✕</button></div>' +
       '<div class="pg-qcpal" hidden></div>' +
-      '<div class="pk-board"><div class="pk-side them"><span class="who"></span><span class="dots"></span></div>' +
-        '<div class="pk-side me"><span class="who"></span><span class="dots"></span></div></div>' +
+      (STREAK ? "" : '<div class="pk-board"><div class="pk-side them"><span class="who"></span><span class="dots"></span></div>' +
+        '<div class="pk-side me"><span class="who"></span><span class="dots"></span></div></div>') +
       '<div class="pk-timer" aria-hidden="true"><i></i></div>' +
-      '<div class="pk-goal"><div class="pk-net"></div><div class="pk-spots"></div><img class="pk-keeper" alt=""></div>' +
+      '<div class="pk-goal"><div class="pk-net"></div><i class="pk-target l">+2</i><i class="pk-target r">+2</i><i class="pk-mark" hidden></i><img class="pk-keeper" alt=""></div>' +
       '<div class="pk-pitch"><img class="pk-shooter" alt=""><span class="pk-ball" aria-hidden="true">⚽</span></div>' +
       '<svg class="pk-trail" aria-hidden="true"><path d=""/></svg>' +
       '<p class="pk-say" aria-live="polite"></p>' +
-      '<div class="pk-controls"></div>' +
       '<div class="pg-gamemsg big">Get ready…</div>';
     document.body.appendChild(wrap);
-    var goal = wrap.querySelector(".pk-goal"), spotsEl = wrap.querySelector(".pk-spots"), keeperImg = wrap.querySelector(".pk-keeper");
-    var shooterImg = wrap.querySelector(".pk-shooter"), ball = wrap.querySelector(".pk-ball"), say = wrap.querySelector(".pk-say");
-    var controls = wrap.querySelector(".pk-controls"), msg = wrap.querySelector(".pg-gamemsg"), timerBar = wrap.querySelector(".pk-timer i");
-    wrap.querySelector(".pk-side.them .who").innerHTML = opts.them.html || "";
-    wrap.querySelector(".pk-side.me .who").innerHTML = (opts.me.html || "") + " <small>(you)</small>";
-    var over = false, live = false, timers = [], r = -1, myKick = null, theirs = {}, mine = {}, hist = [0, 0, 0];
-    var goals = { me: [], them: [] }, waitT = null, lostT = null, meterRaf = 0;
+    var q = function (s) { return wrap.querySelector(s); };
+    var goal = q(".pk-goal"), keeperImg = q(".pk-keeper"), shooterImg = q(".pk-shooter"), ball = q(".pk-ball"), say = q(".pk-say");
+    var msg = q(".pg-gamemsg"), timerBar = q(".pk-timer i"), trail = q(".pk-trail path"), mark = q(".pk-mark");
+    if (!STREAK) { q(".pk-side.them .who").innerHTML = opts.them.html || ""; q(".pk-side.me .who").innerHTML = (opts.me.html || "") + " <small>(you)</small>"; }
+    var over = false, live = false, timers = [], r = -1, phase = "", kickAt = 0, shotNow = null, waitT = null, lostT = null, raf = 0;
+    var pendingShot = {}, pts = { me: [], them: [] }, streakPts = 0, streakGoals = 0, kx = 0.5, swayPh = Math.random() * 6;
     function bubble(el, text) { var b = document.createElement("span"); b.className = "pg-bubble"; b.textContent = text; el.appendChild(b); setTimeout(function () { b.remove(); }, 2600); }
-    quickPalette(wrap, function (i, t) { bubble(wrap.querySelector(".pk-side.me"), t); opts.onQuick(i); });
-    function iShoot(k) { return (k % 2 === 0) === !!opts.iFirst; }
-    function rand(k) { return seeded(((opts.seed || 1) ^ Math.imul(k + 1, 2654435761)) >>> 0); }
+    if (!STREAK) quickPalette(wrap, function (i, t) { bubble(q(".pk-side.me"), t); opts.onQuick(i); });
+    function iShoot(k) { return STREAK || (k % 2 === 0) === !!opts.iFirst; }
+    function total(who) { return pts[who].reduce(function (a, b) { return a + b; }, 0); }
     function dots() {
+      if (STREAK) { q(".pk-streak").textContent = "🔥 " + streakPts; return; }
       ["me", "them"].forEach(function (who) {
-        var g = goals[who], n = Math.max(PEN_KICKS, g.length), html = "";
-        for (var i = 0; i < n; i++) html += '<i class="' + (i >= g.length ? "" : g[i] ? "in" : "out") + '"></i>';
-        wrap.querySelector(".pk-side." + who + " .dots").innerHTML = html;
+        var g = pts[who], n = Math.max(PEN_KICKS, g.length), html = "";
+        for (var i = 0; i < n; i++) html += '<i class="' + (i >= g.length ? "" : g[i] ? "in" : "out") + '">' + (g[i] === 2 ? "2" : "") + "</i>";
+        q(".pk-side." + who + " .dots").innerHTML = html;
       });
     }
     dots();
-    // the winner, once it's certain (or a draw after the sudden-death limit)
+    // the winner, once it's certain (a goal is worth at most 2)
     function decided() {
-      var a = goals.me, b = goals.them, ga = a.filter(Boolean).length, gb = b.filter(Boolean).length;
-      if (a.length <= PEN_KICKS && b.length <= PEN_KICKS) {
-        if (ga > gb + (PEN_KICKS - b.length)) return "me";
-        if (gb > ga + (PEN_KICKS - a.length)) return "them";
-        if (a.length < PEN_KICKS || b.length < PEN_KICKS) return null;
+      var a = pts.me.length, b = pts.them.length, ga = total("me"), gb = total("them");
+      if (a <= PEN_KICKS && b <= PEN_KICKS) {
+        if (ga > gb + 2 * (PEN_KICKS - b)) return "me";
+        if (gb > ga + 2 * (PEN_KICKS - a)) return "them";
+        if (a < PEN_KICKS || b < PEN_KICKS) return null;
       }
-      if (a.length !== b.length) return null;
+      if (a !== b) return null;
       if (ga !== gb) return ga > gb ? "me" : "them";
-      return a.length >= PEN_MAX ? "draw" : null;
+      return a >= PEN_MAX ? "draw" : null;
     }
-    // --- a new kick ---
+    // where things are on screen: x, y from 0 to 1 across the goal
+    function goalPx(x, y) { var gr = goal.getBoundingClientRect(); return { x: gr.left + gr.width * x, y: gr.top + gr.height * y }; }
+    function placeKeeper(x) { keeperImg.style.left = (Math.max(0.12, Math.min(0.88, x)) * 100) + "%"; }
+    function resetKeeper() { keeperImg.className = "pk-keeper"; keeperImg.style.transform = ""; placeKeeper(0.5); }
+    function diveTo(x, y, got) {
+      var gr = goal.getBoundingClientRect(), from = parseFloat(keeperImg.style.left) / 100 || 0.5;
+      var dx = (Math.max(0.05, Math.min(0.95, x)) - from) * gr.width, up = Math.max(0, (0.75 - y)) * gr.height;
+      keeperImg.style.transform = "translate(" + Math.round(dx) + "px," + Math.round(-up) + "px) rotate(" + Math.round(Math.max(-70, Math.min(70, dx / 2))) + "deg)";
+      keeperImg.classList.toggle("got", !!got);
+    }
+    // the bot keeper sways from side to side (faster at higher levels, and after each goal in a Streak)
+    function swaySpeed() { return PEN_SWAY[L] * (STREAK ? 1 + streakGoals * 0.07 : 1); }
+    function frame(now) {
+      raf = requestAnimationFrame(frame);
+      if (phase === "aim" && bot && iShoot(r)) { kx = 0.5 + 0.32 * Math.sin(now * swaySpeed() + swayPh); placeKeeper(kx); }
+    }
+    raf = requestAnimationFrame(frame);
+
+    // ---- a new kick ----
     function nextKick() {
       if (over) return;
-      r++; myKick = null;
+      r++; shotNow = null; phase = "aim";
       var shoot = iShoot(r);
       wrap.classList.toggle("shooting", shoot); wrap.classList.toggle("keeping", !shoot);
       keeperImg.src = shoot ? opts.them.pic : opts.me.pic; shooterImg.src = shoot ? opts.me.pic : opts.them.pic;
-      keeperImg.className = "pk-keeper"; ball.className = "pk-ball"; ball.style.transform = "";
-      say.className = "pk-say"; say.textContent = shoot ? "Your kick! Swipe from the ball to the goal, or tap a spot." : "You're in goal! Which way will you dive?";
-      controls.innerHTML = ""; spotsEl.innerHTML = "";
-      if (shoot) {
-        for (var row = 1; row >= 0; row--) for (var col = 0; col < 3; col++) (function (col, row) {
-          var s = document.createElement("button"); s.type = "button"; s.className = "pk-spot";
-          s.setAttribute("aria-label", "Shoot " + (row ? "high " : "low ") + ["left", "in the middle", "right"][col]);
-          s.addEventListener("click", function () { aimAt(col, row, s); });
-          spotsEl.appendChild(s);
-        })(col, row);
-      } else {
-        // the keeper: the same six spots, to dive to
-        for (var krow = 1; krow >= 0; krow--) for (var kcol = 0; kcol < 3; kcol++) (function (col, row) {
-          var s = document.createElement("button"); s.type = "button"; s.className = "pk-spot pk-divespot";
-          s.setAttribute("aria-label", "Dive " + (row ? "high " : "low ") + ["left", "in the middle", "right"][col]);
-          s.addEventListener("click", function () { dive({ col: col, row: row }, s); });
-          spotsEl.appendChild(s);
-        })(kcol, krow);
-        controls.innerHTML = '<p class="pk-keephint">🧤 Tap a spot in the goal to dive there. High or low!</p>';
-      }
-      // the time to choose
-      timerBar.style.transition = "none"; timerBar.style.transform = "scaleX(1)"; void timerBar.offsetWidth;
-      timerBar.style.transition = "transform " + PEN_CHOOSE + "s linear"; timerBar.style.transform = "scaleX(0)";
+      resetKeeper(); ball.className = "pk-ball"; ball.style.transition = "none"; ball.style.transform = ""; mark.hidden = true;
+      say.className = "pk-say"; say.textContent = shoot ? (r === 0 || STREAK && streakGoals === 0 ? "Swipe from the ball to the goal. 🎯 Top corners are worth 2!" : "Your kick! Swipe for the gap.") : "You're in goal! Tap where the ball is going.";
+      timerBar.style.transition = "none"; timerBar.style.transform = "scaleX(0)";
       clearTimeout(waitT);
-      var k = r;
-      waitT = setTimeout(function () {
-        if (r !== k || myKick) return;
-        if (iShoot(k)) lock({ col: 1, row: 0, q: "bad", miss: false });   // too slow: a weak kick down the middle
-        else lock({ col: 1, row: 0 });                                      // too slow: stays in the middle
-      }, PEN_CHOOSE * 1000);
-      // Bamboo the bot chooses straight away (it's hidden until the kick)
-      if (bot) theirs[r] = iShoot(r) ? botKeep() : botShot();
-    }
-    // shooting: pick a spot, then the power bar
-    var aim = null, meterX = 0.5, meterStart = 0;
-    function aimAt(col, row, el) {
-      if (myKick || over) return;
-      aim = { col: col, row: row };
-      Array.prototype.forEach.call(spotsEl.children, function (s) { s.classList.toggle("on", s === el); });
-      say.textContent = "Now tap when the bar is in the green!";
-      if (!controls.querySelector(".pk-meter")) {
-        controls.innerHTML = '<button type="button" class="pk-meter" aria-label="Kick!"><span class="zone" style="width:' + (W * 100) + '%"></span>' +
-          '<span class="ok" style="width:' + (W * 200) + '%"></span><i class="mark"></i><b>KICK!</b></button>';
-        controls.querySelector(".pk-meter").addEventListener("click", kick);
-        meterStart = performance.now(); cancelAnimationFrame(meterRaf);
-        (function step(now) {
-          if (myKick || over) return;
-          var ph = ((now - meterStart) / T) % 2; meterX = ph < 1 ? ph : 2 - ph;
-          var mk = controls.querySelector(".mark"); if (mk) mk.style.left = (meterX * 100) + "%";
-          meterRaf = requestAnimationFrame(step);
-        })(meterStart);
+      if (shoot && opts.live) {
+        // a live game: 10 seconds to shoot, or it's a soft one down the middle
+        void timerBar.offsetWidth; timerBar.style.transition = "transform " + PEN_LIVE_WAIT + "s linear"; timerBar.style.transform = "scaleX(1)";
+        var k = r; waitT = setTimeout(function () { if (r === k && phase === "aim") kick({ x: 0.5, y: 0.7, q: "bad" }); }, PEN_LIVE_WAIT * 1000);
       }
+      if (!shoot && !bot && pendingShot[r]) { var k3 = r; timers.push(setTimeout(function () { if (r === k3 && phase === "aim") incoming(k3, pendingShot[k3]); }, 500)); }
+      if (!shoot && bot) { var k2 = r; timers.push(setTimeout(function () { if (r === k2 && !over) botShoots(); }, 1100 + Math.random() * 900)); }
     }
-    // ---- swipe to shoot: from the ball toward the goal. Where it points is the spot (high or low, left, middle or
-    // right); how fast is the power, judged like the power bar (the same green zone, tighter against a better bot).
-    var swipe = null, trail = wrap.querySelector(".pk-trail path");
-    function swipeOk() { return live && !over && iShoot(r) && !myKick; }
+    // ---- shooting: a swipe, or a tap on the goal ----
+    var swipe = null;
+    function canShoot() { return live && !over && phase === "aim" && iShoot(r); }
     wrap.addEventListener("pointerdown", function (e) {
-      if (!swipeOk() || e.target.closest("button, .pg-qcpal")) return;
-      var b = ball.getBoundingClientRect(), cx = b.left + b.width / 2, cy = b.top + b.height / 2;
-      if (Math.hypot(e.clientX - cx, e.clientY - cy) > 110) return;   // start on (or near) the ball
+      if (!canShoot() || e.target.closest("button, .pg-qcpal")) return;
+      var b = ball.getBoundingClientRect(), gr = goal.getBoundingClientRect();
+      if (e.clientY >= gr.top && e.clientY <= gr.bottom && e.clientX >= gr.left && e.clientX <= gr.right) {   // a tap on the goal: a steady shot there
+        kick({ x: (e.clientX - gr.left) / gr.width, y: (e.clientY - gr.top) / gr.height, q: "good" }); return;
+      }
+      if (Math.hypot(e.clientX - (b.left + b.width / 2), e.clientY - (b.top + b.height / 2)) > 110) return;
       swipe = { x: e.clientX, y: e.clientY, t: performance.now(), pts: [[e.clientX, e.clientY]] };
       try { wrap.setPointerCapture(e.pointerId); } catch (er) {}
     });
@@ -7596,124 +7719,124 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       var w0 = wrap.getBoundingClientRect();
       trail.setAttribute("d", "M" + swipe.pts.map(function (p) { return Math.round(p[0] - w0.left) + " " + Math.round(p[1] - w0.top); }).join(" L"));
     });
-    function swipeEnd(e) {
+    wrap.addEventListener("pointerup", function (e) {
       if (!swipe) return;
       var s = swipe; swipe = null; trail.setAttribute("d", "");
-      if (!swipeOk()) return;
+      if (!canShoot()) return;
       var dx = e.clientX - s.x, dy = e.clientY - s.y, dist = Math.hypot(dx, dy), ms = Math.max(1, performance.now() - s.t);
-      if (dist < 50 || dy > -30) return;                                // a tap, or not toward the goal
-      var gr = goal.getBoundingClientRect(), midY = gr.top + gr.height / 2;
-      var k = (midY - s.y) / dy, xAt = s.x + dx * k;                    // where the swipe line crosses the goal
-      var rel = (xAt - gr.left) / gr.width, col = Math.max(0, Math.min(2, Math.floor(rel * 3)));
-      var row = e.clientY < midY ? 1 : 0;                              // past the middle of the goal: high
-      var wide = rel < -0.15 || rel > 1.15;
-      var v = dist / ms, x = Math.max(0, Math.min(1, (v - 0.4) / 2.6)), d = x - 0.5;   // ~1.7 px a millisecond is spot on
-      var q = wide ? "bad" : Math.abs(d) < W / 2 ? "perfect" : Math.abs(d) < W ? "good" : "bad";
-      aim = { col: col, row: row };
-      var spot = spotsEl.children[(1 - row) * 3 + col];
-      Array.prototype.forEach.call(spotsEl.children, function (sp) { sp.classList.toggle("on", sp === spot); });
-      say.textContent = q === "perfect" ? "What a strike! 🔥" : q === "good" ? "Good kick!" : d > 0 || wide ? "Too hard!" : "Too soft…";
-      lock({ col: col, row: row, q: q, miss: q === "bad" && (d > 0 || wide) });
-    }
-    wrap.addEventListener("pointerup", swipeEnd);
+      if (dist < 50 || dy > -30) return;
+      var gr = goal.getBoundingClientRect(), endY = Math.max(gr.top + gr.height * 0.1, Math.min(gr.bottom - gr.height * 0.1, e.clientY));
+      var k = (endY - s.y) / dy, xAt = (s.x + dx * k - gr.left) / gr.width, yAt = (endY - gr.top) / gr.height;
+      var v = dist / ms, d = Math.max(0, Math.min(1, (v - 0.4) / 2.6)) - 0.5, W = 0.3 - L * 0.012;
+      var qq = Math.abs(d) < W / 2 ? "perfect" : Math.abs(d) < W ? "good" : "bad";
+      kick({ x: xAt, y: e.clientY < gr.top - 20 && qq !== "perfect" ? -0.2 : yAt, q: qq, hard: d > 0 });
+    });
     wrap.addEventListener("pointercancel", function () { swipe = null; trail.setAttribute("d", ""); });
-    function kick() {
-      if (myKick || over || !aim) return;
-      cancelAnimationFrame(meterRaf);
-      var d = meterX - 0.5, q = Math.abs(d) < W / 2 ? "perfect" : Math.abs(d) < W ? "good" : "bad";
-      lock({ col: aim.col, row: aim.row, q: q, miss: q === "bad" && d > 0 });
-    }
-    function dive(spot, el) {
-      if (myKick || over) return;
-      Array.prototype.forEach.call(spotsEl.children, function (b) { b.classList.toggle("on", b === el); });
-      spotsEl.classList.add("locked");
-      lock(spot);
-    }
-    // my choice is in: tell the other side, then play it out once theirs is in too
-    function lock(choice) {
-      if (myKick !== null || over) return;
-      myKick = choice; mine[r] = choice; clearTimeout(waitT);
-      if (iShoot(r)) { hist[choice.col]++; rowHist[choice.row]++; if (opts.onShot) opts.onShot(r, choice); say.textContent = "Kicked! Waiting for the keeper…"; spotsEl.classList.add("locked"); }
-      else { if (opts.onDive) opts.onDive(r, choice); say.textContent = "Diving " + (choice.row ? "high " : "low ") + ["left", "in the middle", "right"][choice.col] + "…" + (bot ? "" : " Waiting for the kick…"); }
-      maybePlay();
-    }
-    function maybePlay() {
-      if (over || mine[r] === undefined || theirs[r] === undefined) {
-        if (!over && mine[r] !== undefined && !bot) { clearTimeout(lostT); var k = r; lostT = setTimeout(function () { if (r === k && theirs[k] === undefined) end("lost"); }, 15000); }
-        return;
-      }
-      clearTimeout(lostT);
-      play(iShoot(r) ? mine[r] : theirs[r], iShoot(r) ? theirs[r] : mine[r]);
-    }
-    // Bamboo the bot's choices
-    var rowHist = [0, 0];
-    function botKeep() {
-      var read = Math.max.apply(null, hist) > 0 && Math.random() < PEN_READ[L];
-      return { col: read ? hist.indexOf(Math.max.apply(null, hist)) : Math.floor(Math.random() * 3),
-               row: read ? (rowHist[1] >= rowHist[0] ? 1 : 0) : (Math.random() < 0.5 ? 1 : 0) };
-    }
-    function botShot() {
-      var x = Math.random(), q = x < PEN_PF[L] ? "perfect" : x < PEN_PF[L] + PEN_BAD[L] ? "bad" : "good";
-      return { col: Math.floor(Math.random() * 3), row: Math.random() < PEN_HI[L] ? 1 : 0, q: q, miss: q === "bad" && Math.random() < 0.5 };
-    }
-    // what happens: "goal", "saved" or "miss" (the same on both phones)
-    function outcome(shot, keep, k) {
-      var rnd = rand(k);
-      if (shot.q === "bad") return shot.miss ? "miss" : Math.abs(keep.col - shot.col) <= 1 ? "saved" : "goal";
-      if (keep.col === shot.col) {
-        if (keep.row === shot.row) return rnd() < (shot.q === "perfect" ? (shot.row === 1 ? 0.2 : 0.1) : 0.05) ? "goal" : "saved";
-        return rnd() < (shot.q === "perfect" ? 0.7 : 0.45) ? "goal" : "saved";   // the right side, the wrong height
-      }
-      if (bot && iShoot(k) && Math.abs(keep.col - shot.col) === 1) {   // (only Bamboo the bot keeper reaches further)
-        if (shot.q !== "perfect" && rnd() < PEN_REACT[L]) return "saved";
-        if (shot.q === "perfect" && shot.row === 0 && rnd() < PEN_REACHP[L]) return "saved";
-      }
-      return "goal";
-    }
-    function play(shot, keep) {
-      var k = r, res = outcome(shot, keep, k), meShoot = iShoot(k);
-      controls.innerHTML = ""; spotsEl.innerHTML = ""; spotsEl.classList.remove("locked");
+    // my shot is on its way
+    function kick(shot) {
+      if (!canShoot()) return;
+      clearTimeout(waitT); phase = "flying"; shotNow = shot;
       timerBar.style.transition = "none"; timerBar.style.transform = "scaleX(0)";
-      // the ball flies to its spot (or over / wide), the keeper dives
-      var gw = goal.clientWidth, gh = goal.clientHeight, gr = goal.getBoundingClientRect(), br = ball.getBoundingClientRect();
-      var tx = gr.left + gw * (0.2 + shot.col * 0.3) - (br.left + br.width / 2), ty = gr.top + gh * (shot.row ? 0.28 : 0.72) - (br.top + br.height / 2);
-      if (res === "miss") { if (shot.row) ty -= gh * 0.55; else tx += (shot.col === 0 ? -1 : 1) * gw * 0.35; }
-      if (res === "saved") { tx *= 0.92; ty *= 0.86; }
-      if (shot.q === "bad" && !shot.miss) ball.classList.add("slow");
-      ball.style.transform = "translate(" + tx + "px," + ty + "px) scale(0.6)";
-      keeperImg.className = "pk-keeper dive" + keep.col + (keep.row ? " high" : "") + (res === "saved" ? " got" : "");
-      if (typeof sfx === "function") sfx("click");
+      var missed = shot.x < -0.05 || shot.x > 1.05 || shot.y < 0 || (shot.q === "bad" && shot.hard);
+      fly(shot, missed);
+      if (opts.live && !bot) { if (opts.onShot) opts.onShot(r, { x: +shot.x.toFixed(3), y: +shot.y.toFixed(3), q: shot.q, hard: !!shot.hard }); waitResult(); return; }
+      // the bot keeper: it was at kx when you kicked; it reacts, then dives as far as it can get
+      var T = penFlight(shot.q), react = Math.max(120, PEN_REACT[L] - (STREAK ? streakGoals * 12 : 0));
+      var reach = (0.17 + L * 0.008) * (shot.y < 0.35 ? 0.8 : 1) * (shot.x < 0.15 || shot.x > 0.85 ? 0.85 : 1);
+      var can = Math.max(0, (T - react) / 1000) * (0.55 + L * 0.05) * (STREAK ? 1 + streakGoals * 0.03 : 1) + reach, dist = Math.abs(kx - shot.x);
+      var saved = !missed && dist <= can, k = r;
       timers.push(setTimeout(function () {
-        if (over) return;
-        var good = res === "goal" ? meShoot : !meShoot;
-        say.className = "pk-say big " + (good ? "good" : "bad");
-        if (res === "goal") { goal.classList.remove("rip"); void goal.offsetWidth; goal.classList.add("rip"); }
-        if (good) { var gc = fxCentre(wrap, res === "saved" ? keeperImg : goal); fxBurst(wrap, gc.x, gc.y, { n: 14, spread: 60 }); } else fxShake(wrap);
-        say.textContent = res === "goal" ? "GOAL! ⚽" : res === "saved" ? "SAVED! 🧤" : shot.row ? "Over the bar!" : "Wide!";
-        if (typeof sfx === "function") sfx(good ? "coin" : "pat");
-        (meShoot ? goals.me : goals.them).push(res === "goal");
-        dots();
-        var w = decided();
-        if (w) { timers.push(setTimeout(function () { end(w); }, 1300)); return; }
-        timers.push(setTimeout(nextKick, 1800));
-      }, shot.q === "bad" && !shot.miss ? 900 : 600));
+        if (r !== k || over) return;
+        diveTo(saved ? shot.x : kx + Math.sign(shot.x - kx) * Math.min(dist, can), saved ? shot.y : Math.max(0.3, shot.y), saved);
+      }, react));
+      timers.push(setTimeout(function () { if (r === k && !over) result(missed ? "miss" : saved ? "saved" : "goal", shot); }, T));
+    }
+    function fly(shot, missed) {
+      var gr = goal.getBoundingClientRect(), br = ball.getBoundingClientRect();
+      var tx = gr.left + gr.width * (missed && shot.y >= 0 && shot.x >= 0 && shot.x <= 1 ? 0.5 : Math.max(-0.4, Math.min(1.4, shot.x))) - (br.left + br.width / 2);
+      var ty = gr.top + gr.height * (missed && (shot.y < 0 || shot.hard) ? -0.6 : Math.max(0.12, Math.min(0.9, shot.y))) - (br.top + br.height / 2);
+      ball.style.transition = "transform " + penFlight(shot.q) + "ms cubic-bezier(.25,.8,.4,1)";
+      void ball.offsetWidth;
+      ball.style.transform = "translate(" + Math.round(tx) + "px," + Math.round(ty) + "px) scale(0.6)";
+      if (typeof sfx === "function") sfx("click");
+    }
+    // live: wait for the keeper's phone to say what happened
+    function waitResult() {
+      clearTimeout(lostT); var k = r;
+      lostT = setTimeout(function () { if (r === k && phase === "flying" && !over) end("lost"); }, 15000);
+    }
+    // ---- in goal ----
+    function botShoots() {
+      if (over || phase !== "aim") return;
+      var x = Math.random() < PEN_CORNER[L] ? (Math.random() < 0.5 ? 0.1 : 0.9) : 0.15 + Math.random() * 0.7, y = Math.random() < 0.45 ? 0.2 + Math.random() * 0.2 : 0.55 + Math.random() * 0.3;
+      var rr = Math.random(), qq = rr < PEN_PERFECT[L] ? "perfect" : rr < PEN_PERFECT[L] + (1 - PEN_PERFECT[L]) * 0.8 ? "good" : "bad";
+      incoming(r, { x: x, y: y, q: qq, hard: qq === "bad" && Math.random() < 0.5 });
+    }
+    var dive = null;
+    function incoming(k, shot) {
+      if (over || k !== r) return;
+      phase = "keep"; shotNow = shot; kickAt = performance.now(); dive = null;
+      var missed = shot.x < -0.05 || shot.x > 1.05 || shot.y < 0 || (shot.q === "bad" && shot.hard);
+      fly(shot, missed);
+      say.textContent = "Tap where it's going! 🧤";
+      timers.push(setTimeout(function () {
+        if (r !== k || over) return;
+        var saved = false;
+        if (!missed && dive) saved = Math.abs(dive.x - shot.x) < 0.2 && Math.abs(dive.y - shot.y) < 0.42;
+        var res = missed ? "miss" : saved ? "saved" : "goal";
+        if (opts.live && !bot && opts.onResult) opts.onResult(k, { res: res, dive: dive });
+        result(res, shot);
+      }, penFlight(shot.q)));
+    }
+    // a tap in goal: dive there (once, and only before the ball arrives)
+    goal.addEventListener("pointerdown", function (e) {
+      if (phase !== "keep" || dive || over) return;
+      var gr = goal.getBoundingClientRect(); e.stopPropagation();
+      dive = { x: (e.clientX - gr.left) / gr.width, y: (e.clientY - gr.top) / gr.height };
+      mark.hidden = false; mark.style.left = (dive.x * 100) + "%"; mark.style.top = (dive.y * 100) + "%";
+      diveTo(dive.x, dive.y, false);
+      if (typeof sfx === "function") sfx("pat");
+    });
+    // ---- what happened ----
+    function result(res, shot) {
+      if (over) return;
+      phase = "done";
+      var meShoot = iShoot(r), corner = res === "goal" && penCorner(shot.x, shot.y), points = res === "goal" ? (corner ? 2 : 1) : 0;
+      if (res === "saved" && meShoot && !bot) diveTo(shot.x, shot.y, true);
+      if (res === "saved") keeperImg.classList.add("got");
+      var good = res === "goal" ? meShoot : !meShoot;
+      say.className = "pk-say big " + (good ? "good" : "bad");
+      say.textContent = res === "goal" ? (corner ? "TOP CORNER! +2 🎯" : "GOAL! ⚽") : res === "saved" ? "SAVED! 🧤" : shot.y < 0 || shot.hard ? "Over the bar!" : "Wide!";
+      if (res === "goal") { goal.classList.remove("rip"); void goal.offsetWidth; goal.classList.add("rip"); }
+      if (good) { var gc = fxCentre(wrap, res === "saved" ? keeperImg : goal); fxBurst(wrap, gc.x, gc.y, { n: corner ? 22 : 14, spread: 60 }); } else fxShake(wrap);
+      if (typeof sfx === "function") sfx(good ? (corner ? "levelUp" : "coin") : "pat");
+      if (STREAK) {
+        if (res !== "goal") { timers.push(setTimeout(function () { end("streak"); }, 1300)); return; }
+        streakPts += points; streakGoals++; dots();
+        timers.push(setTimeout(nextKick, 1300)); return;
+      }
+      (meShoot ? pts.me : pts.them).push(points);
+      dots();
+      var w = decided();
+      if (w) { timers.push(setTimeout(function () { end(w); }, 1300)); return; }
+      timers.push(setTimeout(nextKick, 1600));
     }
     function end(why) {
-      if (over) return; over = true; live = false;
-      clearTimeout(waitT); clearTimeout(lostT); cancelAnimationFrame(meterRaf);
-      controls.innerHTML = ""; spotsEl.innerHTML = "";
-      var res = { me: goals.me.filter(Boolean).length, them: goals.them.filter(Boolean).length, won: why === "me" ? true : why === "them" ? false : why === "draw" ? "draw" : null, why: why };
+      if (over) return; over = true; live = false; phase = "done";
+      clearTimeout(waitT); clearTimeout(lostT);
+      if (STREAK) { msg.textContent = ""; timers.push(setTimeout(function () { opts.onEnd({ streak: streakPts, goals: streakGoals, why: why }); }, 400)); return; }
+      var res = { me: total("me"), them: total("them"), won: why === "me" ? true : why === "them" ? false : why === "draw" ? "draw" : null, why: why };
       msg.textContent = why === "me" ? "🏆 You win!" : "";
       timers.push(setTimeout(function () { opts.onEnd(res); }, 900));
     }
-    function close() { over = true; clearTimeout(waitT); clearTimeout(lostT); cancelAnimationFrame(meterRaf); timers.forEach(clearTimeout); wrap.remove(); }
-    wrap.querySelector(".pg-gamex").addEventListener("click", function () {
+    function close() { over = true; clearTimeout(waitT); clearTimeout(lostT); cancelAnimationFrame(raf); timers.forEach(clearTimeout); wrap.remove(); }
+    q(".pg-gamex").addEventListener("click", function () {
       if (live && !over && !confirm("Stop the game?")) return;
       close(); if (opts.onQuit) opts.onQuit();
     });
     function go() { live = true; msg.textContent = ""; nextKick(); }
     return {
-      goals: function () { return { me: goals.me.filter(Boolean).length, them: goals.them.filter(Boolean).length }; },
+      goals: function () { return { me: total("me"), them: total("them") }; },
       wrap: wrap, close: close,
       start: function () {
         if (opts.live) countdownFrom(msg, LIVE_COUNTDOWN, "Kick off!", timers, function () { return over; }, go);
@@ -7721,18 +7844,25 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
           timers.push(setTimeout(function () { if (over) return; msg.textContent = s[0]; if (s[0] === "Kick off!") { go(); timers.push(setTimeout(function () { if (!over) msg.textContent = ""; }, 600)); } }, s[1]));
         });
       },
-      // the other player's hidden choice for kick k
-      theirShot: function (k, shot) { if (over || theirs[k] !== undefined) return; theirs[k] = { col: shot.col | 0, row: shot.row ? 1 : 0, q: ["perfect", "good", "bad"].indexOf(shot.q) >= 0 ? shot.q : "bad", miss: !!shot.miss }; if (k === r) maybePlay(); },
-      theirDive: function (k, d) {
-        if (over || theirs[k] !== undefined) return;
-        if (typeof d !== "object" || !d) d = { col: d, row: 0 };
-        theirs[k] = { col: Math.max(0, Math.min(2, d.col | 0)), row: d.row ? 1 : 0 };
-        if (k === r) maybePlay();
+      // live: the other player shot (I'm in goal)
+      theirShot: function (k, shot) {
+        if (over || !shot) return;
+        // (if it arrives before this phone is ready for the kick, it waits for it)
+        pendingShot[k] = { x: +shot.x || 0.5, y: shot.y === undefined ? 0.6 : +shot.y, q: ["perfect", "good", "bad"].indexOf(shot.q) >= 0 ? shot.q : "bad", hard: !!shot.hard };
+        if (k === r && phase === "aim" && !iShoot(k)) incoming(k, pendingShot[k]);
       },
-      quick: function (i) { var t = quickText(i); if (t) bubble(wrap.querySelector(".pk-side.them"), t); },
+      // live: the keeper's phone says how my shot went
+      theirResult: function (k, x) {
+        if (over || k !== r || phase !== "flying" || !x) return;
+        clearTimeout(lostT);
+        if (x.dive) diveTo(+x.dive.x || 0.5, +x.dive.y || 0.6, x.res === "saved");
+        result(["goal", "saved", "miss"].indexOf(x.res) >= 0 ? x.res : "goal", shotNow);
+      },
+      quick: function (i) { var t = quickText(i); if (t && !STREAK) bubble(q(".pk-side.them"), t); },
       left: function () { end("left"); }
     };
   }
+
 
   // ---------- Pet Streak (real version) ----------
   // Sign in with an email link, share pets with co-parents, buy and adopt pets and wardrobe items with paws.
@@ -7747,7 +7877,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261113060939";   // replaced by build_real.ps1
+    var APP_BUILD = "20261113064147";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -8356,13 +8486,13 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         solo: ["🙋 Play solo", "Find the 12 pairs in as few tries as you can."],
         others: ["👫 Take turns", "Find a pair and go again. Most pairs wins."] },
       penalty: { name: "Penalty kicks", art: "🥅", max: 1, invite: "wants a penalty shootout!",
-        solo: ["🤖 Play the bot", "5 kicks each. Shoot past the keeper, then try to save."],
-        others: ["👫 Play someone", "Take turns shooting and diving. Most goals wins."] },
+        solo: ["🤖 Play the bot", "5 kicks each. Swipe for the gap; top corners are worth 2."],
+        others: ["👫 Play someone", "Take turns shooting and saving. Most points wins."] },
       ball: { name: "Ball pass", art: "⚽", max: 1, invite: "wants to play Ball pass!",
         solo: ["🤖 Pass with the bot", "Tap when the ring turns green to hit the ball back. How long can you keep it going?"],
         others: ["👫 Pass together", "Tap when the ring turns green. Keep the ball going as long as you can."] },
       beat: { name: "Beat dash", art: "🎵", max: 1, invite: "wants a Beat dash duel!",
-        solo: ["🙋 Play solo", "3 hearts. Tap on the beat and chase a high score."],
+        solo: ["🙋 Play solo", "Run to the song: jump the logs, duck the branches. 3 hearts."],
         others: ["👫 Beat dash duel", "45 seconds on the same beat. Highest score wins."] }
     };
     function gameOf(g) { return GAMES[g] ? g : "race"; }
@@ -8453,22 +8583,22 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         ],
         ball: [
           ["Pass the ball", "The ball flies between the two pets. Your pet is at the bottom of the screen.", '<div class="ht-pass">' + bot + '<span class="ht-flyball">⚽</span>' + me + "</div>"],
-          ["Watch the ring", "When the ball comes to you, a ring shrinks around your pet. Get ready!", '<div class="ht-ringbox"><i class="ht-ring slowonly"></i>' + me + "</div>"],
-          ["Tap on green", "Tap anywhere on the screen the moment the ring turns green. That hits the ball back. Too soon or too late is a miss.", ring],
+          ["Watch the ring", "The ball can come to the left, middle or right. A ring shrinks where it will land. Get ready!", '<div class="ht-ringbox"><i class="ht-ring slowonly"></i>' + me + "</div>"],
+          ["Tap that side on green", "Tap that side of the screen the moment the ring turns green: your pet dashes over and hits it. The wrong side, too soon or too late is a miss. A perfect hit angles it away!", ring],
           ["Versus", "A miss gives the other player a point. First to 5 wins. Tap at the very last moment for a faster Power shot 🔥", '<div class="ht-big">⚔️ 5 – 3</div>'],
-          ["Together", "Work as a team and count your passes. It gets faster every pass, and one miss ends the game.", '<div class="ht-big">🤝 12</div>']
+          ["Together", "Work as a team and count your passes. ⭐ Pass through a star for +3. It gets faster every pass, and one miss ends the game.", '<div class="ht-big">🤝 12 ⭐</div>']
         ],
         beat: [
-          ["Tap on the beat", "Dots slide into the circle above the button. Tap as each one arrives. Right on the beat is Perfect!", '<div class="ht-tapbtn ht-pulse">TAP!</div>' + finger],
-          ["Build a combo", "Hit beat after beat for a combo: x2, x3, even x4 points. Gold dots are coins worth +20.", '<div class="ht-big">x4 🪙</div>'],
-          ["Jump the logs", "A brown dot is a log. Tap on the beat to jump it, or your pet trips. Tapping off the beat trips your pet too.", '<div class="ht-big">🪵 ⤴</div>'],
-          ["Solo or duel", "Solo: 3 hearts, and every trip costs one. How far can you go? Duel: 45 seconds on the same beat, highest score wins.", '<div class="ht-big">❤️❤️❤️</div>']
+          ["Tap on the beat", "A song plays and dots slide into the circle. Tap as each one arrives. On a plain dot, either button works.", '<div class="ht-tapbtn ht-pulse">TAP!</div>' + finger],
+          ["Jump or duck", "A brown dot is a log: press JUMP. A leafy dot is a low branch: press DUCK. The right button lights up when one is coming.", '<div class="ht-big">🪵 ⤴ · 🌿 ⤵</div>'],
+          ["Combo and FEVER", "Hit beat after beat for x2, x3, even x4 points. Perfect taps fill FEVER: double points for 10 beats! Coins are +20.", '<div class="ht-big">🔥 x2</div>'],
+          ["Solo or duel", "Solo: 3 hearts, and every trip costs one. A new stage and song every 30 seconds. Duel: 45 seconds on the same beat, highest score wins.", '<div class="ht-big">❤️❤️❤️</div>']
         ],
         penalty: [
-          ["Swipe to shoot", "Swipe from the ball toward the goal. Where you swipe is where it goes: left, middle or right, high or low. A firm, quick swipe is a perfect strike; too hard flies over, too soft is an easy save.", goal("aim", "⚽") + finger],
-          ["Or tap and time it", "You can also tap a spot, then tap while the power bar is in the green. Too hard goes over or wide; too soft is an easy save.", '<div class="ht-bar"><i></i><b></b></div>'],
-          ["Now you're the keeper", "When they shoot, tap one of the same 6 spots to dive there. You can't see their choice, so guess well! The right spot saves most shots.", goal("dive", "🧤")],
-          ["Most goals wins", "You each take 5 kicks. If it's a draw, you each take extra kicks to decide it.", '<div class="ht-big">🥅 ⚽⚽⚽</div>']
+          ["Swipe for the gap", "The keeper moves from side to side. Swipe from the ball to where you want it. A firm, quick swipe is a perfect strike; too hard flies over. Or tap a spot in the goal for a steady shot. 🎯 Top corners are worth 2!", goal("aim", "⚽") + finger],
+          ["Quick swipes are hardest to save", "The faster your shot, the less time the keeper has to reach it. Aim away from where the keeper is!", '<div class="ht-bar"><i></i><b></b></div>'],
+          ["Now you're the keeper", "When they shoot, watch the ball and tap where it's going: you dive there. Be quick and close!", goal("dive", "🧤")],
+          ["Match or Streak", "Match: 5 kicks each, most points wins (extra kicks if it's a draw). Streak: keep scoring until the keeper saves one. It gets sharper after every goal!", '<div class="ht-big">🥅 🔥</div>']
         ]
       }[game];
     }
@@ -8503,12 +8633,12 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     }
     function modeTile(v, label) { return "<span><b>" + esc(String(v)) + "</b><small>" + esc(label) + "</small></span>"; }
     async function drawModeStats(game) {
-      var stats = $("g-modestats"), board = $("g-modeboard"), scoreGame = !!BOARD_NAMES[game];
+      var stats = $("g-modestats"), board = $("g-modeboard"), scoreGame = !!BOARD_NAMES[game] || (game === "penalty" && penMode() === "streak");
       stats.innerHTML = modeTile("…", "") + modeTile("…", "") + modeTile("…", ""); board.innerHTML = ""; $("g-modereward").textContent = "";
       $("g-modeall").hidden = !scoreGame;
       if (scoreGame) {
         var key = scoreKey(game), endless = key === "bamboo_endless";
-        $("g-modeboardtitle").textContent = "Today's best" + (game === "bamboo" ? (endless ? " · Endless" : " · 30 seconds") : game === "memory" ? " · " + { 8: "Quick", 12: "Classic", 15: "Big" }[memSize()] : "");
+        $("g-modeboardtitle").textContent = "Today's best" + (game === "penalty" ? " · Streak" : game === "bamboo" ? (endless ? " · Endless" : " · 30 seconds") : game === "memory" ? " · " + { 8: "Quick", 12: "Classic", 15: "Big" }[memSize()] : "");
         var sbd, plays = 0;
         try {
           var got = await Promise.all([rpc("score_board", { p_game: key, p_range: "today", p_scope: "all", p_tz: tz() }),
@@ -8554,11 +8684,15 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       $("g-modehelp").onclick = $("g-modehow").onclick = function () { openGameHelp(game); };
       $("g-modevs").hidden = game !== "ball";
       Array.prototype.forEach.call(document.querySelectorAll("#g-modevs [data-vs]"), function (b) { b.setAttribute("aria-selected", (b.dataset.vs === "1") === ballVs ? "true" : "false"); });
+      // Penalty kicks: Match or Streak
+      $("g-modepen").hidden = game !== "penalty";
+      Array.prototype.forEach.call(document.querySelectorAll("#g-modepen [data-pmode]"), function (b) { b.setAttribute("aria-selected", b.dataset.pmode === penMode() ? "true" : "false"); });
+      if (game === "penalty") solo = penMode() === "streak" ? ["▶ Play Streak", "Keep scoring until the keeper saves one. It gets sharper every goal!"] : ["▶ Play the bot", "5 kicks each. Swipe for the gap; top corners are worth 2."];
       // Treat race: Classic or Marathon
       $("g-moderace").hidden = game !== "race";
       Array.prototype.forEach.call(document.querySelectorAll("#g-moderace [data-rmode]"), function (b) { b.setAttribute("aria-selected", b.dataset.rmode === raceMode() ? "true" : "false"); });
       if (game === "race") solo = raceMode() === "long" ? ["▶ Race the bot", "Marathon: 3 laps, boost pads every 60 steps. About a minute of racing!"] : ["▶ Race the bot", "Classic: tap as fast as you can to the treat."];
-      $("g-modescore").textContent = SCORE_RULES[game === "bamboo" ? bambooKey() : game === "memory" ? scoreKey("memory") : game] || "";
+      $("g-modescore").textContent = SCORE_RULES[game === "bamboo" ? bambooKey() : game === "memory" ? scoreKey("memory") : game === "penalty" ? (penMode() === "streak" ? "pen_streak" : "penalty") : game] || "";
       // Bamboo catch: Endless or 30 seconds (the tiles, the big button and the board all follow it)
       $("g-modebmode").hidden = game !== "bamboo";
       Array.prototype.forEach.call(document.querySelectorAll("#g-modebmode [data-bmode]"), function (b) { b.setAttribute("aria-selected", b.dataset.bmode === bambooMode() ? "true" : "false"); });
@@ -8583,7 +8717,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       // 🔥 Challenge: the champion bot (Ball pass: in Versus only)
       var chal = { race: "A lightning-fast racer. You'll need two thumbs!", bamboo: "A bot that hardly ever misses a catch.",
                    memory: "A bot with a near-perfect memory.", ball: "Power shots and almost no misses.",
-                   penalty: "A keeper that reads your kicks and a striker that rarely misses.", beat: "A bot that hardly ever misses a beat." }[game];
+                   penalty: "A quick, sharp keeper and a striker that rarely misses.", beat: "A bot that hardly ever misses a beat." }[game];
       $("g-modechal").hidden = !!BOT_TEXT[game] || (game === "ball" && !vs);   // (with a bot button, Challenge is inside it)
       $("g-modechal").innerHTML = "<b>🔥 Challenge</b><small>" + esc(chal) + "</small>";
       $("g-modechal").onclick = function () { $("g-mode").hidden = true; playBot(game, true); };
@@ -8602,13 +8736,17 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     Array.prototype.forEach.call(document.querySelectorAll("#g-modebmode [data-bmode]"), function (b) {
       b.addEventListener("click", function () { try { localStorage.setItem(BAMBOO_MODE_KEY, b.dataset.bmode); } catch (e) {} openMode("bamboo"); drawCardStats(); });
     });
+    Array.prototype.forEach.call(document.querySelectorAll("#g-modepen [data-pmode]"), function (b) {
+      b.addEventListener("click", function () { try { localStorage.setItem(PEN_MODE_KEY, b.dataset.pmode); } catch (e) {} openMode("penalty"); });
+    });
     Array.prototype.forEach.call(document.querySelectorAll("#g-moderace [data-rmode]"), function (b) {
       b.addEventListener("click", function () { try { localStorage.setItem(RACE_MODE_KEY, b.dataset.rmode); } catch (e) {} openMode("race"); });
     });
     // how each game's points work, under its board
     var SCORE_RULES = { bamboo_endless: "Points: food 10, golden bamboo 30, times your combo (up to x5).", bamboo: "Points: 1 for each food, 3 for golden bamboo. Rocks take 2 off.",
       memory: "Points: fewer tries and a faster finish score more. A perfect game is 150.", memory8: "Quick board: fewer tries and a faster finish score more. A perfect game is 100.",
-      memory15: "Big board: fewer tries and a faster finish score more. A perfect game is 150.", beat: "Points: Perfect 10, Good 5, times your combo (up to x4). Coins +20." };
+      pen_streak: "Points: 1 for a goal, 2 for a top corner. One save ends your streak.", penalty: "1 point a goal, 2 for a top corner. Most points after 5 kicks each wins.",
+      memory15: "Big board: fewer tries and a faster finish score more. A perfect game is 150.", beat: "Points: Perfect 10, Good 5, times your combo (up to x4), doubled in FEVER. Coins +20." };
     // a little sheet with two choices
     function choose(title, a, b) {
       $("g-choosetitle").textContent = title;
@@ -8640,8 +8778,8 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     }
     function openLeaderboard(game) {
       lbGame = game; lbTab = "today";
-      $("g-lbtitle").textContent = GAMES[game].art + " " + GAMES[game].name + (game === "bamboo" ? (bambooMode() === "endless" ? " · Endless" : " · 30 seconds") : game === "memory" ? " · " + { 8: "Quick", 12: "Classic", 15: "Big" }[memSize()] : "");
-      $("g-lbplay").textContent = "▶ Play " + (game === "bamboo" ? (bambooMode() === "endless" ? "Endless" : "30 seconds") : GAMES[game].name);
+      $("g-lbtitle").textContent = GAMES[game].art + " " + GAMES[game].name + (game === "penalty" ? " · Streak" : game === "bamboo" ? (bambooMode() === "endless" ? " · Endless" : " · 30 seconds") : game === "memory" ? " · " + { 8: "Quick", 12: "Classic", 15: "Big" }[memSize()] : "");
+      $("g-lbplay").textContent = "▶ Play " + (game === "penalty" ? "Streak" : game === "bamboo" ? (bambooMode() === "endless" ? "Endless" : "30 seconds") : GAMES[game].name);
       $("g-lboard").hidden = false; drawLeaderboard();
     }
     $("g-modeall").addEventListener("click", function () { if (modeGame) openLeaderboard(modeGame); });
@@ -8660,7 +8798,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       b.addEventListener("click", function () { openMode(b.dataset.game); });
     });
     var lastGame = "bamboo";
-    function playSolo(game) { lastGame = game; botChallenge = false; if (game === "beat") startBeat(); else if (game === "bamboo") startGame(); else if (game === "memory") startMemory(); else if (game === "ball") ballBot(ballVs); else if (game === "penalty") penBot(); else raceBot(); }
+    function playSolo(game) { lastGame = game; botChallenge = false; if (game === "penalty" && penMode() === "streak") penStreak(); else if (game === "beat") startBeat(); else if (game === "bamboo") startGame(); else if (game === "memory") startMemory(); else if (game === "ball") ballBot(ballVs); else if (game === "penalty") penBot(); else raceBot(); }
     function playBot(game, challenge) { lastGame = game; botChallenge = !!challenge; if (game === "beat") beatDuelBot(); else if (game === "bamboo") duelBot(); else if (game === "memory") memoryBot(); else if (game === "ball") ballBot(ballVs); else if (game === "penalty") penBot(); else raceBot(); }
 
     // --- with others: pick who (online players, and friends who are away: they get a notification) ---
@@ -9431,7 +9569,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         send: function (ev, p) { ch.send({ type: "broadcast", event: ev, payload: p || {} }); },
         fire: function (ev, p) { if (hs[ev]) hs[ev](p || {}); },
         close: function () { try { sb.removeChannel(ch); } catch (e) {} } };
-      ["here", "seat", "full", "old", "hb", "go", "bye", "w", "qc", "tx", "endask", "endok", "endno", "endcancel", "p", "fin", "result", "s", "final", "flip", "pass", "hit", "drop", "shot", "dive"].forEach(function (ev) {
+      ["here", "seat", "full", "old", "hb", "go", "bye", "w", "qc", "tx", "endask", "endok", "endno", "endcancel", "p", "fin", "result", "s", "final", "flip", "pass", "hit", "drop", "shot", "dive", "pres"].forEach(function (ev) {
         ch.on("broadcast", { event: ev }, function (m) { if (hs[ev]) hs[ev](m.payload || {}); });
       });
       ch.subscribe(function (st) { if (st === "SUBSCRIBED" && hs.ready) hs.ready(); });
@@ -9439,7 +9577,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     }
     function hidePlayPages() { ["g-play", "g-social", "g-pick", "g-mode", "g-gamepick", "g-petopts", "g-chat", "g-rooms", "g-roompage"].forEach(function (id) { $(id).hidden = true; }); chatWith = null; }
     // Change this when games stop working between old and new versions: players on different numbers aren't put together.
-    var GAME_PROTO = 2;   // 2: Bamboo duels are Endless, races have Classic/Marathon lengths, Beat dash
+    var GAME_PROTO = 3;   // 2: Bamboo duels are Endless, races have Classic/Marathon lengths, Beat dash
     function liveGame(game, room, host, info) {
       var p = pet(); if (!p || raceNow) return;
       if (!GAMES[game]) { say("Please update the app to play this game."); return; }
@@ -9830,7 +9968,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         var bp = startBallPass({
           me: { pic: gamePic(p), html: tagHTML(p.level, p.name) }, them: { pic: petPic(other.variant), html: petTagHTML(other) },
           iServe: m.first === me.id, live: true, versus: vs, fast: !!m.fast,
-          onHit: function (n, fast) { R.send("hit", { n: n, fast: !!fast }); },
+          onHit: function (n, fast, lane) { R.send("hit", { n: n, fast: !!fast, lane: lane | 0 }); },
           onDrop: function (n) { R.send("drop", { n: n }); },
           onQuick: qcSend,
           onQuit: function () { leave(); openPlay(); },
@@ -9857,7 +9995,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
           }
         });
         view = bp;
-        R.on("hit", function (x) { bp.hit(x.n | 0, !!x.fast); });
+        R.on("hit", function (x) { bp.hit(x.n | 0, !!x.fast, x.lane === undefined ? 1 : x.lane | 0); });
         R.on("drop", function () { bp.drop(); });
         S.quick = function (uid, i) { bp.quick(i); };
         S.bye = function (uid) { if (uid === other.uid && !done) bp.left(); };
@@ -9875,19 +10013,19 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
           me: { pic: gamePic(p), html: tagHTML(p.level, p.name) }, them: { pic: petPic(other.variant), html: petTagHTML(other) },
           iFirst: m.first === me.id, live: true, seed: seedOf(room),
           onShot: function (k, shot) { R.send("shot", { k: k, shot: shot }); },
-          onDive: function (k, col) { R.send("dive", { k: k, col: col }); },
+          onResult: function (k, res) { R.send("pres", { k: k, res: res.res, dive: res.dive }); },
           onQuick: qcSend,
           onQuit: function () { leave(); openPlay(); },
           onEnd: function (res) {
             if (done) return; done = true;
             if (res.why === "left" || res.why === "lost") { endLeft(pk.wrap, res.why === "left" ? label(other) + " left the game." : "We lost touch with " + label(other) + "."); return; }
-            endCard(pk.wrap, res.won, { big: res.me + ' <small class="vs">vs ' + res.them + "</small>", lbl: "goals",
+            endCard(pk.wrap, res.won, { big: res.me + ' <small class="vs">vs ' + res.them + "</small>", lbl: "points",
               lost: label(other) + " wins this time!", score: res.me, against: label(other), again: "🥅 Rematch" });
           }
         });
         view = pk;
         R.on("shot", function (x) { pk.theirShot(x.k | 0, x.shot || {}); });
-        R.on("dive", function (x) { pk.theirDive(x.k | 0, x.col); });
+        R.on("pres", function (x) { pk.theirResult(x.k | 0, { res: x.res, dive: x.dive }); });
         S.quick = function (uid, i) { pk.quick(i); };
         S.bye = function (uid) { if (uid === other.uid && !done) pk.left(); };
         S.stop = function () { pk.close(); };
@@ -10027,6 +10165,25 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       view.wrap.appendChild(end);
       end.querySelector('[data-a="done"]').addEventListener("click", function () { view.close(); raceNow = null; trackMe(); openPlay(); openMode(lastGame); });
       end.querySelector('[data-a="again"]').addEventListener("click", function () { view.close(); raceNow = null; again(); });
+    }
+    // Penalty kicks: a Match against the bot, or a Streak (high scores)
+    var PEN_MODE_KEY = "petstreak.penmode";
+    function penMode() { try { return localStorage.getItem(PEN_MODE_KEY) === "streak" ? "streak" : "match"; } catch (e) { return "match"; } }
+    function penStreak() {
+      var p = pet(); if (!p || raceNow) return;
+      hidePlayPages();
+      var pk = startPenalty({
+        me: { pic: gamePic(p), html: tagHTML(p.level, p.name) }, them: { pic: petPic("panda_golden"), html: esc("Bamboo the keeper 🧤"), bot: true },
+        iFirst: true, level: 3, streak: true, seed: (Math.random() * 1e9) >>> 0,
+        onQuit: function () { raceNow = null; trackMe(); openPlay(); },
+        onEnd: async function (r) {
+          raceNow = null; trackMe();
+          var s = await saveSolo("pen_streak", r.streak, { game: "penalty", mode: "solo" });
+          soloEnd(pk.wrap, "penalty", s.res, s.err, s.lead, '<div class="big">' + r.streak + '</div><p class="lbl">points · ' + r.goals + (r.goals === 1 ? " goal" : " goals") + " in a row</p>", penStreak, pk.close);
+        }
+      });
+      raceNow = { race: pk }; trackMe();
+      pk.start();
     }
     // Treat race: Classic (90 taps) or Marathon (360 taps, 3 laps with boost pads), remembered on this phone
     var RACE_MODE_KEY = "petstreak.racemode", RACE_LONG = 360;
@@ -10202,7 +10359,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     function bambooKey() { return bambooMode() === "endless" ? "bamboo_endless" : "bamboo"; }
     function endlessBest() { try { return +localStorage.getItem(BAMBOO_EBEST_KEY) || 0; } catch (e) { return 0; } }
     // the score board's key for a game (Bamboo catch has two)
-    function scoreKey(game) { return game === "bamboo" ? bambooKey() : game === "memory" ? { 8: "memory8", 15: "memory15" }[memSize()] || "memory" : game; }
+    function scoreKey(game) { return game === "penalty" ? "pen_streak" : game === "bamboo" ? bambooKey() : game === "memory" ? { 8: "memory8", 15: "memory15" }[memSize()] || "memory" : game; }
     function startGame() {
       var p = pet(); if (!p) return;
       hidePlayPages();
