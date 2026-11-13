@@ -2579,6 +2579,135 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
 .pg-race.rhythm .pg-gamemsg { top: calc(64px + env(safe-area-inset-top, 0px)); }
 .pg-lane .track::after { right: 44px; }
 @media (max-height: 700px) { .rc-info { padding-top: calc(70px + env(safe-area-inset-top, 0px)); } .rc-info .rc-left { font-size: 2.6rem; } }
+
+/* ===================== Beat dash ===================== */
+.pg-gamegrid .pg-gamecard.beat, .pg-gametile.beat { background: linear-gradient(150deg, #7f77dd, #3c3489); }
+.pg-gamecard { position: relative; }
+.pg-newtag { position: absolute; top: 10px; right: 10px; padding: 2px 8px; border-radius: 999px; background: #ffc23d; color: #4a2a00; font-style: normal; font-size: 0.7rem; font-weight: 800; letter-spacing: 0.04em; }
+.pg-endever { color: #c98a00 !important; font-weight: 800 !important; }
+.pg-game.pg-beat { display: flex; flex-direction: column; background: #26215c; overflow: hidden;
+  background-image: radial-gradient(circle at 12% 18%, rgba(255,255,255,0.8) 0 1.5px, transparent 2px), radial-gradient(circle at 68% 9%, rgba(255,255,255,0.7) 0 1.5px, transparent 2px),
+  radial-gradient(circle at 84% 26%, rgba(255,255,255,0.6) 0 1px, transparent 1.5px), radial-gradient(circle at 38% 30%, rgba(255,255,255,0.6) 0 1px, transparent 1.5px),
+  radial-gradient(circle at 55% 22%, rgba(206,203,246,0.8) 0 1.5px, transparent 2px), radial-gradient(circle at 26% 6%, rgba(206,203,246,0.6) 0 1px, transparent 1.5px); }
+.pg-beat .pg-gamehud .sc::before { content: "🎵 "; }
+.pg-beat .pg-gamehud .bd-mid { margin-left: auto; background: rgba(255,255,255,0.14) !important; color: #fff !important; box-shadow: none !important; letter-spacing: 1px; }
+.pg-beat .pg-gamehud .bd-mid.low { background: #ffe1df !important; color: #b3261e !important; }
+.pg-beat .pg-gamehud .bd-best { background: rgba(255,255,255,0.14) !important; color: #cecbf6 !important; box-shadow: none !important; font-size: 0.9rem !important; }
+.pg-beat .pg-gamehud .op { background: rgba(255,255,255,0.92); }
+.bd-helpbtn[hidden] { display: none; }
+.bd-tug { position: absolute; left: 16px; right: 16px; top: calc(66px + env(safe-area-inset-top, 0px)); height: 8px; border-radius: 999px; background: #d4537e; overflow: hidden; }
+.bd-tug i { display: block; height: 100%; width: 50%; background: #5dcaa5; transition: width 0.3s; }
+.bd-combo { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding-top: calc(70px + env(safe-area-inset-top, 0px)); pointer-events: none; }
+.bd-combo .x { font-family: var(--display); font-size: 4rem; font-weight: 800; line-height: 1; color: #cecbf6; transition: transform 0.15s; }
+.bd-combo .x.m2 { color: #5dcaa5; } .bd-combo .x.m3 { color: #fac775; } .bd-combo .x.m4 { color: #ff8a5c; transform: scale(1.12); }
+.bd-combo .pf { margin-top: 2px; color: #cecbf6; font-weight: 700; font-size: 0.9rem; }
+.bd-stage { position: relative; flex: none; height: min(300px, 38vh); }
+.bd-hills { position: absolute; left: 0; right: 0; bottom: 70px; background-repeat: repeat-x; pointer-events: none; }
+.bd-hills.far { height: 120px; opacity: 0.55; background-image: radial-gradient(ellipse 90px 70px at 90px 120px, #3c3489 98%, transparent 100%); background-size: 180px 120px; }
+.bd-hills.near { height: 80px; bottom: 60px; background-image: radial-gradient(ellipse 70px 50px at 60px 80px, #4a40a8 98%, transparent 100%); background-size: 150px 80px; }
+.bd-ground { position: absolute; left: 0; right: 0; bottom: 0; height: 64px; background: #534ab7; box-shadow: inset 0 6px 0 #7f77dd;
+  background-image: repeating-linear-gradient(90deg, rgba(255,255,255,0.0) 0 60px, rgba(255,255,255,0.12) 60px 92px); }
+.bd-pet { position: absolute; left: 30%; bottom: 58px; width: 92px; height: 92px; margin-left: -46px; object-fit: contain; z-index: 3; filter: drop-shadow(0 6px 4px rgba(0,0,0,0.35)); transition: scale 0.1s; }
+.bd-stage.beat .bd-pet { scale: 1.06 0.94; }
+.bd-pet.hop { animation: pg-hop 0.25s ease-out; }
+.bd-pet.jump { animation: rc-jump 0.45s ease-out; }
+.bd-pet.trip { animation: rc-trip 0.45s ease-out; }
+.bd-rival { position: absolute; left: 13%; bottom: 60px; width: 66px; height: 66px; margin-left: -33px; object-fit: contain; opacity: 0.85; z-index: 1; filter: drop-shadow(0 4px 3px rgba(0,0,0,0.3)); }
+.bd-rival.hop { animation: pg-hop 0.25s ease-out; }
+.bd-objs { position: absolute; inset: 0; pointer-events: none; z-index: 2; }
+.bd-obj { position: absolute; left: 0; will-change: transform; }
+.bd-obj.log { bottom: 58px; width: 18px; height: 40px; margin-left: 50px; border-radius: 8px; background: repeating-linear-gradient(180deg, #8a5a2b 0 7px, #a0703c 7px 14px); box-shadow: inset 0 0 0 2px rgba(0,0,0,0.2); }
+.bd-obj.log::before { content: ""; position: absolute; left: 50%; top: -6px; width: 14px; height: 14px; margin-left: -7px; border-radius: 50%; background: #d9b07a; box-shadow: inset 0 0 0 2px #a0703c; }
+.bd-obj.log.jumped { opacity: 0.4; }
+.bd-obj.coin { bottom: 128px; width: 26px; height: 26px; margin-left: -13px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #fff2b0, #ffc23d 55%, #c98a00); box-shadow: 0 0 12px rgba(255,194,61,0.6); }
+.bd-obj.coin.got { animation: bd-coin 0.35s ease-out forwards; }
+@keyframes bd-coin { to { transform: translateY(-40px) scale(0.2); opacity: 0; } }
+.bd-pop { position: absolute; left: 30%; bottom: 160px; transform: translateX(-50%); font-family: var(--display); font-size: 1.4rem; font-weight: 800; color: #fff; opacity: 0; pointer-events: none; z-index: 4; text-shadow: 0 2px 6px rgba(0,0,0,0.35); }
+.bd-pop.show { animation: bd-pop 0.6s ease-out; }
+.bd-pop.coin { color: #ffc23d; } .bd-pop.bad { color: #ff9a9a; }
+@keyframes bd-pop { 0% { opacity: 0; transform: translate(-50%, 10px); } 20% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -30px); } }
+.pg-beat .pg-gamemsg { top: 34%; }
+.pg-beat .rc-beat { background: rgba(255,255,255,0.12); box-shadow: inset 0 2px 6px rgba(0,0,0,0.25); margin-top: 10px; }
+.pg-beat .rc-zone { border-color: #ed93b1; background: rgba(237,147,177,0.12); }
+.pg-beat .rc-judge.good { color: #5dcaa5; } .pg-beat .rc-judge.ok { color: #85b7eb; } .pg-beat .rc-judge.bad { color: #ff9a9a; }
+.rc-dots i.log { background: #a0703c; box-shadow: 0 2px 0 #6b4220; border-radius: 5px; }
+.rc-dots i.coin { background: #ffc23d; box-shadow: 0 2px 0 #c98a00; }
+.pg-beat .pg-tapbtn { height: 92px; background: linear-gradient(150deg, #ed93b1, #d4537e); box-shadow: 0 10px 0 #993556; }
+.pg-beat .pg-tapbtn.jump { background: linear-gradient(150deg, #ffc23d, #f08a1c); box-shadow: 0 10px 0 #b8650e; color: #4a2a00; }
+@media (max-height: 700px) { .bd-combo { padding-top: calc(78px + env(safe-area-inset-top, 0px)); } .bd-combo .x { font-size: 2.2rem; } .pg-beat .pg-tapbtn { height: 76px; } .bd-pet { width: 76px; height: 76px; margin-left: -38px; } }
+
+.pg-beat .pg-gamehud { gap: 6px; }
+.pg-beat .pg-gamehud span { white-space: nowrap; padding: 7px 11px; font-size: 1rem; }
+.pg-beat.duel .pg-gamehud .op { max-width: 38%; }
+.pg-beat.duel .pg-gamehud .op .nm .pg-tag { font-size: 0.8rem; }
+.pg-beat.duel .bd-tug { top: calc(64px + env(safe-area-inset-top, 0px)); }
+
+/* ===================== The game page ===================== */
+.pg-gamepage { position: fixed; inset: 0; z-index: 20; display: flex; flex-direction: column; background: #f4f1ec; }
+.pg-gamepage[hidden] { display: none; }
+#g-pick { z-index: 22; }
+.pg-gphero { position: relative; flex: none; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: min(250px, 34vh); padding: calc(10px + env(safe-area-inset-top, 0px)) 16px 14px; overflow: hidden; background: #6fae58; color: #fff; }
+.pg-gphero .pg-playback { position: absolute; left: 14px; top: calc(12px + env(safe-area-inset-top, 0px)); z-index: 2; }
+.pg-gphero .pg-modehelp { top: calc(12px + env(safe-area-inset-top, 0px)); right: 14px; z-index: 2; }
+.pg-gpart { position: absolute; right: -24px; top: 18px; font-size: 9rem; line-height: 1; opacity: 0.22; transform: rotate(-12deg); pointer-events: none; }
+.pg-gppet { position: relative; width: 132px; height: 132px; object-fit: contain; filter: drop-shadow(0 8px 10px rgba(0,0,0,0.25)); animation: pg-gppet 2.4s ease-in-out infinite; }
+@keyframes pg-gppet { 50% { transform: translateY(-6px); } }
+@media (prefers-reduced-motion: reduce) { .pg-gppet { animation: none; } }
+.pg-gphero h2 { position: relative; margin: 2px 0 0; font-family: var(--display); font-size: 1.8rem; color: #fff; text-shadow: 0 2px 8px rgba(0,0,0,0.25); }
+.gp-bamboo .pg-gphero { background: radial-gradient(circle at 80% 10%, rgba(255,236,160,0.6) 0 34px, transparent 36px), repeating-linear-gradient(90deg, transparent 0 46px, rgba(255,255,255,0.12) 46px 56px), linear-gradient(180deg, #8fcf72, #4f8c3c); }
+.gp-race .pg-gphero { background: repeating-linear-gradient(90deg, transparent 0 40px, rgba(255,255,255,0.18) 40px 46px), linear-gradient(170deg, #ff8a5c, #e2456f); }
+.gp-memory .pg-gphero { background: radial-gradient(circle at 25% 25%, rgba(255,255,255,0.14) 0 8px, transparent 9px) 0 0 / 30px 30px, linear-gradient(160deg, #b06ad9, #6b4fd1); }
+.gp-ball .pg-gphero { background: repeating-linear-gradient(180deg, #7cc35c 0 30px, #6db650 30px 60px); }
+.gp-penalty .pg-gphero { background: linear-gradient(180deg, #a8dcff 0 40%, transparent 40%), repeating-linear-gradient(90deg, #6ec457 0 34px, #63b84d 34px 68px); }
+.gp-beat .pg-gphero { background: radial-gradient(circle at 15% 30%, #fff 0 1.5px, transparent 2px), radial-gradient(circle at 70% 18%, #fff 0 1.5px, transparent 2px), radial-gradient(circle at 88% 40%, #cecbf6 0 1.5px, transparent 2px), linear-gradient(180deg, #26215c, #534ab7); }
+.pg-gpbody { flex: 1; overflow-y: auto; padding: 14px 16px calc(20px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: 10px; }
+.pg-gpstats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.pg-gpstats span { display: flex; flex-direction: column; align-items: center; padding: 10px 6px; border-radius: 16px; background: #fff; box-shadow: 0 2px 8px rgba(20,35,43,0.06); text-align: center; }
+.pg-gpstats b { font-family: var(--display); font-size: 1.35rem; color: #14232b; line-height: 1.1; }
+.pg-gpstats small { color: #6b7a82; font-weight: 700; font-size: 0.78rem; }
+.pg-gamepage .pg-modebtn { margin: 0; }
+.pg-gamepage .pg-modebtn.main { align-items: center; text-align: center; border: 0; background: var(--brand); color: #fff; padding: 16px; box-shadow: 0 6px 0 rgba(0,0,0,0.15); }
+.pg-gamepage .pg-modebtn.main b { font-size: 1.3rem; } .pg-gamepage .pg-modebtn.main small { color: rgba(255,255,255,0.88); }
+.gp-bamboo .pg-modebtn.main { background: #3b8a3e; } .gp-race .pg-modebtn.main { background: #e2456f; } .gp-memory .pg-modebtn.main { background: #6b4fd1; }
+.gp-ball .pg-modebtn.main { background: #2f8a4c; } .gp-penalty .pg-modebtn.main { background: #128a63; } .gp-beat .pg-modebtn.main { background: #534ab7; }
+.pg-gprow { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.pg-gprow .pg-modebtn { padding: 12px; border-radius: 16px; }
+.pg-gprow .pg-modebtn b { font-size: 1rem; }
+.pg-gprow .pg-modebtn small { font-size: 0.78rem; }
+.pg-gprow .pg-modebtn.others.live { border-color: #2fbf71; background: #ecfaf2; }
+.pg-gpboard { margin-top: 4px; padding: 12px 14px; border-radius: 18px; background: #fff; box-shadow: 0 2px 8px rgba(20,35,43,0.06); }
+.pg-gpboardhead { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+.pg-gpboardhead b { font-size: 1.02rem; color: #14232b; }
+.pg-gpboard .pg-hint { margin: 8px 0 0; }
+
+/* Playground: no board under the games; the ⚙ settings panel */
+.pg-playboard { display: none; }
+.pg-setbtn { font-size: 1.1rem; }
+.pg-playsetpanel { position: absolute; right: 12px; top: calc(66px + env(safe-area-inset-top, 0px)); z-index: 6; width: min(300px, calc(100vw - 24px)); padding: 12px 14px; border-radius: 18px; background: #fff; box-shadow: 0 12px 30px rgba(20,35,43,0.2); }
+.pg-playsetpanel[hidden] { display: none; }
+.pg-playsetpanel .pg-note { margin: 8px 0 0; font-size: 0.85rem; }
+/* the corner of a game card: NEW, and paw games left */
+.pg-cardtags { position: absolute; top: 10px; right: 10px; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; pointer-events: none; }
+.pg-cardtags .pg-newtag { position: static; }
+.pg-pawtag { padding: 2px 7px; border-radius: 999px; background: rgba(255,255,255,0.92); color: #8a4b12; font-style: normal; font-size: 0.72rem; font-weight: 800; }
+
+/* History: bests and a game filter */
+.pg-histbests { display: flex; gap: 8px; overflow-x: auto; padding: 2px 0 6px; scrollbar-width: none; }
+.pg-histbests:empty { display: none; }
+.pg-histbests span { flex: none; display: flex; flex-direction: column; align-items: center; min-width: 76px; padding: 8px 10px; border-radius: 14px; background: #f4f1ec; }
+.pg-histbests i { font-style: normal; font-size: 1.3rem; }
+.pg-histbests b { font-family: var(--display); font-size: 1.05rem; color: #14232b; }
+.pg-histbests small { font-size: 0.72rem; font-weight: 700; color: #6b7a82; white-space: nowrap; }
+.pg-histchips { display: flex; gap: 6px; overflow-x: auto; padding: 2px 0 8px; scrollbar-width: none; }
+.pg-histchips:empty { display: none; }
+.pg-histchips .pg-chip.on { background: var(--brand); border-color: var(--brand); color: #fff; }
+
+.pg-gamepage .pg-modebtn { height: auto; min-height: 0; }
+.pg-gprow .pg-modebtn.wide { grid-column: 1 / -1; }
+.pg-gprow .pg-modebtn[hidden] { display: none; }
+@media (max-width: 430px) { #g-play .pg-playhead .pg-playicon { display: none; } #g-play .pg-playhead h2 { font-size: 1.25rem; } }
+
+.pg-gpbody > * { flex-shrink: 0; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -2723,6 +2852,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         <button type="button" class="pg-playback" id="g-playclose" aria-label="Back to your pet">←</button>
         <h2><span class="pg-playicon" aria-hidden="true">🎮 </span>Playground</h2>
         <span class="pg-playpaws" id="g-playpaws">🐾 0</span>
+        <button type="button" class="pg-headicon pg-setbtn" id="g-playset" aria-label="Playground settings" aria-expanded="false">⚙️</button>
         <button type="button" class="pg-headicon" id="g-playsocial" aria-label="Friends and chats">💬<span class="pg-dotcount" id="g-playsocialdot" hidden></span></button>
       </header>
       <div class="pg-playbody">
@@ -2751,8 +2881,9 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         </div>
         <!-- the games: swipe for more -->
         <div class="pg-gamestrip pg-gamegrid" id="g-gamestrip">
+          <button type="button" class="pg-gamecard beat" data-game="beat"><span class="pg-cardtags"><em class="pg-newtag">NEW</em></span><span class="art" aria-hidden="true">🎵</span><b>Beat dash</b><small data-stat>Tap on the beat</small></button>
           <button type="button" class="pg-gamecard bamboo" data-game="bamboo"><span class="art" aria-hidden="true">🎋</span><b>Bamboo catch</b><small data-stat>Catch the falling food</small></button>
-          <button type="button" class="pg-gamecard race" data-game="race"><span class="art" aria-hidden="true">🏁</span><b>Treat race</b><small data-stat>Tap on the beat · up to 4</small></button>
+          <button type="button" class="pg-gamecard race" data-game="race"><span class="art" aria-hidden="true">🏁</span><b>Treat race</b><small data-stat>Tap fastest · up to 4</small></button>
           <button type="button" class="pg-gamecard memory" data-game="memory"><span class="art" aria-hidden="true">🃏</span><b>Memory match</b><small data-stat>Find the pairs</small></button>
           <button type="button" class="pg-gamecard ball" data-game="ball"><span class="art" aria-hidden="true">⚽</span><b>Ball pass</b><small data-stat>Keep it going · or versus</small></button>
           <button type="button" class="pg-gamecard penalty" data-game="penalty"><span class="art" aria-hidden="true">🥅</span><b>Penalty kicks</b><small data-stat>Shoot, save, win</small></button>
@@ -2764,6 +2895,8 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
           <ol class="pg-board" id="g-board"></ol>
           <p class="pg-hint" id="g-gamereward"></p>
         </div>
+      </div>
+      <div class="pg-playsetpanel" id="g-playsetpanel" hidden>
         <label class="pg-onlineswitch"><input type="checkbox" id="g-showonline" checked> <span>Show me as online, so others can invite me</span></label>
         <p class="pg-note">Scores reset every day. Other players only see your pet, never your name, unless you're friends.</p>
       </div>
@@ -2851,19 +2984,33 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       </div>
     </div>
     <!-- tap a game: solo or with others -->
-    <div class="pg pg-adopt" id="g-mode" hidden>
-      <div class="pg-card pg-modecard">
+    <!-- a game's own page: its scene, your stats, every way to play, today's best -->
+    <div class="pg pg-gamepage" id="g-mode" hidden>
+      <div class="pg-gphero">
+        <button type="button" class="pg-playback" id="g-modeclose" aria-label="Back to the Playground">←</button>
         <button type="button" class="pg-modehelp" id="g-modehelp" aria-label="How to play">?</button>
-        <div class="pg-modeart" id="g-modeart" aria-hidden="true">🏁</div>
+        <div class="pg-gpart" id="g-modeart" aria-hidden="true">🏁</div>
+        <img class="pg-gppet" id="g-modepet" alt="">
         <h2 id="g-modename">Treat race</h2>
+      </div>
+      <div class="pg-gpbody" id="g-modebody">
+        <div class="pg-gpstats" id="g-modestats"></div>
         <div class="pg-tabs pg-modevs" id="g-modevs" role="tablist" hidden>
           <button type="button" role="tab" data-vs="1" aria-selected="true">⚔️ Versus</button>
           <button type="button" role="tab" data-vs="0" aria-selected="false">🤝 Together</button>
         </div>
-        <button type="button" class="pg-modebtn" id="g-modesolo"></button>
-        <button type="button" class="pg-modebtn others" id="g-modeothers"></button>
-        <button type="button" class="pg-modebtn chal" id="g-modechal"></button>
-        <button type="button" class="pg-linkbtn" id="g-modeclose">Cancel</button>
+        <button type="button" class="pg-modebtn main" id="g-modesolo"></button>
+        <div class="pg-gprow">
+          <button type="button" class="pg-modebtn" id="g-modebot"></button>
+          <button type="button" class="pg-modebtn others" id="g-modeothers"></button>
+          <button type="button" class="pg-modebtn" id="g-modeinvite"></button>
+          <button type="button" class="pg-modebtn chal" id="g-modechal"></button>
+        </div>
+        <div class="pg-gpboard">
+          <div class="pg-gpboardhead"><b id="g-modeboardtitle">Today's best</b><button type="button" class="pg-linkbtn" id="g-modehow">How to play</button></div>
+          <ol class="pg-board" id="g-modeboard"></ol>
+          <p class="pg-hint" id="g-modereward"></p>
+        </div>
       </div>
     </div>
     <!-- Rooms: find a public room, or create one -->
@@ -3046,11 +3193,12 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       <div class="pg-card">
         <h2>Which game?</h2>
         <div class="pg-pickgames">
-          <button type="button" class="pg-gametile race" id="g-pickrace"><span class="art" aria-hidden="true">🏁</span><b>Treat race</b><small>Tap on the beat to the treat</small></button>
+          <button type="button" class="pg-gametile race" id="g-pickrace"><span class="art" aria-hidden="true">🏁</span><b>Treat race</b><small>Tap fastest to the treat</small></button>
           <button type="button" class="pg-gametile duel" id="g-pickduel"><span class="art" aria-hidden="true">🎋</span><b>Bamboo duel</b><small>Highest score in 30 s</small></button>
           <button type="button" class="pg-gametile memory" id="g-pickmem"><span class="art" aria-hidden="true">🃏</span><b>Memory match</b><small>Take turns finding pairs</small></button>
           <button type="button" class="pg-gametile ball" id="g-pickball"><span class="art" aria-hidden="true">⚽</span><b>Ball pass</b><small>Keep it going together</small></button>
           <button type="button" class="pg-gametile penalty" id="g-pickpen"><span class="art" aria-hidden="true">🥅</span><b>Penalty kicks</b><small>Shoot and save</small></button>
+          <button type="button" class="pg-gametile beat" id="g-pickbeat"><span class="art" aria-hidden="true">🎵</span><b>Beat dash</b><small>Same beat, highest score</small></button>
         </div>
         <button type="button" class="pg-linkbtn" id="g-pickno">Cancel</button>
       </div>
@@ -3074,6 +3222,8 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     <div class="pg pg-card pg-sheet pg-histsheet" id="g-history" hidden>
       <h2><span>🏁 Your games <small>last 7 days</small></span> <button type="button" class="pg-x" id="g-historyclose" aria-label="Close your games">✕</button></h2>
       <p class="pg-hint" id="g-histsum"></p>
+      <div class="pg-histbests" id="g-histbests"></div>
+      <div class="pg-chips pg-histchips" id="g-histchips" role="tablist" aria-label="Filter by game"></div>
       <ol class="pg-histlist" id="g-histlist"></ol>
     </div>
     <!-- in a room, but looking after the pet: the way back -->
@@ -6367,69 +6517,37 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
   }
 
   // ---------- Treat race (2 to 4 players) ----------
-  // A lane each and a treat at the end. Tap ON THE BEAT: dots slide into the circle, and a tap as one arrives moves
-  // your pet (perfect: 2 steps, good: 1). A tap off the beat trips your pet and it sits out the next beat, so tapping
-  // as fast as you can doesn't work. Four logs lie across each lane: you stop at a log until you tap on the beat to
-  // jump it. The beat gets a little quicker as you get closer to the treat.
-  // Who won is decided by one referee (the player who sent the invites, or this phone against the bot) and given to
-  // everyone with result(), so two phones can never both say "You win". Phones only share how far they've got (steps).
+  // A lane each and a treat at the end. Every tap on the big button moves your pet a step. Who won is decided by one
+  // referee (the player who sent the invites, or this phone against the bot) and given to everyone with result(),
+  // so two phones can never both say "You win".
   // startTapRace({ players: [{ uid, pic, html, me }], steps, onTap(n), onFinish(), onQuick(i), onQuit() })
   //   -> { wrap, start(), progress(uid, n), quick(uid, i), left(uid), result(order), status(text), close() }
-  var RACE_STEPS = 120, RACE_PERFECT = 70, RACE_GOOD = 140;   // (about 45 seconds of racing)
-  function raceBeat(n, steps) { return 560 - Math.min(1, n / (steps || RACE_STEPS)) * 140; }   // ms between beats
-  function raceLogs(steps) { return [0.18, 0.38, 0.57, 0.75].map(function (f) { return Math.round(steps * f); }); }
-  // a step forward from n by add, stopping at a log that hasn't been jumped yet; at the log, an on-beat tap jumps it
-  function raceStep(n, add, logs, jumped) {
-    for (var i = 0; i < logs.length; i++) {
-      var lg = logs[i];
-      if (jumped[lg]) continue;
-      if (n === lg) { jumped[lg] = true; return { n: n + 1, jump: true }; }
-      if (n < lg) return { n: Math.min(n + add, lg), jump: false };
-    }
-    return { n: n + add, jump: false };
-  }
-  var RACE_HOW_KEY = "petstreak.racehow2";
+  var RACE_STEPS = 120;   // (about 15 seconds of tapping)
   function startTapRace(opts) {
-    var steps = opts.steps || RACE_STEPS, me = null, logs = raceLogs(steps), jumped = {};
-    var wrap = document.createElement("div"); wrap.className = "pg-game pg-race rhythm";
+    var steps = opts.steps || RACE_STEPS, me = null;
+    var wrap = document.createElement("div"); wrap.className = "pg-game pg-race";
     wrap.innerHTML =
       '<div class="pg-gamehud"><span class="lbl">🏁 Treat race</span>' +
-        '<button type="button" class="pg-qcbtn rc-helpbtn" aria-label="How to play">?</button>' +
         (opts.onQuick ? '<button type="button" class="pg-qcbtn" aria-label="Send an emoji">💬</button>' : "") +
         '<button type="button" class="pg-gamex" aria-label="Leave the race">✕</button></div>' +
       '<div class="pg-qcpal" hidden></div>' +
-      '<div class="rc-info"><b class="rc-left">' + steps + '</b><small>steps to the treat 🍰</small><span class="rc-streak"></span></div>' +
       '<div class="pg-lanes"></div>' +
       '<div class="pg-gamemsg big">Get ready…</div>' +
-      '<div class="rc-beat" aria-hidden="true"><i class="rc-zone"></i><div class="rc-dots"></div><b class="rc-judge"></b></div>' +
       '<button type="button" class="pg-tapbtn" disabled>TAP!</button>';
     document.body.appendChild(wrap);
     var box = wrap.querySelector(".pg-lanes"), msg = wrap.querySelector(".pg-gamemsg"), btn = wrap.querySelector(".pg-tapbtn");
-    var beatEl = wrap.querySelector(".rc-beat"), dotsEl = wrap.querySelector(".rc-dots"), judgeEl = wrap.querySelector(".rc-judge"), zoneEl = wrap.querySelector(".rc-zone");
-    var lanes = {}, leftEl = wrap.querySelector(".rc-left"), streakEl = wrap.querySelector(".rc-streak"), streak = 0;
-    function info() {
-      leftEl.textContent = Math.max(0, steps - lanes[me].n);
-      streakEl.textContent = streak >= 3 ? "🔥 " + streak + " perfect in a row" : "";
-      streakEl.classList.toggle("on", streak >= 3);
-    }
+    var lanes = {};
     // others on top, you at the bottom (next to the button)
     opts.players.filter(function (pl) { return !pl.me; }).concat(opts.players.filter(function (pl) { return pl.me; })).forEach(function (pl) {
       var lane = document.createElement("div"); lane.className = "pg-lane" + (pl.me ? " me" : "");
-      lane.innerHTML = '<span class="who"></span><div class="track">' +
-        logs.map(function (lg) { return '<i class="rc-log" data-log="' + lg + '" style="left:calc(' + (lg / steps * 100) + '% * 0.82 + 52px)"></i>'; }).join("") +
-        '<img alt=""><i class="treat">🍰</i><b class="place"></b></div>';
+      lane.innerHTML = '<span class="who"></span><div class="track"><img alt=""><i class="treat">🍰</i><b class="place"></b></div>';
       lane.querySelector(".who").innerHTML = (pl.html || "") + (pl.me ? " <small>(you)</small>" : "");
       lane.querySelector("img").src = pl.pic;
       box.appendChild(lane);
       lanes[pl.uid] = { el: lane, n: 0 };
       if (pl.me) me = pl.uid;
     });
-    function place(uid) {
-      var l = lanes[uid]; if (!l) return;
-      l.el.querySelector("img").style.left = "calc(" + (Math.min(1, l.n / steps) * 100) + "% * 0.82)";
-      // logs behind a pet are jumped (theirs too, from how far they've got)
-      Array.prototype.forEach.call(l.el.querySelectorAll(".rc-log"), function (lg) { lg.classList.toggle("over", l.n > +lg.dataset.log); });
-    }
+    function place(uid) { var l = lanes[uid]; if (l) l.el.querySelector("img").style.left = "calc(" + (Math.min(1, l.n / steps) * 100) + "% * 0.82)"; }
     Object.keys(lanes).forEach(place);
     function bubble(uid, text) {
       var l = lanes[uid]; if (!l) return;
@@ -6437,111 +6555,28 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       l.el.appendChild(b); setTimeout(function () { b.remove(); }, 2600);
     }
     quickPalette(wrap, function (i, t) { bubble(me, t); opts.onQuick(i); });
-    var live = false, over = false, finished = false, timers = [], raf = 0;
-    // the beat: each one has a time; a tap scores on the nearest beat it hasn't used yet
-    var beats = [], stumbleUntil = 0, jdT = null;
-    function lastBeat() { return beats[beats.length - 1]; }
-    function addBeats(now) { while (!beats.length || lastBeat().t < now + 3000) { var prev = beats.length ? lastBeat().t : now + 600; beats.push({ t: beats.length ? prev + raceBeat(lanes[me].n, steps) : prev, used: false, ticked: false }); } }
-    function judge(text, cls) {
-      judgeEl.textContent = text; judgeEl.className = "rc-judge show " + cls;
-      clearTimeout(jdT); jdT = setTimeout(function () { judgeEl.className = "rc-judge"; }, 520);
-    }
-    function atLog() { var n = lanes[me].n; return logs.some(function (lg) { return n === lg && !jumped[lg]; }); }
-    function showBtn() { var lg = atLog(); btn.textContent = lg ? "JUMP! ⤴" : "TAP!"; btn.classList.toggle("jump", lg); }
-    function trip(why) {
-      stumbleUntil = performance.now() + raceBeat(lanes[me].n, steps) * 1.05; streak = 0; info();
-      var img = lanes[me].el.querySelector("img"); img.classList.remove("hop", "trip", "jump"); void img.offsetWidth; img.classList.add("trip");
-      judge(why, "bad"); fxShake(btn);
-      if (typeof sfx === "function") sfx("splat");
-    }
+    var live = false, over = false, finished = false, timers = [];
     function tap(e) {
       if (e) e.preventDefault();
       if (!live || over || finished) return;
-      var now = performance.now();
-      if (now < stumbleUntil) { judge("Wait for it…", "bad"); return; }
-      // the nearest beat that isn't used up
-      var best = null;
-      beats.forEach(function (b) { if (!b.used && (!best || Math.abs(b.t - now) < Math.abs(best.t - now))) best = b; });
-      var d = best ? now - best.t : 1e9;
-      if (!best || Math.abs(d) > RACE_GOOD) { trip(d < 0 ? "Too soon!" : "Off the beat!"); return; }
-      best.used = true;
-      var perfect = Math.abs(d) <= RACE_PERFECT, l = lanes[me], r = raceStep(l.n, perfect ? 2 : 1, logs, jumped);
-      l.n = r.n; place(me); showBtn(); streak = perfect ? streak + 1 : 0; info();
-      var img = l.el.querySelector("img"); img.classList.remove("hop", "trip", "jump"); void img.offsetWidth; img.classList.add(r.jump ? "jump" : "hop");
-      judge(r.jump ? "Jump! 🪵" : perfect ? "Perfect! +2" : "Good +1", perfect || r.jump ? "good" : "ok");
-      var zc = fxCentre(wrap, zoneEl);
-      if (perfect) fxBurst(wrap, zc.x, zc.y, { n: 6, spread: 18, colors: ["#ffc23d", "#ffffff", "#4cc38a"] });
-      if (r.jump) { var dr = fxCentre(wrap, img); fxBurst(wrap, dr.x, dr.y, { n: 8, spread: 26, colors: ["#a0703c", "#c79a63", "#7bd389"] }); }
-      if (typeof sfx === "function") sfx(perfect ? "coin" : "click");
-      if (navigator.vibrate) try { navigator.vibrate(perfect ? 18 : 8); } catch (er) {}
+      var l = lanes[me]; l.n++; place(me);
+      var img = l.el.querySelector("img"); img.classList.remove("hop"); void img.offsetWidth; img.classList.add("hop");
+      if (l.n % 3 === 0) { var dr = img.getBoundingClientRect(), wr0 = wrap.getBoundingClientRect(); fxBurst(wrap, dr.left - wr0.left + 8, dr.bottom - wr0.top - 10, { n: 4, spread: 14, colors: ["#e9c9a8", "#f3dcc4", "#d9b28c"] }); }
+      if (typeof sfx === "function" && l.n % 4 === 0) sfx("click");
       if (opts.onTap) opts.onTap(l.n);
       if (l.n >= steps) { finished = true; btn.disabled = true; msg.textContent = "🏁"; if (opts.onFinish) opts.onFinish(); }
     }
     btn.addEventListener("pointerdown", tap);
     function onKey(e) { if (e.target.tagName === "INPUT") return; if (e.key === " " || e.key === "Enter") tap(e); }
     window.addEventListener("keydown", onKey);
-    // the dots: the next few beats slide left into the circle; the pet bobs and a soft tick plays on each beat
-    var DOTS = 7, dotEls = [];
-    for (var i = 0; i < DOTS; i++) { var dEl = document.createElement("i"); dEl.className = "gone"; dotsEl.appendChild(dEl); dotEls.push(dEl); }
-    function frame() {
-      raf = requestAnimationFrame(frame);
-      if (!live) return;
-      var now = performance.now(); addBeats(now);
-      beats = beats.filter(function (b) { return b.t > now - 400; });
-      var zx = zoneEl.offsetLeft + zoneEl.offsetWidth / 2, gap = Math.max(56, (beatEl.clientWidth - zx) / 4.2), k = 0;
-      beats.forEach(function (b) {
-        if (!b.ticked && now >= b.t) {
-          b.ticked = true;
-          var ln = lanes[me].el; if (!finished) { ln.classList.add("beat"); setTimeout(function () { ln.classList.remove("beat"); }, 140); }
-          zoneEl.classList.remove("pulse"); void zoneEl.offsetWidth; zoneEl.classList.add("pulse");
-          if (typeof sfx === "function" && !finished) sfx("beat");
-        }
-        if (k >= DOTS) return;
-        var x = zx + (b.t - now) / raceBeat(lanes[me].n, steps) * gap, el = dotEls[k++];
-        el.style.transform = "translateX(" + Math.round(x - 9) + "px)";
-        el.className = b.used ? "used" : now > b.t + RACE_GOOD ? "gone" : "";
-      });
-      for (; k < DOTS; k++) dotEls[k].className = "gone";
-    }
-    raf = requestAnimationFrame(frame);
-    function close() { over = true; live = false; cancelAnimationFrame(raf); timers.forEach(clearTimeout); window.removeEventListener("keydown", onKey); wrap.remove(); }
+    function close() { over = true; live = false; timers.forEach(clearTimeout); window.removeEventListener("keydown", onKey); wrap.remove(); }
     wrap.querySelector(".pg-gamex").addEventListener("click", function () {
       if (live && !over && !confirm("Leave the race?")) return;
       close(); if (opts.onQuit) opts.onQuit();
     });
-    // how to play: the first race on this phone, and any time before the start from the ? button
-    var howEl = null;
-    function closeHow() { if (howEl) { howEl.remove(); howEl = null; } }
-    function showHow(then) {
-      closeHow();
-      howEl = document.createElement("div"); howEl.className = "pb-how";
-      howEl.innerHTML = '<div class="pb-howcard"><h3>🏁 How to race</h3><ol>' +
-        "<li>Dots slide into the circle above the button. <b>Tap as a dot reaches the circle.</b></li>" +
-        "<li>Right on the beat: <b>Perfect, 2 steps</b>. A little off: Good, 1 step.</li>" +
-        "<li>Tap off the beat and your pet trips and misses the next beat, so don't just tap fast!</li>" +
-        "<li>At a log 🪵 the button says <b>JUMP</b>: tap on the beat to hop over it.</li>" +
-        "<li>First to the treat 🍰 wins. The beat speeds up near the end!</li>" +
-        '</ol><button type="button" class="pg-feed">' + (then ? "Got it, let's race!" : "Got it") + "</button></div>";
-      howEl.querySelector("button").addEventListener("click", function () { closeHow(); if (then) then(); });
-      wrap.appendChild(howEl);
-      try { localStorage.setItem(RACE_HOW_KEY, "1"); } catch (e) {}
-    }
-    function go() { live = true; btn.disabled = false; closeHow(); wrap.querySelector(".rc-helpbtn").hidden = true; beats = []; addBeats(performance.now()); showBtn(); if (opts.onGo) opts.onGo(); }
     return {
       wrap: wrap, close: close,
-      start: function () {
-        var seen = false;
-        try { seen = !!localStorage.getItem(RACE_HOW_KEY); } catch (e) {}
-        function count() { countdownFrom(msg, opts.onQuick ? LIVE_COUNTDOWN : 3, "Go!", timers, function () { return over; }, go); }
-        wrap.querySelector(".rc-helpbtn").addEventListener("click", function () {
-          if (opts.onQuick) { showHow(null); return; }     // a live race keeps its shared countdown
-          timers.forEach(clearTimeout); timers.length = 0; msg.textContent = "";
-          showHow(count);
-        });
-        if (opts.onQuick) { count(); if (!seen) showHow(null); }
-        else if (!seen) showHow(count);
-        else count();
-      },
+      start: function () { countdownFrom(msg, opts.onQuick ? LIVE_COUNTDOWN : 3, "Tap!", timers, function () { return over; }, function () { live = true; btn.disabled = false; }); },
       progress: function (uid, n) { var l = lanes[uid]; if (!l || over || uid === me) return; l.n = Math.max(l.n, n); place(uid); },
       quick: function (uid, i) { var t = quickText(i); if (t) bubble(uid, t); },
       left: function (uid) { var l = lanes[uid]; if (l) { l.el.classList.add("gone"); l.el.querySelector(".place").textContent = "left"; } },
@@ -6557,23 +6592,246 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       }
     };
   }
-  // Bamboo the bot keeps to the same beat. Its level (1-8) is how often it's right on it: a perfect beat is 2 steps,
-  // a good one 1, a miss nothing (and sometimes a trip that costs the next beat too). It jumps logs the same way.
-  var BOT_RACE_P = [0.2, 0.3, 0.4, 0.5, 0.6, 0.72, 0.8, 0.88], BOT_RACE_G = [0.45, 0.45, 0.42, 0.38, 0.32, 0.24, 0.18, 0.1];
-  function botRacer(race, uid, onFinish, level, delay) {
-    var L = Math.max(1, Math.min(8, level || 2)) - 1, n = 0, alive = true, skip = 0, logs = raceLogs(RACE_STEPS), jumped = {};
-    function beat() {
+  // Bamboo the bot: taps 6 to 10 times a second depending on its level (1-5), with the odd short pause
+  function botRacer(race, uid, onFinish, level) {
+    // (levels 6-8 are the Challenge: you need about 10 to 11 taps a second)
+    var L = Math.max(1, Math.min(8, level || 2)), base = [140, 122, 108, 96, 86, 80, 74, 69][L - 1], pause = [0.06, 0.05, 0.04, 0.03, 0.02, 0.015, 0.01, 0.008][L - 1];
+    var n = 0, alive = true;
+    function step() {
       if (!alive) return;
-      if (skip > 0) skip--;
-      else {
-        var r = Math.random(), add = r < BOT_RACE_P[L] ? 2 : r < BOT_RACE_P[L] + BOT_RACE_G[L] ? 1 : 0;
-        if (add) { n = raceStep(n, add, logs, jumped).n; race.progress(uid, n); if (n >= RACE_STEPS) { onFinish(); return; } }
-        else if (Math.random() < 0.5) skip = 1;
-      }
-      setTimeout(beat, raceBeat(n));
+      n++; race.progress(uid, n);
+      if (n >= RACE_STEPS) { onFinish(); return; }
+      setTimeout(step, base + Math.random() * 40 + (Math.random() < pause ? 220 : 0));
     }
-    setTimeout(beat, delay == null ? 3000 + 600 : delay);   // (in step with the first beat)
+    setTimeout(step, 3000 + 250);   // (after the bot race's 3-2-1)
     return { stop: function () { alive = false; }, n: function () { return n; } };
+  }
+
+  // ---------- Beat dash ----------
+  // Your pet runs to the beat. Dots slide into the circle above the button: tap as one arrives. Right on the beat is
+  // Perfect (10 points), a little off is Good (5), times your combo (x2 after 8 hits in a row, x3 after 16, x4 after
+  // 24). Gold dots are coins (+20). Brown dots are logs: tap on the beat to jump, or your pet trips over it. A tap off
+  // the beat trips your pet too. The beat keeps getting quicker.
+  //  * Solo: 3 hearts; every trip costs one. How far can you go? (high scores, like Bamboo catch)
+  //  * Duel (opts.live): 45 seconds, the same beats for both phones (shared seed); a trip costs 15 points. Highest
+  //    score wins. opts.them is the other pet; opp(n) shows their score (the bot's, or the other phone's).
+  // startBeatDash({ pic, seed, live, them: { pic, html }, best, onScore(n), onQuick(i), onGo(), onEnd(score, close, wrap, stats), onQuit() })
+  //   -> { wrap, start(), opp(n), quick(i), status(t), score(), close() }
+  var BEAT_PERFECT = 70, BEAT_GOOD = 140, BEAT_DUEL = 45, BEAT_HEARTS = 3, BEAT_GAP = 92;
+  function beatGap(i, duel) { return duel ? Math.max(410, 560 - i * 1.8) : Math.max(330, 560 - i * 1.6); }   // ms to the next beat
+  function beatKind(rnd, i, prev) {
+    if (i < 6) return "";
+    var r = rnd();
+    if (prev !== "log" && r < Math.min(0.28, 0.08 + i * 0.002)) return "log";
+    return r > 0.86 ? "coin" : "";
+  }
+  var BEAT_HOW_KEY = "petstreak.beathow";
+  function startBeatDash(opts) {
+    var duel = !!opts.live, rnd = opts.seed ? seeded(opts.seed) : Math.random;
+    var wrap = document.createElement("div"); wrap.className = "pg-game pg-beat" + (duel ? " duel" : "");
+    wrap.innerHTML =
+      '<div class="pg-gamehud"><span class="sc">0</span><span class="bd-mid"></span>' +
+        (duel ? '<span class="op"><span class="nm"></span> <b class="opn">0</b></span>' : '<span class="bd-best">Best ' + (opts.best || 0) + "</span>") +
+        '<button type="button" class="pg-qcbtn bd-helpbtn" aria-label="How to play">?</button>' +
+        (opts.onQuick ? '<button type="button" class="pg-qcbtn" aria-label="Send an emoji">💬</button>' : "") +
+        '<button type="button" class="pg-gamex" aria-label="Stop the game">✕</button></div>' +
+      '<div class="pg-qcpal" hidden></div><div class="pg-duelbubbles"></div>' +
+      (duel ? '<div class="bd-tug" aria-hidden="true"><i></i></div>' : "") +
+      '<div class="bd-combo" aria-live="polite"><b class="x">x1</b><small class="pf">Tap on the beat!</small></div>' +
+      '<div class="bd-stage"><i class="bd-hills far"></i><i class="bd-hills near"></i><i class="bd-ground"></i>' +
+        (duel ? '<img class="bd-rival" alt="">' : "") +
+        '<div class="bd-objs"></div><img class="bd-pet" alt=""><b class="bd-pop"></b></div>' +
+      '<div class="pg-gamemsg big">Get ready…</div>' +
+      '<div class="rc-beat" aria-hidden="true"><i class="rc-zone"></i><div class="rc-dots"></div><b class="rc-judge"></b></div>' +
+      '<button type="button" class="pg-tapbtn" disabled>TAP!</button>';
+    document.body.appendChild(wrap);
+    var q = function (s) { return wrap.querySelector(s); };
+    var msg = q(".pg-gamemsg"), btn = q(".pg-tapbtn"), petEl = q(".bd-pet"), objs = q(".bd-objs"), stage = q(".bd-stage");
+    var hudScore = q(".sc"), hudMid = q(".bd-mid"), comboX = q(".bd-combo .x"), comboPf = q(".bd-combo .pf"), popEl = q(".bd-pop");
+    var beatEl = q(".rc-beat"), dotsEl = q(".rc-dots"), judgeEl = q(".rc-judge"), zoneEl = q(".rc-zone");
+    petEl.src = opts.pic;
+    var rival = q(".bd-rival"), opEl = q(".op .opn");
+    if (duel) { if (rival && opts.them && opts.them.pic) rival.src = opts.them.pic; q(".op .nm").innerHTML = (opts.them && opts.them.html) || ""; }
+    var bubbles = q(".pg-duelbubbles");
+    function duelBubble(text, mine) { var b = document.createElement("span"); b.className = "pg-bubble" + (mine ? " mine" : ""); b.textContent = (mine ? "You " : "") + text; bubbles.appendChild(b); setTimeout(function () { b.remove(); }, 2600); }
+    if (opts.onQuick) quickPalette(wrap, function (i, t) { duelBubble(t, true); opts.onQuick(i); });
+
+    var live = false, over = false, timers = [], raf = 0, t0 = 0, endAt = 0;
+    var score = 0, hearts = BEAT_HEARTS, combo = 0, bestCombo = 0, perfects = 0, theirs = 0, stumbleUntil = 0;
+    var beats = [], nextI = 0, prevKind = "", jdT = null;
+    function mult() { return Math.min(4, 1 + Math.floor(combo / 8)); }
+    function showHud() {
+      hudScore.textContent = score;
+      if (!duel) hudMid.textContent = "❤️".repeat(hearts) + "🤍".repeat(BEAT_HEARTS - hearts);
+      comboX.textContent = "x" + mult(); comboX.className = "x m" + mult();
+      comboPf.textContent = combo ? combo + " in a row · " + perfects + " perfect" : "Tap on the beat!";
+      if (duel) { var all = score + theirs; q(".bd-tug i").style.width = (all ? Math.round(score / all * 100) : 50) + "%"; }
+      if (opts.onScore) opts.onScore(score);
+    }
+    function addBeats(now) {
+      while (!beats.length || beats[beats.length - 1].t < now + 3200) {
+        var t = beats.length ? beats[beats.length - 1].t + beatGap(nextI - 1, duel) : t0 + 900;
+        var kind = beatKind(rnd, nextI, prevKind); prevKind = kind;
+        beats.push({ i: nextI++, t: t, kind: kind, used: false, done: false, ticked: false, el: null });
+      }
+    }
+    function judge(text, cls) { judgeEl.textContent = text; judgeEl.className = "rc-judge show " + cls; clearTimeout(jdT); jdT = setTimeout(function () { judgeEl.className = "rc-judge"; }, 520); }
+    function pop(text, cls) { popEl.textContent = text; popEl.className = "bd-pop show " + (cls || ""); clearTimeout(pop.t); pop.t = setTimeout(function () { popEl.className = "bd-pop"; }, 600); }
+    function petAnim(cls) { petEl.classList.remove("hop", "trip", "jump"); void petEl.offsetWidth; petEl.classList.add(cls); }
+    function trip(why) {
+      combo = 0; stumbleUntil = performance.now() + beatGap(nextI, duel) * 1.05;
+      petAnim("trip"); judge(why, "bad"); fxShake(btn);
+      if (duel) { score = Math.max(0, score - 15); pop("-15", "bad"); }
+      else { hearts--; pop("💔", "bad"); }
+      if (typeof sfx === "function") sfx("splat");
+      showHud();
+      if (!duel && hearts <= 0) finish();
+    }
+    function tap(e) {
+      if (e) e.preventDefault();
+      if (!live || over) return;
+      var now = performance.now();
+      if (now < stumbleUntil) { judge("Wait for it…", "bad"); return; }
+      var best = null;
+      beats.forEach(function (b) { if (!b.used && !b.done && (!best || Math.abs(b.t - now) < Math.abs(best.t - now))) best = b; });
+      var d = best ? now - best.t : 1e9;
+      if (!best || Math.abs(d) > BEAT_GOOD) { trip(d < 0 ? "Too soon!" : "Off the beat!"); return; }
+      best.used = true; best.done = true;
+      var perfect = Math.abs(d) <= BEAT_PERFECT, m = mult(), pts = (perfect ? 10 : 5) * m;
+      combo++; bestCombo = Math.max(bestCombo, combo); if (perfect) perfects++;
+      if (best.kind === "coin") pts += 20;
+      score += pts;
+      if (best.el) { best.el.classList.add(best.kind === "log" ? "jumped" : "got"); }
+      petAnim(best.kind === "log" ? "jump" : "hop");
+      judge(best.kind === "log" ? "Jump! 🪵" : perfect ? "Perfect!" : "Good", perfect || best.kind === "log" ? "good" : "ok");
+      pop("+" + pts, best.kind === "coin" ? "coin" : "");
+      var zc = fxCentre(wrap, zoneEl);
+      if (perfect) fxBurst(wrap, zc.x, zc.y, { n: 6, spread: 18, colors: ["#ffc23d", "#ffffff", "#5DCAA5"] });
+      if (best.kind === "coin") { var pc = fxCentre(wrap, petEl); fxBurst(wrap, pc.x, pc.y - 20, { n: 8, spread: 26, colors: ["#ffc23d", "#fff2b0"] }); }
+      if (mult() > m) { var cc = fxCentre(wrap, comboX); fxBurst(wrap, cc.x, cc.y, { n: 12, spread: 40 }); if (typeof sfx === "function") sfx("sparkle"); }
+      else if (typeof sfx === "function") sfx(best.kind === "coin" ? "coin" : perfect ? "click" : "click");
+      if (navigator.vibrate) try { navigator.vibrate(perfect ? 16 : 8); } catch (er) {}
+      showHud();
+    }
+    btn.addEventListener("pointerdown", tap);
+    function onKey(e) { if (e.target.tagName === "INPUT") return; if (e.key === " " || e.key === "Enter") tap(e); }
+    window.addEventListener("keydown", onKey);
+
+    var DOTS = 7, dotEls = [];
+    for (var i = 0; i < DOTS; i++) { var dEl = document.createElement("i"); dEl.className = "gone"; dotsEl.appendChild(dEl); dotEls.push(dEl); }
+    function frame() {
+      raf = requestAnimationFrame(frame);
+      if (!live) return;
+      var now = performance.now(); addBeats(now);
+      // beats that went by without a tap: a log trips you, anything else just ends the combo
+      beats.forEach(function (b) {
+        if (!b.done && now > b.t + BEAT_GOOD) { b.done = true; if (b.kind === "log") trip("Trip! 🪵"); else if (combo) { combo = 0; showHud(); } }
+      });
+      if (over) return;
+      beats = beats.filter(function (b) { if (b.t < now - 900) { if (b.el) b.el.remove(); return false; } return true; });
+      // the world scrolls by; logs and coins sit where their beat will meet your pet
+      var sw = stage.clientWidth, px = sw * 0.3, gapMs = beatGap(nextI, duel);
+      var run = (now - t0) / gapMs * BEAT_GAP;
+      q(".bd-hills.far").style.backgroundPositionX = -Math.round(run * 0.25) + "px";
+      q(".bd-hills.near").style.backgroundPositionX = -Math.round(run * 0.55) + "px";
+      q(".bd-ground").style.backgroundPositionX = -Math.round(run) + "px";
+      var zx = zoneEl.offsetLeft + zoneEl.offsetWidth / 2, gap = Math.max(56, (beatEl.clientWidth - zx) / 4.2), k = 0;
+      beats.forEach(function (b) {
+        var x = px + (b.t - now) / gapMs * BEAT_GAP;
+        if (b.kind && !b.el && x < sw + 40) { b.el = document.createElement("i"); b.el.className = "bd-obj " + b.kind; objs.appendChild(b.el); }
+        if (b.el) b.el.style.transform = "translateX(" + Math.round(x) + "px)";
+        if (!b.ticked && now >= b.t) {
+          b.ticked = true;
+          stage.classList.add("beat"); setTimeout(function () { stage.classList.remove("beat"); }, 130);
+          zoneEl.classList.remove("pulse"); void zoneEl.offsetWidth; zoneEl.classList.add("pulse");
+          if (typeof sfx === "function") sfx("beat");
+        }
+        if (k >= DOTS || b.t < now - BEAT_GOOD - 60) return;
+        var dx = zx + (b.t - now) / gapMs * gap, el = dotEls[k++];
+        el.style.transform = "translateX(" + Math.round(dx - 9) + "px)";
+        el.className = (b.kind || "") + (b.used ? " used" : b.done ? " gone" : "");
+      });
+      for (; k < DOTS; k++) dotEls[k].className = "gone";
+      // the next beat is a log: the button says so
+      var nx = beats.filter(function (b) { return !b.done; })[0], lg = !!(nx && nx.kind === "log" && nx.t - now < gapMs * 1.2);
+      if (btn.classList.contains("jump") !== lg) { btn.classList.toggle("jump", lg); btn.textContent = lg ? "JUMP! ⤴" : "TAP!"; }
+      if (duel) { var left = Math.max(0, Math.ceil((endAt - now) / 1000)); hudMid.textContent = "⏱ " + left + "s"; hudMid.classList.toggle("low", left <= 5); if (now >= endAt) finish(); }
+    }
+    raf = requestAnimationFrame(frame);
+    function finish() {
+      if (over) return; over = true; live = false; btn.disabled = true;
+      msg.className = "pg-gamemsg big"; msg.textContent = duel ? "Time's up!" : "Out of hearts!";
+      timers.push(setTimeout(function () { opts.onEnd(score, close, wrap, { perfect: perfects, combo: bestCombo }); }, 900));
+    }
+    function close() { over = true; live = false; cancelAnimationFrame(raf); timers.forEach(clearTimeout); window.removeEventListener("keydown", onKey); wrap.remove(); }
+    q(".pg-gamex").addEventListener("click", function () {
+      if (live && !over && !confirm(duel ? "Leave the duel?" : "Stop the game? This score won't count.")) return;
+      close(); if (opts.onQuit) opts.onQuit();
+    });
+    var howEl = null;
+    function closeHow() { if (howEl) { howEl.remove(); howEl = null; } }
+    function showHow(then) {
+      closeHow();
+      howEl = document.createElement("div"); howEl.className = "pb-how";
+      howEl.innerHTML = '<div class="pb-howcard"><h3>🎵 How to play Beat dash</h3><ol>' +
+        "<li>Dots slide into the circle above the button. <b>Tap as a dot reaches the circle.</b></li>" +
+        "<li>Right on the beat is <b>Perfect</b>. Keep it up for a combo: x2, x3, even x4 points!</li>" +
+        "<li>🟡 Gold dots are coins: +20. 🟤 Brown dots are logs: <b>tap on the beat to jump</b>, or your pet trips.</li>" +
+        (duel ? "<li>Tapping off the beat trips your pet too (-15). 45 seconds: highest score wins!</li>"
+              : "<li>Tapping off the beat trips your pet too. <b>3 trips and the run is over.</b> The beat keeps getting faster!</li>") +
+        '</ol><button type="button" class="pg-feed">' + (then ? "Got it, let's go!" : "Got it") + "</button></div>";
+      howEl.querySelector("button").addEventListener("click", function () { closeHow(); if (then) then(); });
+      wrap.appendChild(howEl);
+      try { localStorage.setItem(BEAT_HOW_KEY, "1"); } catch (e) {}
+    }
+    function go() {
+      live = true; btn.disabled = false; closeHow(); q(".bd-helpbtn").hidden = true;
+      t0 = performance.now(); endAt = t0 + BEAT_DUEL * 1000 + 900; beats = []; addBeats(t0); showHud();
+      if (opts.onGo) opts.onGo();
+    }
+    showHud();
+    return {
+      wrap: wrap, close: close,
+      start: function () {
+        var seen = false;
+        try { seen = !!localStorage.getItem(BEAT_HOW_KEY); } catch (e) {}
+        function count() { countdownFrom(msg, opts.onQuick ? LIVE_COUNTDOWN : 3, "Go!", timers, function () { return over; }, go); }
+        q(".bd-helpbtn").addEventListener("click", function () {
+          if (opts.onQuick) { showHow(null); return; }
+          timers.forEach(clearTimeout); timers.length = 0; msg.textContent = "";
+          showHow(count);
+        });
+        if (opts.onQuick) { count(); if (!seen) showHow(null); }
+        else if (!seen) showHow(count);
+        else count();
+      },
+      opp: function (n) {
+        if (n > theirs && rival) { rival.classList.remove("hop"); void rival.offsetWidth; rival.classList.add("hop"); }
+        theirs = n; if (opEl) opEl.textContent = n; if (duel) showHud();
+      },
+      quick: function (i) { var t = quickText(i); if (t) duelBubble(t, false); },
+      status: function (t) { msg.className = "pg-gamemsg big"; msg.textContent = t; },
+      score: function () { return score; }
+    };
+  }
+  // Bamboo the bot in a Beat dash duel: the same beats, hit right as often as its level says (1-8)
+  var BOT_BEAT_P = [0.25, 0.35, 0.45, 0.55, 0.65, 0.75, 0.83, 0.9], BOT_BEAT_G = [0.45, 0.42, 0.38, 0.33, 0.27, 0.2, 0.14, 0.08];
+  function beatBot(game, level, seed) {
+    var L = Math.max(1, Math.min(8, level || 3)) - 1, rnd = seeded(seed), i = 0, prev = "", combo = 0, score = 0, alive = true, skip = 0;
+    function step() {
+      if (!alive) return;
+      var kind = beatKind(rnd, i, prev); prev = kind;
+      if (skip > 0) { skip--; combo = 0; if (kind === "log") score = Math.max(0, score - 15); }
+      else {
+        var r = Math.random(), hit = r < BOT_BEAT_P[L] ? 10 : r < BOT_BEAT_P[L] + BOT_BEAT_G[L] ? 5 : 0;
+        if (hit) { var m = Math.min(4, 1 + Math.floor(combo / 8)); combo++; score += hit * m + (kind === "coin" ? 20 : 0); }
+        else { combo = 0; if (kind === "log" || Math.random() < 0.3) { score = Math.max(0, score - 15); skip = 1; } }
+      }
+      game.opp(score);
+      timers = setTimeout(step, beatGap(i++, true));
+    }
+    var timers = setTimeout(step, 900);
+    return { stop: function () { alive = false; clearTimeout(timers); }, score: function () { return score; } };
   }
 
   // ---------- Memory match ----------
@@ -7265,7 +7523,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261113034047";   // replaced by build_real.ps1
+    var APP_BUILD = "20261113041631";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -7868,8 +8126,8 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         solo: ["🙋 Play solo", "30 seconds. Catch the food, dodge the rocks, beat today's best."],
         others: ["👫 Bamboo duel", "The same food falls for you both. Highest score wins."] },
       race: { name: "Treat race", art: "🏁", max: 3, invite: "wants to race you!",
-        solo: ["🤖 Race the bot", "Tap on the beat and jump the logs to beat Bamboo the bot."],
-        others: ["👫 Race other players", "Up to 4 racers. Tap on the beat to the treat!"] },
+        solo: ["🤖 Race the bot", "Tap as fast as you can to beat Bamboo the bot."],
+        others: ["👫 Race other players", "Up to 4 racers. Tap fastest to the treat!"] },
       memory: { name: "Memory match", art: "🃏", max: 1, invite: "wants to play Memory match!",
         solo: ["🙋 Play solo", "Find the 12 pairs in as few tries as you can."],
         others: ["👫 Take turns", "Find a pair and go again. Most pairs wins."] },
@@ -7878,7 +8136,10 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         others: ["👫 Play someone", "Take turns shooting and diving. Most goals wins."] },
       ball: { name: "Ball pass", art: "⚽", max: 1, invite: "wants to play Ball pass!",
         solo: ["🤖 Pass with the bot", "Tap when the ring turns green to hit the ball back. How long can you keep it going?"],
-        others: ["👫 Pass together", "Tap when the ring turns green. Keep the ball going as long as you can."] }
+        others: ["👫 Pass together", "Tap when the ring turns green. Keep the ball going as long as you can."] },
+      beat: { name: "Beat dash", art: "🎵", max: 1, invite: "wants a Beat dash duel!",
+        solo: ["🙋 Play solo", "3 hearts. Tap on the beat and chase a high score."],
+        others: ["👫 Beat dash duel", "45 seconds on the same beat. Highest score wins."] }
     };
     function gameOf(g) { return GAMES[g] ? g : "race"; }
 
@@ -7955,10 +8216,9 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
           ["Beat the clock", "You have 30 seconds, and things fall faster near the end. In a Bamboo duel the same food falls for both of you, and the highest score wins.", '<div class="ht-big ht-pulse">⏱️ 30</div>']
         ],
         race: [
-          ["Tap on the beat", "Dots slide into a circle. Tap as each one arrives: right on the beat is 2 steps, a little off is 1. Off the beat and your pet trips!", '<div class="ht-tapbtn ht-pulse">TAP!</div>' + finger],
-          ["Jump the logs", "Each lane has four logs. At a log the button says JUMP: tap on the beat to hop over.", '<div class="ht-big">🪵 ⤴</div>'],
-          ["First to the treat wins", "Keep to the beat as it speeds up. The first pet to reach the treat wins the race.", '<div class="ht-lane"><span class="ht-run">' + me + '</span><em>🍎</em></div><div class="ht-lane"><span class="ht-run slow">' + bot + "</span><em>🍎</em></div>"],
-          ["Race your friends", "Up to 4 racers can play at once. The 🔥 Challenge bot hardly ever misses a beat!", '<div class="ht-big">🏁 👫 👫</div>']
+          ["Tap, tap, tap!", "Every tap on the big button moves your pet one step along its lane.", '<div class="ht-tapbtn ht-pulse">TAP!</div>' + finger],
+          ["First to the treat wins", "Keep tapping as fast as you can. The first pet to reach the treat wins the race.", '<div class="ht-lane"><span class="ht-run">' + me + '</span><em>🍎</em></div><div class="ht-lane"><span class="ht-run slow">' + bot + "</span><em>🍎</em></div>"],
+          ["Race your friends", "Up to 4 racers can play at once. Against the 🔥 Challenge bot you'll need two thumbs!", '<div class="ht-big">🏁 👫 👫</div>']
         ],
         memory: [
           ["Flip two cards", "Tap two cards to turn them over and see what's on them.", cards(["🍩", "flip"], ["🎩", "flip two"], ["❓"], ["❓"])],
@@ -7971,6 +8231,12 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
           ["Tap on green", "Tap anywhere on the screen the moment the ring turns green. That hits the ball back. Too soon or too late is a miss.", ring],
           ["Versus", "A miss gives the other player a point. First to 5 wins. Tap at the very last moment for a faster Power shot 🔥", '<div class="ht-big">⚔️ 5 – 3</div>'],
           ["Together", "Work as a team and count your passes. It gets faster every pass, and one miss ends the game.", '<div class="ht-big">🤝 12</div>']
+        ],
+        beat: [
+          ["Tap on the beat", "Dots slide into the circle above the button. Tap as each one arrives. Right on the beat is Perfect!", '<div class="ht-tapbtn ht-pulse">TAP!</div>' + finger],
+          ["Build a combo", "Hit beat after beat for a combo: x2, x3, even x4 points. Gold dots are coins worth +20.", '<div class="ht-big">x4 🪙</div>'],
+          ["Jump the logs", "A brown dot is a log. Tap on the beat to jump it, or your pet trips. Tapping off the beat trips your pet too.", '<div class="ht-big">🪵 ⤴</div>'],
+          ["Solo or duel", "Solo: 3 hearts, and every trip costs one. How far can you go? Duel: 45 seconds on the same beat, highest score wins.", '<div class="ht-big">❤️❤️❤️</div>']
         ],
         penalty: [
           ["Pick your spot", "When you shoot, tap one of the 6 spots in the goal: left, middle or right, high or low.", goal("aim", "⚽") + finger],
@@ -7997,26 +8263,80 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     $("g-ghclose").addEventListener("click", function () { $("g-gamehelp").hidden = true; });
     $("g-ghback").addEventListener("click", function () { if (ghAt) { ghAt--; drawGameHelp(); } });
     $("g-ghnext").addEventListener("click", function () { if (ghAt === ghSteps.length - 1) $("g-gamehelp").hidden = true; else { ghAt++; drawGameHelp(); } });
+    // the game page: its scene, your stats for it, every way to play, and today's best (or this week's wins)
+    var BOT_TEXT = { bamboo: "The same food falls for you both. Beat its score.", memory: "Take turns finding pairs. Most pairs wins.",
+                     beat: "The same beat for 45 seconds. Highest score wins." }, modeGame = null;
+    function modeTile(v, label) { return "<span><b>" + esc(String(v)) + "</b><small>" + esc(label) + "</small></span>"; }
+    async function drawModeStats(game) {
+      var stats = $("g-modestats"), board = $("g-modeboard"), scoreGame = !!BOARD_NAMES[game];
+      stats.innerHTML = modeTile("…", "") + modeTile("…", "") + modeTile("…", ""); board.innerHTML = ""; $("g-modereward").textContent = "";
+      if (scoreGame) {
+        $("g-modeboardtitle").textContent = "Today's best";
+        var d; try { d = await playData(game); } catch (e) { stats.innerHTML = ""; return; }
+        if (modeGame !== game) return;
+        var at = -1; d.board.forEach(function (r, i) { if (r.me) at = i; });
+        var mine = at >= 0 ? d.board[at] : null, paid = Math.max(0, GAME_PAID - d.plays);
+        stats.innerHTML = (game === "beat" ? modeTile(beatBest().toLocaleString(), "your best ever") : modeTile(mine ? mine.best : "–", "your best today")) +
+          modeTile(mine ? "#" + (at + 1) : "–", "rank today") + modeTile(paid, paid === 1 ? "paw game left" : "paw games left");
+        d.board.slice(0, 5).forEach(function (row, i) {
+          var li = document.createElement("li"); if (row.me) li.className = "me";
+          li.innerHTML = '<span class="rk">' + (i < 3 ? MEDALS[i] : i + 1) + "</span>" + avatarDot({ name: row.name, avatar: row.avatar }) +
+            '<span class="nm">' + esc(row.me ? "You" : row.name) + '</span><b class="pt">' + Number(row.best).toLocaleString() + "</b>";
+          board.appendChild(li);
+        });
+        if (!d.board.length) board.innerHTML = '<li class="pg-logempty">Nobody has played today yet. Be the first! ' + esc(GAMES[game].art) + "</li>";
+        $("g-modereward").textContent = paid ? "🐾 Your next " + (paid === 1 ? "solo game pays" : paid + " solo games pay") + " paws." : "You've had today's 3 paw games. Keep playing for a better score!";
+      } else {
+        $("g-modeboardtitle").textContent = "This week's wins";
+        var b; try { b = await rpc("weekly_board", { p_game: game }); } catch (e) { stats.innerHTML = ""; return; }
+        if (modeGame !== game) return;
+        var me = b.me, ball = game === "ball" ? bestBall("solo", -1).best : null, played = 0;
+        try { played = ((await rpc("my_game_history")) || []).filter(function (h) { return h.game === game; }).length; } catch (e) {}
+        if (modeGame !== game) return;
+        stats.innerHTML = modeTile(me ? me.wins : 0, "wins this week") + modeTile(me ? "#" + me.place : "–", "rank this week") +
+          (ball !== null ? modeTile(ball, "best passes") : modeTile(played, "played this week"));
+        (b.rows || []).slice(0, 5).forEach(function (row, i) {
+          var li = document.createElement("li"); if (row.me) li.className = "me";
+          li.innerHTML = '<span class="rk">' + (i < 3 ? MEDALS[i] : i + 1) + '</span><img class="pg-boardpet" alt="" src="' + esc(petPic(row.variant)) + '"><span class="nm">' + esc(row.me ? "You" : row.pet || "A pet") + '</span><b class="pt">' + row.wins + "</b>";
+          board.appendChild(li);
+        });
+        if (!(b.rows || []).length) board.innerHTML = '<li class="pg-logempty">No wins yet this week. Be the first! 🏆</li>';
+        $("g-modereward").textContent = "Win against other players to climb. Wins reset every Monday.";
+      }
+    }
     function openMode(game) {
       var g = GAMES[game], n = Object.keys(online).length, vs = game === "ball" && ballVs;
       var solo = vs ? BALL_VS_TEXT.solo : g.solo, oth = vs ? BALL_VS_TEXT.others : g.others;
+      modeGame = game;
+      $("g-mode").className = "pg pg-gamepage gp-" + game;
       $("g-modeart").textContent = g.art; $("g-modename").textContent = g.name;
-      $("g-modehelp").onclick = function () { openGameHelp(game); };
+      $("g-modepet").src = gamePic(pet());
+      $("g-modehelp").onclick = $("g-modehow").onclick = function () { openGameHelp(game); };
       $("g-modevs").hidden = game !== "ball";
       Array.prototype.forEach.call(document.querySelectorAll("#g-modevs [data-vs]"), function (b) { b.setAttribute("aria-selected", (b.dataset.vs === "1") === ballVs ? "true" : "false"); });
-      $("g-modesolo").innerHTML = "<b>" + esc(solo[0]) + "</b><small>" + esc(solo[1]) + "</small>";
-      $("g-modeothers").innerHTML = "<b>" + esc(oth[0]) + "</b><small>" + esc(oth[1]) + "</small>" +
-        '<em class="' + (n ? "on" : "") + '">' + (showOnline() ? (n ? "🟢 " + n + " online now" : "🌙 Nobody online · invite a friend") : "🙈 You're hidden") + "</em>";
+      $("g-modesolo").innerHTML = "<b>" + esc(solo[0].replace(/^\S+ /, "▶ ")) + "</b><small>" + esc(solo[1]) + "</small>";
+      // against the bot: for the games where solo means on your own
+      $("g-modebot").hidden = !BOT_TEXT[game];
+      $("g-modebot").innerHTML = "<b>🤖 Vs the bot</b><small>" + esc(BOT_TEXT[game] || "") + "</small>";
+      $("g-modebot").onclick = function () { $("g-mode").hidden = true; playBot(game, false); };
+      $("g-modeothers").innerHTML = "<b>🌐 Play online</b><small>" + (showOnline() ? (n ? "🟢 " + n + " online now" : "Find a room or a player") : "🙈 You're hidden") + "</small>";
+      $("g-modeothers").classList.toggle("live", !!n && showOnline());
+      $("g-modeinvite").innerHTML = "<b>💌 Invite a friend</b><small>" + esc(oth[1]) + "</small>";
+      $("g-modeinvite").onclick = function () { openPick(game); };
       $("g-modesolo").onclick = function () { $("g-mode").hidden = true; playSolo(game); };
       // 🔥 Challenge: the champion bot (Ball pass: in Versus only)
       var chal = { race: "A lightning-fast racer. You'll need two thumbs!", bamboo: "A bot that hardly ever misses a catch.",
                    memory: "A bot with a near-perfect memory.", ball: "Power shots and almost no misses.",
-                   penalty: "A keeper that reads your kicks and a striker that rarely misses." }[game];
+                   penalty: "A keeper that reads your kicks and a striker that rarely misses.", beat: "A bot that hardly ever misses a beat." }[game];
       $("g-modechal").hidden = game === "ball" && !vs;
       $("g-modechal").innerHTML = "<b>🔥 Challenge</b><small>" + esc(chal) + "</small>";
       $("g-modechal").onclick = function () { $("g-mode").hidden = true; playBot(game, true); };
       $("g-modeothers").onclick = function () { roomsOpen(game); };
-      $("g-mode").hidden = false;
+      // an odd button out stretches across the row
+      var vis = Array.prototype.filter.call(document.querySelectorAll(".pg-gprow .pg-modebtn"), function (b) { b.classList.remove("wide"); return !b.hidden; });
+      if (vis.length % 2) vis[vis.length - 1].classList.add("wide");
+      $("g-mode").hidden = false; $("g-modebody").scrollTop = 0;
+      drawModeStats(game);
     }
     $("g-modeclose").addEventListener("click", function () { $("g-mode").hidden = true; });
     Array.prototype.forEach.call(document.querySelectorAll("#g-modevs [data-vs]"), function (b) {
@@ -8025,8 +8345,8 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     Array.prototype.forEach.call(document.querySelectorAll(".pg-gamecard[data-game]"), function (b) {
       b.addEventListener("click", function () { openMode(b.dataset.game); });
     });
-    function playSolo(game) { botChallenge = false; if (game === "bamboo") startGame(); else if (game === "memory") startMemory(); else if (game === "ball") ballBot(ballVs); else if (game === "penalty") penBot(); else raceBot(); }
-    function playBot(game, challenge) { botChallenge = !!challenge; if (game === "bamboo") duelBot(); else if (game === "memory") memoryBot(); else if (game === "ball") ballBot(ballVs); else if (game === "penalty") penBot(); else raceBot(); }
+    function playSolo(game) { botChallenge = false; if (game === "beat") startBeat(); else if (game === "bamboo") startGame(); else if (game === "memory") startMemory(); else if (game === "ball") ballBot(ballVs); else if (game === "penalty") penBot(); else raceBot(); }
+    function playBot(game, challenge) { botChallenge = !!challenge; if (game === "beat") beatDuelBot(); else if (game === "bamboo") duelBot(); else if (game === "memory") memoryBot(); else if (game === "ball") ballBot(ballVs); else if (game === "penalty") penBot(); else raceBot(); }
 
     // --- with others: pick who (online players, and friends who are away: they get a notification) ---
     var pick = null;
@@ -8123,6 +8443,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       $("g-pickmem").onclick = function () { $("g-gamepick").hidden = true; then("memory"); };
       $("g-pickball").onclick = function () { $("g-gamepick").hidden = true; then("ball"); };
       $("g-pickpen").onclick = function () { $("g-gamepick").hidden = true; then("penalty"); };
+      $("g-pickbeat").onclick = function () { $("g-gamepick").hidden = true; then("beat"); };
       $("g-pickno").onclick = function () { $("g-gamepick").hidden = true; };
     }
 
@@ -8239,7 +8560,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     });
 
     // ---------- The weekly ranking: wins against other players, resetting every Monday ----------
-    var weekTab = "", WEEK_TABS = [["", "🏆 All"], ["race", "🏁 Race"], ["ball", "⚽ Ball"], ["penalty", "🥅 Penalty"], ["bamboo", "🎋 Bamboo"], ["memory", "🃏 Memory"]];
+    var weekTab = "", WEEK_TABS = [["", "🏆 All"], ["race", "🏁 Race"], ["ball", "⚽ Ball"], ["penalty", "🥅 Penalty"], ["bamboo", "🎋 Bamboo"], ["memory", "🃏 Memory"], ["beat", "🎵 Beat"]];
     function weekLeft(ends) {
       var ms = Date.parse(ends) - Date.now(), d = Math.floor(ms / 86400000), h = Math.max(0, Math.floor(ms % 86400000 / 3600000));
       return d > 0 ? d + "d " + h + "h" : h + "h";
@@ -8292,7 +8613,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     // started), and a "poke" on the room's channel makes the others check at once. When the host starts, the players go
     // into a normal live game, and openPlay() brings them back here afterwards.
     var roomNow = null, roomTimer = null, roomCh = null, roomPickGame = null, roomOpp = null, roomVs = true, roomNewPub = true, roomNewMax = 4, roomStake = 0;
-    var ROOM_LINK_KEY = "petstreak.roomlink", roomGames = ["race", "ball", "penalty", "bamboo", "memory"];
+    var ROOM_LINK_KEY = "petstreak.roomlink", roomGames = ["race", "ball", "penalty", "bamboo", "beat", "memory"];
     function roomsOpen(game) {
       if (game) roomPickGame = game;
       if (roomNow) { roomShow(); return; }
@@ -9055,7 +9376,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         timers.forEach(clearTimeout); timers = [];
         wait.remove();
         players = m.players;
-        if (game === "bamboo") goBamboo(m); else if (game === "memory") goMemory(m); else if (game === "ball") goBall(m); else if (game === "penalty") goPenalty(m); else goRace(m);
+        if (game === "bamboo" || game === "beat") goBamboo(m); else if (game === "memory") goMemory(m); else if (game === "ball") goBall(m); else if (game === "penalty") goPenalty(m); else goRace(m);
         if (host) S.wT = setInterval(wSend, 1000);
       }
       function others() { return players.filter(function (x) { return x.uid !== me.id; }); }
@@ -9115,7 +9436,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       // a Bamboo duel: both phones get the same falling food; the host compares the final scores
       function goBamboo(m) {
         var other = others()[0], latest = 0, sentN = -1, finals = {}, gone = false, judgeT = null, theirs = 0;
-        var bam = startBambooGame({
+        var bam = (game === "beat" ? startBeatDash : startBambooGame)({
           pic: gamePic(p), seed: seedOf(room), live: true, them: { pic: petPic(other.variant), html: petTagHTML(other) },
           onScore: function (n) { latest = n; },
           onQuick: qcSend,
@@ -9145,7 +9466,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
           var won = b === null || b === undefined ? null : a > b ? true : a < b ? false : "draw";
           if (won === null) { endLeft(bam.wrap, "We lost touch with " + label(other) + ". You scored " + a + "."); return; }
           endCard(bam.wrap, won, { big: a + ' <small class="vs">vs ' + b + "</small>", lbl: "points", lost: label(other) + " wins this time!", score: a,
-            against: label(other), again: "🎋 Again" });
+            against: label(other), again: game === "beat" ? "🎵 Again" : "🎋 Again" });
         }
         S.bye = function (uid) {
           if (uid !== other.uid || done) return;
@@ -9389,7 +9710,6 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       var race = startTapRace({
         players: [{ uid: "bot", pic: petPic(botChallenge ? "panda_sakura" : "panda_golden"), html: esc(botName("race")) }, { uid: me.id, pic: gamePic(p), html: tagHTML(p.level, p.name), me: true }],
         onFinish: function () { finish([me.id, "bot"]); },
-        onGo: function () { bot = botRacer(race, "bot", function () { finish(["bot", me.id]); }, botLv("race"), 600); },   // (it starts with the first beat)
         onQuit: function () { if (bot) bot.stop(); raceNow = null; trackMe(); openPlay(); }
       });
       function finish(order) {
@@ -9397,10 +9717,10 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         race.result(order);
         var won = order[0] === me.id;
         logGame("race", "bot", "Bamboo the bot", won ? "won" : "lost", won ? 1 : 2, null);
-        botEnd(race, won ? "1st" : "2nd", botResult("race", won, "You beat Bamboo the bot!", "Bamboo the bot wins! Keep to the beat next time."), raceBot, won ? "win" : "lose");
+        botEnd(race, won ? "1st" : "2nd", botResult("race", won, "You beat Bamboo the bot!", "Bamboo the bot wins! Tap faster next time."), raceBot, won ? "win" : "lose");
       }
       raceNow = { race: race }; trackMe();
-      race.start();
+      race.start(); bot = botRacer(race, "bot", function () { finish(["bot", me.id]); }, botLv("race"));
     }
     // Bamboo the bot catches something every second or so; higher levels catch more often and hit fewer rocks
     function duelBot() {
@@ -9503,7 +9823,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     function soloEnd(wrap, game, res, err, lead, html, again, close) {
       var end = document.createElement("div"); end.className = "pg-gameend";
       end.innerHTML = html +
-        (res ? "<p>" + (res.new_best ? "🏆 Your best today!" : "Your best today: " + res.best) + "</p>" +
+        (res ? (html.indexOf("pg-endever") >= 0 ? "" : "<p>" + (res.new_best ? "🏆 Your best today!" : "Your best today: " + res.best) + "</p>") +
                (res.paws ? '<p class="paws">+' + res.paws + " 🐾</p>" : "") + (lead ? "<p>" + esc(lead) + "</p>" : "")
              : "<p>" + esc(err || "") + "</p>") +
         '<div class="pg-row"><button type="button" class="pg-btn pg-grow" data-a="done">Done</button>' +
@@ -9537,6 +9857,44 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
           soloEnd(wrap, "bamboo", s.res, s.err, s.lead, '<div class="big">' + score + '</div><p class="lbl">points</p>', startGame, close);
         }
       });
+    }
+    // Beat dash solo: 3 hearts, a high score (the best ever is kept on this phone too, for the top of the screen)
+    var BEAT_BEST_KEY = "petstreak.beatbest";
+    function beatBest() { try { return +localStorage.getItem(BEAT_BEST_KEY) || 0; } catch (e) { return 0; } }
+    function startBeat() {
+      var p = pet(); if (!p) return;
+      hidePlayPages();
+      var bd = startBeatDash({
+        pic: gamePic(p), best: beatBest(),
+        onQuit: function () { openPlay(); },
+        onEnd: async function (score, close, wrap, st) {
+          var ever = score > beatBest(); if (ever) { try { localStorage.setItem(BEAT_BEST_KEY, String(score)); } catch (e) {} }
+          var s = await saveSolo("beat", score);
+          soloEnd(wrap, "beat", s.res, s.err, s.lead, '<div class="big">' + score.toLocaleString() + '</div><p class="lbl">points · ' + st.perfect + " perfect · best combo " + st.combo + "</p>" +
+            (ever && score > 0 ? '<p class="pg-endever">🏆 Your best ever!</p>' : ""), startBeat, close);
+        }
+      });
+      bd.start();
+    }
+    // a Beat dash duel with Bamboo the bot: the same beats, scored the same way
+    function beatDuelBot() {
+      var p = pet(); if (!p || raceNow) return;
+      hidePlayPages();
+      var seed = (Math.random() * 1e9) >>> 0, bot = null;
+      var game = startBeatDash({
+        pic: gamePic(p), seed: seed, live: true, them: { pic: petPic(botChallenge ? "panda_sakura" : "panda_golden"), html: esc(botChallenge ? "🔥 Bamboo" : "🤖 Bamboo") },
+        onGo: function () { bot = beatBot(game, botLv("beat"), seed); },
+        onQuit: function () { if (bot) bot.stop(); raceNow = null; trackMe(); openPlay(); },
+        onEnd: function (score) {
+          var b = bot ? bot.score() : 0; if (bot) bot.stop();
+          var won = score > b ? true : score < b ? false : "draw";
+          logGame("beat", "bot", botChallenge ? "Bamboo the champion" : "Bamboo the bot", won === true ? "won" : won === false ? "lost" : "draw", null, score);
+          botEnd(game, score + ' <small class="vs">vs ' + b + "</small>",
+            botResult("beat", won, "You beat Bamboo the bot!", "Bamboo the bot wins! Have another go.", "🤝 A draw with the bot!"), beatDuelBot, won === true ? "win" : won === false ? "lose" : "draw");
+        }
+      });
+      raceNow = { race: game }; trackMe();
+      game.start();
     }
     function startMemory() {
       var p = pet(); if (!p) return;
@@ -9678,6 +10036,26 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       botWelcome("play", $("g-playwelcome"));
       setTimeout(maybePlayTour, 700);
     }
+    // each game card: your best today (score games) or this week's place, and a paw badge while paid games are left
+    async function drawCardStats() {
+      Object.keys(GAMES).forEach(async function (game) {
+        var card = document.querySelector('.pg-gamecard[data-game="' + game + '"]'); if (!card) return;
+        var stat = card.querySelector("[data-stat]"), tags = card.querySelector(".pg-cardtags");
+        if (!tags) { tags = document.createElement("span"); tags.className = "pg-cardtags"; card.appendChild(tags); }
+        try {
+          if (BOARD_NAMES[game]) {
+            var d = await playData(game), mine = d.board.filter(function (r) { return r.me; })[0], paid = Math.max(0, GAME_PAID - d.plays);
+            if (mine && stat) stat.textContent = "Best today " + Number(mine.best).toLocaleString();
+            var paw = tags.querySelector(".pg-pawtag");
+            if (paid) { if (!paw) { paw = document.createElement("em"); paw.className = "pg-pawtag"; tags.appendChild(paw); } paw.textContent = "🐾 " + paid; paw.title = paid + " paw games left today"; }
+            else if (paw) paw.remove();
+          } else {
+            var b = await rpc("weekly_board", { p_game: game });
+            if (b && b.me && stat) stat.textContent = "#" + b.me.place + " this week";
+          }
+        } catch (e) {}
+      });
+    }
     function renderOnlineCount() {
       var n = Object.keys(online).length;
       // a bold green button when people are here (with their pets' faces), a quiet line when nobody is
@@ -9689,7 +10067,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       $("g-onlinecount").classList.toggle("none", !n || !showOnline());
     }
     // the high scores show one game at a time (tabs)
-    var boardGame = "bamboo", BOARD_NAMES = { bamboo: "Bamboo catch", memory: "Memory match" };
+    var boardGame = "bamboo", BOARD_NAMES = { bamboo: "Bamboo catch", memory: "Memory match", beat: "Beat dash" };
     async function playData(game) {
       game = game || boardGame;
       var r = await Promise.all([rpc("my_games_today", { p_game: game, p_tz: tz() }), rpc("game_board", { p_game: game, p_tz: tz() })]);
@@ -9706,7 +10084,8 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         // the pet's day (midnight where the pet lives), the same day the challenge and quests use
         var day = function (d) { try { return new Intl.DateTimeFormat("en-CA", { timeZone: (pets[0] && pets[0].tz) || "UTC" }).format(d); } catch (e) { return d.toDateString(); } }, today = day(new Date());
         $("g-todaycount").textContent = (h || []).filter(function (g) { return day(new Date(g.at)) === today; }).length;
-      }, function () {}); }
+      }, function () {}); drawCardStats(); }
+      return;   // (each game's scores are on its own page now: the board below isn't shown)
       // games without a daily score show this week's wins for that game instead
       if (!BOARD_NAMES[boardGame]) { drawWeekBoard(boardGame); return; }
       $("g-boardtitle").textContent = "Today's best · " + BOARD_NAMES[boardGame];
@@ -9734,7 +10113,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       });
       if (!d.board.length) box.innerHTML = '<li class="pg-logempty">Nobody has played today yet. Be the first! 🎋</li>';
     }
-    var GAME_LABEL = { bamboo: "Bamboo catch", race: "Treat race", memory: "Memory match", ball: "Ball pass", penalty: "Penalty kicks" };
+    var GAME_LABEL = { bamboo: "Bamboo catch", race: "Treat race", memory: "Memory match", ball: "Ball pass", penalty: "Penalty kicks", beat: "Beat dash" };
     // race, ball pass and penalties: the week's wins for that game
     async function drawWeekBoard(game) {
       $("g-boardtitle").textContent = "This week · " + GAME_LABEL[game];
@@ -9778,7 +10157,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     $("g-gamestrip").addEventListener("scroll", function () {
       drawGameDots();
       clearTimeout(stripTimer);
-      stripTimer = setTimeout(function () { var g = drawGameDots(); if (g && g !== boardGame) { boardGame = g; renderPlay(true); } }, 180);
+      stripTimer = setTimeout(function () { var g = drawGameDots(); if (g) boardGame = g; }, 180);
     }, { passive: true });
     // today's challenge: one goal, 15 paws
     var challenge = null;
@@ -9815,6 +10194,12 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     Array.prototype.forEach.call(document.querySelectorAll(".pg-boardtabs [data-board]"), function (b) {
       b.addEventListener("click", function () { boardGame = b.dataset.board; renderPlay(true); });
     });
+    // ⚙ in the Playground header: the online switch and the small print
+    $("g-playset").addEventListener("click", function (e) {
+      e.stopPropagation(); var open = $("g-playsetpanel").hidden;
+      $("g-playsetpanel").hidden = !open; this.setAttribute("aria-expanded", open ? "true" : "false");
+    });
+    document.addEventListener("click", function (e) { if (!$("g-playsetpanel").hidden && !e.target.closest("#g-playsetpanel, #g-playset")) { $("g-playsetpanel").hidden = true; $("g-playset").setAttribute("aria-expanded", "false"); } });
     $("g-showonline").addEventListener("change", function () {
       try { localStorage.setItem(SHOW_ONLINE_KEY, $("g-showonline").checked ? "on" : "off"); } catch (e) {}
       syncLobby(); renderOnlineCount();
@@ -10064,12 +10449,35 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       rpc("record_game", { p_game: game, p_mode: mode, p_against: against || null, p_result: result || null, p_place: place || null,
         p_score: score === undefined || score === null ? null : score }).catch(function () {});
     }
+    var histAll = [], histStakes = [], histGame = "";
     async function openHistory() {
-      $("g-history").hidden = false;
-      var box = $("g-histlist"); box.innerHTML = '<li class="pg-logempty">Loading…</li>'; $("g-histsum").textContent = "";
-      var list;
-      try { list = (await rpc("my_game_history")) || []; }
+      $("g-history").hidden = false; histGame = "";
+      var box = $("g-histlist"); box.innerHTML = '<li class="pg-logempty">Loading…</li>'; $("g-histsum").textContent = ""; $("g-histbests").innerHTML = ""; $("g-histchips").innerHTML = "";
+      try { histAll = (await rpc("my_game_history")) || []; }
       catch (e) { box.innerHTML = '<li class="pg-logempty">' + esc(/my_game_history/.test(e.message) ? "Game history isn't switched on yet." : e.message) + "</li>"; return; }
+      histStakes = [];
+      try { histStakes = (await rpc("my_stakes")) || []; } catch (e) {}
+      // your bests this week: the top score in each score game, and wins in the others
+      var bests = Object.keys(GAMES).map(function (k) {
+        var mine = histAll.filter(function (g) { return g.game === k; }); if (!mine.length) return "";
+        var v = BOARD_NAMES[k] || k === "ball" ? Math.max.apply(null, mine.map(function (g) { return g.score || 0; })).toLocaleString()
+              : mine.filter(function (g) { return g.result === "won" || g.place === 1; }).length + " won";
+        return '<span><i aria-hidden="true">' + GAMES[k].art + "</i><b>" + esc(v) + "</b><small>" + esc(BOARD_NAMES[k] ? "best" : k === "ball" ? "best passes" : GAMES[k].name) + "</small></span>";
+      }).join("");
+      $("g-histbests").innerHTML = bests;
+      var used = Object.keys(GAMES).filter(function (k) { return histAll.some(function (g) { return g.game === k; }); });
+      $("g-histchips").innerHTML = used.length > 1 ? [["", "All"]].concat(used.map(function (k) { return [k, GAMES[k].art + " " + GAMES[k].name]; }))
+        .map(function (c) { return '<button type="button" class="pg-chip' + (c[0] === histGame ? " on" : "") + '" data-hg="' + c[0] + '">' + esc(c[1]) + "</button>"; }).join("") : "";
+      drawHistory();
+    }
+    $("g-histchips").addEventListener("click", function (e) {
+      var b = e.target.closest("[data-hg]"); if (!b) return;
+      histGame = b.dataset.hg;
+      Array.prototype.forEach.call(this.children, function (c) { c.classList.toggle("on", c === b); });
+      drawHistory();
+    });
+    function drawHistory() {
+      var box = $("g-histlist"), list = histAll.filter(function (g) { return !histGame || g.game === histGame; });
       var won = list.filter(function (g) { return g.mode === "live" && g.result === "won"; }).length, lives = list.filter(function (g) { return g.mode === "live"; }).length;
       $("g-histsum").textContent = list.length ? list.length + (list.length === 1 ? " game" : " games") + " this week" + (lives ? " · " + won + " of " + lives + " live games won 🏆" : "") : "";
       box.innerHTML = "";
@@ -10090,8 +10498,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
           '<span class="res ' + cls + '">' + esc(res) + "</span>";
         box.appendChild(li);
       });
-      var stakes = [];
-      try { stakes = (await rpc("my_stakes")) || []; } catch (e) {}
+      var stakes = histStakes.filter(function (x) { return !histGame || x.game === histGame; });
       if (stakes.length) { if (!list.length) box.innerHTML = ""; var sh = document.createElement("li"); sh.className = "pg-histday"; sh.textContent = "🐾 Paw games"; box.appendChild(sh); }
       stakes.forEach(function (x) {
         var G = GAMES[x.game] || GAMES.race, li = document.createElement("li"), paid = x.status === "paid";
