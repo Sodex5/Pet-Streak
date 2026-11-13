@@ -3055,6 +3055,56 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
 .pg-botnote { margin: 6px 0 0; color: #8a9aa1; font-size: 0.76rem; }
 #g-find, #g-chal { z-index: 34; }
 .pg-rankrules span .cap { margin: 0 0 0 auto; padding-right: 4px; font-size: 0.7rem; color: #8a9aa1; }
+
+/* ===== Room themes and decorations ===== */
+.rm-scene.th-beach .rm-wall { background: linear-gradient(#fff6e0, #f6e2b5); border-bottom-color: #c9a46a; }
+.rm-scene.th-beach .rm-wall::before { background: repeating-linear-gradient(90deg, transparent 0 30px, rgba(127,211,230,0.18) 30px 34px); }
+.rm-scene.th-beach .rm-window { background: linear-gradient(#8fd3ff 0 45%, #3fb1d9 45% 70%, #f3dca2 70%); }
+.rm-scene.th-beach .rm-floor { background: radial-gradient(ellipse at 50% 40%, rgba(255,255,255,0.25), transparent 70%), repeating-linear-gradient(90deg, #f1d9a3 0 64px, #ead09a 64px 66px); }
+.rm-scene.th-snow .rm-wall { background: linear-gradient(#f2f8ff, #dceaf8); border-bottom-color: #8fa9c4; }
+.rm-scene.th-snow .rm-wall::before { background: radial-gradient(circle, rgba(255,255,255,0.9) 1.5px, transparent 2px) 0 0 / 22px 22px; }
+.rm-scene.th-snow .rm-window { background: linear-gradient(#b9d3ec, #eef5fc 65%, #fff); }
+.rm-scene.th-snow .rm-floor { background: radial-gradient(ellipse at 50% 40%, rgba(255,255,255,0.5), transparent 70%), repeating-linear-gradient(90deg, #dfe9f3 0 64px, #d4e1ee 64px 66px); }
+.rm-scene.th-night .rm-wall { background: linear-gradient(#2b2f6b, #3a3f8f); border-bottom-color: #22255a; }
+.rm-scene.th-night .rm-wall::before { background: radial-gradient(circle, rgba(255,255,255,0.85) 1px, transparent 1.5px) 0 0 / 26px 26px, radial-gradient(circle, rgba(255,214,107,0.7) 1.2px, transparent 1.8px) 13px 9px / 34px 30px; }
+.rm-scene.th-night .rm-window { background: radial-gradient(circle at 70% 30%, #fff6c8 0 9px, transparent 10px), linear-gradient(#111a45, #2b3a8a); border-color: #c9cdf5; }
+.rm-scene.th-night .rm-floor { background: radial-gradient(ellipse at 50% 40%, rgba(160,140,255,0.2), transparent 70%), repeating-linear-gradient(90deg, #4a3f7a 0 64px, #43386f 64px 66px); }
+.rm-scene.th-night .rm-tip, .rm-scene.th-night .rm-seat { color: #2b2f6b; }
+.rm-walldecor, .rm-floordecor { position: absolute; inset: 0; pointer-events: none; }
+.rm-dec { position: absolute; font-style: normal; line-height: 1; filter: drop-shadow(0 3px 2px rgba(0,0,0,0.2)); }
+.rm-dec.rd_poster { left: 32%; top: 16%; width: 34px; height: 44px; display: grid; place-items: center; font-size: 1.2rem; background: #fff; border: 3px solid #ff8a4c; border-radius: 4px; transform: rotate(-4deg); }
+.rm-dec.rd_shelf { left: 64%; bottom: 6%; width: 50px; height: 34px; display: grid; place-items: center; font-size: 1.3rem; background: #a0693c; border-radius: 4px; box-shadow: inset 0 -5px 0 #7d4f2a; }
+.rm-dec.rd_plant { left: 3%; top: -4%; font-size: 2.4rem; }
+.rm-dec.rd_lamp { right: 4%; top: -6%; font-size: 1.6rem; padding-bottom: 26px; background: linear-gradient(#6b5a4a, #6b5a4a) center bottom / 4px 28px no-repeat; }
+.rm-dec.rd_lamp::after { content: ""; position: absolute; left: 50%; bottom: 0; width: 20px; height: 5px; margin-left: -10px; border-radius: 50%; background: #6b5a4a; }
+.rm-dec.rd_fish { left: 3%; bottom: 36%; width: 46px; height: 32px; display: grid; place-items: center; font-size: 1.1rem; background: rgba(74,168,255,0.45); border: 2px solid rgba(255,255,255,0.9); border-radius: 8px 8px 4px 4px; }
+.rm-decorate { position: absolute; right: calc(4% + 58px); top: 50%; transform: translateY(-50%); width: 44px; height: 44px; border: 0; border-radius: 14px; background: #fff; font-size: 1.3rem; box-shadow: 0 3px 0 #d9b48c; z-index: 2; }
+.rm-decorate[hidden] { display: none; }
+.rm-decorpanel { padding: 0 12px 14px; gap: 6px; }
+.rm-decgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }
+.rm-deccard { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 8px 6px 10px; border: 2px solid #e6ecef; border-radius: 16px; background: #fafbfc; font: inherit; color: #14232b; }
+.rm-deccard.on { border-color: #2fbf71; background: #effaf3; }
+.rm-deccard .art { width: 56px; height: 42px; display: grid; place-items: center; font-style: normal; font-size: 1.5rem; border-radius: 10px; background: #f6d9b8; }
+.rm-deccard .art.th-rt_beach { background: linear-gradient(#8fd3ff 0 50%, #f1d9a3 50%); }
+.rm-deccard .art.th-rt_snow { background: linear-gradient(#eef5fc 0 50%, #dfe9f3 50%); }
+.rm-deccard .art.th-rt_night { background: linear-gradient(#2b2f6b 0 50%, #4a3f7a 50%); }
+.rm-deccard b { font-size: 0.76rem; text-align: center; }
+.rm-deccard small { font-size: 0.7rem; font-weight: 700; color: #55666e; }
+.rm-deccard.on small { color: #1a7f4b; }
+.rm-askart { font-size: 2.6rem; }
+/* the arcade sign during a game: a live score */
+.rm-arcade.live { background: #a32d2d; box-shadow: 0 3px 0 #6e1d1d; }
+.rm-arcade.live small { color: #ffd2d2; }
+/* the result card: challenge them back */
+.pg-chalback { display: block; width: 100%; margin: 10px 0 0; background: linear-gradient(#e2574b, #c43b2f); box-shadow: 0 4px 0 #8f251c; }
+/* admin: games and the auto-pay switch */
+#g-adgamescard .bars i.l1, #g-adgamescard .pg-adlegend i.l1 { background: #2fbf71; }
+#g-adgamescard .bars i.l2, #g-adgamescard .pg-adlegend i.l2 { background: #7f77dd; }
+#g-adgamescard .bars i.l3, #g-adgamescard .pg-adlegend i.l3 { background: #c7d1d6; }
+.pg-adauto { display: flex; align-items: center; gap: 12px; margin: 0 0 10px; padding: 10px 12px; border-radius: 14px; background: #f4f6f8; }
+.pg-adauto[hidden] { display: none; }
+.pg-adauto .pg-grow { display: flex; flex-direction: column; }
+.pg-adauto small { color: #55666e; font-size: 0.74rem; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -3467,10 +3517,12 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         <div class="rm-wall">
           <button type="button" class="rm-arcade" id="g-roomarcade"><i aria-hidden="true">🕹️</i><span><b id="g-roomarcadegame">Pick a game</b><small id="g-roomarcadesub"></small></span></button>
           <span class="rm-window" aria-hidden="true"></span>
-          <span class="rm-shelf" aria-hidden="true">🪴</span>
+          <span class="rm-walldecor" id="g-roomwalldecor" aria-hidden="true"></span>
+          <button type="button" class="rm-decorate" id="g-roomdecorate" aria-label="Decorate your room" hidden>🎨</button>
           <button type="button" class="rm-toybox" id="g-roomtoybox" aria-label="Toys">🧸</button>
         </div>
         <div class="rm-floor" id="g-roomfloor">
+          <span class="rm-floordecor" id="g-roomfloordecor" aria-hidden="true"></span>
           <div class="rm-mat" id="g-roommat"><i class="rm-matring" aria-hidden="true"></i><span class="rm-matpaws" id="g-roommatpaws" aria-hidden="true"></span><span class="rm-matsign" id="g-roommatlbl">Stand here when ready</span></div>
           <button type="button" class="rm-seat" id="g-roomseat" hidden>＋ Invite</button>
           <span class="rm-ball" id="g-roomball" aria-label="Ball" role="button">⚽</span>
@@ -3494,6 +3546,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         </div>
         <div class="rm-panel rm-grid" data-rp="emo" id="g-roomemos" hidden></div>
         <div class="rm-panel rm-grid" data-rp="toys" id="g-roomtoys" hidden></div>
+        <div class="rm-panel rm-decorpanel" data-rp="decor" id="g-roomdecor" hidden></div>
         <div class="rm-panel rm-gamepanel" data-rp="game" hidden>
           <div class="pg-roomgame" id="g-roomgame"></div>
           <h3 class="rm-subhead">Players</h3>
@@ -3925,6 +3978,9 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
           <div class="pg-adcard"><h3>Last 7 days</h3><div class="pg-adchart" id="g-adweek"></div>
             <p class="pg-adlegend"><i class="l1" aria-hidden="true"></i>Fed their pet <i class="l2" aria-hidden="true"></i>Did a quest</p></div>
           <div class="pg-adcard"><h3>Most-done quests <small>last 7 days</small></h3><ol class="pg-adquests" id="g-adquests"></ol></div>
+          <div class="pg-adcard" id="g-adgamescard" hidden><h3>🎮 Games <small>last 7 days</small></h3><div class="pg-adchart" id="g-adgames"></div>
+            <p class="pg-adlegend"><i class="l1" aria-hidden="true"></i>Against players <i class="l2" aria-hidden="true"></i>Against bots <i class="l3" aria-hidden="true"></i>Solo</p>
+            <div class="pg-adbars" id="g-adgamebars"></div></div>
           <div class="pg-adcard" id="g-adpawscard" hidden><h3>🐾 Paws this week <small id="g-adpawsheld"></small></h3><div class="pg-adchart" id="g-adpaws"></div>
             <p class="pg-adlegend"><i class="l3" aria-hidden="true"></i>Given out <i class="l4" aria-hidden="true"></i>Spent</p>
             <div class="pg-adflow"><div><h4>Came from</h4><ol id="g-adpawsfrom"></ol></div><div><h4>Went on</h4><ol id="g-adpawsto"></ol></div></div></div>
@@ -3951,7 +4007,9 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
           <div class="pg-adcard" id="g-adminfb" hidden><h3>Feedback <small id="g-fbcount"></small></h3><div id="g-fblist"></div><button type="button" class="pg-btn" id="g-fbdone" hidden></button></div>
         </section>
         <section data-apane="tools" hidden>
-          <div class="pg-adcard"><h3>🏆 Weekly prizes <small>you decide who gets paid</small></h3><div id="g-adprizes"></div></div>
+          <div class="pg-adcard"><h3>🏆 Prizes <small>you decide who gets paid</small></h3>
+            <label class="pg-adauto" id="g-adautorow" hidden><span class="pg-grow"><b>Pay ranking prizes automatically</b><small>Each day's and week's top 3 get their XP and paws as soon as it ends</small></span><input type="checkbox" id="g-adauto" class="pg-switch"></label>
+            <div id="g-adprizes"></div></div>
           <div class="pg-adcard"><h3>📢 Announcement</h3>
             <p class="pg-note">Shown once to every player when they open the app, for 14 days.</p>
             <textarea id="g-adminnews" class="pg-adminnews" maxlength="200" rows="2" placeholder="Your message to all players" aria-label="Announcement"></textarea>
@@ -7861,7 +7919,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     }
     function close() { over = true; live = false; cancelAnimationFrame(raf); clearTimeout(lateT); timers.forEach(clearTimeout); window.removeEventListener("keydown", onKey); wrap.remove(); }
     wrap.querySelector(".pg-gamex").addEventListener("click", function () {
-      if (live && !over && !confirm("Stop the game?")) return;
+      if (live && !over && !opts.live && !confirm("Stop the game?")) return;
       close(); if (opts.onQuit) opts.onQuit();
     });
     function go() {
@@ -8135,7 +8193,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     }
     function close() { over = true; clearTimeout(waitT); clearTimeout(lostT); cancelAnimationFrame(raf); timers.forEach(clearTimeout); wrap.remove(); }
     q(".pg-gamex").addEventListener("click", function () {
-      if (live && !over && !confirm("Stop the game?")) return;
+      if (live && !over && !opts.live && !confirm("Stop the game?")) return;
       close(); if (opts.onQuit) opts.onQuit();
     });
     function go() { live = true; msg.textContent = ""; nextKick(); }
@@ -8181,7 +8239,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261113084056";   // replaced by build_real.ps1
+    var APP_BUILD = "20261113091205";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -8824,6 +8882,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         .on("broadcast", { event: "chatup" }, function (m) { gotChatUpdate(m.payload); })
         .on("broadcast", { event: "roominv" }, function (m) { gotRoomInvite(m.payload); })
         .on("broadcast", { event: "chal" }, function (m) { if (m.payload && m.payload.to === me.id) chalCheck(true); })
+        .on("broadcast", { event: "chalgo" }, function (m) { if (m.payload && m.payload.to === me.id && chalNow && chalNow.id === m.payload.id) chalNow.last = 0; })
         .on("broadcast", { event: "typing" }, function (m) { gotTyping(m.payload); })
         .subscribe(function (status) { if (status === "SUBSCRIBED") { lobbyReady = true; lastTracked = ""; trackMe(); } });
     }
@@ -9336,8 +9395,14 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       if (b.prize) {
         say("🏆 You came #" + b.prize.place + (b.prize.kind === "week" ? " this week" : " today") + "! +" + b.prize.xp + " XP" + (b.prize.paws ? " and " + b.prize.paws + " paws 🐾" : ""));
         sfx("levelUp"); loadAll({ quiet: true });
+      } else if (b.alert) {
+        say("😮 " + (b.alert.name || shownPetName(b.alert.pet)) + " took your #" + b.alert.place + " spot! Win it back before 6 pm.");
+        sfx("pat");
       }
     }
+    // I just gained points: if that pushed someone off their top-3 spot, they get a notification
+    function rankKnock() { try { sb.functions.invoke("send-friend-push", { body: { kind: "knocked" } }).catch(function () {}); } catch (e) {} }
+    document.addEventListener("visibilitychange", function () { if (!document.hidden && me && pet()) setTimeout(loadWeekSub, 2500); });
     function loadWeekSub() { rpc("rank_board", { p_range: "today" }).then(rankSub, function () { rpc("weekly_board").then(function (b) { $("g-weekrank").textContent = b.me ? "#" + b.me.place : "–"; $("g-statwins").textContent = b.me ? b.me.wins : 0; weekSub(b); }, function () {}); }); }
     // ---------- The ranking: points today (resets at 6 pm Nigeria time) and this week ----------
     var RANK_TABS = [["today", "Today"], ["week", "This week"]];
@@ -9489,7 +9554,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     $("g-chalyes").addEventListener("click", async function () {
       var C = chalNow; if (!C || C.c.mine) return;
       $("g-chalyes").disabled = true;
-      try { var st = await rpc("challenge_answer", { p_id: C.id, p_ok: true }); chalClose(); chalPlay(st, false); }
+      try { var st = await rpc("challenge_answer", { p_id: C.id, p_ok: true }); sendLive("chalgo", { to: st.from, id: st.id }); chalClose(); chalPlay(st, false); }
       catch (e) { chalClose(); say(friendly(e.message)); }
       $("g-chalyes").disabled = false;
     });
@@ -9678,6 +9743,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       var had = R.members.map(function (m) { return m.uid; }), first = R.seq === null;
       R.code = s.code; R.pub = s.public; R.max = s.max; R.host = s.host; R.members = s.members; R.stake = s.stake || null;
       R.game = s.game; R.gameRoom = s.game_room; R.gamePlayers = s.game_players || [];
+      if (JSON.stringify(s.look || null) !== JSON.stringify(R.look2 || null)) { R.look2 = s.look || null; rmApplyLook(R.look2); }
       R.members.forEach(function (m) { R.names[m.uid] = shownPetName(m.pet); });
       rmSync();
       if (first && s.host === me.id && !R.tab) roomTab("game");
@@ -9911,20 +9977,31 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       var W = watchNow; $("g-watch").hidden = true; if (!W) return;
       watchNow = null; clearInterval(W.t); W.R.close();
     }
-    function watchOpen() {
+    // the live score for the arcade sign: "Bo 3 · 2 Ada", or who's ahead
+    function arcadeScore(W) {
+      var m = W.m || {}, s = m.s || {}; if (!W.m) return "";
+      var u = W.uids.slice().sort(function (a, b) { return (s[b] | 0) - (s[a] | 0); });
+      if (m.max) return roomName(u[0]) + " is ahead";
+      if (W.uids.length === 2) return roomName(W.uids[0]) + " " + (s[W.uids[0]] | 0) + " · " + (s[W.uids[1]] | 0) + " " + roomName(W.uids[1]);
+      return roomName(u[0]) + " leads · " + (s[u[0]] | 0);
+    }
+    function watchOpen(silent) {
       var r = roomNow; if (!r || !r.gameRoom) return;
+      if (!silent && watchNow && watchNow.silent && watchNow.room === r.gameRoom) { watchNow.silent = false; $("g-watch").hidden = false; drawWatch(watchNow); return; }
       watchClose();
-      var W = watchNow = { R: openRoom(r.gameRoom), game: r.game, uids: r.gamePlayers.slice(), last: Date.now(), m: null, over: false };
+      var W = watchNow = { R: openRoom(r.gameRoom), room: r.gameRoom, silent: !!silent, game: r.game, uids: r.gamePlayers.slice(), last: Date.now(), m: null, over: false };
       W.R.on("w", function (m) { if (watchNow !== W) return; W.m = m; W.last = Date.now(); W.over = !!m.done; drawWatch(W); });
       W.R.on("bye", function (m) {
         if (watchNow !== W || W.over || (W.uids.length > 2 && !(roomNow && m.uid === roomNow.host))) return;
         W.over = true; W.left = m.uid; drawWatch(W);
       });
       W.t = setInterval(function () { if (!W.over && Date.now() - W.last > 8000) { W.over = true; drawWatch(W); } }, 1000);
-      $("g-watch").hidden = false; drawWatch(W);
+      $("g-watch").hidden = !!silent; drawWatch(W);
     }
     function drawWatch(W) {
       var r = roomNow, G = GAMES[W.game], m = W.m || {}, s = m.s || {}, box = $("g-watchlist"); if (!r) return;
+      if (rmS) { var sc = arcadeScore(W); if (sc && !W.over) $("g-roomarcadesub").textContent = sc; }
+      if (W.silent) return;
       $("g-watchtitle").innerHTML = G.art + " " + esc(G.name);
       var best = Math.max.apply(null, W.uids.map(function (u) { return s[u] | 0; }));
       var top = W.uids.filter(function (u) { return (s[u] | 0) === best; });
@@ -10137,6 +10214,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       Object.keys(rmS.pets).forEach(function (u) { if (!here[u]) { rmS.pets[u].el.remove(); delete rmS.pets[u]; } });
       // an empty spot by the door: invite someone
       var seat = $("g-roomseat"); seat.hidden = R.members.length >= R.max;
+      $("g-roomdecorate").hidden = R.host !== me.id;
       rmMatLabel();
     }
     function rmMe() { return (rmS && rmS.pets[me.id]) || { x: 0.5, y: 0.4, tx: 0.5, ty: 0.4, ready: false }; }
@@ -10153,8 +10231,12 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       rmGoButton();
       // the arcade board on the wall: the next game
       var g = R.host === me.id ? roomPickGame : rmS.hostGame, G = g === "random" ? ROOM_RANDOM : g && GAMES[g], live = roomLive();
-      $("g-roomarcadegame").textContent = live ? "👀 Watch " + GAMES[R.game].name : G ? G.art + " " + G.name : R.host === me.id ? "Pick a game" : "No game yet";
-      $("g-roomarcadesub").textContent = live ? "A game is on" : R.host === me.id ? (!G ? "Tap to choose" : R.members.length < 2 ? "Waiting for players" : "Tap to start") : "The host picks";
+      if (live && !watchNow) watchOpen(true);
+      if (!live && watchNow && watchNow.silent) watchClose();
+      var score = live && watchNow ? arcadeScore(watchNow) : "";
+      $("g-roomarcadegame").textContent = live ? "🔴 " + GAMES[R.game].art + " " + GAMES[R.game].name : G ? G.art + " " + G.name : R.host === me.id ? "Pick a game" : "No game yet";
+      $("g-roomarcadesub").textContent = live ? (score || "Live now · tap to watch") : R.host === me.id ? (!G ? "Tap to choose" : R.members.length < 2 ? "Waiting for players" : "Tap to start") : "The host picks";
+      $("g-roomarcade").classList.toggle("live", !!live);
     }
     // where a tap lands on the floor, from 0 to 1 each way
     function rmFloorAt(e) {
@@ -10330,9 +10412,49 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       var seed = (Math.random() * 1e9) | 0;
       rmToyGo(kind, seed, me.id); rmSend({ k: "toy", t: kind, s: seed });
     }
+    // ---------- the room's look: the host's theme and decorations (bought with paws, like other items) ----------
+    var RM_THEMES = [["", "🏠", "Cosy treehouse"], ["rt_beach", "🏖️", "Beach hut"], ["rt_snow", "❄️", "Snowy cabin"], ["rt_night", "🌙", "Starry night"]];
+    var RM_DECOR = { rd_plant: ["floor", "🪴"], rd_poster: ["wall", "🏆"], rd_lamp: ["floor", "💡"], rd_shelf: ["wall", "📚"], rd_fish: ["floor", "🐠"] };
+    function rmApplyLook(look) {
+      var sc = $("g-roomscene"); look = look || {};
+      sc.className = "rm-scene" + (look.theme ? " th-" + look.theme.replace("rt_", "") : "");
+      var wall = "", floor = "";
+      (look.decor || []).forEach(function (id) {
+        var d = RM_DECOR[id]; if (!d) return;
+        var h = '<i class="rm-dec ' + id + '">' + d[1] + "</i>";
+        if (d[0] === "wall") wall += h; else floor += h;
+      });
+      $("g-roomwalldecor").innerHTML = wall; $("g-roomfloordecor").innerHTML = floor;
+    }
+    function drawDecor() {
+      var box = $("g-roomdecor"), R = roomNow; if (!R) return;
+      var mine = (R.look2 || {}).theme || "";
+      function card(id, art, name, kind) {
+        var it = id ? item(id) : null, have = !id || !!owned[id], on = kind === "theme" ? (mine === id) : have;
+        var b = document.createElement("button"); b.type = "button"; b.className = "rm-deccard" + (on ? " on" : "");
+        b.innerHTML = '<i class="art th-' + (id || "cozy") + '">' + art + "</i><b>" + esc(name) + "</b><small>" +
+          (kind === "theme" ? (on ? "✓ In use" : have ? "Use it" : "🐾 " + (it ? cost(it) : "")) : have ? "✓ In your room" : "🐾 " + (it ? cost(it) : "")) + "</small>";
+        b.addEventListener("click", async function () {
+          if (!have) {
+            if (!it) return;
+            var ok = await storeAsk({ pic: '<span class="rm-askart">' + art + "</span>", title: "Buy " + name + "?", text: (kind === "theme" ? "A new look for your room. " : "It goes in your room for everyone to see. ") + "🐾 " + cost(it) + " paws.", ok: "Buy for 🐾 " + cost(it) });
+            if (ok !== "ok") return;
+            try { await rpc("buy_item", { p_item: id }); owned[id] = true; loadAll({ quiet: true }); celebrate({ pic: '<span class="rm-askart">' + art + "</span>", title: name + " is yours!", text: kind === "theme" ? "It's on in your room now." : "It's in your room now." }); }
+            catch (e) { say(friendly(e.message)); return; }
+          }
+          if (kind === "theme") { try { await rpc("room_set_theme", { p_item: id || null }); } catch (e) { say(friendly(e.message)); return; } }
+          roomPoke(); roomPoll(); setTimeout(drawDecor, 700);
+        });
+        return b;
+      }
+      box.innerHTML = '<h3 class="rm-subhead">Room theme</h3><div class="rm-decgrid" id="g-decthemes"></div><h3 class="rm-subhead">Decorations</h3><div class="rm-decgrid" id="g-decitems"></div>';
+      RM_THEMES.forEach(function (t) { $("g-decthemes").appendChild(card(t[0], t[1], t[2], "theme")); });
+      ["rd_plant", "rd_poster", "rd_lamp", "rd_shelf", "rd_fish"].forEach(function (id) { var it = item(id); if (it) $("g-decitems").appendChild(card(id, RM_DECOR[id][1], it.name, "decor")); });
+    }
+    $("g-roomdecorate").addEventListener("click", function () { roomTab("decor"); drawDecor(); });
     // the panel under the room: chat, emotes, toys or the game
     var rmSwallowAt = 0;   // (the tap that closes a sheet doesn't also walk the pet)
-    var RM_SHEET_TITLES = { chat: "💬 Chat", emo: "😄 Emotes", toys: "🧸 Toys", game: "🕹️ Game" };
+    var RM_SHEET_TITLES = { chat: "💬 Chat", emo: "😄 Emotes", toys: "🧸 Toys", game: "🕹️ Game", decor: "🎨 Decorate your room" };
     function roomTab(which) {
       var open = which || null;
       Array.prototype.forEach.call(document.querySelectorAll("#g-roomtabs [data-rp]"), function (b) { b.setAttribute("aria-pressed", b.dataset.rp === open ? "true" : "false"); });
@@ -10598,7 +10720,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         clearInterval(hereTimer);
         R.send("here", { who: mine, v: GAME_PROTO });
         hereTimer = setInterval(function () { R.send("here", { who: mine, v: GAME_PROTO }); }, 800);
-        timers.push(setTimeout(function () { if (!players.length) { clearInterval(hereTimer); drawWait("This game has ended or couldn't be reached.", [{ text: "Back to the Playground", primary: true, go: function () { leave(); openPlay(); } }]); } }, 12000));
+        timers.push(setTimeout(function () { if (!players.length) { clearInterval(hereTimer); drawWait("This game has ended or couldn't be reached.", [{ text: "Back to the Playground", primary: true, go: function () { leave(); openPlay(); } }]); } }, 25000));   // (a host on a slow phone can take a while to open the game)
       });
       R.on("seat", function (m) {
         if (host || !(m.players || []).some(function (x) { return x.uid === me.id; })) return;
@@ -10881,6 +11003,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         wrap.appendChild(end);
         stakeLine(end);
         if (won === true || won === false) rankLine(end);
+        if (won === false && lone) chalBackOffer(end, lone);
         sfx(won === true ? "levelUp" : "pat");
         end.querySelector('[data-a="done"]').addEventListener("click", function () { cleanup(); openPlay(); if (!roomNow) openMode(game); });
         var ag = end.querySelector('[data-a="again"]');
@@ -10889,6 +11012,20 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         if (fr) fr.addEventListener("click", async function () { if (await addFriendPet(stranger)) { fr.disabled = true; fr.textContent = "Request sent ✓"; } });
         var bl = end.querySelector('[data-a="block"]');
         if (bl) bl.addEventListener("click", function () { cleanup(); openPlay(); openPetOpts(stranger); });
+      }
+      // lost to someone in today's top 3 (and above me)? A button to challenge them right back
+      function chalBackOffer(end, them) {
+        setTimeout(function () {
+          rpc("rank_board", { p_range: "today" }).then(function (b) {
+            if (!b || S.closed) return;
+            var r = (b.rows || []).filter(function (x) { return x.uid === them.uid; })[0];
+            if (!r || r.place > 3 || r.challenged || b.left <= 0 || (b.me && b.me.place < r.place)) return;
+            var name = r.name || shownPetName(r.pet), btn = document.createElement("button");
+            btn.type = "button"; btn.className = "pg-feed pg-chalback"; btn.textContent = "⚔️ Challenge " + name + " back (+" + b.beat[r.place - 1] + ")";
+            btn.addEventListener("click", function () { cleanup(); openPlay(); challengeAsk(r, b, name); });
+            var row = end.querySelector(".pg-row"); end.insertBefore(btn, row);
+          }, function () {});
+        }, 3500);   // (after both results are in)
       }
       // the ranking points this game gave (or a lost challenge took): both phones report first, so check a few times
       function rankLine(end) {
@@ -10901,6 +11038,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
             line.hidden = false;
             line.textContent = x.pts > 0 ? "🏆 +" + x.pts + " ranking points" + (x.reason === "challenge" ? " · challenge won!" : "") : "💔 " + x.pts + " points · challenge lost";
             line.classList.toggle("down", x.pts < 0);
+            if (x.pts > 0) rankKnock();
             loadWeekSub();
           }, function () {});
         })();
@@ -10930,13 +11068,28 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         end.innerHTML = '<p>' + esc(text) + "</p>" + endButtons(false, roomNow ? "← Back to the room" : "← Back to " + GAMES[game].name);
         endHero(end, "left");
         wrap.appendChild(end); stakeLine(end, true);
+        // they left: that's my win (it counts once their phone has reported the loss)
+        if (started && players.length <= 2) {
+          rpc("report_match", { p_room: room, p_game: game, p_won: true }).then(function () { rankLine(end); }, function () {});
+          if (/left the game/.test(text)) end.querySelector("p").textContent += " You win! 🏆";
+        }
         end.querySelector('[data-a="done"]').addEventListener("click", function () { cleanup(); openPlay(); });
       }
-      function leave() { R.send("bye", { uid: me.id }); cleanup(); }
+      function leave() {
+        if (started && !S.stakeOver && players.length <= 2) rpc("report_match", { p_room: room, p_game: game, p_won: false }).catch(function () {});
+        R.send("bye", { uid: me.id }); cleanup();
+      }
+      // ✕ during a game against someone: leaving counts as a loss, so ask first (a paw game asks its own way)
+      function quitGuard(e) {
+        if (!started || S.closed || S.stakeOver || S.quitOk || (S.stakeAmt && !S.stakeOver) || !e.target.closest || !e.target.closest(".pg-gamex")) return;
+        if (!confirm(players.length <= 2 ? "Leave the game? Leaving counts as a loss." : "Leave the game?")) { e.stopPropagation(); e.preventDefault(); return; }
+        S.quitOk = true;
+      }
+      document.addEventListener("click", quitGuard, true);
       function cleanup() {
         if (S.closed) return; S.closed = true;
         clearInterval(hereTimer); clearInterval(S.wT); clearInterval(S.hbT); clearTimeout(autoT); timers.forEach(clearTimeout);
-        document.removeEventListener("click", stakeGuard, true); stakeClose();
+        document.removeEventListener("click", stakeGuard, true); document.removeEventListener("click", quitGuard, true); stakeClose();
         if (S.stop) S.stop(); else if (view) view.close();
         wait.remove(); R.close();
         if (raceNow === S) raceNow = null;
@@ -11015,6 +11168,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         if (mood === "win" && rb.id) rpc("rank_bot_win", { p_id: rb.id }).then(function (x) {
           var line = end.querySelector(".pg-rankline"); if (!line || !x) return;
           line.hidden = false; line.textContent = x.counted ? "🏆 +" + x.pts + " ranking points" : x.cap ? "Bot wins after 10 today don't add points. Play a real player for +5!" : "";
+          if (x.counted) rankKnock();
           loadWeekSub();
         }, function () {});
       }
@@ -12297,7 +12451,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         });
         var rb = $("g-adrepcount"); rb.hidden = !st.reports; rb.textContent = st.reports || "";
       } catch (e) {}
-      adminDaily(); adminRooms(); adminLog(); adminPrizes(); adminPaws(); adminDrift(); adminSaleDraw();
+      adminDaily(); adminRooms(); adminLog(); adminPrizes(); adminPaws(); adminDrift(); adminSaleDraw(); adminGames();
     }
     // ---------- update_060: paws flow, drifting players, store sale, spreadsheet ----------
     async function adminPaws() {
@@ -12364,6 +12518,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     // ranking prizes (today's and this week's top 3): XP to their first pet, and paws for the week
     async function adminRankPrizes(box, oldN) {
       var d; try { d = await rpc("admin_rank_prizes"); } catch (e) { return; }
+      $("g-adautorow").hidden = !("auto" in d); $("g-adauto").checked = !!d.auto;
       var wait = d.waiting || [], n = wait.length + (oldN || 0);
       prizeBadge(n);
       $("g-adprizecount").hidden = !n; $("g-adprizecount").textContent = n || "";
@@ -12390,6 +12545,13 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         acts.appendChild(skip); acts.appendChild(pay); row.appendChild(acts); box.appendChild(row);
       });
     }
+    $("g-adauto").addEventListener("change", async function () {
+      var on = this.checked;
+      if (on && !confirm("Pay ranking prizes automatically from now on? Anything waiting is paid now.")) { this.checked = false; return; }
+      try { await rpc("admin_rank_auto", { p_on: on }); say(on ? "🏆 Prizes will pay themselves." : "You'll decide each prize again."); }
+      catch (e) { this.checked = !on; say(friendly(e.message)); }
+      adminPrizes(); adminLog();
+    });
     // weekly prizes: the top 3 of each finished week wait here for Pay or Skip
     var MEDAL = { 1: "🥇", 2: "🥈", 3: "🥉" };
     async function adminPrizes() {
@@ -12446,6 +12608,23 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     $("g-adprizenote").addEventListener("click", function () { adminTab("tools"); });
     // daily tasks: bars for today, a 7-day chart and the favourite quests
     var QUEST_NAMES = { feed: "🍎 Feed", play2: "🎮 Play 2 games", win: "🏆 Win a game", hello: "👋 Say hello", chat: "💬 Send a message", xmas: "🎄 Christmas quest" };
+    async function adminGames() {
+      var d; try { d = await rpc("admin_game_stats"); } catch (e) { return; }
+      $("g-adgamescard").hidden = false;
+      var days = d.days || [], top = Math.max(1, Math.max.apply(null, days.map(function (x) { return x.live + x.bot + x.solo; })));
+      $("g-adgames").innerHTML = days.map(function (x) {
+        var day = new Date(x.day + "T12:00:00").toLocaleDateString([], { weekday: "narrow" });
+        return '<div class="col" title="' + esc(x.day) + ": " + x.live + " vs players, " + x.bot + " vs bots, " + x.solo + ' solo"><span class="bars"><i class="l1" style="height:' + Math.round(x.live / top * 100) + '%"></i><i class="l2" style="height:' + Math.round(x.bot / top * 100) + '%"></i><i class="l3" style="height:' + Math.round(x.solo / top * 100) + '%"></i></span><small>' + esc(day) + "</small></div>";
+      }).join("");
+      var found = d.players + d.bots, pc = found ? Math.round(d.players / found * 100) : 0, c = d.chal || {}, acc = c.sent ? Math.round(c.accepted / c.sent * 100) : 0;
+      var games = Object.keys(d.by_game || {}).sort(function (a, b) { return d.by_game[b] - d.by_game[a]; });
+      var rows = [["Find a game: matched with a player", d.players, found, pc + "% of " + found], ["Challenges accepted", c.accepted || 0, c.sent || 0, acc + "% of " + (c.sent || 0) + " sent"],
+                  ["Challengers who won", c.won || 0, c.accepted || 0, (c.accepted ? Math.round((c.won || 0) / c.accepted * 100) : 0) + "%"]];
+      $("g-adgamebars").innerHTML = rows.map(function (r) {
+        var p = r[2] ? Math.round(r[1] / r[2] * 100) : 0;
+        return '<div class="pg-adbar"><span>' + esc(r[0]) + "</span><b>" + r[1] + " <small>" + esc(r[3]) + '</small></b><i><u style="width:' + Math.max(p, r[1] ? 2 : 0) + '%"></u></i></div>';
+      }).join("") + (games.length ? '<p class="pg-note">Most played: ' + games.slice(0, 3).map(function (k) { return (GAMES[k] ? GAMES[k].art + " " + GAMES[k].name : k) + " (" + d.by_game[k] + ")"; }).join(" · ") + "</p>" : "");
+    }
     async function adminDaily() {
       var d; try { d = await rpc("admin_daily"); } catch (e) { $("g-admindaily").innerHTML = '<p class="pg-note">Run update_055 to see daily tasks.</p>'; return; }
       var n = Math.max(1, d.players), t = d.today || {};
