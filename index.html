@@ -2400,6 +2400,12 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
 
 .pg-playhead h2 { white-space: nowrap; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 @media (max-width: 380px) { .pg-playhead .pg-playicon { display: none; } }
+
+.pg-gamedots { gap: 0 !important; margin: 0 0 6px !important; }
+.pg-gamedots button { display: grid; place-items: center; min-width: 26px; height: 30px; padding: 0 2px; border: 0; background: none; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.pg-gamedots button i { width: 7px; height: 7px; border-radius: 4px; background: rgba(20,35,43,0.22); transition: width 0.2s, background 0.2s; }
+.pg-gamedots button.on i { width: 18px; background: #26215c; }
+.pg-gamedots button:focus-visible { outline: 2px solid #26215c; outline-offset: -4px; border-radius: 8px; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -2578,7 +2584,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
           <button type="button" class="pg-gamecard ball" data-game="ball"><span class="art" aria-hidden="true">⚽</span><b>Ball pass</b><small data-stat>Keep it going · or versus</small></button>
           <button type="button" class="pg-gamecard penalty" data-game="penalty"><span class="art" aria-hidden="true">🥅</span><b>Penalty kicks</b><small data-stat>Shoot, save, win</small></button>
         </div>
-        <div class="pg-gamedots" id="g-gamedots" aria-hidden="true"></div>
+        <div class="pg-gamedots" id="g-gamedots"></div>
         <!-- the best for the game in front of you -->
         <div class="pg-playboard">
           <h3 class="pg-playh" id="g-boardtitle">Today's best</h3>
@@ -6850,7 +6856,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261113000711";   // replaced by build_real.ps1
+    var APP_BUILD = "20261113001418";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -9271,12 +9277,23 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     // the swipe row: dots underneath, and the board follows the game in front
     function drawGameDots() {
       var strip = $("g-gamestrip"), cards = strip.querySelectorAll(".pg-gamecard"), dots = $("g-gamedots");
-      if (dots.children.length !== cards.length) { dots.innerHTML = ""; for (var i = 0; i < cards.length; i++) dots.appendChild(document.createElement("i")); }
+      if (dots.children.length !== cards.length) {
+        dots.innerHTML = "";
+        Array.prototype.forEach.call(cards, function (c, i) {
+          var b = document.createElement("button"); b.type = "button"; b.innerHTML = "<i></i>";
+          b.setAttribute("aria-label", "Show " + (GAME_LABEL[c.dataset.game] || c.dataset.game));
+          b.addEventListener("click", function () {   // a dot takes you to its game
+            var max = strip.scrollWidth - strip.clientWidth, n = strip.querySelectorAll(".pg-gamecard").length;
+            strip.scrollTo({ left: n > 1 ? max * i / (n - 1) : 0, behavior: "smooth" });
+          });
+          dots.appendChild(b);
+        });
+      }
       // how far along the row you've swiped picks the game (so every game gets a turn, even the last ones); that card gets a ring
       var max = strip.scrollWidth - strip.clientWidth, at = max > 4 ? Math.round(strip.scrollLeft / max * (cards.length - 1)) : 0;
       at = Math.max(0, Math.min(cards.length - 1, at));
       Array.prototype.forEach.call(cards, function (c, i) { c.classList.toggle("pick", i === at); });
-      Array.prototype.forEach.call(dots.children, function (d, i) { d.className = i === at ? "on" : ""; });
+      Array.prototype.forEach.call(dots.children, function (d, i) { d.className = i === at ? "on" : ""; d.setAttribute("aria-current", i === at ? "true" : "false"); });
       return cards[at] ? cards[at].dataset.game : boardGame;
     }
     var stripTimer = null;
