@@ -3105,6 +3105,8 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
 .pg-adauto[hidden] { display: none; }
 .pg-adauto .pg-grow { display: flex; flex-direction: column; }
 .pg-adauto small { color: #55666e; font-size: 0.74rem; }
+
+.pg-gamedots button { min-width: 32px; min-height: 40px; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -7794,7 +7796,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       var from = to === "me" ? themLane : meLane;
       if (to === "them") setTimeout(function () { themLane = lane; moveTo(themEl, lane); }, 250);   // (they run to it)
       // Together: sometimes a star mid-court
-      if (!VS && !star && n >= 3 && Math.random() < 0.3) { star = { lane: Math.floor(Math.random() * 3) }; starEl.hidden = false; starEl.style.left = (BALL_LANES[star.lane] * 100) + "%"; }
+      if (!VS && !opts.live && !star && n >= 3 && Math.random() < 0.3) { star = { lane: Math.floor(Math.random() * 3) }; starEl.hidden = false; starEl.style.left = (BALL_LANES[star.lane] * 100) + "%"; }
       flight = { to: to, n: n, lane: lane, from: from, t0: performance.now(), dur: (CHL >= 0 ? Math.max(430, 1400 * Math.pow([0.93, 0.922, 0.918][CHL], n)) : ballTravel(n, VS)) * (fast ? (CHL >= 0 ? [0.76, 0.72, 0.71][CHL] : 0.78) : 1), fast: !!fast,
                  sway: (Math.random() < 0.5 ? -1 : 1) * (fast ? 0.28 + Math.random() * 0.08 : 0.12 + Math.random() * 0.16) };
       clearTimeout(lateT);
@@ -8239,7 +8241,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261113091205";   // replaced by build_real.ps1
+    var APP_BUILD = "20261113093516";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -9432,11 +9434,12 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     }
     // draws a board into a list: what's at stake, the places, my place, and how points work
     async function drawRankBoard(box, range, redraw) {
-      var b;
+      var b, ticket = (box.__rankTicket = (box.__rankTicket || 0) + 1);
       box.innerHTML = rankTabsHTML(range).replace(/^/, '<li class="pg-ranktabsrow">') + '</li><li class="pg-logempty">Loading…</li>';
       Array.prototype.forEach.call(box.querySelectorAll("[data-rr]"), function (x) { x.addEventListener("click", function () { redraw(x.dataset.rr); }); });
       try { b = await rpc("rank_board", { p_range: range }); }
-      catch (e) { box.lastChild.textContent = /rank_board/.test(e.message) ? "The new ranking isn't switched on yet." : e.message; return null; }
+      catch (e) { if (ticket === box.__rankTicket) box.lastChild.textContent = /rank_board/.test(e.message) ? "The new ranking isn't switched on yet." : e.message; return null; }
+      if (ticket !== box.__rankTicket) return null;   // (a newer tab was picked meanwhile)
       if (range === "today") rankSub(b);
       while (box.children.length > 1) box.removeChild(box.lastChild);
       var info = document.createElement("li"); info.className = "pg-rankinfo";
@@ -9532,7 +9535,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
           C.last = Date.now();
           rpc("challenge_state", { p_id: c.id }).then(function (st) {
             if (chalNow !== C || !st) return;
-            if (st.status === "accepted") { chalClose(); chalPlay(st, true); }
+            if (st.status === "accepted") { chalClose(); if (raceNow) { say(nm + " accepted, but you're in another game. Challenge them again later!"); return; } chalPlay(st, true); }
             else if (st.status === "declined") { chalClose(); say(nm + " said not now. Try again tomorrow, or challenge someone else!"); }
             else if (st.status === "expired") { chalClose(); say(nm + " didn't answer in time."); }
           }, function () {});
@@ -9540,6 +9543,12 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       }, 250);
     }
     function chalClose() { if (chalNow) clearInterval(chalNow.t); chalNow = null; $("g-chal").hidden = true; }
+    // something else started: put the challenge card away, and tell the server (cancel mine, or say not now to theirs)
+    function chalDrop() {
+      var C = chalNow; if (!C) return; chalClose();
+      if (C.c.mine) rpc("challenge_cancel", { p_id: C.id }).catch(function () {});
+      else rpc("challenge_answer", { p_id: C.id, p_ok: false }).catch(function () {});
+    }
     function chalPlay(st, host) {
       var who = st.who || {}, html = tagHTML(who.level || 1, who.name || shownPetName(who.pet));
       lastGame = st.game; hidePlayPages(); $("g-week").hidden = true; $("g-history").hidden = true;
@@ -9553,6 +9562,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     });
     $("g-chalyes").addEventListener("click", async function () {
       var C = chalNow; if (!C || C.c.mine) return;
+      if (raceNow || findNow) { chalDrop(); say("Finish what you're doing first, then challenge them back!"); return; }
       $("g-chalyes").disabled = true;
       try { var st = await rpc("challenge_answer", { p_id: C.id, p_ok: true }); sendLive("chalgo", { to: st.from, id: st.id }); chalClose(); chalPlay(st, false); }
       catch (e) { chalClose(); say(friendly(e.message)); }
@@ -9560,10 +9570,10 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     });
     // challenges waiting for me: on a ping, when the app comes back, and every so often while it's open
     async function chalCheck(force) {
-      if (!me || !pet() || raceNow || chalNow || (!force && document.hidden)) return;
+      if (!me || !pet() || raceNow || chalNow || findNow || (!force && document.hidden)) return;
       var list; try { list = (await rpc("my_challenges")) || []; } catch (e) { return; }
       var c = list.filter(function (x) { return x && !chalSeen[x.id]; })[0];
-      if (c && !raceNow && !chalNow) { chalSeen[c.id] = 1; chalShow(c); }
+      if (c && !raceNow && !chalNow && !findNow) { chalSeen[c.id] = 1; chalShow(c); }
     }
     setInterval(function () { chalCheck(false); }, 20000);
     document.addEventListener("visibilitychange", function () { if (!document.hidden) setTimeout(function () { chalCheck(true); }, 1500); });
@@ -9574,6 +9584,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     var RANK_BOT_LOOKS = ["panda_classic", "panda_snowy", "panda_moss", "panda_golden", "panda_sakura", "panda_ember"];
     function startFind() {
       if (!pet() || raceNow || findNow) return;
+      if (chalNow) { if (chalNow.c.mine) { say("You're waiting for a challenge answer. Cancel it first."); return; } chalDrop(); }
       var F = findNow = { t0: Date.now(), timer: null, busy: false, last: 0 };
       $("g-findpet").src = gamePic(pet()); $("g-findtitle").textContent = "Finding a player…";
       $("g-findsub").textContent = "If nobody's free in " + FIND_SECS + " seconds, you'll play a challenge bot.";
@@ -9583,20 +9594,30 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         if (findNow !== F) return;
         var gone = (Date.now() - F.t0) / 1000, left = Math.max(0, Math.ceil(FIND_SECS - gone));
         $("g-findsecs").textContent = left; arc.style.strokeDashoffset = (len * Math.min(1, gone / FIND_SECS)).toFixed(1);
-        if (left <= 0) { findStop(); rankBotGame(); return; }
+        if (left <= 0 && !F.final) {
+          F.final = true;
+          rpc("match_find").then(function (m) { if (findNow !== F) return; if (m && m.room) findPlay(F, m); else { findStop(); rankBotGame(); } },
+                                 function () { if (findNow === F) { findStop(); rankBotGame(); } });
+          return;
+        }
+        if (F.final) return;
         if (!F.busy && Date.now() - F.last > 2000) {
           F.busy = true; F.last = Date.now();
           rpc("match_find").then(function (m) {
             F.busy = false;
-            if (findNow !== F || !m || m.waiting) return;
-            findStop(); chalClose();
-            var who = m.who || {};
-            say("🎮 Matched with " + (who.name || shownPetName(who.pet)) + "!");
-            chalPlay({ game: m.game, room: m.room, to: m.other, from: m.host, who: who }, m.host === me.id);
+            if (findNow !== F || !m || m.waiting || F.final) return;
+            findPlay(F, m);
           }, function (e) { F.busy = false; if (/match_find/.test(e.message)) { findStop(); say("Find a game isn't switched on yet."); } });
         }
       }
       F.timer = setInterval(tick, 250); tick();
+    }
+    function findPlay(F, m) {
+      findStop(); chalDrop();
+      if (raceNow) return;
+      var who = m.who || {};
+      say("🎮 Matched with " + (who.name || shownPetName(who.pet)) + "!");
+      chalPlay({ game: m.game, room: m.room, to: m.other, from: m.host, who: who }, m.host === me.id);
     }
     function findStop() {
       if (!findNow) return;
@@ -9611,6 +9632,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     async function rankBotGame() {
       var games = ["race", "bamboo", "memory", "ball", "penalty", "beat"], g = games[Math.floor(Math.random() * games.length)], id = null;
       try { id = await rpc("rank_bot_start", { p_game: g }); } catch (e) {}
+      if (raceNow) return;   // (something else started meanwhile)
       rankBot = { id: id, game: g, name: RANK_BOT_NAMES[Math.floor(Math.random() * RANK_BOT_NAMES.length)], variant: RANK_BOT_LOOKS[Math.floor(Math.random() * RANK_BOT_LOOKS.length)] };
       say("🎮 " + rankBot.name + " is ready to play " + GAMES[g].name + "!");
       hidePlayPages();
@@ -9761,8 +9783,8 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         R.seq = s.seq;
         var picked = (s.game_players || []).indexOf(me.id) >= 0;
         if (!GAMES[s.game]) say("A new game has started. Please update the app to play it.");
-        else if (picked && s.host !== me.id && !raceNow) { $("g-roompage").hidden = true; liveGame(s.game, s.game_room, false, { from: s.host }); }
-        else if (!picked) { roomNote(GAMES[s.game].art + " A game has started. Tap 👀 Watch to see it!"); if (watchNow) watchOpen(); }
+        else if (picked && s.host !== me.id && !raceNow) { chalDrop(); findStop(); $("g-roompage").hidden = true; liveGame(s.game, s.game_room, false, { from: s.host }); }
+        else if (!picked) { roomNote(GAMES[s.game].art + " A game has started. Tap 👀 Watch to see it!"); if (watchNow) watchOpen(watchNow.silent); }
       }
       var look = JSON.stringify([R.members, R.host, R.max, R.stake, R.gameRoom, R.gamePlayers, friends.length]);
       if (!$("g-roompage").hidden && look !== R.look) { R.look = look; roomDraw(); }
@@ -9876,7 +9898,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       if (R.stake && R.stake.status === "offered" && R.stake.to === me.id && R.stakeShown !== R.stake.id) { R.stakeShown = R.stake.id; roomTab("game"); }
       if (live) {
         var wb = document.createElement("button"); wb.type = "button"; wb.className = "pg-feed pg-roomwatch"; wb.textContent = "👀 Watch " + GAMES[R.game].name;
-        wb.addEventListener("click", watchOpen); g.appendChild(wb);
+        wb.addEventListener("click", function () { watchOpen(); }); g.appendChild(wb);
       }
       if (R.stake) { roomStakeCard(g); return; }
       if (R.stakeAgain && !raceNow) { roomStake = R.stakeAgain; R.stakeAgain = 0; }   // Play again keeps the amount (they still have to agree)
@@ -9959,7 +9981,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       try { res = await rpc("room_start", { p_room: R.id, p_game: game, p_players: [me.id].concat(chosen.map(function (m) { return m.uid; })), p_extra: { vs: vs } }); }
       catch (e) { say(e.message); return false; }
       finally { R.starting = false; }
-      R.seq = (R.seq || 0) + 1; R.played = roomPickGame; roomPoke();
+      R.seq = (R.seq || 0) + 1; R.played = roomPickGame; roomPoke(); chalDrop(); findStop();
       if (R.randomOpp) { R.randomOpp = false; setTimeout(function () { roomOpp = null; }, 0); }
       $("g-roompage").hidden = true;
       liveGame(game, res.game_room, true, { vs: vs, fast: false, guests: chosen.map(function (m) { return { uid: m.uid, html: petTagHTML(m), state: "wait" }; }) });
@@ -10473,7 +10495,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     document.addEventListener("pointerdown", function (e) {
       if ($("g-roompage").hidden) return;
       if (!$("g-roomact").hidden && !e.target.closest(".rm-actmenu, .rm-pet")) { $("g-roomact").hidden = true; rmSwallowAt = Date.now(); }
-      if (!$("g-roomsheet").hidden && !e.target.closest(".rm-sheet, .rm-dock, #g-msgsheet, .pg-sheet")) { roomTab(null); rmSwallowAt = Date.now(); }
+      if (!$("g-roomsheet").hidden && !e.target.closest(".rm-sheet, .rm-dock, #g-msgsheet, .pg-sheet, #g-stconfirm, #g-celebrate, #g-chal")) { roomTab(null); rmSwallowAt = Date.now(); }
     }, true);
     // the host's big Start button over the room, once a game is picked and someone is here to play
     function rmGoButton() {
@@ -11828,7 +11850,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       // and a tap outside Ranking or History closes it
       document.addEventListener("pointerdown", function (e) {
         ["g-week", "g-history"].forEach(function (x) {
-          if (!$(x).hidden && !e.target.closest("#" + x + ", #g-msgsheet, #g-petopts, .pg-tabs#g-playtabs")) $(x).hidden = true;
+          if (!$(x).hidden && !e.target.closest("#" + x + ", #g-msgsheet, #g-petopts, .pg-playtabs, #g-stconfirm, #g-chal, #g-celebrate")) $(x).hidden = true;
         });
       }, true);
       var mo = new MutationObserver(sync);
