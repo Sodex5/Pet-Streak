@@ -3449,6 +3449,10 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
 .pg-adsetsave { background: var(--brand); color: #fff; }
 .pg-adsetsave[hidden] { display: none; }
 .pg-adsetreset { background: #fff; color: #3b4b53; box-shadow: inset 0 0 0 1.5px #d6e0e4; }
+
+/* bigger taps: the ranking card's challenge buttons and the room's people button */
+.pg-rankmini .pg-chalbtn { min-height: 36px; padding: 6px 10px; }
+.rm-pplbtn { min-height: 36px; padding: 4px 12px; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -8639,7 +8643,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261114080516";   // replaced by build_real.ps1
+    var APP_BUILD = "20261114082621";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -9986,7 +9990,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       if (opt.compact) { if (!b.me && (b.rows || []).length) box.insertAdjacentHTML("beforeend", '<li class="pg-rankme">No points yet ' + (range === "week" ? "this week" : "today") + ". Win a game to get on the board!</li>"); return b; }
       if (!b.me && (b.rows || []).length) box.insertAdjacentHTML("beforeend", '<li class="pg-rankme">You have no points ' + (range === "week" ? "this week" : "today") + " yet. Tap Find a game to get on the board!</li>");
       var rules = document.createElement("li"); rules.className = "pg-rankrules";
-      rules.innerHTML = "<b>How points work</b><span>🎮 Beat a player <em>+5</em></span><span>🤖 Beat a challenge bot <small class='cap'>10 a day</small><em>+2</em></span>" +
+      rules.innerHTML = "<b>How points work</b><span>🎮 Beat a player <em>+" + RULES.rank_win + "</em></span><span>🤖 Beat a challenge bot <small class='cap'>" + RULES.rank_bot_cap + " a day</small><em>+" + RULES.rank_bot + "</em></span>" +
         "<span>⚔️ Beat today's top 3 <em>+25 · +15 · +10</em></span><span>💔 Lose a challenge <em>−5</em></span>" +
         (range === "today" ? "<small>You have " + b.left + (b.left === 1 ? " challenge" : " challenges") + " left today. Prizes are given by the Pet Streak team.</small>" : "<small>Prizes are given by the Pet Streak team.</small>");
       box.appendChild(rules);
@@ -10055,7 +10059,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       $("g-chalme").src = gamePic(pet()); $("g-chalthem").src = petPic(who.variant);
       $("g-chaltitle").textContent = c.mine ? "Waiting for " + nm + "…" : "⚔️ " + nm + " challenges you!";
       $("g-chalsub").textContent = c.mine ? "They're #" + c.place + " today. " + G.art + " " + G.name + " if they accept." : "They want your #" + c.place + " spot today. Win to keep it! " + G.art + " " + G.name;
-      $("g-chalpts").innerHTML = c.mine ? '<span class="win">Win <b>+' + c.prize + "</b></span><span class=\"lose\">Lose <b>−5</b></span>" : '<span class="win">Win <b>+5</b></span><span class="lose">Lose: they take <b>' + c.prize + "</b></span>";
+      $("g-chalpts").innerHTML = c.mine ? '<span class="win">Win <b>+' + c.prize + "</b></span><span class=\"lose\">Lose <b>−5</b></span>" : '<span class="win">Win <b>+' + RULES.rank_win + '</b></span><span class="lose">Lose: they take <b>' + c.prize + "</b></span>";
       $("g-chalno").textContent = c.mine ? "Cancel challenge" : "Not now";
       $("g-chalyes").hidden = !!c.mine; $("g-chalyes").textContent = "⚔️ Accept";
       $("g-chal").hidden = false; sfx(c.mine ? "pat" : "happy");
@@ -10584,7 +10588,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       watchClose();
       clearInterval(roomTimer); roomTimer = null;
       try { if (roomCh) sb.removeChannel(roomCh); } catch (e) {}
-      roomCh = null; roomNow = null; rmStop(); roomDmEnd(); rmArrange(false); $("g-roompanel").hidden = true; $("g-roompage").hidden = true;
+      roomCh = null; roomNow = null; rmStop(); roomDmEnd(); rmArrange(false); botMatchEnd(); $("g-roompanel").hidden = true; $("g-roompage").hidden = true;
       try { localStorage.removeItem(ROOM_KEY); } catch (e) {}
       keepAwake();
       if (why) say(why);
@@ -10785,7 +10789,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
           if (!mine) rmSend(rmSt());   // say where I am to the newcomer
         }
         q.m = m;
-        var src = m.uid === me.id ? gamePic(pet()) : otherPic(m);
+        var src = m.uid === me.id ? myRoomPic() : otherPic(m, true);
         var img = q.el.querySelector("img"); if (img.getAttribute("src") !== src) img.src = src;
         var tag = (m.uid === R.host ? "👑 " : m.bot ? "🤖 " : "") + esc(m.uid === me.id ? shownPetName(m.pet) + " (you)" : m.bot ? m.pet : roomName(m.uid));
         var dot = q.el.querySelector(".rl.head");
@@ -11204,6 +11208,17 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     }, true);
     // the host's big Start button over the room, once a game is picked and someone is here to play
     function rmGoButton() { rmNext(); }
+    // ---------- the amounts the admin can change (Admin → Tools → Live settings) ----------
+    var RULES = { rank_win: 5, rank_bot: 2, rank_bot_cap: 10, quest_xp: 10, challenge_paws: 15, stake_daily: 20 }, rulesAt = 0;
+    async function loadRules() {
+      if (Date.now() - rulesAt < 10 * 60000) return;
+      try { var r = await rpc("game_rules"); if (r) { Object.keys(RULES).forEach(function (k) { if (typeof r[k] === "number") RULES[k] = r[k]; }); rulesAt = Date.now(); drawRules(); } } catch (e) { /* older database: the usual amounts */ }
+    }
+    function drawRules() {
+      var q = document.querySelector(".pg-qp small"); if (q) q.innerHTML = "Beat a player <em>+" + RULES.rank_win + "</em> · a bot <em>+" + RULES.rank_bot + "</em>";
+      $("g-questnote").textContent = questNote();
+    }
+    function questNote(p) { return "Each quest gives " + (p ? p.name : "your pet") + " " + RULES.quest_xp + " XP. Finish all three for " + RULES.quest_xp + " more."; }
     // ---------- the people here (panel): message privately, see a profile, add players or bots ----------
     var roomDmTo = null;
     function drawPeople() {
@@ -11277,8 +11292,8 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     }
     function rmWho(uid) {
       var R = roomNow, m = R.members.filter(function (x) { return x.uid === uid; })[0], b = (rmS && rmS.bots || []).filter(function (x) { return x.uid === uid; })[0];
-      return m ? { uid: uid, name: uid === me.id ? "You" : roomName(uid), pic: uid === me.id ? gamePic(pet()) : otherPic(m), m: m }
-           : b ? { uid: uid, name: b.pet, pic: otherPic({ variant: b.variant }), bot: true } : null;
+      return m ? { uid: uid, name: uid === me.id ? "You" : roomName(uid), pic: uid === me.id ? myRoomPic() : otherPic(m, true), m: m }
+           : b ? { uid: uid, name: b.pet, pic: otherPic({ variant: b.variant }, true), bot: true } : null;
     }
     function rmNext() {
       var R = roomNow; if (!R || !rmS) return;
@@ -11381,6 +11396,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     // ---------- Bot matches: only bots in the line-up, so they play each other and the room watches ----------
     // The host's phone plays it out (a quick simulation of the game's score) and sends the score each second.
     var botMatch = null;
+    function botMatchEnd() { if (botMatch) { clearInterval(botMatch.T); clearTimeout(botMatch.quiet); } botMatch = null; if (!$("g-watch").hidden && !watchNow) $("g-watch").hidden = true; }
     function rmBotMatch(bots, g) {
       var R = roomNow; if (!R || R.host !== me.id || (botMatch && !botMatch.done)) return;
       var pool = ["race", "ball", "penalty", "bamboo", "beat", "memory"].filter(function (k) { return GAMES[k]; });
@@ -11418,6 +11434,9 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       M.uids = p.uids.filter(function (u) { return /^bot-/.test(u); }).slice(0, 4); M.s = {};
       M.uids.forEach(function (u) { M.s[u] = Math.max(0, +((p.s || {})[u]) || 0); M.names[u] = RANK_BOT_NAMES.indexOf((p.names || {})[u]) >= 0 ? p.names[u] : "Bot"; M.looks[u] = RANK_BOT_LOOKS.indexOf((p.looks || {})[u]) >= 0 ? p.looks[u] : "panda_classic"; });
       var finished = !!p.done && !M.done; M.done = !!p.done;
+      // (a guest: no score for 6 seconds means the host has gone; the match is over)
+      clearTimeout(M.quiet);
+      if (!M.done && R.host !== me.id) M.quiet = setTimeout(function () { if (botMatch === M && !M.done) { M.done = true; $("g-roomarcade").hidden = !roomLive(); botMatchDraw(); rmNext(); } }, 6000);
       botMatchSign(); botMatchDraw();
       if (finished) {
         var top = M.uids.slice().sort(function (a, b) { return M.s[b] - M.s[a]; }), G = GAMES[M.game];
@@ -12212,7 +12231,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         }
         if (mood === "win" && rb.id) rpc("rank_bot_win", { p_id: rb.id }).then(function (x) {
           var line = end.querySelector(".pg-rankline"); if (!line || !x) return;
-          line.hidden = false; line.textContent = x.counted ? "🏆 +" + x.pts + " ranking points" : x.cap ? "Bot wins after 10 today don't add points. Play a real player for +5!" : "";
+          line.hidden = false; line.textContent = x.counted ? "🏆 +" + x.pts + " ranking points" : x.cap ? "Bot wins after " + RULES.rank_bot_cap + " today don't add points. Play a real player for +" + RULES.rank_win + "!" : "";
           if (x.counted) rankKnock();
           loadWeekSub();
         }, function () {});
@@ -12589,6 +12608,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         if (!$("g-sheet").hidden || !$("g-store").hidden || tryOn) return;   // (a try-on or a zoomed camera isn't the real look)
         var key = gamePicKey(p); if (gamePicMemo[key]) return;
         gamePicMemo = {}; gamePicMemo[key] = snapPet(!!p.hat);
+        gamePicMemo[key + "|r"] = p.hat ? gamePicMemo[key] : snapPet(true);   // (in rooms: framed like everyone else)
       } catch (e) { /* the plain picture still works */ }
     }
     // a picture of the 3D pet as it is now: eyes open, clear background, framed from its feet to the top of its head (or hat)
@@ -12600,7 +12620,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         renderer.setClearColor(oc, 0); renderer.render(scene, camera);
         var src = renderer.domElement;
         var proj = function (y) { var v = modelRoot.localToWorld(new THREE.Vector3(0, y, 0)).project(camera); return { x: (v.x + 1) / 2 * src.width, y: (1 - v.y) / 2 * src.height }; };
-        var foot = proj(0), top = proj(1.24), side = Math.max(8, (foot.y - top.y) * 1.08);
+        var foot = proj(0), top = proj(hasHat ? 1.24 : 1.0), side = Math.max(8, (foot.y - top.y) * 1.08);
         var out = document.createElement("canvas"); out.width = out.height = 256;
         out.getContext("2d").drawImage(src, foot.x - side / 2, top.y - side * 0.05, side, side, 0, 0, 256, 256);
         return out.toDataURL("image/png");
@@ -12619,8 +12639,10 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       return { variant: x && PET_LOOKS[x.variant] ? x.variant : "panda_classic", hat: h && h.type === "hat" ? h.id : null, glasses: g && g.type === "glasses" ? g.id : null };
     }
     function lookKey(l) { return [l.variant, l.hat || "", l.glasses || ""].join("|"); }
-    function otherPic(x) {
-      var l = lookOf(x), k = lookKey(l);
+    // my pet in a room: framed the same way as everyone there, so all pets are the same size
+    function myRoomPic() { var p = pet(); return (p && gamePicMemo[gamePicKey(p) + "|r"]) || gamePic(p); }
+    function otherPic(x, room) {
+      var l = lookOf(x), k = lookKey(l) + (room && !l.hat ? "|r" : "");
       if (otherPicMemo[k]) return otherPicMemo[k];
       if (otherPicQueue.indexOf(k) < 0) otherPicQueue.push(k);
       setTimeout(otherPicNext, 60);
@@ -12630,7 +12652,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       if (otherPicBusy || !otherPicQueue.length) return;
       // only while something covers the home screen (no one sees the swap), and never mid Dress up or bath
       if (!window.__petHidden || !modelRoot || !renderer || !moodRig || bathing || tryOn) { clearTimeout(otherPicNext.t); otherPicNext.t = setTimeout(otherPicNext, 1500); return; }
-      var k = otherPicQueue.shift(), part = k.split("|"), l = { variant: part[0], hat: part[1] || null, glasses: part[2] || null };
+      var k = otherPicQueue.shift(), part = k.split("|"), l = { variant: part[0], hat: part[1] || null, glasses: part[2] || null, room: part[3] === "r" };
       otherPicBusy = true;
       var done = function () { otherPicBusy = false; setTimeout(otherPicNext, 30); };
       // hats and glasses from the food pack come with it; the fur picture may need fetching too
@@ -12644,7 +12666,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         try {
           modelRoot.visible = true;
           setVariantLook(l.variant); updateHat(fake); updateGlasses(fake); setMud(0, true);
-          otherPicMemo[k] = snapPet(!!l.hat);
+          otherPicMemo[k] = snapPet(!!l.hat || l.room);
         } catch (e) { otherPicMemo[k] = petPic(l.variant); }
         // my own pet back as it was
         try { modelRoot.visible = vis; applyLook(); updateHat(dressView(p)); updateGlasses(dressView(p)); setMud(p ? dirtOf(p) : 0, true); } catch (e) {}
@@ -12710,7 +12732,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     function openPlay() {
       if (!pet()) { say("Get a pet first, then you can play with it 🎮"); return; }
       rankBot = null; setTimeout(function () { chalCheck(true); }, 1200);
-      snapGamePic();
+      snapGamePic(); loadRules();
       if (roomNow) { roomShow(); return; }   // (back from a room's game: back to the room)
       $("g-play").hidden = false; $("g-menu").hidden = true; loadPlayNews(); loadRoomCard(); drawRoomCard();
       $("g-showonline").checked = showOnline();
@@ -12871,7 +12893,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     }
     $("g-chbtn").addEventListener("click", async function (e) {
       e.stopPropagation(); var b = this; b.disabled = true;
-      try { await rpc("claim_challenge"); sfx("levelUp"); floatText("+15 🐾"); say("🏆 Challenge done! +15 paws"); await loadAll({ quiet: true }); }
+      try { var cr = await rpc("claim_challenge"), cp = cr && cr.paws != null ? cr.paws : RULES.challenge_paws; sfx("levelUp"); if (cp) { floatText("+" + cp + " 🐾"); say("🏆 Challenge done! +" + cp + " paws"); } else say("🏆 Challenge done!"); await loadAll({ quiet: true }); }
       catch (err) { say(friendly(err.message)); }
       b.disabled = false; renderPlay();
     });
@@ -14193,7 +14215,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         });
         li.appendChild(b); list.appendChild(li);
       });
-      $("g-questnote").textContent = daily && daily.bonus ? "🎉 All done today! New quests tomorrow." : "Each quest gives " + (p ? p.name : "your pet") + " 10 XP. Finish all three for 10 more.";
+      $("g-questnote").textContent = daily && daily.bonus ? "🎉 All done today! New quests tomorrow." : questNote(p);
     }
     function openDaily() { $("g-daily").hidden = false; drawDaily(); dailyCheck(); }
     function drawXmasPreviewBtn() { $("g-adminxmas").textContent = xmasPreview() ? "Turn preview off" : "Turn preview on"; }
@@ -14379,11 +14401,11 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       else if (claimable) {
         // say which quest is done, so it's clear what earned it
         var dq = (daily.quests || []).filter(function (q) { return q.done >= q.target && !q.claimed; })[0], qt = dq && QUEST_TEXT[dq.key];
-        set(qt ? qt[0] : "⭐", claimable === 1 ? "Quest done: " + (qt ? qt[1](p) : "a daily quest") : claimable + " quests are done!", "Claim 10 XP for " + p.name, "Claim", openDaily);
+        set(qt ? qt[0] : "⭐", claimable === 1 ? "Quest done: " + (qt ? qt[1](p) : "a daily quest") : claimable + " quests are done!", "Claim " + RULES.quest_xp + " XP for " + p.name, "Claim", openDaily);
       }
       else if (!who.length && isOwner(p)) set("👥", "Get a co-parent", "XP and the streak count when " + FEEDS_PER_DAY + " of you feed", "Get one", safeOn() ? invite : coparentChoice);
       else if (notYet && !fullToday(p)) set("⏳", "Waiting for " + notYet.name, "The day counts once you've both fed. " + leftTxt, notYet.nudged ? "" : "Remind", function () { nudge(p, notYet, $("g-nextbtn")); });
-      else if (questsLeft) set("🎯", questsLeft === 1 ? "1 quest left today" : questsLeft + " quests left today", "Each one gives " + p.name + " 10 XP", "See", openDaily);
+      else if (questsLeft) set("🎯", questsLeft === 1 ? "1 quest left today" : questsLeft + " quests left today", "Each one gives " + p.name + " " + RULES.quest_xp + " XP", "See", openDaily);
       else set("✅", "All done for today", p.name + " is happy. See you tomorrow!", "", null);
       var card = $("g-next"), key = $("g-nexttitle").textContent;
       card.classList.toggle("act", !$("g-nextbtn").hidden || !iFed(p));
