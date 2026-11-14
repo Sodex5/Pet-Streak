@@ -8607,7 +8607,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261114073150";   // replaced by build_real.ps1
+    var APP_BUILD = "20261114073337";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -11165,6 +11165,11 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       if ($("g-roompage").hidden) return;
       if (!$("g-roomact").hidden && !e.target.closest(".rm-actmenu, .rm-ring, .rm-pet")) { $("g-roomact").hidden = true; rmSwallowAt = Date.now(); }
       if (!$("g-roomsheet").hidden && !e.target.closest(".rm-sheet, .rm-dock, #g-msgsheet, .pg-sheet, #g-stconfirm, #g-celebrate, #g-chal")) { roomTab(null); rmSwallowAt = Date.now(); }
+      // the "In this room" list: a tap anywhere outside it (or its button) closes it
+      if (!$("g-roompanel").hidden && !e.target.closest("#g-roompanel, #g-roompeople, #g-msgsheet, .pg-sheet, #g-petopts, #g-stconfirm")) {
+        $("g-roompanel").hidden = true; $("g-roompeople").setAttribute("aria-pressed", "false");
+        if (e.target.closest("#g-roomscene")) rmSwallowAt = Date.now();
+      }
     }, true);
     // the host's big Start button over the room, once a game is picked and someone is here to play
     function rmGoButton() { rmNext(); }
