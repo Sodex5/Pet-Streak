@@ -3423,6 +3423,11 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
 /* the arrange bar sits under the room (not over it), in place of the game bar */
 .rm-arrangebar { position: static; flex: none; margin: 8px 10px 0; }
 .pg-roompage:has(.rm-scene.arrange) .rm-nextbar, .pg-roompage:has(.rm-scene.arrange) .rm-invrow { display: none; }
+
+/* players in a game leave the room until they're done (they show in the people list as "In a game") */
+.pg-roompage .rm-pet { transition: opacity 0.4s; }
+.pg-roompage .rm-pet.busy { opacity: 0; pointer-events: none; }
+.pg-roompage .rm-pet.busy::before { content: none; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -8607,7 +8612,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261114073730";   // replaced by build_real.ps1
+    var APP_BUILD = "20261114074350";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -10827,7 +10832,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         q.el.style.left = (q.x * 100) + "%"; q.el.style.top = (q.y * 100) + "%";
         q.el.style.zIndex = 10 + Math.round(q.y * 100);
         q.el.style.setProperty("--s", (0.95 + q.y * 0.08).toFixed(3)); q.el.style.setProperty("--f", q.face);
-        var cls = "rm-pet" + (u === me.id ? " me" : "") + (moving ? " walk" : "") + (q.pose ? " p-" + q.pose : "") + (q.ready ? " ready" : "") + (q.m && q.m.busy ? " busy" : "") + (q.namedUntil > t ? " named" : "");
+        var cls = "rm-pet" + (u === me.id ? " me" : "") + (moving ? " walk" : "") + (q.pose ? " p-" + q.pose : "") + (q.ready ? " ready" : "") + (q.m && q.m.busy || (botMatch && !botMatch.done && botMatch.uids.indexOf(u) >= 0) ? " busy" : "") + (q.namedUntil > t ? " named" : "");
         if (q.el.className !== cls) q.el.className = cls;
         if (u === me.id) {
 
@@ -11183,7 +11188,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         var w = rmWho(uid); if (!w) return;
         var m = w.m, li = document.createElement("li");
         li.innerHTML = '<img alt="" src="' + esc(w.pic) + '"><span class="pg-grow"><b>' + esc(w.name) + (uid === R.host ? " 👑" : "") + "</b><small>" +
-          (w.bot ? "🤖 Bot" : m && m.busy ? "🎮 In a game" : rmReady(uid) ? "✅ Ready" : uid === me.id ? "You" : "Here") + "</small></span>";
+          (w.bot ? (botMatch && !botMatch.done && botMatch.uids.indexOf(uid) >= 0 ? "🤖 Bot · 🎮 In a game" : "🤖 Bot") : m && m.busy ? "🎮 In a game" : rmReady(uid) ? "✅ Ready" : uid === me.id ? "You" : "Here") + "</small></span>";
         if (!w.bot && uid !== me.id) {
           var dm = document.createElement("button"); dm.type = "button"; dm.className = "rm-pbtn"; dm.textContent = "✉️"; dm.setAttribute("aria-label", "Message " + w.name + " privately");
           dm.addEventListener("click", function (e) { e.stopPropagation(); roomDm(uid); }); li.appendChild(dm);
