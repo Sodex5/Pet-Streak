@@ -3414,6 +3414,15 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
 .rm-awaylist { display: flex; flex-wrap: wrap; gap: 6px; }
 .rm-awaychip { display: flex; align-items: center; gap: 6px; min-height: 38px; padding: 4px 12px 4px 8px; border: 0; border-radius: 999px; background: #f1efff; color: #26215c; font: inherit; font-size: 0.82rem; font-weight: 800; }
 .rm-awaychip i { font-style: normal; font-size: 1.2rem; }
+
+/* room pets a little smaller (58px -> 48px) */
+.pg-roompage .rm-pet { width: 60px; }
+.pg-roompage .rm-pet img { width: 48px; height: 48px; }
+.pg-roompage .rm-pet::after { top: 43px; height: 8px; }
+
+/* the arrange bar sits under the room (not over it), in place of the game bar */
+.rm-arrangebar { position: static; flex: none; margin: 8px 10px 0; }
+.pg-roompage:has(.rm-scene.arrange) .rm-nextbar, .pg-roompage:has(.rm-scene.arrange) .rm-invrow { display: none; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -3854,11 +3863,12 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
           <span class="rm-ball" id="g-roomball" aria-label="Ball" role="button">⚽</span>
         </div>
         <div class="rm-pieces" id="g-roompieces"></div>
-        <div class="rm-arrangebar" id="g-roomarrange" hidden><span>✋ Drag to move · tap one to put it away</span><button type="button" id="g-roomarrangedone">Done</button></div>
         <div class="rm-toys" id="g-roomtoylayer"></div>
         <div class="rm-ring" id="g-roomact" hidden></div>
         <p class="rm-tip" id="g-roomtip">Tap the floor to walk · hold your pet for emotes</p>
       </div>
+      <!-- arranging decorations: the tip and Done sit under the room, so nothing in the room is covered -->
+      <div class="rm-arrangebar" id="g-roomarrange" hidden><span>✋ Drag to move · tap one to put it away</span><button type="button" id="g-roomarrangedone">Done</button></div>
       <!-- the next game: one slim bar (the host taps it to pick the game and who plays) -->
       <div class="rm-nextbar" id="g-roomnext">
         <button type="button" class="rm-nextinfo" id="g-roomgamebtn"><i id="g-roomgameart">🎮</i><span><b id="g-roomgamename">Pick a game</b><small id="g-roomgamesub"></small></span><em class="chev" id="g-roomgamechev">▾</em></button>
@@ -8597,7 +8607,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261114072504";   // replaced by build_real.ps1
+    var APP_BUILD = "20261114073150";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
