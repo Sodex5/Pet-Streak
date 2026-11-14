@@ -3355,6 +3355,65 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
 .pg-rankmini li.pg-rankinfo { padding: 7px 12px; font-size: 0.85rem; }
 .pg-rankmini .pg-ranktabs button { min-height: 34px; padding: 6px 10px; }
 .pg-rankmini li.pg-rankme { padding: 7px 10px; font-size: 0.8rem; }
+
+/* ===== The room v3.1: smaller room, add/share row, the people list beside the chat ===== */
+.pg-roompage .rm-scene { flex: none; height: clamp(170px, 30vh, 250px); min-height: 0; }
+.rm-invrow { flex: none; display: flex; gap: 8px; margin: 6px 10px 0; }
+.rm-invrow button { flex: 1; min-width: 0; min-height: 38px; padding: 6px 10px; border: 0; border-radius: 999px; background: #fff; color: #26215c; font: inherit; font-size: 0.82rem; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; box-shadow: inset 0 0 0 1.5px #d6d1f6; }
+.rm-invrow button:first-child { background: #26215c; color: #fff; box-shadow: none; }
+.rm-invrow b { letter-spacing: 0.04em; }
+.rm-chathead { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 8px 4px 14px; border-bottom: 1px solid #eef1f3; }
+.rm-chathead > b { font-size: 0.8rem; color: #55666e; }
+.rm-pplbtn { flex: none; display: flex; align-items: center; gap: 4px; min-height: 30px; padding: 3px 10px; border: 0; border-radius: 999px; background: #f1efff; color: #26215c; font: inherit; font-size: 0.76rem; font-weight: 800; }
+.rm-pplbtn b { min-width: 18px; height: 18px; padding: 0 4px; border-radius: 9px; background: #26215c; color: #fff; font-size: 0.66rem; line-height: 18px; text-align: center; }
+.rm-pplbtn[aria-pressed="true"] { background: #26215c; color: #fff; }
+.rm-pplbtn[aria-pressed="true"] b { background: #fff; color: #26215c; }
+/* the list sits in the chat's right side; the chat moves over to make room */
+.rm-chatbox .rm-people { position: absolute; top: 41px; right: 0; bottom: 0; width: 46%; z-index: 3; padding: 8px 8px calc(8px + env(safe-area-inset-bottom, 0px)); border-radius: 0; background: #f8f7ff; box-shadow: inset 1px 0 0 #e4e1f7; animation: rmPeopleSide 0.2s ease-out; }
+@keyframes rmPeopleSide { from { opacity: 0; transform: translateX(16px); } }
+.rm-chatbox:has(.rm-people:not([hidden])) > .pg-chatlist,
+.rm-chatbox:has(.rm-people:not([hidden])) > .pg-chatbar,
+.rm-chatbox:has(.rm-people:not([hidden])) > .rm-dmbar,
+.rm-chatbox:has(.rm-people:not([hidden])) > .pg-roomsays,
+.rm-chatbox:has(.rm-people:not([hidden])) > .pg-chatform { margin-right: 46%; }
+.rm-chatbox:has(.rm-people:not([hidden])) .pg-chatlist li { max-width: 94%; }
+.rm-chatbox .rm-peoplehead { margin-bottom: 6px; }
+.rm-chatbox .rm-peoplehead b { font-size: 0.8rem; color: #3c3489; }
+.rm-chatbox .rm-peoplehead .pg-x { width: 28px; height: 28px; font-size: 0.8rem; }
+.rm-chatbox .rm-peoplelist { gap: 4px; }
+.rm-chatbox .rm-peoplelist li { gap: 6px; padding: 4px 4px 4px 6px; border-radius: 12px; background: #fff; }
+.rm-chatbox .rm-peoplelist li.tap { cursor: pointer; }
+.rm-chatbox .rm-peoplelist img { width: 30px; height: 30px; }
+.rm-chatbox .rm-peoplelist b { font-size: 0.78rem; }
+.rm-chatbox .rm-peoplelist small { font-size: 0.64rem; }
+.rm-chatbox .rm-pbtn { width: 28px; height: 28px; font-size: 0.8rem; }
+.rm-chatbox .rm-addppl { margin-top: 6px; min-height: 36px; font-size: 0.82rem; }
+
+/* the people list beside the chat: rows fit (name shortens, buttons stay whole) */
+.rm-chatbox .rm-people { top: 41px; }
+.rm-chatbox .rm-peoplelist li { min-width: 0; }
+.rm-chatbox .rm-peoplelist .pg-grow { flex: 1; min-width: 0; }
+.rm-chatbox .rm-peoplelist small { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rm-chatbox .rm-pbtn { flex: none; }
+
+/* ===== decorations as pieces: each in its own spot; the owner drags them in Arrange mode ===== */
+.rm-pieces { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+.rm-pieces .rm-piece { position: absolute; transform: translate(-50%, -85%); right: auto; bottom: auto; touch-action: none; user-select: none; -webkit-user-select: none; }
+.rm-pieces .rm-dec.rd_plant { font-size: 2.2rem; }
+.rm-pieces .rm-dec.rd_lamp { font-size: 1.5rem; }
+.rm-scene.arrange .rm-pieces { pointer-events: auto; z-index: 30; }
+.rm-scene.arrange .rm-piece { cursor: grab; outline: 2px dashed rgba(38,33,92,0.7); outline-offset: 3px; border-radius: 8px; animation: rmWobble 1.6s ease-in-out infinite; }
+.rm-scene.arrange .rm-piece.drag { cursor: grabbing; animation: none; outline-style: solid; filter: drop-shadow(0 8px 6px rgba(0,0,0,0.3)); }
+@keyframes rmWobble { 0%, 100% { rotate: -2deg; } 50% { rotate: 2deg; } }
+.rm-arrangebar { position: absolute; left: 8px; right: 8px; top: 8px; z-index: 31; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 6px 6px 12px; border-radius: 14px; background: rgba(38,33,92,0.92); color: #fff; font-size: 0.78rem; font-weight: 700; }
+.rm-arrangebar[hidden] { display: none; }
+.rm-arrangebar button { flex: none; min-height: 32px; padding: 4px 14px; border: 0; border-radius: 999px; background: #fff; color: #26215c; font: inherit; font-weight: 800; }
+.rm-arrangebtn { display: flex; flex-direction: column; align-items: flex-start; width: 100%; margin-bottom: 4px; padding: 10px 14px; border: 0; border-radius: 16px; background: #26215c; color: #fff; font: inherit; font-weight: 800; text-align: left; }
+.rm-arrangebtn small { font-weight: 600; opacity: 0.8; font-size: 0.74rem; }
+.rm-subhead small { font-weight: 600; text-transform: none; letter-spacing: 0; color: #8a979d; }
+.rm-awaylist { display: flex; flex-wrap: wrap; gap: 6px; }
+.rm-awaychip { display: flex; align-items: center; gap: 6px; min-height: 38px; padding: 4px 12px 4px 8px; border: 0; border-radius: 999px; background: #f1efff; color: #26215c; font: inherit; font-size: 0.82rem; font-weight: 800; }
+.rm-awaychip i { font-style: normal; font-size: 1.2rem; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -3760,8 +3819,10 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         <small class="pg-roomlbl">How many players?</small>
         <div class="pg-tabs" id="g-roommaxtabs" role="tablist">
           <button type="button" role="tab" data-max="2" aria-selected="false">2</button>
-          <button type="button" role="tab" data-max="3" aria-selected="false">3</button>
           <button type="button" role="tab" data-max="4" aria-selected="true">4</button>
+          <button type="button" role="tab" data-max="6" aria-selected="false">6</button>
+          <button type="button" role="tab" data-max="8" aria-selected="false">8</button>
+          <button type="button" role="tab" data-max="12" aria-selected="false">12</button>
         </div>
         <button type="button" class="pg-feed" id="g-roomnewok">Create room</button>
         <button type="button" class="pg-linkbtn" id="g-roomnewcancel">Cancel</button>
@@ -3772,9 +3833,8 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       <header class="pg-playhead rm-head">
         <button type="button" class="pg-playback" id="g-roomback" aria-label="Leave the room">←</button>
         <div class="rm-headtxt"><h2 id="g-roomtitle">Room</h2><div class="pg-roommeta" id="g-roommeta"></div></div>
-        <button type="button" class="rm-headbtn" id="g-roompeople" aria-label="People in this room">👥<b id="g-roompeoplen"></b></button>
-        <button type="button" class="rm-headbtn" id="g-roommore" aria-label="More">⋯</button>
-        <button type="button" id="g-roommin" hidden>🏠</button><button type="button" id="g-roomchats" hidden>💬</button><button type="button" id="g-roominvite" hidden>Invite</button>
+        <button type="button" class="rm-headbtn" id="g-roommin" aria-label="Go home (you stay in the room)">🏠</button>
+        <button type="button" class="rm-headbtn" id="g-roommore" aria-label="More">⋯</button><button type="button" id="g-roomchats" hidden>💬</button><button type="button" id="g-roominvite" hidden>Invite</button>
       </header>
       <!-- the room itself: pets walk about while you wait (tap the floor to walk, hold your pet for emotes) -->
       <div class="rm-scene" id="g-roomscene">
@@ -3793,6 +3853,8 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
           <button type="button" class="rm-seat" id="g-roomseat" hidden>＋ Invite</button>
           <span class="rm-ball" id="g-roomball" aria-label="Ball" role="button">⚽</span>
         </div>
+        <div class="rm-pieces" id="g-roompieces"></div>
+        <div class="rm-arrangebar" id="g-roomarrange" hidden><span>✋ Drag to move · tap one to put it away</span><button type="button" id="g-roomarrangedone">Done</button></div>
         <div class="rm-toys" id="g-roomtoylayer"></div>
         <div class="rm-ring" id="g-roomact" hidden></div>
         <p class="rm-tip" id="g-roomtip">Tap the floor to walk · hold your pet for emotes</p>
@@ -3803,8 +3865,13 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         <button type="button" class="rm-ready" id="g-roomready" hidden>I'm ready</button>
         <button type="button" class="rm-go" id="g-roomgo" hidden></button>
       </div>
+      <div class="rm-invrow">
+        <button type="button" id="g-roomaddbtn">＋ Add or invite</button>
+        <button type="button" id="g-roomsharebtn">🔗 Share code <b id="g-roomsharecode"></b></button>
+      </div>
       <!-- chat: always open -->
       <div class="rm-chatbox">
+        <div class="rm-chathead"><b>💬 Room chat</b><button type="button" class="rm-pplbtn" id="g-roompeople" aria-label="People in this room">👥 In this room <b id="g-roompeoplen"></b></button></div>
         <ol class="pg-chatlist" id="g-roomchat" aria-live="polite"></ol>
         <div class="pg-chatbar" id="g-roomreply" hidden><span class="pg-grow"><b id="g-roomreplytitle"></b><small id="g-roomreplytext"></small></span><button type="button" class="pg-x" id="g-roomreplyx" aria-label="Cancel">✕</button></div>
         <div class="rm-dmbar" id="g-roomdm" hidden><span>🔒 Private to <b id="g-roomdmname"></b> · only in this room</span><button type="button" class="pg-x" id="g-roomdmx" aria-label="Back to the room chat">✕</button></div>
@@ -3814,14 +3881,13 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
           <button type="submit" class="pg-btn pg-primary" aria-label="Send">➤</button>
         </form>
         <b class="rm-dot" id="g-roomchatdot" hidden></b>
+        <!-- the people here, beside the chat: private messages, profiles, adding players or bots -->
+        <aside class="rm-people" id="g-roompanel" hidden>
+          <button type="button" id="g-roompanelx" hidden>✕</button>
+          <ul class="rm-peoplelist" id="g-roompeoplelist"></ul>
+          <button type="button" class="rm-addppl" id="g-roomaddppl">＋ Add</button>
+        </aside>
       </div>
-      <!-- the people here: private messages, and adding players or bots -->
-      <aside class="rm-people" id="g-roompanel" hidden>
-        <div class="rm-peoplehead"><b>👥 In this room</b><button type="button" class="pg-x" id="g-roompanelx" aria-label="Close">✕</button></div>
-        <ul class="rm-peoplelist" id="g-roompeoplelist"></ul>
-        <button type="button" class="rm-addppl" id="g-roomaddppl">＋ Add players or bots</button>
-        <p class="rm-legend"><i class="rl owner"></i> Owner of the pet <i class="rl cop"></i> Co-parent</p>
-      </aside>
       <!-- the host's picker (the next game, who plays, its options), and decorating -->
       <div class="rm-sheet" id="g-roomsheet" hidden>
         <div class="rm-sheethead"><b id="g-roomsheettitle"></b><button type="button" class="pg-x" id="g-roomsheetx" aria-label="Close">✕</button></div>
@@ -8531,7 +8597,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261114063028";   // replaced by build_real.ps1
+    var APP_BUILD = "20261114071436";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -9772,7 +9838,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       }
       if (!r) {
         box.className = "pg-roomcard quiet";
-        box.innerHTML = '<span class="ic">🏠</span><span class="pg-grow"><b>Play with friends in a room</b><small>Up to 4 players · pick games together · chat between rounds</small></span><button type="button" class="go">Create</button>';
+        box.innerHTML = '<span class="ic">🏠</span><span class="pg-grow"><b>Play with friends in a room</b><small>Up to 12 players · pick games together · chat between rounds</small></span><button type="button" class="go">Create</button>';
         box.querySelector(".go").addEventListener("click", function () { roomsOpen(); setTimeout(function () { $("g-roomcreate").click(); }, 50); });
         return;
       }
@@ -10310,6 +10376,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       var R = roomNow; if (!R) return;
       var hostM = R.members.filter(function (m) { return m.uid === R.host; })[0], iHost = R.host === me.id, n = R.members.length;
       $("g-roomtitle").textContent = hostM ? (R.host === me.id ? "Your room" : roomName(R.host) + "'s room") : "Room";
+      $("g-roomsharecode").textContent = R.code || "";
       $("g-roommeta").innerHTML = (R.pub ? "🌍 Public" : "🔒 Private") + " · " + n + " of " + R.max + " players" + (R.code ? ' · Code <b>' + esc(R.code) + "</b>" : "") + (safeOn() ? "<br>🛡️ Safe mode: you only see friends' messages" : "");
       // typing is for friends: without one here, ready-made messages are the only way to talk
       $("g-roomform").hidden = safeOn() && !R.members.some(function (m) { return m.uid !== me.id && friendOf(m.uid); });
@@ -10475,7 +10542,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       watchClose();
       clearInterval(roomTimer); roomTimer = null;
       try { if (roomCh) sb.removeChannel(roomCh); } catch (e) {}
-      roomCh = null; roomNow = null; rmStop(); roomDmEnd(); $("g-roompanel").hidden = true; $("g-roompage").hidden = true;
+      roomCh = null; roomNow = null; rmStop(); roomDmEnd(); rmArrange(false); $("g-roompanel").hidden = true; $("g-roompage").hidden = true;
       try { localStorage.removeItem(ROOM_KEY); } catch (e) {}
       keepAwake();
       if (why) say(why);
@@ -10496,6 +10563,11 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       });
       $("g-msgsheet").hidden = false;
     }
+    function roomKick(uid) {
+      var R = roomNow; if (!R || R.host !== me.id) return;
+      if (!confirm("Remove " + roomName(uid) + " from the room?")) return;
+      rpc("room_kick", { p_room: R.id, p_user: uid }).then(function () { say(roomName(uid) + " was removed from the room."); roomPoke(); roomPoll(); }, function (e) { say(e.message); });
+    }
     function roomPerson(uid) {
       var R = roomNow, m = R.members.filter(function (x) { return x.uid === uid; })[0], items = [];
       if (m) items.push(["👤 See " + roomName(uid), function () { openPetOpts(m); }]);
@@ -10510,9 +10582,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
           say("Blocked. You won't see their messages any more."); loadFriends();
         }, function (e) { say(e.message); });
       }, true]);
-      if (m && R.host === me.id) items.push(["🚪 Remove from room", function () {
-        rpc("room_kick", { p_room: R.id, p_user: uid }).then(function () { roomPoke(); roomPoll(); }, function (e) { say(e.message); });
-      }, true]);
+      if (m && R.host === me.id) items.push(["🚪 Remove from room", function () { roomKick(uid); }, true]);
       roomSheet(items);
     }
     function roomInvite() {
@@ -10686,7 +10756,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       Object.keys(rmS.pets).forEach(function (u) { if (!here[u]) { rmS.pets[u].el.remove(); delete rmS.pets[u]; } });
       // an empty spot by the door: invite someone
       $("g-roomseat").hidden = true;   // (adding people is in the people panel now)
-      $("g-roomdecorate").hidden = true;   // (decorating is in the ⋯ menu)
+      $("g-roomdecorate").hidden = R.host !== me.id;
       rmNext();
       rmMatLabel();
     }
@@ -10716,6 +10786,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       $("g-roomarcadegame").textContent = live ? "🔴 " + GAMES[R.game].art + " " + GAMES[R.game].name : G ? G.art + " " + G.name : R.host === me.id ? "Pick a game" : "No game yet";
       $("g-roomarcadesub").textContent = live ? (score || "Live now · tap to watch") : R.host === me.id ? (!G ? "Tap to choose" : R.members.length < 2 ? "Waiting for players" : "Tap to start") : "The host picks";
       $("g-roomarcade").classList.toggle("live", !!live); $("g-roomarcade").hidden = !live;
+      if (!live && botMatch && !botMatch.done) botMatchSign();
     }
     // where a tap lands on the floor, from 0 to 1 each way
     function rmFloorAt(e) {
@@ -10745,7 +10816,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         if (q.pose && q.poseUntil && t > q.poseUntil) { q.pose = ""; q.poseUntil = 0; }
         q.el.style.left = (q.x * 100) + "%"; q.el.style.top = (q.y * 100) + "%";
         q.el.style.zIndex = 10 + Math.round(q.y * 100);
-        q.el.style.setProperty("--s", (0.82 + q.y * 0.3).toFixed(3)); q.el.style.setProperty("--f", q.face);
+        q.el.style.setProperty("--s", (0.95 + q.y * 0.08).toFixed(3)); q.el.style.setProperty("--f", q.face);
         var cls = "rm-pet" + (u === me.id ? " me" : "") + (moving ? " walk" : "") + (q.pose ? " p-" + q.pose : "") + (q.ready ? " ready" : "") + (q.m && q.m.busy ? " busy" : "") + (q.namedUntil > t ? " named" : "");
         if (q.el.className !== cls) q.el.className = cls;
         if (u === me.id) {
@@ -10840,6 +10911,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       var isBot = (rmS && rmS.bots || []).some(function (b) { return b.uid === u; });
       if (!rmS || !R || !u || u === me.id || (!isBot && !R.members.some(function (m) { return m.uid === u; }))) return;
       if (p.k === "bsay" && isBot) { rmBotSay(u, ROOM_SAYS[p.t | 0] || "👋", true); return; }
+      if (p.k === "bm" && u === R.host && GAMES[p.game] && Array.isArray(p.uids) && p.uids.length <= 4) { botMatchShow(p); return; }
       if (p.k === "botplay" && u === R.host && p.to === me.id && !raceNow && GAMES[p.game] && p.bot && /^bot-/.test(p.bot.uid) && RANK_BOT_NAMES.indexOf(p.bot.pet) >= 0) {
         rankBot = { id: null, game: p.game, name: p.bot.pet, variant: RANK_BOT_LOOKS.indexOf(p.bot.variant) >= 0 ? p.bot.variant : "panda_classic", room: true };
         $("g-roompage").hidden = true; say("🎮 You're playing " + p.bot.pet + "!");
@@ -10951,23 +11023,90 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         var h = '<i class="rm-dec ' + id + '">' + d[1] + "</i>";
         if (d[0] === "wall") wall += h; else floor += h;
       });
+      if (look.pieces) { wall = ""; floor = ""; rmDrawPieces(look.pieces); }
       $("g-roomwalldecor").innerHTML = wall; $("g-roomfloordecor").innerHTML = floor;
     }
+    // ---------- decorations as pieces: each one has its own spot; the owner drags them in Arrange mode ----------
+    var RM_SPOT = { rd_plant: [0.07, 0.42], rd_poster: [0.38, 0.2], rd_lamp: [0.93, 0.42], rd_shelf: [0.7, 0.3], rd_fish: [0.08, 0.66] };
+    var rmPieces = [];
+    function rmDrawPieces(list) {
+      if (rmArr && rmArr.drag) return;   // (not while one is being dragged)
+      rmPieces = (list || []).filter(function (p) { return RM_DECOR[p.item]; });
+      var box = $("g-roompieces"); box.innerHTML = "";
+      rmPieces.forEach(function (p, i) {
+        var d = RM_SPOT[p.item] || [0.5, 0.6], x = p.x == null ? Math.min(0.95, d[0] + (i % 3) * 0.04) : p.x, y = p.y == null ? d[1] : p.y;
+        var el = document.createElement("i"); el.className = "rm-dec rm-piece " + p.item; el.dataset.id = p.id; el.textContent = RM_DECOR[p.item][1];
+        el.style.left = (x * 100) + "%"; el.style.top = (y * 100) + "%"; el.style.zIndex = 1 + Math.round(y * 100);
+        box.appendChild(el);
+      });
+    }
+    var rmArr = null;
+    function rmArrange(on) {
+      var R = roomNow; if (on && (!R || R.host !== me.id)) return;
+      rmArr = on ? { drag: null } : null;
+      $("g-roomscene").classList.toggle("arrange", !!on); $("g-roomarrange").hidden = !on;
+      if (on) { roomTab(null); $("g-roomtip").hidden = true; if (!rmPieces.length) say("Buy a decoration first: 🎨 then Decorations."); }
+    }
+    $("g-roomarrangedone").addEventListener("click", function () { rmArrange(false); });
+    $("g-roompieces").addEventListener("pointerdown", function (e) {
+      var el = e.target.closest(".rm-piece"); if (!rmArr || !el) return;
+      e.preventDefault(); e.stopPropagation();
+      var box = $("g-roompieces").getBoundingClientRect();
+      rmArr.drag = { el: el, id: +el.dataset.id, box: box, x0: e.clientX, y0: e.clientY, moved: false };
+      try { el.setPointerCapture(e.pointerId); } catch (x) {}
+      el.classList.add("drag");
+    });
+    $("g-roompieces").addEventListener("pointermove", function (e) {
+      var D = rmArr && rmArr.drag; if (!D) return;
+      if (Math.abs(e.clientX - D.x0) + Math.abs(e.clientY - D.y0) > 6) D.moved = true;
+      if (!D.moved) return;
+      D.x = Math.min(0.93, Math.max(0.07, (e.clientX - D.box.left) / D.box.width));
+      D.y = Math.min(0.97, Math.max(0.12, (e.clientY - D.box.top) / D.box.height));
+      D.el.style.left = (D.x * 100) + "%"; D.el.style.top = (D.y * 100) + "%"; D.el.style.zIndex = 1 + Math.round(D.y * 100);
+    });
+    function rmDrop(e) {
+      var D = rmArr && rmArr.drag; if (!D) return;
+      rmArr.drag = null; D.el.classList.remove("drag"); rmSwallowAt = Date.now();
+      if (D.moved && D.x != null) {
+        var p = rmPieces.filter(function (q) { return q.id === D.id; })[0]; if (p) { p.x = D.x; p.y = D.y; }
+        rpc("room_decor_move", { p_id: D.id, p_x: D.x, p_y: D.y }).then(function () { roomPoke(); }, function (er) { say(friendly(er.message)); roomPoll(); });
+        return;
+      }
+      // a tap: put it away?
+      var it = rmPieces.filter(function (q) { return q.id === D.id; })[0]; if (!it) return;
+      var nm = item(it.item) ? item(it.item).name : "this";
+      roomSheet([["📦 Put the " + nm.toLowerCase() + " away", function () {
+        rpc("room_decor_place", { p_id: D.id, p_on: false }).then(function () { D.el.remove(); rmPieces = rmPieces.filter(function (q) { return q.id !== D.id; }); roomPoke(); roomPoll(); say("Put away. Bring it back from 🎨 Decorate."); }, function (er) { say(friendly(er.message)); });
+      }]]);
+    }
+    $("g-roompieces").addEventListener("pointerup", rmDrop);
+    $("g-roompieces").addEventListener("pointercancel", rmDrop);
     function drawDecor() {
       var box = $("g-roomdecor"), R = roomNow; if (!R) return;
       if (!item("rt_beach") && !drawDecor.refetch) { drawDecor.refetch = true; storeAt = 0; box.innerHTML = '<p class="pg-note">Loading…</p>'; loadAll({ quiet: true }).then(function () { drawDecor(); }, function () { drawDecor(); }); return; }
       var mine = (R.look2 || {}).theme || "";
+      if (!drawDecor.pieces || drawDecor.stale) {
+        drawDecor.stale = false;
+        rpc("room_decor_mine").then(function (x) { drawDecor.pieces = x || []; drawDecor(); }, function () { drawDecor.pieces = []; drawDecor(); });
+        if (!drawDecor.pieces) { box.innerHTML = '<p class="pg-note">Loading…</p>'; return; }
+      }
+      var mineP = drawDecor.pieces || [];
+      var countOf = function (id) { return mineP.filter(function (p) { return p.item === id; }).length; };
       function card(id, art, name, kind) {
-        var it = id ? item(id) : null, have = !id || !!owned[id], on = kind === "theme" ? (mine === id) : have;
+        var it = id ? item(id) : null, n = kind === "decor" ? countOf(id) : 0, have = kind === "decor" ? false : !id || !!owned[id], on = kind === "theme" ? (mine === id) : n > 0;
         var b = document.createElement("button"); b.type = "button"; b.className = "rm-deccard" + (on ? " on" : "");
         b.innerHTML = '<i class="art th-' + (id || "cozy") + '">' + art + "</i><b>" + esc(name) + "</b><small>" +
-          (kind === "theme" ? (on ? "✓ In use" : have ? "Use it" : "🐾 " + (it ? cost(it) : "")) : have ? "✓ In your room" : "🐾 " + (it ? cost(it) : "")) + "</small>";
+          (kind === "theme" ? (on ? "✓ In use" : have ? "Use it" : "🐾 " + (it ? cost(it) : "")) : (n ? "×" + n + " · " : "") + "🐾 " + (it ? cost(it) : "")) + "</small>";
         b.addEventListener("click", async function () {
           if (!have) {
             if (!it) return;
-            var ok = await storeAsk({ pic: '<span class="rm-askart">' + art + "</span>", title: "Buy " + name + "?", text: (kind === "theme" ? "A new look for your room. " : "It goes in your room for everyone to see. ") + "🐾 " + cost(it) + " paws.", ok: "Buy for 🐾 " + cost(it) });
+            var ok = await storeAsk({ pic: '<span class="rm-askart">' + art + "</span>", title: (kind === "decor" && n ? "Buy another " + name.toLowerCase() + "?" : "Buy " + name + "?"), text: (kind === "theme" ? "A new look for your room. " : (n ? "You have " + n + ". " : "") + "It goes in your room for everyone to see, and you can move it where you like. ") + "🐾 " + cost(it) + " paws.", ok: "Buy for 🐾 " + cost(it) });
             if (ok !== "ok") return;
-            try { await rpc("buy_item", { p_item: id }); owned[id] = true; loadAll({ quiet: true }); celebrate({ pic: '<span class="rm-askart">' + art + "</span>", title: name + " is yours!", text: kind === "theme" ? "It's on in your room now." : "It's in your room now." }); }
+            try {
+              if (kind === "decor") { await rpc("room_decor_buy", { p_item: id }); drawDecor.stale = true; } else await rpc("buy_item", { p_item: id });
+              owned[id] = true; loadAll({ quiet: true });
+              celebrate({ pic: '<span class="rm-askart">' + art + "</span>", title: name + " is yours!", text: kind === "theme" ? "It's on in your room now." : "It's in your room now. Tap ✋ Arrange to move it." });
+            }
             catch (e) { say(friendly(e.message)); return; }
           }
           if (kind === "theme") { try { await rpc("room_set_theme", { p_item: id || null }); } catch (e) { say(friendly(e.message)); return; } }
@@ -10975,11 +11114,24 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         });
         return b;
       }
-      box.innerHTML = '<h3 class="rm-subhead">Room theme</h3><div class="rm-decgrid" id="g-decthemes"></div><h3 class="rm-subhead">Decorations</h3><div class="rm-decgrid" id="g-decitems"></div>';
+      box.innerHTML = '<button type="button" class="rm-arrangebtn" id="g-decarrange">✋ Arrange your room<small>Drag decorations where you like</small></button>' +
+        '<h3 class="rm-subhead">Room theme</h3><div class="rm-decgrid" id="g-decthemes"></div><h3 class="rm-subhead">Decorations <small>· buy as many as you like</small></h3><div class="rm-decgrid" id="g-decitems"></div>' +
+        '<div id="g-decaway"></div>';
+      $("g-decarrange").addEventListener("click", function () { rmArrange(true); });
+      var away = mineP.filter(function (p) { return !p.placed; });
+      if (away.length) {
+        var ab = $("g-decaway"); ab.innerHTML = '<h3 class="rm-subhead">Put away</h3><div class="rm-awaylist"></div>';
+        away.forEach(function (p) {
+          var d = RM_DECOR[p.item]; if (!d) return;
+          var b = document.createElement("button"); b.type = "button"; b.className = "rm-awaychip"; b.innerHTML = "<i>" + d[1] + "</i> Bring back";
+          b.addEventListener("click", function () { rpc("room_decor_place", { p_id: p.id, p_on: true }).then(function () { p.placed = true; roomPoke(); roomPoll(); drawDecor(); }, function (e) { say(friendly(e.message)); }); });
+          ab.querySelector(".rm-awaylist").appendChild(b);
+        });
+      }
       RM_THEMES.forEach(function (t) { $("g-decthemes").appendChild(card(t[0], t[1], t[2], "theme")); });
       ["rd_plant", "rd_poster", "rd_lamp", "rd_shelf", "rd_fish"].forEach(function (id) { var it = item(id); if (it) $("g-decitems").appendChild(card(id, RM_DECOR[id][1], it.name, "decor")); });
     }
-    $("g-roomdecorate").addEventListener("click", function () { roomTab("decor"); drawDecor(); });
+    $("g-roomdecorate").addEventListener("click", function () { rmArrange(false); drawDecor.stale = true; roomTab("decor"); drawDecor(); });
     // the panel under the room: chat, emotes, toys or the game
     var rmSwallowAt = 0;   // (the tap that closes a sheet doesn't also walk the pet)
     var RM_SHEET_TITLES = { chat: "💬 Chat", emo: "😄 Emotes", toys: "🧸 Toys", game: "🕹️ Next game", decor: "🎨 Decorate your room" };
@@ -11015,17 +11167,18 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       list.forEach(function (uid) {
         var w = rmWho(uid); if (!w) return;
         var m = w.m, li = document.createElement("li");
-        li.innerHTML = '<img alt="" src="' + esc(w.pic) + '"><span class="pg-grow"><b>' + (m && m.role ? '<i class="rl ' + (m.role === "owner" ? "owner" : "cop") + '"></i> ' : "") + esc(w.name) + (uid === R.host ? " 👑" : "") + "</b><small>" +
+        li.innerHTML = '<img alt="" src="' + esc(w.pic) + '"><span class="pg-grow"><b>' + esc(w.name) + (uid === R.host ? " 👑" : "") + "</b><small>" +
           (w.bot ? "🤖 Bot" : m && m.busy ? "🎮 In a game" : rmReady(uid) ? "✅ Ready" : uid === me.id ? "You" : "Here") + "</small></span>";
         if (!w.bot && uid !== me.id) {
           var dm = document.createElement("button"); dm.type = "button"; dm.className = "rm-pbtn"; dm.textContent = "✉️"; dm.setAttribute("aria-label", "Message " + w.name + " privately");
-          dm.addEventListener("click", function () { roomDm(uid); }); li.appendChild(dm);
-          var mo = document.createElement("button"); mo.type = "button"; mo.className = "rm-pbtn"; mo.textContent = "⋯"; mo.setAttribute("aria-label", "More about " + w.name);
-          mo.addEventListener("click", function () { $("g-roompanel").hidden = true; roomPerson(uid); }); li.appendChild(mo);
+          dm.addEventListener("click", function (e) { e.stopPropagation(); roomDm(uid); }); li.appendChild(dm);
+          li.classList.add("tap"); li.addEventListener("click", function () { roomPerson(uid); });
+          if (host) { var kk = document.createElement("button"); kk.type = "button"; kk.className = "rm-pbtn kick"; kk.textContent = "🚪"; kk.setAttribute("aria-label", "Remove " + w.name + " from the room");
+            kk.addEventListener("click", function (e) { e.stopPropagation(); roomKick(uid); }); li.appendChild(kk); }
         }
         if (w.bot && host) {
           var x = document.createElement("button"); x.type = "button"; x.className = "rm-pbtn"; x.textContent = "✕"; x.setAttribute("aria-label", "Remove " + w.name);
-          x.addEventListener("click", function () { rmBotRemove(uid); }); li.appendChild(x);
+          x.addEventListener("click", function (e) { e.stopPropagation(); rmBotRemove(uid); }); li.appendChild(x);
         }
         box.appendChild(li);
       });
@@ -11037,14 +11190,22 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     }
     function roomDmEnd() { roomDmTo = null; $("g-roomdm").hidden = true; $("g-roomin").placeholder = "Message the room…"; }
     $("g-roomdmx").addEventListener("click", roomDmEnd);
-    $("g-roompeople").addEventListener("click", function () { drawPeople(); roomTab(null); $("g-roompanel").hidden = !$("g-roompanel").hidden; });
-    $("g-roompanelx").addEventListener("click", function () { $("g-roompanel").hidden = true; });
+    $("g-roompeople").addEventListener("click", function () { drawPeople(); $("g-roompanel").hidden = !$("g-roompanel").hidden; $("g-roompeople").setAttribute("aria-pressed", $("g-roompanel").hidden ? "false" : "true"); });
+    $("g-roomaddbtn").addEventListener("click", roomInvite);
+    $("g-roomsharebtn").addEventListener("click", roomShare);
+    function roomShare() {
+      var R = roomNow; if (!R) return;
+      var url = location.origin + location.pathname + "?room=" + encodeURIComponent(R.code), text = "Join my Pet Streak room! 🐾 Code: " + R.code;
+      if (navigator.share) { navigator.share({ text: text, url: url }).catch(function () {}); return; }
+      try { navigator.clipboard.writeText(text + " " + url).then(function () { say("Copied! Code " + R.code + " · paste it to a friend."); }, function () { say("Room code: " + R.code); }); } catch (e) { say("Room code: " + R.code); }
+    }
+    $("g-roompanelx").addEventListener("click", function () { $("g-roompanel").hidden = true; $("g-roompeople").setAttribute("aria-pressed", "false"); });
     $("g-roomaddppl").addEventListener("click", function () { $("g-roompanel").hidden = true; roomInvite(); });
     $("g-roommore").addEventListener("click", function () {
       var R = roomNow; if (!R) return;
-      var items = [["🏠 Go home (you stay in the room)", function () { $("g-roommin").click(); }], ["💬 Your chats", function () { $("g-roomchats").click(); }]];
+      var items = [["💬 Your chats", function () { $("g-roomchats").click(); }]];
       if (R.host === me.id) items.push(["🎨 Decorate the room", function () { roomTab("decor"); drawDecor(); }]);
-      items.push(["🔗 Share the room code", function () { try { navigator.clipboard.writeText(R.code).then(function () { say("Code copied: " + R.code); }); } catch (e) { say("Room code: " + R.code); } }]);
+      items.push(["🔗 Share the room code", roomShare]);
       items.push(["🚪 Leave the room", roomLeave, true]);
       roomSheet(items);
     });
@@ -11122,10 +11283,10 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       var botsOnly = iPlay && nHum === 1 && nBots > 0;
       // two people without the host: not a game the host can run (the host plays any game between two people)
       var badPair = G2 && nHum === 2 && !iPlay;
-      var ok = !!G && L.length >= 2 && !notReady.length && !late && !R.stake && !badPair;
+      var ok = !!G && L.length >= 2 && !notReady.length && !late && !R.stake && !badPair && !(botMatch && !botMatch.done);
       go.disabled = !ok;
       go.textContent = !G ? "Pick a game first" : L.length < 2 ? (G2 ? "Pick who plays" : "Invite players or add a bot") : badPair ? "Put yourself in to host a game for two" : late ? "Waiting for " + roomName(late.uid) + " to finish…"
-        : notReady.length ? "Waiting for " + (notReady.length === 1 ? roomName(notReady[0]) : notReady.length + " players") + " to be ready" : "▶ Start " + (g === "random" ? "a random game" : G.name) + (botsOnly ? " with " + (L.length === 2 ? rmWho(L[1]).name : "the bots") : nBots ? " · " + nBots + (nBots === 1 ? " bot" : " bots") : "");
+        : botMatch && !botMatch.done ? "The bots are playing…" : notReady.length ? "Waiting for " + (notReady.length === 1 ? roomName(notReady[0]) : notReady.length + " players") + " to be ready" : !nHum ? "▶ Start: watch the bots play" : "▶ Start " + (g === "random" ? "a random game" : G.name) + (botsOnly ? " with " + (L.length === 2 ? rmWho(L[1]).name : "the bots") : nBots ? " · " + nBots + (nBots === 1 ? " bot" : " bots") : "");
       note.textContent = live ? "" : host ? (L.length > 1 ? "Tap a player (or yourself) to sit them out." : "") : mineIn ? (meQ && meQ.ready ? "You're in! Waiting for the host to start." : "You're playing next. Tap I'm ready!") : G ? "You're sitting this one out." : "Waiting for the host to pick a game…";
       rmMatLabel2(L);
     }
@@ -11153,11 +11314,13 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       q.ready = !q.ready; rmSend(rmSt()); rmNext(); sfx(q.ready ? "happy" : "pat");
       if (q.ready) { var mb = rmMatBox(); rmWalk(rmClamp(mb.x + (Math.random() - 0.5) * mb.rx, 0.06, 0.94), rmClamp(mb.y, 0.05, 0.97)); }
     });
-    $("g-roomgamebtn").addEventListener("click", function () { var R = roomNow; if (!R) return; if (roomLive()) watchOpen(); else if (R.host === me.id) roomTab("game"); });
+    $("g-roomgamebtn").addEventListener("click", function () { var R = roomNow; if (!R) return; if (roomLive()) watchOpen(); else if (botMatch && !botMatch.done) botMatchOpen(); else if (R.host === me.id) roomTab("game"); });
     $("g-roomgo").addEventListener("click", function () {
       var R = roomNow, L = rmLineup(); if (!R || $("g-roomgo").disabled) return;
       var bots = L.filter(function (u) { return /^bot-/.test(u); }), hum = L.filter(function (u) { return !/^bot-/.test(u); });
       var gg = roomPickGame === "random" ? null : roomPickGame;
+      // only bots: they play each other and everyone watches
+      if (!hum.length && bots.length >= 2) { rmBotMatch(bots, gg); return; }
       // me and bots only: played on my phone
       if (hum.length === 1 && hum[0] === me.id && bots.length) { rmBotGame(bots); return; }
       // a guest against a bot (a game for two): their phone plays it; I stay in the room
@@ -11168,6 +11331,78 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       }
       var inner = document.querySelector("#g-roomgame .pg-roomstart"); if (inner && !inner.disabled) inner.click();
     });
+    // ---------- Bot matches: only bots in the line-up, so they play each other and the room watches ----------
+    // The host's phone plays it out (a quick simulation of the game's score) and sends the score each second.
+    var botMatch = null;
+    function rmBotMatch(bots, g) {
+      var R = roomNow; if (!R || R.host !== me.id || (botMatch && !botMatch.done)) return;
+      var pool = ["race", "ball", "penalty", "bamboo", "beat", "memory"].filter(function (k) { return GAMES[k]; });
+      var game = g && GAMES[g] ? g : pool[Math.floor(Math.random() * pool.length)];
+      var uids = bots.slice(0, GAMES[game].max === 1 ? 2 : 4), names = {}, looks = {};
+      uids.forEach(function (u) { var b = (R.bots || []).filter(function (x) { return x.uid === u; })[0]; names[u] = b ? b.pet : "Bot"; looks[u] = b ? b.variant : "panda_classic"; });
+      if (uids.length < 2) { say("Bots need someone to play: put two bots in."); return; }
+      var s = {}; uids.forEach(function (u) { s[u] = 0; });
+      var M = { game: game, uids: uids, names: names, looks: looks, s: s, t: 0, done: false, kick: 0 };
+      var rnd = function (a, b) { return a + Math.floor(Math.random() * (b - a + 1)); };
+      var step = function () {
+        if (!roomNow || roomNow.id !== R.id) { clearInterval(M.T); return; }
+        M.t++;
+        if (game === "race") { uids.forEach(function (u) { s[u] = Math.min(100, s[u] + rnd(4, 11)); }); if (uids.some(function (u) { return s[u] >= 100; })) M.done = true; }
+        else if (game === "ball") { if (M.t % 2 === 0) { s[uids[rnd(0, 1)]]++; if (s[uids[0]] >= 5 || s[uids[1]] >= 5) M.done = true; } }
+        else if (game === "penalty") {
+          if (M.t % 2 === 0) { var who = uids[M.kick % 2]; if (Math.random() < 0.7) s[who]++; M.kick++;
+            var rounds = Math.ceil(M.kick / 2), left = M.kick % 2 === 0;
+            if (left && rounds >= 5 && s[uids[0]] !== s[uids[1]]) M.done = true;
+            if (left && rounds >= 8) M.done = true; } }
+        else if (game === "memory") { if (M.t % 2 === 0) { s[uids[rnd(0, uids.length - 1)]]++; if (uids.reduce(function (a, u) { return a + s[u]; }, 0) >= 12) M.done = true; } }
+        else { uids.forEach(function (u) { s[u] += game === "beat" ? rnd(40, 180) : rnd(10, 50); }); if (M.t >= 30) M.done = true; }
+        if (M.done) clearInterval(M.T);
+        var msg = { k: "bm", game: game, uids: uids, names: names, looks: looks, s: s, done: M.done, t: M.t };
+        rmSend(msg); botMatchShow(msg);
+      };
+      botMatch = M; R.played = roomPickGame;
+      say("🤖 The bots are playing " + GAMES[game].name + "! Tap the game bar to watch.");
+      M.T = setInterval(step, 1000); step();
+      botMatchOpen();
+    }
+    function botMatchShow(p) {
+      var was = botMatch, R = roomNow; if (!R) return;
+      var M = botMatch = was && was.game === p.game && !was.shown ? was : { game: p.game, uids: p.uids, names: {}, looks: {}, s: {} };
+      M.uids = p.uids.filter(function (u) { return /^bot-/.test(u); }).slice(0, 4); M.s = {};
+      M.uids.forEach(function (u) { M.s[u] = Math.max(0, +((p.s || {})[u]) || 0); M.names[u] = RANK_BOT_NAMES.indexOf((p.names || {})[u]) >= 0 ? p.names[u] : "Bot"; M.looks[u] = RANK_BOT_LOOKS.indexOf((p.looks || {})[u]) >= 0 ? p.looks[u] : "panda_classic"; });
+      var finished = !!p.done && !M.done; M.done = !!p.done;
+      botMatchSign(); botMatchDraw();
+      if (finished) {
+        var top = M.uids.slice().sort(function (a, b) { return M.s[b] - M.s[a]; }), G = GAMES[M.game];
+        var tie = M.uids.length > 1 && M.s[top[0]] === M.s[top[1]];
+        roomNote("🤖 " + (tie ? "It's a draw" : M.names[top[0]] + " wins") + " at " + G.art + " " + G.name + " · " + M.uids.map(function (u) { return M.names[u] + " " + M.s[u] + (M.game === "race" ? "%" : ""); }).join(" · "));
+        setTimeout(function () { if (botMatch === M) { $("g-roomarcade").hidden = !roomLive(); } if (R.host === me.id) rmNext(); }, 4000);
+      }
+      if (R.host !== me.id || finished) rmNext();
+    }
+    function botMatchSign() {
+      var M = botMatch; if (!M || roomLive()) return;
+      var G = GAMES[M.game], top = M.uids.slice().sort(function (a, b) { return M.s[b] - M.s[a]; });
+      $("g-roomarcadegame").textContent = (M.done ? "🏁 " : "🔴 ") + G.art + " " + G.name;
+      $("g-roomarcadesub").textContent = M.uids.length === 2 ? M.names[M.uids[0]] + " " + M.s[M.uids[0]] + " · " + M.s[M.uids[1]] + " " + M.names[M.uids[1]] : M.names[top[0]] + " leads";
+      $("g-roomarcade").classList.add("live"); $("g-roomarcade").hidden = false;
+      if (!M.done) { $("g-roomgamename").textContent = "🤖 The bots are playing"; $("g-roomgamesub").textContent = "Tap to watch"; }
+    }
+    function botMatchOpen() { if (!botMatch) return; watchClose(); botMatch.open = true; $("g-watch").hidden = false; botMatchDraw(); }
+    function botMatchDraw() {
+      var M = botMatch; if (!M || !M.open || $("g-watch").hidden || watchNow) return;
+      var G = GAMES[M.game], best = Math.max.apply(null, M.uids.map(function (u) { return M.s[u]; }));
+      var top = M.uids.filter(function (u) { return M.s[u] === best; });
+      $("g-watchtitle").innerHTML = G.art + " " + esc(G.name) + " · 🤖 bots";
+      $("g-watchnote").textContent = M.done ? (top.length > 1 ? "It's a draw!" : "🏆 " + M.names[top[0]] + " wins!") : "🔴 Live";
+      var box = $("g-watchlist"); box.innerHTML = "";
+      M.uids.slice().sort(function (a, b) { return M.s[b] - M.s[a]; }).forEach(function (u) {
+        var li = document.createElement("li");
+        li.innerHTML = '<img alt="" src="' + esc(otherPic({ variant: M.looks[u] })) + '"><span class="pg-grow"><b>' + esc(M.names[u]) + "</b><small>🤖 Bot</small></span><b>" + M.s[u] + (M.game === "race" ? "%" : "") + "</b>";
+        box.appendChild(li);
+      });
+    }
+    $("g-watchclose").addEventListener("click", function () { if (botMatch) botMatch.open = false; });
     // ---------- Bots in a room (the host's phone runs them) ----------
     function rmBotAdd() {
       var R = roomNow; if (!R || R.host !== me.id) return;
@@ -11249,7 +11484,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       $("g-roomtoys").appendChild(b);
     });
     $("g-roomfloor").addEventListener("click", function (e) {
-      if (!rmS || e.target.closest(".rm-pet, .rm-seat, .rm-toy") || Date.now() - rmSwallowAt < 500) return;
+      if (!rmS || rmArr || e.target.closest(".rm-pet, .rm-seat, .rm-toy") || Date.now() - rmSwallowAt < 500) return;
       $("g-roomact").hidden = true; rmS.lastInput = Date.now();
       if (e.target.closest(".rm-ball")) { rmToy("ball"); return; }
       var at = rmFloorAt(e); rmWalk(at.x, at.y);
@@ -11260,7 +11495,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     $("g-roomwand").addEventListener("click", function (e) { e.stopPropagation(); rmToy("bub"); });
     $("g-roombasket").addEventListener("click", function (e) { e.stopPropagation(); rmToy("snk"); });
     $("g-roomtoybox").addEventListener("click", function () { roomTab("toys"); });
-    $("g-roomarcade").addEventListener("click", function () { if (roomLive()) watchOpen(); else roomTab("game"); });
+    $("g-roomarcade").addEventListener("click", function () { if (roomLive()) watchOpen(); else if (botMatch) botMatchOpen(); else roomTab("game"); });
 
     // --- a live game: the waiting room, then the game ---
     // The host waits for the invited players to arrive ("here"), seats them ("seat") and starts ("go", with the
@@ -11923,7 +12158,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       view.wrap.appendChild(end);
       if (rb) {
         // a Find-a-game match: Play again looks for a player again, and a win adds its points
-        if (rb.room) { again = function () { openPlay(); }; var ag1 = end.querySelector('[data-a="again"]'); if (ag1) ag1.textContent = "← Back to the room"; var bn = end.querySelector(".pg-botnote"); if (bn) bn.textContent = "🤖 " + rb.name + " is a room bot"; }
+        if (rb.room) { again = function () { openPlay(); }; var ag1 = end.querySelector('[data-a="again"]'); if (ag1) { ag1.textContent = "← Back to the room"; ag1.className = "pg-feed"; } var dn1 = end.querySelector('[data-a="done"]'); if (dn1) dn1.remove(); var bn = end.querySelector(".pg-botnote"); if (bn) bn.textContent = "🤖 " + rb.name + " is a room bot"; }
         else {
         again = function () { openPlay(); startFind(); };
         var ag0 = end.querySelector('[data-a="again"]'); if (ag0) ag0.textContent = "🎮 Find another game";
@@ -11935,7 +12170,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
           loadWeekSub();
         }, function () {});
       }
-      end.querySelector('[data-a="done"]').addEventListener("click", function () { view.close(); raceNow = null; trackMe(); openPlay(); openMode(lastGame); });
+      var dn = end.querySelector('[data-a="done"]'); if (dn) dn.addEventListener("click", function () { view.close(); raceNow = null; trackMe(); openPlay(); openMode(lastGame); });
       end.querySelector('[data-a="again"]').addEventListener("click", function () { view.close(); raceNow = null; again(); });
     }
     // Penalty kicks: a Match against the bot, or a Streak (high scores)
@@ -12318,7 +12553,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         renderer.setClearColor(oc, 0); renderer.render(scene, camera);
         var src = renderer.domElement;
         var proj = function (y) { var v = modelRoot.localToWorld(new THREE.Vector3(0, y, 0)).project(camera); return { x: (v.x + 1) / 2 * src.width, y: (1 - v.y) / 2 * src.height }; };
-        var foot = proj(0), top = proj(hasHat ? 1.24 : 1.0), side = Math.max(8, (foot.y - top.y) * 1.08);
+        var foot = proj(0), top = proj(1.24), side = Math.max(8, (foot.y - top.y) * 1.08);
         var out = document.createElement("canvas"); out.width = out.height = 256;
         out.getContext("2d").drawImage(src, foot.x - side / 2, top.y - side * 0.05, side, side, 0, 0, 256, 256);
         return out.toDataURL("image/png");
@@ -12404,7 +12639,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     // ---------- the card that switches between today's challenge and the news ----------
     var feedNews = [], feedAt = 0, feedFace = "ch", feedT = null;
     function feedDraw() {
-      var hasCh = !$("g-challenge").hidden && !!challenge, hasNews = feedNews.length > 0, faces = [];
+      var hasCh = !$("g-challenge").hidden && !!challenge && !challenge.claimed, hasNews = feedNews.length > 0, faces = [];
       if (hasCh) faces.push("ch"); if (hasNews) faces.push("news");
       $("g-feedcard").hidden = !faces.length;
       if (faces.indexOf(feedFace) < 0) feedFace = faces[0] || "ch";
