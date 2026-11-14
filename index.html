@@ -3246,6 +3246,20 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
 .rm-sheet .pg-roomstart { display: none; }
 
 .rm-arcade[hidden], .rm-toybox[hidden] { display: none; }
+
+/* admin: app errors */
+.pg-errrow { margin: 6px 0; border-radius: 12px; background: #fff4f2; box-shadow: inset 0 0 0 1px #f5c4b3; }
+.pg-errrow.fixed { background: #f4f6f8; box-shadow: none; opacity: 0.8; }
+.pg-errrow summary { list-style: none; cursor: pointer; padding: 10px 12px; display: flex; flex-direction: column; gap: 2px; }
+.pg-errrow summary::-webkit-details-marker { display: none; }
+.pg-errrow summary b { font-size: 0.86rem; color: #712b13; word-break: break-word; }
+.pg-errrow.fixed summary b { color: #444441; text-decoration: line-through; }
+.pg-errrow summary small { color: #8a6a5a; font-weight: 700; font-size: 0.72rem; }
+.pg-errmore { padding: 0 12px 12px; font-size: 0.76rem; color: #3a4a52; }
+.pg-errmore p { margin: 3px 0; display: flex; gap: 8px; }
+.pg-errmore p span { flex: none; width: 64px; color: #8a9aa1; font-weight: 700; }
+.pg-errmore code, .pg-errmore em { font-style: normal; word-break: break-all; }
+.pg-errmore pre { max-height: 160px; overflow: auto; margin: 6px 0 8px; padding: 8px; border-radius: 8px; background: #1f2430; color: #e6e6e6; font-size: 0.68rem; white-space: pre-wrap; word-break: break-all; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -4173,6 +4187,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
           <button type="button" id="g-adminpshow" hidden></button>
         </section>
         <section data-apane="reports" hidden>
+          <div class="pg-adcard" id="g-adminerrs"><h3>🐞 App errors <small id="g-errcount"></small></h3><div id="g-errlist"></div></div>
           <div class="pg-adcard" id="g-adminchat" hidden><h3>Reported chats</h3><div id="g-chatreps"></div></div>
           <div class="pg-adcard" id="g-adminrep" hidden><h3>Reported pet names</h3><div id="g-replist"></div></div>
           <div class="pg-adcard" id="g-adminfb" hidden><h3>Feedback <small id="g-fbcount"></small></h3><div id="g-fblist"></div><button type="button" class="pg-btn" id="g-fbdone" hidden></button></div>
@@ -8410,13 +8425,52 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261114051426";   // replaced by build_real.ps1
+    var APP_BUILD = "20261114053614";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
         .then(function (v) { if (v && v.build && v.build > APP_BUILD) document.getElementById("g-update").hidden = false; })
         .catch(function () {});
     }
+    // ---------- App errors: reported to the admin (what broke, where in the code, which screen, which version) ----------
+    // Nothing a player typed is sent, only the error. The same error is sent once (with how many times it happened),
+    // at most 20 different ones per visit, and only once signed in.
+    var errQueue = [], errSeen = {}, errSent = 0;
+    function errScreen() {
+      var gm = document.querySelector(".pg-game"); if (gm) return "game:" + (gm.className.split(" ")[1] || "");
+      var top = "home", z = -1;
+      Array.prototype.forEach.call(document.querySelectorAll(".pg:not([hidden])"), function (e) {
+        if (!e.id || /^g-(msg|float|bar|dock|tabs|roombar|update|top|mood|crew|bottom)$/.test(e.id)) return;   // (always-there bits, not a screen)
+        var zz = +getComputedStyle(e).zIndex || 0; if (zz >= z) { z = zz; top = e.id; }
+      });
+      return top;
+    }
+    function errAgent() {
+      var u = navigator.userAgent || "", os = /Android/.test(u) ? "Android" : /iPhone|iPad/.test(u) ? "iPhone" : /Windows/.test(u) ? "Windows" : /Mac/.test(u) ? "Mac" : "Other";
+      var br = /Edg\//.test(u) ? "Edge" : /SamsungBrowser/.test(u) ? "Samsung" : /CriOS|Chrome\//.test(u) ? "Chrome" : /Firefox|FxiOS/.test(u) ? "Firefox" : /Safari/.test(u) ? "Safari" : "Browser";
+      return os + " " + br + (window.matchMedia && matchMedia("(display-mode: standalone)").matches ? " · app" : "");
+    }
+    function errCatch(message, source, line, col, stack) {
+      message = String(message || "").slice(0, 300);
+      // (not app bugs: a lost connection, browser noise, an extension's error)
+      if (!message || /ResizeObserver loop|^Script error\.?$|Failed to fetch|NetworkError|Load failed|network connection was lost|AbortError/i.test(message)) return;
+      var key = message + "|" + (source || "") + "|" + (line || 0);
+      if (errSeen[key]) { errSeen[key].n++; return; }
+      if (errSent + errQueue.length >= 20) return;
+      errSeen[key] = { n: 1 };
+      errQueue.push({ key: key, message: message, source: source || "", line: line | 0, col: col | 0, stack: String(stack || "").slice(0, 2000), screen: errScreen() });
+      clearTimeout(errCatch.t); errCatch.t = setTimeout(errFlush, 3000);
+    }
+    function errFlush() {
+      if (!errQueue.length) return;
+      if (typeof rpc !== "function" || !me) { clearTimeout(errCatch.t); errCatch.t = setTimeout(errFlush, 15000); return; }   // (once signed in)
+      errQueue.splice(0).forEach(function (e) {
+        errSent++; var n = errSeen[e.key] ? errSeen[e.key].n : 1;
+        rpc("log_client_error", { p_message: e.message, p_source: e.source, p_line: e.line, p_col: e.col, p_stack: e.stack, p_screen: e.screen, p_build: APP_BUILD, p_agent: errAgent(), p_n: n }).catch(function () {});
+      });
+    }
+    window.addEventListener("error", function (e) { if (e && e.message) errCatch(e.message, e.filename, e.lineno, e.colno, e.error && e.error.stack); });
+    window.addEventListener("unhandledrejection", function (e) { var r = e && e.reason; errCatch(r && r.message ? r.message : String(r), "promise", 0, 0, r && r.stack); });
     setTimeout(checkForUpdate, 8000);
     setInterval(checkForUpdate, 5 * 60 * 1000);
     document.addEventListener("visibilitychange", function () { if (!document.hidden) checkForUpdate(); });
@@ -10246,7 +10300,8 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       R.seq = (R.seq || 0) + 1; R.played = roomPickGame; roomPoke(); chalDrop(); findStop();
       if (R.randomOpp) { R.randomOpp = false; setTimeout(function () { roomOpp = null; }, 0); }
       $("g-roompage").hidden = true;
-      liveGame(game, res.game_room, true, { vs: vs, fast: false, guests: chosen.map(function (m) { return { uid: m.uid, html: petTagHTML(m), state: "wait" }; }) });
+      var withBots = game === "race" ? rmLineup().filter(function (u) { return /^bot-/.test(u); }).map(function (u) { var b = (R.bots || []).filter(function (x) { return x.uid === u; })[0]; return b && { uid: b.uid, pet: b.pet, variant: b.variant, level: b.level, wins: 0, bot: true }; }).filter(Boolean) : [];
+      liveGame(game, res.game_room, true, { vs: vs, fast: false, bots: withBots, guests: chosen.map(function (m) { return { uid: m.uid, html: petTagHTML(m), state: "wait" }; }) });
       return true;
     }
     // Watching: the host's phone sends the scores once a second ("w") and anyone sitting out sees them on one scoreboard.
@@ -10668,6 +10723,12 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       var isBot = (rmS && rmS.bots || []).some(function (b) { return b.uid === u; });
       if (!rmS || !R || !u || u === me.id || (!isBot && !R.members.some(function (m) { return m.uid === u; }))) return;
       if (p.k === "bsay" && isBot) { rmBotSay(u, ROOM_SAYS[p.t | 0] || "👋", true); return; }
+      if (p.k === "botplay" && u === R.host && p.to === me.id && !raceNow && GAMES[p.game] && p.bot && /^bot-/.test(p.bot.uid) && RANK_BOT_NAMES.indexOf(p.bot.pet) >= 0) {
+        rankBot = { id: null, game: p.game, name: p.bot.pet, variant: RANK_BOT_LOOKS.indexOf(p.bot.variant) >= 0 ? p.bot.variant : "panda_classic", room: true };
+        $("g-roompage").hidden = true; say("🎮 You're playing " + p.bot.pet + "!");
+        if (p.game === "ball") { lastGame = "ball"; botChallenge = false; ballBot(true); } else playBot(p.game, false);
+        return;
+      }
       var q = rmS.pets[u]; if (!q) return;
       var num = function (v, d) { v = +v; return isFinite(v) ? rmClamp(v, 0, 1) : d; };
       if (p.k === "st") {
@@ -10833,12 +10894,18 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     function rmLineup() {
       var R = roomNow; if (!R) return [];
       if (R.host !== me.id) return (rmS && rmS.hostLineup) || [R.host];
-      var g = roomPickGame, G = g === "random" ? ROOM_RANDOM : g && GAMES[g], two = !!G && G.max === 1 && g !== "random";
-      if ((R.lineupBots || []).length) { var lb = R.lineupBots.filter(function (u) { return (R.bots || []).some(function (b) { return b.uid === u; }); }); if (lb.length) return [me.id].concat(two ? lb.slice(0, 1) : g === "race" ? lb.slice(0, 3) : lb.slice(0, 1)); }
-      var others = R.members.filter(function (m) { return m.uid !== me.id; }).map(function (m) { return m.uid; });
-      if (two) return [me.id].concat(roomOpp && others.indexOf(roomOpp) >= 0 ? [roomOpp] : []);
-      R.sitOut = R.sitOut || {};
-      return [me.id].concat(others.filter(function (u) { return !R.sitOut[u]; }).slice(0, 3));
+      var g = roomPickGame, G = g === "random" ? ROOM_RANDOM : g && GAMES[g], cap = !G ? 4 : G.max === 1 && g !== "random" ? 2 : 4;
+      var here = R.members.map(function (m) { return m.uid; }).concat((R.bots || []).map(function (b) { return b.uid; }));
+      if (!R.lineup || R.lineupFor !== g) {
+        var humans = here.filter(function (u) { return u !== me.id && !/^bot-/.test(u); });
+        R.lineup = [me.id].concat(cap === 2 ? (roomOpp && humans.indexOf(roomOpp) >= 0 ? [roomOpp] : humans.slice(0, 1)) : humans.slice(0, 3));
+        R.lineupFor = g;
+      }
+      R.lineup = R.lineup.filter(function (u) { return here.indexOf(u) >= 0; }).slice(0, cap);
+      // two people (one of them me): the existing game and paws options use roomOpp
+      var hum = R.lineup.filter(function (u) { return !/^bot-/.test(u); });
+      roomOpp = cap === 2 && hum.length === 2 && hum.indexOf(me.id) >= 0 ? hum.filter(function (u) { return u !== me.id; })[0] : cap === 2 ? null : roomOpp;
+      return R.lineup.slice();
     }
     function rmWho(uid) {
       var R = roomNow, m = R.members.filter(function (x) { return x.uid === uid; })[0], b = (rmS && rmS.bots || []).filter(function (x) { return x.uid === uid; })[0];
@@ -10860,7 +10927,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         var rd = uid === R.host || w.bot || rmReady(uid), b = document.createElement("button"); b.type = "button";
         b.className = "rm-slot" + (rd ? " ready" : "") + (uid === me.id ? " me" : "");
         b.innerHTML = '<img alt="" src="' + esc(w.pic) + '"><span><b>' + esc(w.name) + "</b><small>" + (uid === R.host ? "👑 Host" : w.bot ? "🤖 Bot · ready" : rd ? "✅ Ready" : "⏳ Not ready") + "</small></span>";
-        if (host && uid !== me.id) b.addEventListener("click", function () { rmBench(uid); });
+        if (host) b.addEventListener("click", function () { rmBench(uid); });
         else if (!host && uid !== me.id && !w.bot) b.addEventListener("click", function () { roomPerson(uid); });
         slots.appendChild(b);
       });
@@ -10892,12 +10959,15 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       var notReady = L.filter(function (u) { var w = rmWho(u); return u !== R.host && w && !w.bot && !rmReady(u); });
       var late = R.members.filter(function (m) { return L.indexOf(m.uid) >= 0 && m.busy && m.uid !== me.id; })[0];
       go.hidden = !host || !!live;
-      var botsOnly = L.length > 1 && L.slice(1).every(function (u) { return /^bot-/.test(u); });
-      var ok = !!G && L.length >= 2 && !notReady.length && !late && !R.stake;
+      var nBots = L.filter(function (u) { return /^bot-/.test(u); }).length, nHum = L.length - nBots, iPlay = L.indexOf(me.id) >= 0;
+      var botsOnly = iPlay && nHum === 1 && nBots > 0;
+      // two people without the host: not a game the host can run (the host plays any game between two people)
+      var badPair = G2 && nHum === 2 && !iPlay;
+      var ok = !!G && L.length >= 2 && !notReady.length && !late && !R.stake && !badPair;
       go.disabled = !ok;
-      go.textContent = !G ? "Pick a game first" : L.length < 2 ? (G2 ? "Pick who plays" : "Invite players or add a bot") : late ? "Waiting for " + roomName(late.uid) + " to finish…"
-        : notReady.length ? "Waiting for " + (notReady.length === 1 ? roomName(notReady[0]) : notReady.length + " players") + " to be ready" : "▶ Start " + (g === "random" ? "a random game" : G.name) + (botsOnly ? " with " + (L.length === 2 ? rmWho(L[1]).name : "the bots") : "");
-      note.textContent = live ? "" : host ? (L.length > 1 ? "Tap a player to sit them out." : "") : mineIn ? (meQ && meQ.ready ? "You're in! Waiting for the host to start." : "You're playing next. Tap I'm ready!") : G ? "You're sitting this one out." : "Waiting for the host to pick a game…";
+      go.textContent = !G ? "Pick a game first" : L.length < 2 ? (G2 ? "Pick who plays" : "Invite players or add a bot") : badPair ? "Put yourself in to host a game for two" : late ? "Waiting for " + roomName(late.uid) + " to finish…"
+        : notReady.length ? "Waiting for " + (notReady.length === 1 ? roomName(notReady[0]) : notReady.length + " players") + " to be ready" : "▶ Start " + (g === "random" ? "a random game" : G.name) + (botsOnly ? " with " + (L.length === 2 ? rmWho(L[1]).name : "the bots") : nBots ? " · " + nBots + (nBots === 1 ? " bot" : " bots") : "");
+      note.textContent = live ? "" : host ? (L.length > 1 ? "Tap a player (or yourself) to sit them out." : "") : mineIn ? (meQ && meQ.ready ? "You're in! Waiting for the host to start." : "You're playing next. Tap I'm ready!") : G ? "You're sitting this one out." : "Waiting for the host to pick a game…";
       rmMatLabel2(L);
     }
     // the rug: ready pets stand on it
@@ -10907,17 +10977,17 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       if ($("g-roommatlbl").textContent !== t) $("g-roommatlbl").textContent = t;
     }
     function rmBench(uid, bringIn) {
-      var R = roomNow, g = roomPickGame, G = g && g !== "random" && GAMES[g], two = !!G && G.max === 1, bot = /^bot-/.test(uid);
-      R.sitOut = R.sitOut || {}; R.lineupBots = R.lineupBots || [];
-      if (bot) {
-        if (bringIn) { if (two || g !== "race") R.lineupBots = [uid]; else if (R.lineupBots.indexOf(uid) < 0) R.lineupBots.push(uid); roomOpp = null; }
-        else R.lineupBots = R.lineupBots.filter(function (x) { return x !== uid; });
+      var R = roomNow, L = rmLineup(), g = roomPickGame, G = g === "random" ? ROOM_RANDOM : g && GAMES[g], cap = G && G.max === 1 && g !== "random" ? 2 : 4;
+      if (bringIn) {
+        if (L.indexOf(uid) >= 0) return;
+        if (L.length >= cap) { if (cap === 2) L[L.length - 1] = uid; else { say("That's a full game (4 players). Sit someone out first."); return; } }
+        else L.push(uid);
       } else {
-        R.lineupBots = [];
-        if (two) roomOpp = bringIn ? uid : null;
-        else if (bringIn) delete R.sitOut[uid]; else R.sitOut[uid] = 1;
+        if (uid === me.id && (g === "race" || g === "random") && L.some(function (u) { return u !== me.id && !/^bot-/.test(u); })) { say("You host this one, so you're in it."); return; }
+        L = L.filter(function (u) { return u !== uid; });
       }
-      rmSend(rmSt()); roomDraw(); rmNext();
+      R.lineup = L; R.lineupFor = g;
+      rmLineup(); rmSend(rmSt()); roomDraw(); rmNext();
     }
     $("g-roomready").addEventListener("click", function () {
       var q = rmS && rmS.pets[me.id]; if (!q) return;
@@ -10927,7 +10997,16 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     $("g-roomgamebtn").addEventListener("click", function () { var R = roomNow; if (!R) return; if (roomLive()) watchOpen(); else if (R.host === me.id) roomTab("game"); });
     $("g-roomgo").addEventListener("click", function () {
       var R = roomNow, L = rmLineup(); if (!R || $("g-roomgo").disabled) return;
-      if (L.length > 1 && L.slice(1).every(function (u) { return /^bot-/.test(u); })) { rmBotGame(L.slice(1)); return; }
+      var bots = L.filter(function (u) { return /^bot-/.test(u); }), hum = L.filter(function (u) { return !/^bot-/.test(u); });
+      var gg = roomPickGame === "random" ? null : roomPickGame;
+      // me and bots only: played on my phone
+      if (hum.length === 1 && hum[0] === me.id && bots.length) { rmBotGame(bots); return; }
+      // a guest against a bot (a game for two): their phone plays it; I stay in the room
+      if (hum.length === 1 && hum[0] !== me.id && bots.length) {
+        var b0 = (R.bots || []).filter(function (b) { return b.uid === bots[0]; })[0], g1 = gg || ["ball", "penalty", "bamboo", "beat", "memory"][Math.floor(Math.random() * 5)];
+        rmSend({ k: "botplay", to: hum[0], game: g1, bot: { uid: b0.uid, pet: b0.pet, variant: b0.variant } });
+        say("🎮 " + roomName(hum[0]) + " is playing " + b0.pet + "!"); R.played = roomPickGame; return;
+      }
       var inner = document.querySelector("#g-roomgame .pg-roomstart"); if (inner && !inner.disabled) inner.click();
     });
     // ---------- Bots in a room (the host's phone runs them) ----------
@@ -11049,7 +11128,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
       if (!GAMES[game]) { say("Please update the app to play this game."); return; }
       watchClose(); hidePlayPages();
       var R = openRoom(room), mine = myPresence(), G = GAMES[game];
-      var players = host ? [mine] : [], guests = host ? info.guests : [], hostUid = host ? me.id : info.from;
+      var players = host ? [mine].concat((info.bots || []).slice(0, 3)) : [], guests = host ? info.guests : [], hostUid = host ? me.id : info.from;
       var started = false, done = false, timers = [], hereTimer = null, autoT = null, view = null;
       var S = raceNow = { room: room, game: game };
       trackMe(); keepAwake();
@@ -11315,6 +11394,10 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         var pump = setInterval(function () { if (latest !== sentN) { sentN = latest; R.send("p", { uid: me.id, n: sentN }); } }, 100);
         R.on("p", function (x) { prog[x.uid] = x.n | 0; race.progress(x.uid, x.n | 0); if (host && (x.n | 0) >= steps) referee(x.uid); });
         R.on("fin", function (x) { if (host) referee(x.uid); });
+        if (host) m.players.filter(function (x) { return x.bot; }).forEach(function (b) {
+          var sent = 0, hook = { progress: function (u, n) { prog[u] = n; race.progress(u, n); if (n - sent >= 2 || n >= steps) { sent = n; R.send("p", { uid: u, n: n }); } } };
+          timers.push(setTimeout(function () { if (done) return; var br = botRacer(hook, b.uid, function () { referee(b.uid); }, 2, steps); S.botStops = (S.botStops || []).concat([br]); }, Math.max(0, LIVE_COUNTDOWN * 1000 - 3250)));
+        });
         R.on("result", function (x) { if (!host) show(x.order || []); });
         S.quick = function (uid, i) { race.quick(uid, i); };
         S.ws = function () { return { s: prog, max: steps }; };
@@ -11334,7 +11417,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
           referee(best);
         }, 95000));
         function show(order) {
-          if (done) return; done = true; clearInterval(pump);
+          if (done) return; done = true; clearInterval(pump); (S.botStops || []).forEach(function (b) { b.stop(); });
           race.result(order);
           var place = order.indexOf(me.id) + 1, winner = players.filter(function (x) { return x.uid === order[0]; })[0];
           endCard(race.wrap, place === 1 ? true : false, {
@@ -12989,7 +13072,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         });
         var rb = $("g-adrepcount"); rb.hidden = !st.reports; rb.textContent = st.reports || "";
       } catch (e) {}
-      adminDaily(); adminRooms(); adminLog(); adminPrizes(); adminPaws(); adminDrift(); adminSaleDraw(); adminGames();
+      adminDaily(); adminRooms(); adminLog(); adminPrizes(); adminPaws(); adminDrift(); adminSaleDraw(); adminGames(); adminErrors();
     }
     // ---------- update_060: paws flow, drifting players, store sale, spreadsheet ----------
     async function adminPaws() {
@@ -13146,6 +13229,33 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     $("g-adprizenote").addEventListener("click", function () { adminTab("tools"); });
     // daily tasks: bars for today, a 7-day chart and the favourite quests
     var QUEST_NAMES = { feed: "🍎 Feed", play2: "🎮 Play 2 games", win: "🏆 Win a game", hello: "👋 Say hello", chat: "💬 Send a message", xmas: "🎄 Christmas quest" };
+    // App errors: what broke on players' phones, newest first; mark one fixed (it comes back if it happens again)
+    async function adminErrors() {
+      var box = $("g-errlist"), list;
+      try { list = (await rpc("admin_errors", { p_days: 7 })) || []; }
+      catch (e) { box.innerHTML = '<p class="pg-note">' + (/admin_errors/.test(e.message) ? "Run update_070 to see app errors." : esc(e.message)) + "</p>"; return; }
+      var open = list.filter(function (x) { return !x.fixed; }), done = list.filter(function (x) { return x.fixed; });
+      $("g-errcount").textContent = open.length ? open.length + " open · last 7 days" : "last 7 days";
+      box.innerHTML = open.length ? "" : '<p class="pg-note">🎉 No app errors in the last 7 days.</p>';
+      function row(x) {
+        var d = document.createElement("details"); d.className = "pg-errrow" + (x.fixed ? " fixed" : "");
+        var ago = Math.round((Date.now() - Date.parse(x.last)) / 60000), when = ago < 60 ? ago + "m ago" : ago < 1440 ? Math.round(ago / 60) + "h ago" : Math.round(ago / 1440) + "d ago";
+        d.innerHTML = "<summary><b></b><small>×" + x.count + " · " + x.users + (x.users === 1 ? " player" : " players") + " · " + esc(when) + "</small></summary>" +
+          '<div class="pg-errmore"><p><span>Where</span><code></code></p><p><span>Screens</span><em class="sc"></em></p><p><span>Versions</span><em class="bv"></em></p><p><span>Phone</span><em class="ag"></em></p><pre></pre></div>';
+        d.querySelector("summary b").textContent = x.message;
+        d.querySelector("code").textContent = (x.source || "?") + (x.line ? ":" + x.line + (x.col ? ":" + x.col : "") : "");
+        d.querySelector(".sc").textContent = (x.screens || []).join(", ") || "–";
+        d.querySelector(".bv").textContent = (x.builds || []).join(", ") || "–";
+        d.querySelector(".ag").textContent = x.agent || "–";
+        d.querySelector("pre").textContent = x.stack || "(no stack)";
+        var b = document.createElement("button"); b.type = "button"; b.className = "pg-btn"; b.textContent = x.fixed ? "Reopen" : "✓ Mark fixed";
+        b.addEventListener("click", function () { rpc("admin_error_fixed", { p_hash: x.hash, p_fixed: !x.fixed }).then(adminErrors, function (e) { say(friendly(e.message)); }); });
+        d.querySelector(".pg-errmore").appendChild(b);
+        return d;
+      }
+      open.forEach(function (x) { box.appendChild(row(x)); });
+      if (done.length) { var h = document.createElement("h4"); h.className = "pg-adsub"; h.textContent = "Marked fixed"; box.appendChild(h); done.forEach(function (x) { box.appendChild(row(x)); }); }
+    }
     async function adminGames() {
       var d; try { d = await rpc("admin_game_stats"); } catch (e) { return; }
       $("g-adgamescard").hidden = false;
