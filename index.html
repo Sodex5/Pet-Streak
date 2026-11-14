@@ -3428,6 +3428,27 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
 .pg-roompage .rm-pet { transition: opacity 0.4s; }
 .pg-roompage .rm-pet.busy { opacity: 0; pointer-events: none; }
 .pg-roompage .rm-pet.busy::before { content: none; }
+
+/* ===== Admin: new players' journey and live settings ===== */
+.pg-adjdays { display: flex; gap: 6px; margin-bottom: 10px; }
+.pg-adjdays button { flex: 1; min-height: 34px; border: 0; border-radius: 999px; background: #edf1f3; color: #3b4b53; font: inherit; font-size: 0.8rem; font-weight: 800; }
+.pg-adjdays button[aria-selected="true"] { background: #14232b; color: #fff; }
+.pg-adjourney { display: flex; flex-direction: column; gap: 9px; }
+.pg-adjourney .pg-adbar.worst span { color: #b3261e; font-weight: 800; }
+.pg-adjourney .pg-adbar.worst u { background: #e5484d; }
+.pg-adsettings { display: flex; flex-direction: column; gap: 10px; }
+.pg-adset { display: flex; flex-direction: column; gap: 6px; padding: 10px 12px; border-radius: 14px; background: #f6f8fa; }
+.pg-adset.changed { background: #fff6e6; box-shadow: inset 0 0 0 1.5px #f3c56b; }
+.pg-adsettxt b { display: block; font-size: 0.9rem; color: #14232b; }
+.pg-adsettxt small { color: #5c6b72; font-size: 0.76rem; }
+.pg-adsetin { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 6px; }
+.pg-adsetin label { display: flex; flex-direction: column; gap: 2px; }
+.pg-adsetin label small { font-size: 0.66rem; color: #8a99a1; font-weight: 700; }
+.pg-adsetin input { width: 76px; min-height: 38px; padding: 4px 8px; border: 1.5px solid #d6e0e4; border-radius: 10px; background: #fff; font: inherit; font-weight: 800; color: #14232b; }
+.pg-adsetsave, .pg-adsetreset { min-height: 38px; padding: 4px 14px; border: 0; border-radius: 999px; font: inherit; font-size: 0.82rem; font-weight: 800; }
+.pg-adsetsave { background: var(--brand); color: #fff; }
+.pg-adsetsave[hidden] { display: none; }
+.pg-adsetreset { background: #fff; color: #3b4b53; box-shadow: inset 0 0 0 1.5px #d6e0e4; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="manifest" href="manifest.json">
@@ -4346,6 +4367,9 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         <section data-apane="overview">
           <button type="button" class="pg-adnotice" id="g-adprizenote" hidden></button>
           <div class="pg-adkpis" id="g-adminstats"></div>
+          <div class="pg-adcard"><h3>🧭 New players' journey <small>where they stop</small></h3>
+            <div class="pg-adjdays" id="g-adjdays" role="tablist"><button type="button" data-jd="7">7 days</button><button type="button" data-jd="30" aria-selected="true">30 days</button><button type="button" data-jd="90">90 days</button></div>
+            <div class="pg-adjourney" id="g-adjourney"></div></div>
           <div class="pg-adcard"><h3>Daily tasks today <small id="g-addayname"></small></h3><div class="pg-adbars" id="g-admindaily"></div></div>
           <div class="pg-adcard"><h3>Last 7 days</h3><div class="pg-adchart" id="g-adweek"></div>
             <p class="pg-adlegend"><i class="l1" aria-hidden="true"></i>Fed their pet <i class="l2" aria-hidden="true"></i>Did a quest</p></div>
@@ -4380,6 +4404,9 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
           <div class="pg-adcard" id="g-adminfb" hidden><h3>Feedback <small id="g-fbcount"></small></h3><div id="g-fblist"></div><button type="button" class="pg-btn" id="g-fbdone" hidden></button></div>
         </section>
         <section data-apane="tools" hidden>
+          <div class="pg-adcard"><h3>⚙️ Live settings <small>change them without an update</small></h3>
+            <p class="pg-note">Changes work straight away for everyone. Each one is saved in the admin log.</p>
+            <div class="pg-adsettings" id="g-adsettings"></div></div>
           <div class="pg-adcard"><h3>🏆 Prizes <small>you decide who gets paid</small></h3>
             <label class="pg-adauto" id="g-adautorow" hidden><span class="pg-grow"><b>Pay ranking prizes automatically</b><small>Each day's and week's top 3 get their XP and paws as soon as it ends</small></span><input type="checkbox" id="g-adauto" class="pg-switch"></label>
             <div id="g-adprizes"></div></div>
@@ -8612,7 +8639,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261114074350";   // replaced by build_real.ps1
+    var APP_BUILD = "20261114080516";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -13712,6 +13739,62 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         return '<div class="pg-adbar"><span>' + esc(r[0]) + "</span><b>" + r[1] + " <small>" + esc(r[3]) + '</small></b><i><u style="width:' + Math.max(p, r[1] ? 2 : 0) + '%"></u></i></div>';
       }).join("") + (games.length ? '<p class="pg-note">Most played: ' + games.slice(0, 3).map(function (k) { return (GAMES[k] ? GAMES[k].art + " " + GAMES[k].name : k) + " (" + d.by_game[k] + ")"; }).join(" · ") + "</p>" : "");
     }
+    // ---------- new players' journey: of the players who signed up in the last N days, how far they got ----------
+    var adJourneyDays = 30;
+    async function adminJourney() {
+      var box = $("g-adjourney"), d;
+      try { d = await rpc("admin_journey", { p_days: adJourneyDays }); }
+      catch (e) { box.innerHTML = '<p class="pg-note">' + (/admin_journey/.test(e.message) ? "Run update_073 to see the journey." : esc(e.message)) + "</p>"; return; }
+      var steps = d.steps || [], first = steps[0] ? steps[0].n : 0;
+      if (!first) { box.innerHTML = '<p class="pg-note">No new players in the last ' + d.days + " days.</p>"; return; }
+      // the biggest drop between one step and the next (of the steps everyone could reach)
+      var worst = -1, worstDrop = 0;
+      steps.forEach(function (s, i) {
+        if (!i) return; var pc = s.of ? s.n / s.of : 0, prev = steps[i - 1].of ? steps[i - 1].n / steps[i - 1].of : 0;
+        if (prev - pc > worstDrop) { worstDrop = prev - pc; worst = i; }
+      });
+      box.innerHTML = steps.map(function (s, i) {
+        var pc = s.of ? Math.round(s.n / s.of * 100) : 0;
+        return '<div class="pg-adbar' + (i === worst ? " worst" : "") + '"><span>' + esc(s.label) + "</span><b>" + s.n + " <small>of " + s.of + " · " + pc + '%</small></b><i><u style="width:' + Math.max(pc, s.n ? 2 : 0) + '%"></u></i></div>';
+      }).join("") + (worst > 0 ? '<p class="pg-note">Biggest drop: <b>' + esc(steps[worst].label.toLowerCase()) + "</b>.</p>" : "") +
+        '<p class="pg-note">"Came back" counts only players who joined long enough ago to have had the chance.</p>';
+    }
+    Array.prototype.forEach.call(document.querySelectorAll("#g-adjdays [data-jd]"), function (b) {
+      b.addEventListener("click", function () {
+        adJourneyDays = +b.dataset.jd;
+        Array.prototype.forEach.call(document.querySelectorAll("#g-adjdays [data-jd]"), function (x) { x.setAttribute("aria-selected", x === b ? "true" : "false"); });
+        adminJourney();
+      });
+    });
+    // ---------- live settings ----------
+    async function adminSettings(list) {
+      var box = $("g-adsettings");
+      if (!list) { try { list = await rpc("admin_settings"); } catch (e) { box.innerHTML = '<p class="pg-note">' + (/admin_settings/.test(e.message) ? "Run update_073 to change settings here." : esc(e.message)) + "</p>"; return; } }
+      box.innerHTML = "";
+      (list || []).forEach(function (s) {
+        var row = document.createElement("div"); row.className = "pg-adset" + (s.changed ? " changed" : "");
+        var names = s.value.length === 3 ? ["1st", "2nd", "3rd"] : s.value.length === 2 ? ["From", "To"] : [""];
+        row.innerHTML = '<div class="pg-adsettxt"><b>' + esc(s.label) + "</b><small>" + esc(s.help) + (s.changed ? " · was " + esc(s.def.join(", ")) : "") + "</small></div>" +
+          '<div class="pg-adsetin">' + s.value.map(function (v, i) {
+            return '<label>' + (names[i] ? "<small>" + names[i] + "</small>" : "") + '<input type="number" inputmode="numeric" min="' + s.lo + '" max="' + s.hi + '" value="' + v + '" aria-label="' + esc(s.label + (names[i] ? " " + names[i] : "")) + '"></label>';
+          }).join("") +
+          '<button type="button" class="pg-adsetsave" hidden>Save</button>' + (s.changed ? '<button type="button" class="pg-adsetreset">Reset</button>' : "") + "</div>";
+        var ins = row.querySelectorAll("input"), save = row.querySelector(".pg-adsetsave"), reset = row.querySelector(".pg-adsetreset");
+        var now = function () { return Array.prototype.map.call(ins, function (x) { return parseInt(x.value, 10); }); };
+        Array.prototype.forEach.call(ins, function (x) { x.addEventListener("input", function () { save.hidden = JSON.stringify(now()) === JSON.stringify(s.value); }); });
+        save.addEventListener("click", async function () {
+          var v = now();
+          if (v.some(function (n) { return isNaN(n); })) { say("Fill in every number."); return; }
+          if (!confirm(s.label + ": " + s.value.join(", ") + " → " + v.join(", ") + "?\nThis changes it for every player straight away.")) return;
+          try { var l = await rpc("admin_set_setting", { p_key: s.key, p_value: v }); say("Saved: " + s.label + "."); adminSettings(l); } catch (e) { say(e.message); }
+        });
+        if (reset) reset.addEventListener("click", async function () {
+          if (!confirm("Put " + s.label + " back to " + s.def.join(", ") + "?")) return;
+          try { var l = await rpc("admin_set_setting", { p_key: s.key, p_value: null }); say("Back to normal: " + s.label + "."); adminSettings(l); } catch (e) { say(e.message); }
+        });
+        box.appendChild(row);
+      });
+    }
     async function adminDaily() {
       var d; try { d = await rpc("admin_daily"); } catch (e) { $("g-admindaily").innerHTML = '<p class="pg-note">Run update_055 to see daily tasks.</p>'; return; }
       var n = Math.max(1, d.players), t = d.today || {};
@@ -13903,11 +13986,11 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     function openAdmin() {
       if (!(profile && profile.is_admin)) return;
       $("g-menu").hidden = true; $("g-admin").hidden = false; adminTab("overview");
-      adminDraw(); adminPlayers(false); loadFeedback(); loadReports(); loadChatReports();
+      adminDraw(); adminJourney(); adminSettings(); adminPlayers(false); loadFeedback(); loadReports(); loadChatReports();
     }
     $("g-adminopen").addEventListener("click", openAdmin);
     $("g-adminclose").addEventListener("click", function () { $("g-admin").hidden = true; $("g-apd").hidden = true; });
-    $("g-adminrefresh").addEventListener("click", function () { adminDraw(); adminPlayers(false); loadFeedback(); loadReports(); loadChatReports(); say("Refreshed."); });
+    $("g-adminrefresh").addEventListener("click", function () { adminDraw(); adminJourney(); adminSettings(); adminPlayers(false); loadFeedback(); loadReports(); loadChatReports(); say("Refreshed."); });
     Array.prototype.forEach.call(document.querySelectorAll("#g-admin [data-atab]"), function (b) {
       b.addEventListener("click", function () { adminTab(b.getAttribute("data-atab")); });
     });
