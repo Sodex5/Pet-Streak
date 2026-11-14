@@ -8607,7 +8607,7 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
     // The phone keeps a saved copy of the app (sw.js), so after an update the first open can still be the old
     // version. Each build stamps the page and writes version.json with the same stamp; when they differ, a banner
     // offers the new version, and Update fetches it fresh (sw.js saves it) before reloading.
-    var APP_BUILD = "20261114073337";   // replaced by build_real.ps1
+    var APP_BUILD = "20261114073730";   // replaced by build_real.ps1
     function checkForUpdate() {
       if (APP_BUILD === "dev" || !navigator.onLine) return;
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
@@ -10452,7 +10452,6 @@ body:has(.pg-storepage:not([hidden])) .pg-snow, body:has(.pg-playpage:not([hidde
         });
         g.appendChild(pw);
       }
-      if (n < 2) g.appendChild(roomBotButton("🤖 Play a bot while you wait"));
       var go = document.createElement("button"); go.type = "button"; go.className = "pg-feed pg-roomstart";
       var ready = roomPickGame && n >= 2 && (!two || others.length === 1 || roomOpp);
       // everyone in the game has to be back from the last one
